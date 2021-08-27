@@ -1,0 +1,158 @@
+<form class="kt-form kt-form--label-right" method="POST" id="form-edit">
+	@csrf
+	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
+	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
+	
+    <div class="modal-body">
+		<div class="form-group row mb-5">
+			<div class="col-lg-6">
+				<label>Kode Indikator</label>
+				<input type="text" class="form-control" name="kode" id="kode" value="{{!empty(old('kode'))? old('kode') : ($actionform == 'update' && $data->kode != ''? $data->kode : old('kode'))}}" />
+			</div>
+			<div class="col-lg-6">
+				<label>Nama</label>
+				<input type="text" class="form-control" name="nama" id="nama" value="{{!empty(old('nama'))? old('nama') : ($actionform == 'update' && $data->nama != ''? $data->nama : old('nama'))}}" />
+			</div>
+		</div>
+		<div class="form-group row mb-5">
+			<div class="col-lg-6">
+				<label>TPB</label>
+                <select class="form-select form-select-solid form-select2" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB" data-dropdown-parent="#form-edit" data-allow-clear="true">
+                    <option></option>
+					@foreach($tpb as $p)  
+						@php
+						  $select = ($actionform == 'update' && ($p->id == $data->tpb_id) ? 'selected="selected"' : '');
+						@endphp
+						<option value="{{ $p->id }}" {!! $select !!}>{{ $p->no_tpb . ' - ' . $p->nama }}</option>
+					@endforeach
+				</select>
+			</div>
+			<div class="col-lg-6">
+				<label>Satuan Ukur</label>
+				<input type="text" class="form-control" name="satuan_ukur" id="satuan_ukur" value="{{!empty(old('satuan_ukur'))? old('satuan_ukur') : ($actionform == 'update' && $data->satuan_ukur != ''? $data->satuan_ukur : old('satuan_ukur'))}}" />
+			</div>
+		</div>
+		<div class="form-group row">
+			<div class="col-lg-6">
+				<label>Keterangan</label>
+				<input type="text" class="form-control" name="keterangan" id="keterangan" value="{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $data->keterangan != ''? $data->keterangan : old('keterangan'))}}" />
+			</div>
+		</div>		
+	</div>
+    <div class="text-center pt-15">
+        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" data-kt-roles-modal-action="cancel">Discard</button>
+        <button id="submit" type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">
+            <span class="indicator-label">Submit</span>
+            <span class="indicator-progress">Please wait...
+            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+        </button>
+    </div>
+</form>
+
+<script type="text/javascript">
+    var title = "{{$actionform == 'update'? 'Update' : 'Tambah'}}" + " {{ $pagetitle }}";
+
+    $(document).ready(function(){
+        $('.modal-title').html(title);
+        $('.form-select2').select2();
+
+        $('.modal').on('shown.bs.modal', function () {
+            setFormValidate();
+        });  
+    });
+
+    function setFormValidate(){
+        $('#form-edit').validate({
+            rules: {
+                nama:{
+                        required: true
+                }               		               		                              		               		               
+            },
+            messages: {
+                nama: {
+                    required: "Nama wajib diinput"
+                }                                      		                   		                   
+            },	        
+            highlight: function(element) {
+                $(element).closest('.form-control').addClass('is-invalid');
+            },
+            unhighlight: function(element) {
+                $(element).closest('.form-control').removeClass('is-invalid');
+            },
+            errorElement: 'div',
+            errorClass: 'invalid-feedback',
+            errorPlacement: function(error, element) {
+                if(element.parent('.validated').length) {
+                    error.insertAfter(element.parent());
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+        submitHandler: function(form){
+                var typesubmit = $("input[type=submit][clicked=true]").val();
+                
+                $(form).ajaxSubmit({
+                    type: 'post',
+                    url: urlstore,
+                    data: {source : typesubmit},
+                    dataType : 'json',
+                    beforeSend: function(){
+                        $.blockUI({
+                            theme: true,
+                            baseZ: 2000
+                        })    
+                    },
+                    success: function(data){
+                        $.unblockUI();
+
+                        swal.fire({
+                                title: data.title,
+                                html: data.msg,
+                                type: data.flag,
+
+                                buttonsStyling: false,
+
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                                confirmButtonClass: "btn btn-default"
+                        });	                   
+
+                        if(data.flag == 'success') {
+                            $('#winform').modal('hide');
+                            datatable.ajax.reload( null, false );
+                        }
+                    },
+                    error: function(jqXHR, exception){
+                        $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                        swal.fire({
+                                title: "Error System",
+                                html: msgerror+', coba ulangi kembali !!!',
+                                type: 'error',
+
+                                buttonsStyling: false,
+
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                                confirmButtonClass: "btn btn-default"
+                        });	                               
+                    }
+                });
+                return false;
+        }
+        });		
+    }
+</script>
