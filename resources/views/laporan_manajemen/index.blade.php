@@ -53,7 +53,7 @@
                     <div class="form-group row  mb-5">
                         <div class="col-lg-6">
                             <label>Periode Laporan</label>
-                            <select class="form-select form-select-solid form-select2" name="periode_manajemen_id" data-kt-select2="true" data-placeholder="Pilih Periode" data-allow-clear="true">
+                            <select class="form-select form-select-solid form-select2" name="periode_laporan_id" data-kt-select2="true" data-placeholder="Pilih Periode" data-allow-clear="true">
                                 <option></option>
                                 @foreach($periode as $p)  
                                     <option value="{{ $p->id }}">{{ $p->nama }}</option>
@@ -162,7 +162,7 @@
                 data: function (d) {
                     d.perusahaan_id = $("select[name='perusahaan_id']").val(),
                     d.tahun = $("select[name='tahun']").val(),
-                    d.periode_manajemen_id = $("select[name='periode_manajemen_id']").val(),
+                    d.periode_laporan_id = $("select[name='periode_laporan_id']").val(),
                     d.status_id = $("select[name='status_id']").val()
                 }
             },
@@ -201,7 +201,7 @@
         swal.fire({
             title: "Pemberitahuan",
             text: "Yakin hapus data "+$(element).data('nama')+" ?",
-            type: "warning",
+            icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, hapus data",
             cancelButtonText: "Tidak"
@@ -223,12 +223,11 @@
                     swal.fire({
                             title: data.title,
                             html: data.msg,
-                            type: data.flag,
+                            icon: data.flag,
 
-                            buttonsStyling: false,
+                            buttonsStyling: true,
 
                             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                            confirmButtonClass: "btn btn-default"
                     });
 
                     if(data.flag == 'success') {
@@ -257,12 +256,11 @@
                     swal.fire({
                         title: "Error System",
                         html: msgerror+', coba ulangi kembali !!!',
-                        type: 'error',
+                        icon: 'error',
 
-                        buttonsStyling: false,
+                        buttonsStyling: true,
 
                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                        confirmButtonClass: "btn btn-default"
                     });  
                     }
                 });
@@ -274,7 +272,7 @@
         swal.fire({
             title: "Pemberitahuan",
             text: "Validasi Data Laporan "+$(element).data('periode')+" ?",
-            type: "warning",
+            icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, Validasi",
             cancelButtonText: "Tidak"
@@ -297,12 +295,11 @@
                     swal.fire({
                             title: data.title,
                             html: data.msg,
-                            type: data.flag,
+                            icon: data.flag,
 
-                            buttonsStyling: false,
+                            buttonsStyling: true,
 
                             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                            confirmButtonClass: "btn btn-default"
                     });
 
                     if(data.flag == 'success') {
@@ -331,12 +328,11 @@
                     swal.fire({
                         title: "Error System",
                         html: msgerror+', coba ulangi kembali !!!',
-                        type: 'error',
+                        icon: 'error',
 
-                        buttonsStyling: false,
+                        buttonsStyling: true,
 
                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                        confirmButtonClass: "btn btn-default"
                     });  
                     }
                 });
@@ -371,12 +367,11 @@
                     swal.fire({
                             title: data.title,
                             html: data.msg,
-                            type: data.flag,
+                            icon: data.flag,
 
-                            buttonsStyling: false,
+                            buttonsStyling: true,
 
                             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                            confirmButtonClass: "btn btn-default"
                     });
 
                     if(data.flag == 'success') {
@@ -405,12 +400,11 @@
                     swal.fire({
                         title: "Error System",
                         html: msgerror+', coba ulangi kembali !!!',
-                        type: 'error',
+                        icon: 'error',
 
-                        buttonsStyling: false,
+                        buttonsStyling: true,
 
                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                        confirmButtonClass: "btn btn-default"
                     });  
                     }
                 });

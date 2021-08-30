@@ -112,7 +112,6 @@ License: For each use you must have a valid license purchased only from above li
         <script type="text/javascript" src="{{asset('plugins/jquery.blockUI.js')}}"></script>
         <script type="text/javascript" src="{{asset('plugins/jquery.validate.min.js')}}"></script>
         <script type="text/javascript" src="{{asset('plugins/jquery.form.js')}}"></script>
-        <!-- <script type="text/javascript" src="{{asset('plugins/select2/select2.min.js')}}"></script> -->
         <script type="text/javascript">
             $.ajaxSetup({
                 headers: {

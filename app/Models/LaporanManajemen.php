@@ -15,7 +15,7 @@ class LaporanManajemen extends Model
 
     public function periode()
     {
-        return $this->belongsTo('App\Models\PeriodeManajemen', 'periode_manajemen_id');
+        return $this->belongsTo('App\Models\PeriodeLaporan', 'periode_laporan_id');
     }
 
     public function status()

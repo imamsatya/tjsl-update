@@ -80,19 +80,31 @@ Route::prefix('referensi')->group(function () {
         Route::get('index', 'App\Http\Controllers\Referensi\PerusahaanController@index')->name('referensi.perusahaan.index');
         Route::post('create', 'App\Http\Controllers\Referensi\PerusahaanController@create')->name('referensi.perusahaan.create');
         Route::post('edit', 'App\Http\Controllers\Referensi\PerusahaanController@edit')->name('referensi.perusahaan.edit');
+        Route::post('update_active', 'App\Http\Controllers\Referensi\PerusahaanController@update_active')->name('referensi.perusahaan.update_active');
         Route::post('store', 'App\Http\Controllers\Referensi\PerusahaanController@store')->name('referensi.perusahaan.store');
         Route::post('delete', 'App\Http\Controllers\Referensi\PerusahaanController@delete')->name('referensi.perusahaan.delete');
         Route::get('datatable', 'App\Http\Controllers\Referensi\PerusahaanController@datatable')->name('referensi.perusahaan.datatable');
     });
     
-    Route::prefix('periode_manajemen')->group(function(){
-        Route::get('index', 'App\Http\Controllers\Referensi\PeriodeManajemenController@index')->name('referensi.periode_manajemen.index');
-        Route::post('create', 'App\Http\Controllers\Referensi\PeriodeManajemenController@create')->name('referensi.periode_manajemen.create');
-        Route::post('edit', 'App\Http\Controllers\Referensi\PeriodeManajemenController@edit')->name('referensi.periode_manajemen.edit');
-        Route::post('store', 'App\Http\Controllers\Referensi\PeriodeManajemenController@store')->name('referensi.periode_manajemen.store');
-        Route::post('delete', 'App\Http\Controllers\Referensi\PeriodeManajemenController@delete')->name('referensi.periode_manajemen.delete');
-        Route::get('datatable', 'App\Http\Controllers\Referensi\PeriodeManajemenController@datatable')->name('referensi.periode_manajemen.datatable');
+    Route::prefix('periode_laporan')->group(function(){
+        Route::get('index', 'App\Http\Controllers\Referensi\PeriodeLaporanController@index')->name('referensi.periode_laporan.index');
+        Route::post('create', 'App\Http\Controllers\Referensi\PeriodeLaporanController@create')->name('referensi.periode_laporan.create');
+        Route::post('edit', 'App\Http\Controllers\Referensi\PeriodeLaporanController@edit')->name('referensi.periode_laporan.edit');
+        Route::post('store', 'App\Http\Controllers\Referensi\PeriodeLaporanController@store')->name('referensi.periode_laporan.store');
+        Route::post('delete', 'App\Http\Controllers\Referensi\PeriodeLaporanController@delete')->name('referensi.periode_laporan.delete');
+        Route::get('datatable', 'App\Http\Controllers\Referensi\PeriodeLaporanController@datatable')->name('referensi.periode_laporan.datatable');
     });
+});
+
+Route::prefix('menu')->group(function(){
+    Route::get('index', 'App\Http\Controllers\MenuController@index')->name('menu.index');
+    Route::post('create', 'App\Http\Controllers\MenuController@create')->name('menu.create');
+    Route::post('edit', 'App\Http\Controllers\MenuController@edit')->name('menu.edit');
+    Route::post('store', 'App\Http\Controllers\MenuController@store')->name('menu.store');
+    Route::post('delete', 'App\Http\Controllers\MenuController@delete')->name('menu.delete');
+    Route::post('gettreemenu', 'App\Http\Controllers\MenuController@gettreemenu')->name('menu.gettreemenu');
+    Route::post('submitchangestructure', 'App\Http\Controllers\MenuController@submitchangestructure')->name('menu.submitchangestructure');
+    Route::get('datatable', 'App\Http\Controllers\MenuController@datatable')->name('menu.datatable');
 });
 
 Route::prefix('anggaran_tpb')->group(function(){
@@ -101,6 +113,7 @@ Route::prefix('anggaran_tpb')->group(function(){
     Route::post('edit', 'App\Http\Controllers\AnggaranTpbController@edit')->name('anggaran_tpb.edit');
     Route::post('store', 'App\Http\Controllers\AnggaranTpbController@store')->name('anggaran_tpb.store');
     Route::post('delete', 'App\Http\Controllers\AnggaranTpbController@delete')->name('anggaran_tpb.delete');
+    Route::post('delete_by_pilar', 'App\Http\Controllers\AnggaranTpbController@delete_by_pilar')->name('anggaran_tpb.delete_by_pilar');
     Route::get('datatable', 'App\Http\Controllers\AnggaranTpbController@datatable')->name('anggaran_tpb.datatable');
     Route::post('export', 'App\Http\Controllers\AnggaranTpbController@export')->name('anggaran_tpb.export');
     Route::post('validasi', 'App\Http\Controllers\AnggaranTpbController@validasi')->name('anggaran_tpb.validasi');
@@ -122,4 +135,15 @@ Auth::routes();
 // Fetch Route
 Route::prefix('fetch')->group(function(){
     Route::post('/gettpbbypilar', 'App\Http\Controllers\FetchController@getTpbByPilar');
+});
+
+Route::prefix('general')->group(function(){
+    Route::get('fetchpilihaninputan', 'App\Http\Controllers\GeneralController@fetchpilihaninputan')->name('general.fetchpilihaninputan');
+    Route::get('fecthwilayah', 'App\Http\Controllers\GeneralController@fecthwilayah')->name('general.fecthwilayah');
+    Route::get('fetchparentmenu', 'App\Http\Controllers\GeneralController@fetchparentmenu')->name('general.fetchparentmenu');
+    Route::get('fetchparentunit', 'App\Http\Controllers\GeneralController@fetchparentunit')->name('general.fetchparentunit');
+    Route::get('fetchkategoriuser', 'App\Http\Controllers\GeneralController@fetchkategoriuser')->name('general.fetchkategoriuser');
+    Route::get('fetchbumnactive', 'App\Http\Controllers\GeneralController@fetchbumnactive')->name('general.fetchbumnactive');
+    Route::get('fetchassessment', 'App\Http\Controllers\GeneralController@fetchassessment')->name('general.fetchassessment');
+    Route::get('fetchrole', 'App\Http\Controllers\GeneralController@fetchrole')->name('general.fetchrole');
 });

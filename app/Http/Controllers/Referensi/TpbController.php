@@ -49,17 +49,18 @@ class TpbController extends Controller
      */
     public function datatable(Request $request)
     {
+        $tpb = Tpb::orderBy('pilar_pembangunan_id')->orderBy('no_tpb')->get();
         try{
-            return datatables()->of(Tpb::query())
+            return datatables()->of($tpb)
             ->addColumn('action', function ($row){
                 $id = (int)$row->id;
                 $button = '<div align="center">';
 
-                $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" data-original-title="Ubah data '.$row->nama.'"><i class="bi bi-pencil fs-3"></i></button>';
+                $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data '.$row->nama.'"><i class="bi bi-pencil fs-3"></i></button>';
 
                 $button .= '&nbsp;';
 
-                $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->nama.'" data-toggle="tooltip" data-original-title="Hapus data '.$row->nama.'"><i class="bi bi-trash fs-3"></i></button>';
+                $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->nama.'" data-toggle="tooltip" title="Hapus data '.$row->nama.'"><i class="bi bi-trash fs-3"></i></button>';
 
                 $button .= '</div>';
                 return $button;
@@ -112,7 +113,8 @@ class TpbController extends Controller
 
         $validator = $this->validateform($request);
         if (!$validator->fails()) {
-            $param = $request->except('actionform','id');
+            $param = $request->except('actionform','id','no_tpb');
+            $param['no_tpb'] = 'TPB ' . $request->no_tpb;
 
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();

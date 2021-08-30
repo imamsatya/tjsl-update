@@ -12,9 +12,11 @@ use Illuminate\Support\Str;
 use Datatables;
 use App\Http\Controllers\Controller;
 
-use App\Models\PeriodeManajemen;
+use App\Models\PeriodeLaporan;
+use App\Models\LaporanManajemen;
+use App\Models\Perusahaan;
 
-class PeriodeManajemenController extends Controller
+class PeriodeLaporanController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -23,8 +25,8 @@ class PeriodeManajemenController extends Controller
      */
     public function __construct()
     {
-        $this->__route = 'referensi.periode_manajemen';
-        $this->pagetitle = 'Periode Manajemen';
+        $this->__route = 'referensi.periode_laporan';
+        $this->pagetitle = 'Periode Laporan';
     }
 
     /**
@@ -36,7 +38,7 @@ class PeriodeManajemenController extends Controller
     {
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
-            'breadcrumb' => 'Referensi - Periode Manajemen'
+            'breadcrumb' => 'Referensi - Periode Laporan'
         ]);
     }
 
@@ -48,17 +50,18 @@ class PeriodeManajemenController extends Controller
      */
     public function datatable(Request $request)
     {
+        $periode = PeriodeLaporan::orderBy('jenis_laporan')->orderBy('urutan')->get();
         try{
-            return datatables()->of(PeriodeManajemen::query())
+            return datatables()->of($periode)
             ->addColumn('action', function ($row){
                 $id = (int)$row->id;
                 $button = '<div align="center">';
 
-                $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" data-original-title="Ubah data '.$row->nama.'"><i class="bi bi-pencil fs-3"></i></button>';
+                $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data '.$row->nama.'"><i class="bi bi-pencil fs-3"></i></button>';
 
                 $button .= '&nbsp;';
 
-                $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->nama.'" data-toggle="tooltip" data-original-title="Hapus data '.$row->nama.'"><i class="bi bi-trash fs-3"></i></button>';
+                $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->nama.'" data-toggle="tooltip" title="Hapus data '.$row->nama.'"><i class="bi bi-trash fs-3"></i></button>';
 
                 $button .= '</div>';
                 return $button;
@@ -93,12 +96,12 @@ class PeriodeManajemenController extends Controller
 
     public function create()
     {
-        $periode_manajemen = PeriodeManajemen::get();
+        $periode_laporan = PeriodeLaporan::get();
 
         return view($this->__route.'.form',[
             'pagetitle' => $this->pagetitle,
             'actionform' => 'insert',
-            'data' => $periode_manajemen
+            'data' => $periode_laporan
         ]);
 
     }
@@ -117,13 +120,30 @@ class PeriodeManajemenController extends Controller
 
         $validator = $this->validateform($request);
         if (!$validator->fails()) {
-            $param['nama'] = $request->input('nama');
-            $param['keterangan'] = $request->input('keterangan');
+            $param = $request->except('actionform','id','tanggal_awal','tanggal_akhir');
 
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
-                                  $periode_manajemen = PeriodeManajemen::create((array)$param);
+                                   
+                                  $tanggal_awal=date_format(date_create($request->tanggal_awal),"Y-m-d");
+                                  $tanggal_akhir=date_format(date_create($request->tanggal_akhir),"Y-m-d");
+                                  $param['tanggal_awal'] = $tanggal_awal;
+                                  $param['tanggal_akhir'] = $tanggal_akhir;
+
+                                  $periode_laporan = PeriodeLaporan::create((array)$param);
+
+                                  // create data laporan manajemen all bumn
+                                  if($request->jenis_laporan == 'Manajemen'){
+                                    $perusahaan = Perusahaan::where('is_active', true)->get();
+                                    foreach($perusahaan as $p){
+                                        $param_laporan['perusahaan_id'] = $p->id;
+                                        $param_laporan['periode_laporan_id'] = $periode_laporan->id;
+                                        $param_laporan['status_id'] = 3;
+                                        $param_laporan['tahun'] = date('Y');
+                                        $laporan_manajamen = LaporanManajemen::create((array)$param_laporan);
+                                    }
+                                  }
 
                                   DB::commit();
                                   $result = [
@@ -144,8 +164,14 @@ class PeriodeManajemenController extends Controller
 
                 case 'update': DB::beginTransaction();
                                try{
-                                  $periode_manajemen = PeriodeManajemen::find((int)$request->input('id'));
-                                  $periode_manajemen->update((array)$param);
+                                   
+                                  $tanggal_awal=date_format(date_create($request->tanggal_awal),"Y-m-d");
+                                  $tanggal_akhir=date_format(date_create($request->tanggal_akhir),"Y-m-d");
+                                  $param['tanggal_awal'] = $tanggal_awal;
+                                  $param['tanggal_akhir'] = $tanggal_akhir;
+                                  
+                                  $periode_laporan = PeriodeLaporan::find((int)$request->input('id'));
+                                  $periode_laporan->update((array)$param);
 
                                   DB::commit();
                                   $result = [
@@ -188,12 +214,12 @@ class PeriodeManajemenController extends Controller
 
         try{
 
-            $periode_manajemen = PeriodeManajemen::find((int)$request->input('id'));
+            $periode_laporan = PeriodeLaporan::find((int)$request->input('id'));
 
                 return view($this->__route.'.form',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
-                    'data' => $periode_manajemen
+                    'data' => $periode_laporan
 
                 ]);
         }catch(Exception $e){}
@@ -208,7 +234,7 @@ class PeriodeManajemenController extends Controller
     {
         DB::beginTransaction();
         try{
-            $data = PeriodeManajemen::find((int)$request->input('id'));
+            $data = PeriodeLaporan::find((int)$request->input('id'));
             $data->delete();
 
             DB::commit();

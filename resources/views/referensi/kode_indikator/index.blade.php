@@ -109,7 +109,7 @@
         swal.fire({
             title: "Pemberitahuan",
             text: "Yakin hapus data "+$(element).data('nama')+" ?",
-            type: "warning",
+            icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, hapus data",
             cancelButtonText: "Tidak"
@@ -131,12 +131,11 @@
                     swal.fire({
                             title: data.title,
                             html: data.msg,
-                            type: data.flag,
+                            icon: data.flag,
 
-                            buttonsStyling: false,
+                            buttonsStyling: true,
 
                             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                            confirmButtonClass: "btn btn-default"
                     });
 
                     if(data.flag == 'success') {
@@ -165,12 +164,11 @@
                     swal.fire({
                         title: "Error System",
                         html: msgerror+', coba ulangi kembali !!!',
-                        type: 'error',
+                        icon: 'error',
 
-                        buttonsStyling: false,
+                        buttonsStyling: true,
 
                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                        confirmButtonClass: "btn btn-default"
                     });  
                     }
                 });

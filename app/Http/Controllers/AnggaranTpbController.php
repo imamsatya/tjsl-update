@@ -37,14 +37,51 @@ class AnggaranTpbController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
+        $anggaran       = AnggaranTpb::select('tpbs.pilar_pembangunan_id','anggaran_tpbs.*')
+                                        ->leftJoin('tpbs','tpbs.id','anggaran_tpbs.tpb_id');
+        $anggaran_pilar = AnggaranTpb::leftJoin('tpbs','tpbs.id','anggaran_tpbs.tpb_id')
+                                        ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'tpbs.pilar_pembangunan_id');
+        
+        if($request->perusahaan_id){
+            $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
+            $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
+        }
+
+        if($request->tahun){
+            $anggaran = $anggaran->where('anggaran_tpbs.tahun', $request->tahun);
+            $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.tahun', $request->tahun);
+        }
+
+        if($request->pilar_pembangunan_id){
+            $anggaran = $anggaran->where('tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
+            $anggaran_pilar = $anggaran_pilar->where('tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
+        }
+
+        if($request->tpb_id){
+            $anggaran = $anggaran->where('anggaran_tpbs.tpb_id', $request->tpb_id);
+            $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.tpb_id', $request->tpb_id);
+        }
+        
+        $anggaran_pilar = $anggaran_pilar->select('tpbs.pilar_pembangunan_id', DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'), 'pilar_pembangunans.nama as pilar_nama', 'pilar_pembangunans.id as pilar_id')
+                            ->groupBy('tpbs.pilar_pembangunan_id', 'pilar_pembangunans.nama', 'pilar_pembangunans.id')
+                            ->orderBy('tpbs.pilar_pembangunan_id')
+                            ->get();
+        $anggaran = $anggaran->orderBy('tpbs.pilar_pembangunan_id')->get();
+        
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
             'perusahaan' => Perusahaan::get(),
+            'anggaran' => $anggaran,
+            'anggaran_pilar' => $anggaran_pilar,
             'pilar' => PilarPembangunan::get(),
             'tpb' => Tpb::get(),
+            'perusahaan_id' => $request->perusahaan_id,
+            'tahun' => $request->tahun,
+            'pilar_pembangunan_id' => $request->pilar_pembangunan_id,
+            'tpb_id' => $request->tpb_id,
         ]);
     }
 
@@ -81,10 +118,10 @@ class AnggaranTpbController extends Controller
                 return @$row->perusahaan->nama_lengkap;
             })
             ->addColumn('pilar', function ($row){
-                return @$row->tpb->pilar->nama;
+                return @$row->tpb->nama . '-' .@$row->tpb->pilar->nama;
             })
             ->addColumn('tpb', function ($row){
-                return @$row->tpb->nama;
+                return @$row->tpb->pilar->nama .'-'.@$row->tpb->nama;
             })
             ->addColumn('status', function ($row){
                 return @$row->status->nama;
@@ -99,11 +136,11 @@ class AnggaranTpbController extends Controller
                 if($row->status_id!=1){
                     $button = '<div align="center">';
 
-                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" data-original-title="Ubah data '.$row->nama.'"><i class="bi bi-pencil fs-3"></i></button> ';
+                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data '.$row->nama.'"><i class="bi bi-pencil fs-3"></i></button> ';
 
                     $button .= '&nbsp;';
 
-                    $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->nama.'" data-toggle="tooltip" data-original-title="Hapus data '.$row->nama.'"><i class="bi bi-trash fs-3"></i></button>';
+                    $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->nama.'" data-toggle="tooltip" title="Hapus data '.$row->nama.'"><i class="bi bi-trash fs-3"></i></button>';
 
                     $button .= '</div>';
                 }
@@ -153,16 +190,18 @@ class AnggaranTpbController extends Controller
             'title' => 'Error'
         ];
 
-        $param = $request->except('actionform','id');
-
         switch ($request->input('actionform')) {
             case 'insert': DB::beginTransaction();
                             try{
-                                
+                                $param['perusahaan_id'] = $request->perusahaan_id;
+                                $param['tahun'] = $request->tahun;
+                                $param['status_id'] = 2;
                                 if($request->tpb_id){
                                     $tpb_id = $request->tpb_id;
+                                    $anggaran = $request->anggaran;
                                     for($i=0; $i<count($tpb_id); $i++){
                                         $param['tpb_id'] = $tpb_id[$i];
+                                        $param['anggaran'] = str_replace(',', '', $anggaran[$i]);
                                         AnggaranTpb::create((array)$param);
                                     }
                                 }
@@ -187,7 +226,7 @@ class AnggaranTpbController extends Controller
             case 'update': DB::beginTransaction();
                             try{
                                 $anggaran_tpb = AnggaranTpb::find((int)$request->input('id'));
-                                $param['anggaran'] = $request->input('anggaran');
+                                $param['anggaran'] = str_replace(',', '', $request->input('anggaran'));
                                 $anggaran_tpb->update((array)$param);
 
                                 DB::commit();
@@ -246,6 +285,35 @@ class AnggaranTpbController extends Controller
         DB::beginTransaction();
         try{
             $data = AnggaranTpb::find((int)$request->input('id'));
+            $data->delete();
+
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses hapus data',
+                'title' => 'Sukses'
+            ];
+        }catch(\Exception $e){
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal hapus data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+    
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function delete_by_pilar(Request $request)
+    {
+        DB::beginTransaction();
+        try{
+            $data = AnggaranTpb::LeftJoin('tpbs','tpbs.id','anggaran_tpbs.tpb_id')
+                                    ->where('tpbs.pilar_pembangunan_id', (int)$request->input('id'));
             $data->delete();
 
             DB::commit();

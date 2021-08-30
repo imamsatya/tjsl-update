@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PeriodeManajemen extends Model
+class PeriodeLaporan extends Model
 {
     protected $guarded = [];
 

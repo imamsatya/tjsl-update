@@ -58,11 +58,11 @@
 @section('addafterjs')
 <script>
     var datatable;
-    var urlcreate = "{{route('referensi.periode_manajemen.create')}}";
-    var urledit = "{{route('referensi.periode_manajemen.edit')}}";
-    var urlstore = "{{route('referensi.periode_manajemen.store')}}";
-    var urldatatable = "{{route('referensi.periode_manajemen.datatable')}}";
-    var urldelete = "{{route('referensi.periode_manajemen.delete')}}";
+    var urlcreate = "{{route('referensi.periode_laporan.create')}}";
+    var urledit = "{{route('referensi.periode_laporan.edit')}}";
+    var urlstore = "{{route('referensi.periode_laporan.store')}}";
+    var urldatatable = "{{route('referensi.periode_laporan.datatable')}}";
+    var urldelete = "{{route('referensi.periode_laporan.delete')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
@@ -79,7 +79,6 @@
         $('body').on('click','.cls-button-delete',function(){
             onbtndelete(this);
         });
-        
 
         setDatatable();
     });
@@ -93,7 +92,7 @@
                 { data: 'id', orderable: false, searchable: false },
                 { data: 'nama', name: 'nama' },
                 { data: 'jenis_laporan', name: 'jenis_laporan' },
-                { data: 'urutan', name: 'urutan' },
+                { data: 'urutan', name: 'urutan', sClass: 'text-center'},
                 { data: 'tanggal_awal', name: 'tanggal_awal' },
                 { data: 'tanggal_akhir', name: 'tanggal_akhir' },
                 { data: 'action', name:'action'},
@@ -112,7 +111,7 @@
         swal.fire({
             title: "Pemberitahuan",
             text: "Yakin hapus data "+$(element).data('nama')+" ?",
-            type: "warning",
+            icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, hapus data",
             cancelButtonText: "Tidak"
@@ -134,12 +133,11 @@
                     swal.fire({
                             title: data.title,
                             html: data.msg,
-                            type: data.flag,
+                            icon: data.flag,
 
-                            buttonsStyling: false,
+                            buttonsStyling: true,
 
                             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                            confirmButtonClass: "btn btn-default"
                     });
 
                     if(data.flag == 'success') {
@@ -168,12 +166,11 @@
                     swal.fire({
                         title: "Error System",
                         html: msgerror+', coba ulangi kembali !!!',
-                        type: 'error',
+                        icon: 'error',
 
-                        buttonsStyling: false,
+                        buttonsStyling: true,
 
                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                        confirmButtonClass: "btn btn-default"
                     });  
                     }
                 });

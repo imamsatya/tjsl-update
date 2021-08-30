@@ -3,72 +3,70 @@
 	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
 	
-    <div class="modal-body">
-		<div class="form-group row mb-5">
-			<div class="col-lg-12">
-                <label>BUMN</label>
-                <select class="form-select form-select-solid form-select2" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" data-allow-clear="true">
-                    <option></option>
-                    @foreach($perusahaan as $p)  
-                        <option value="{{ $p->id }}">{{ $p->nama_lengkap }}</option>
-                    @endforeach
-                </select>
-			</div>
-		</div>
-		<div class="form-group row mb-5">
-			<div class="col-lg-6">
-                <label>Tahun</label>
-                <select class="form-select form-select-solid form-select2" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih Tahun" data-allow-clear="true">
-                    <option></option>
-                    @php for($i = date("Y"); $i>=2020; $i--){ @endphp
-                    <option value="{{$i}}">{{$i}}</option>
-                    @php } @endphp
-                </select>
-			</div>
-			<div class="col-lg-6">
-				<label>Pilar Pembangunan</label>
-                <select class="form-select form-select-solid form-select2" name="pilar_pembangunan_id" data-kt-select2="true" data-placeholder="Pilih Pilar" data-allow-clear="true" onchange="return onChangePilar(this.value)">
-                    <option></option>
-                    @foreach($pilar as $p)  
-                        <option value="{{ $p->id }}">{{ $p->nama }}</option>
-                    @endforeach
-                </select>
-			</div>
-		</div>
-        <div class="form-group">
-            <div class="col-lg-12">
-                <div class="checkbox-tpb">
-                </div>
-            </div>	
-        </div>	
-        <div class="text-left pt-10">
-            <a id="proses" class="btn btn-primary btn-proses">Proses</a>
+    <div class="form-group row mb-5">
+        <div class="col-lg-12">
+            <label>BUMN</label>
+            <select class="form-select form-select-solid form-select2" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN"  data-dropdown-parent="#form-edit" required>
+                <option></option>
+                @foreach($perusahaan as $p)  
+                    <option value="{{ $p->id }}">{{ $p->nama_lengkap }}</option>
+                @endforeach
+            </select>
         </div>
-
-        <!--begin::Anggaran-->
-        <div class="anggaran-header" style="display:none;">
-            <h3 class="card-title align-items-start flex-column mt-10">
-                <span class="card-label fw-bolder fs-3 mb-1">Anggaran TPB</span>
-            </h3>
-            <div class="separator border-gray-200 mb-3"></div>
-            <div class="form-group row">
-                <div class="col-lg-6">
-                </div>	
-                <div class="col-lg-6">
-                    <label><small><i>dalam rupiah penuh</i></small></label>
-                </div>	
+    </div>
+    <div class="form-group row mb-5">
+        <div class="col-lg-6">
+            <label>Tahun</label>
+            <select class="form-select form-select-solid form-select2" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun"  data-dropdown-parent="#form-edit" required>
+                <option></option>
+                @php for($i = date("Y"); $i>=2020; $i--){ @endphp
+                <option value="{{$i}}">{{$i}}</option>
+                @php } @endphp
+            </select>
+        </div>
+        <div class="col-lg-6">
+            <label>Pilar Pembangunan</label>
+            <select class="form-select form-select-solid form-select2" name="pilar_pembangunan_id" data-kt-select2="true" data-placeholder="Pilih Pilar"  data-dropdown-parent="#form-edit" onchange="return onChangePilar(this.value)">
+                <option></option>
+                @foreach($pilar as $p)  
+                    <option value="{{ $p->id }}">{{ $p->nama }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-lg-12">
+            <div class="checkbox-tpb">
             </div>
+        </div>	
+    </div>	
+    <div class="text-left pt-10">
+        <a id="proses" class="btn btn-primary btn-proses">Proses</a>
+    </div>
+
+    <!--begin::Anggaran-->
+    <div class="anggaran-header" style="display:none;">
+        <h3 class="card-title align-items-start flex-column mt-10">
+            <span class="card-label fw-bolder fs-3 mb-1">Anggaran TPB</span>
+        </h3>
+        <div class="separator border-gray-200 mb-3"></div>
+        <div class="form-group row">
+            <div class="col-lg-6">
+            </div>	
+            <div class="col-lg-6">
+                <label><small><i>dalam rupiah penuh</i></small></label>
+            </div>	
         </div>
-        <div class="input-anggaran mb-5">
-        </div>
-        <div class="anggaran-footer" style="display:none;">
-            <button id="submit" type="submit" class="btn btn-success" data-kt-roles-modal-action="submit">
-                <span class="indicator-label">Simpan</span>
-                <span class="indicator-progress">Please wait...
-                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-            </button>
-        </div>
-	</div>
+    </div>
+    <div class="input-anggaran mb-5">
+    </div>
+    <div class="anggaran-footer" style="display:none;">
+        <button id="submit" type="submit" class="btn btn-success" data-kt-roles-modal-action="submit">
+            <span class="indicator-label">Simpan</span>
+            <span class="indicator-progress">Please wait...
+            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+        </button>
+    </div>
 </form>
 
 <script type="text/javascript">
@@ -93,7 +91,7 @@
         var contentData = '';
 
         $('input[name=tpb]:checked').each(function(){
-            var id = $(this).val;
+            var id = $(this).val();
             var text = $(this).next('span').text();
 
             contentData += '<div class="form-group row mb-3">';
@@ -101,13 +99,26 @@
             contentData += text;
             contentData += '</div>';
             contentData += '<div class="col-lg-6">';
-            contentData += '<input type="hidden" class="form-control" name="tpb_id[]" value="'+id+'" required>';
-            contentData += '<input type="text" onkeypress="return onlyNumberKey(event)" class="form-control" name="anggaran[]" required>';
+            contentData += '<input type="hidden" class="form-control" name="input_tpb_id[]" value="'+id+'" required>';
+            contentData += '<input type="text" class="form-control anggaran-array" name="input_anggaran[]" required>';
             contentData += '</div>';
             contentData += '</div>';
         });
         
         $(".input-anggaran").html(contentData);
+        $('.anggaran-array').keyup(function(event) {
+
+            // skip for arrow keys
+            if(event.which >= 37 && event.which <= 40) return;
+
+            // format number
+            $(this).val(function(index, value) {
+            return value
+            .replace(/\D/g, "")
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+            ;
+            });
+        });
     }
     
     function onChangePilar(id){
@@ -129,7 +140,7 @@
 
                     contentData += '<div class="col-lg-6">';
                     contentData += '<label class="form-check form-check-sm form-check-custom form-check-solid">';
-                    contentData += '<input name="tpb" class="form-check-input" type="checkbox" value="'+data[i].id+'" />';
+                    contentData += '<input name="tpb" class="form-check-input" type="checkbox" checked="checked" value="'+data[i].id+'" required/>';
                     contentData += '<span class="form-check-label">'+data[i].nama+'</span>';
                     contentData += '</label>';
                     contentData += '</div>';
@@ -163,11 +174,17 @@
             },
         submitHandler: function(form){
                 var typesubmit = $("input[type=submit][clicked=true]").val();
+                var tpb_id = $("input[name='input_tpb_id[]']").map(function(){return $(this).val();}).get();
+                var anggaran = $("input[name='input_anggaran[]']").map(function(){return $(this).val();}).get();
                 
                 $(form).ajaxSubmit({
                     type: 'post',
                     url: urlstore,
-                    data: {source : typesubmit},
+                    data: {
+                        source : typesubmit,
+                        tpb_id : tpb_id,
+                        anggaran : anggaran
+                    },
                     dataType : 'json',
                     beforeSend: function(){
                         $.blockUI({
@@ -181,17 +198,17 @@
                         swal.fire({
                                 title: data.title,
                                 html: data.msg,
-                                type: data.flag,
+                                icon: data.flag,
 
-                                buttonsStyling: false,
+                                buttonsStyling: true,
 
-                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                                confirmButtonClass: "btn btn-default"
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                         });	                   
 
                         if(data.flag == 'success') {
                             $('#winform').modal('hide');
-                            datatable.ajax.reload( null, false );
+                            // datatable.ajax.reload( null, false );
+                            location.reload(); 
                         }
                     },
                     error: function(jqXHR, exception){
@@ -215,12 +232,11 @@
                         swal.fire({
                                 title: "Error System",
                                 html: msgerror+', coba ulangi kembali !!!',
-                                type: 'error',
+                                icon: 'error',
 
-                                buttonsStyling: false,
+                                buttonsStyling: true,
 
-                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                                confirmButtonClass: "btn btn-default"
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                         });	                               
                     }
                 });

@@ -36,9 +36,9 @@
                         <thead>
                             <tr>
                                 <th>No.</th>
-                                <th>No TPB</th>
-                                <th>Nama</th>
                                 <th>Pilar Pembangunan</th>
+                                <th>Nama</th>
+                                <th>No TPB</th>
                                 <th style="text-align:center;">Aksi</th>
                             </tr>
                         </thead>
@@ -88,9 +88,9 @@
             ajax: urldatatable,
             columns: [
                 { data: 'id', orderable: false, searchable: false },
-                { data: 'no_tpb', name: 'no_tpb' },
-                { data: 'nama', name: 'nama' },
                 { data: 'pilar', name: 'pilar' },
+                { data: 'nama', name: 'nama' },
+                { data: 'no_tpb', name: 'no_tpb' },
                 { data: 'action', name:'action'},
             ],
             drawCallback: function( settings ) {
@@ -107,7 +107,7 @@
         swal.fire({
             title: "Pemberitahuan",
             text: "Yakin hapus data "+$(element).data('nama')+" ?",
-            type: "warning",
+            icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, hapus data",
             cancelButtonText: "Tidak"
@@ -129,12 +129,11 @@
                     swal.fire({
                             title: data.title,
                             html: data.msg,
-                            type: data.flag,
+                            icon: data.flag,
 
-                            buttonsStyling: false,
+                            buttonsStyling: true,
 
                             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                            confirmButtonClass: "btn btn-default"
                     });
 
                     if(data.flag == 'success') {
@@ -163,12 +162,11 @@
                     swal.fire({
                         title: "Error System",
                         html: msgerror+', coba ulangi kembali !!!',
-                        type: 'error',
+                        icon: 'error',
 
-                        buttonsStyling: false,
+                        buttonsStyling: true,
 
                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                        confirmButtonClass: "btn btn-default"
                     });  
                     }
                 });

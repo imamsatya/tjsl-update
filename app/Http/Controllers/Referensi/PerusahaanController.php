@@ -54,16 +54,31 @@ class PerusahaanController extends Controller
                 $id = (int)$row->id;
                 $button = '<div align="center">';
 
-                $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" data-original-title="Ubah data '.$row->nama.'"><i class="bi bi-pencil fs-3"></i></button> ';
+                $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data '.$row->nama.'"><i class="bi bi-pencil fs-3"></i></button> ';
 
                 // $button .= '&nbsp;';
 
-                // $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->nama.'" data-toggle="tooltip" data-original-title="Hapus data '.$row->nama.'"><i class="bi bi-trash fs-3"></i></button>';
+                // $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->nama.'" data-toggle="tooltip" title="Hapus data '.$row->nama.'"><i class="bi bi-trash fs-3"></i></button>';
 
                 $button .= '</div>';
                 return $button;
             })
-            ->rawColumns(['nama','keterangan','action'])
+            ->editColumn('is_active', function ($row){
+                $id = $row->is_active;
+                $button = '<div align="center">';
+
+                $checked = 'title="Ubah menjadi Aktif"';
+                if($row->is_active){
+                    $checked = 'title="Ubah menjadi Tidak Aktif" checked="checked"';
+                }
+                $button .= '<label class="form-check form-switch form-check-custom form-check-solid">
+                                <input id="edit_active" class="form-check-input" data-id="'.$row->id.'" data-nama="'.$row->nama_lengkap.'" type="checkbox" value="1" data-toggle="tooltip" '.$checked.' />
+                            </label>';
+
+                $button .= '</div>';
+                return $button;
+            })
+            ->rawColumns(['nama','keterangan','action','is_active'])
             ->toJson();
         }catch(Exception $e){
             return response([
@@ -159,6 +174,41 @@ class PerusahaanController extends Controller
                 'flag'  => 'warning',
                 'msg' => '<ul>'.implode('', $messages).'</ul>',
                 'title' => 'Gagal proses data'
+            ];
+        }
+
+        return response()->json($result);
+    }
+    
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update_active(Request $request)
+    {
+        $result = [
+            'flag' => 'error',
+            'msg' => 'Error System',
+            'title' => 'Error'
+        ];
+
+        try{
+            $param['is_active'] = $request->input('is_active');
+            $perusahaan = Perusahaan::find((int)$request->input('id'));
+            $perusahaan->update((array)$param);
+
+            DB::commit();
+            $result = [
+            'flag'  => 'success',
+            'msg' => 'Sukses ubah data',
+            'title' => 'Sukses'
+            ];
+        }catch(\Exception $e){
+            DB::rollback();
+            $result = [
+            'flag'  => 'warning',
+            'msg' => $e->getMessage(),
+            'title' => 'Gagal'
             ];
         }
 

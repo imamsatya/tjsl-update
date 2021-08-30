@@ -2,43 +2,41 @@
 	@csrf
 	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
-	
-    <div class="modal-body">
-		<div class="form-group row mb-5">
-			<div class="col-lg-6">
-				<label>Kode Indikator</label>
-				<input type="text" class="form-control" name="kode" id="kode" value="{{!empty(old('kode'))? old('kode') : ($actionform == 'update' && $data->kode != ''? $data->kode : old('kode'))}}" />
-			</div>
-			<div class="col-lg-6">
-				<label>Nama</label>
-				<input type="text" class="form-control" name="nama" id="nama" value="{{!empty(old('nama'))? old('nama') : ($actionform == 'update' && $data->nama != ''? $data->nama : old('nama'))}}" />
-			</div>
-		</div>
-		<div class="form-group row mb-5">
-			<div class="col-lg-6">
-				<label>TPB</label>
-                <select class="form-select form-select-solid form-select2" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB" data-dropdown-parent="#form-edit" data-allow-clear="true">
-                    <option></option>
-					@foreach($tpb as $p)  
-						@php
-						  $select = ($actionform == 'update' && ($p->id == $data->tpb_id) ? 'selected="selected"' : '');
-						@endphp
-						<option value="{{ $p->id }}" {!! $select !!}>{{ $p->no_tpb . ' - ' . $p->nama }}</option>
-					@endforeach
-				</select>
-			</div>
-			<div class="col-lg-6">
-				<label>Satuan Ukur</label>
-				<input type="text" class="form-control" name="satuan_ukur" id="satuan_ukur" value="{{!empty(old('satuan_ukur'))? old('satuan_ukur') : ($actionform == 'update' && $data->satuan_ukur != ''? $data->satuan_ukur : old('satuan_ukur'))}}" />
-			</div>
-		</div>
-		<div class="form-group row">
-			<div class="col-lg-6">
-				<label>Keterangan</label>
-				<input type="text" class="form-control" name="keterangan" id="keterangan" value="{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $data->keterangan != ''? $data->keterangan : old('keterangan'))}}" />
-			</div>
-		</div>		
-	</div>
+
+    <div class="form-group row mb-5">
+        <div class="col-lg-6">
+            <label>TPB</label>
+            <select class="form-select form-select-solid form-select2" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB" data-dropdown-parent="#form-edit" data-allow-clear="true" required>
+                <option></option>
+                @foreach($tpb as $p)  
+                    @php
+                        $select = ($actionform == 'update' && ($p->id == $data->tpb_id) ? 'selected="selected"' : '');
+                    @endphp
+                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->no_tpb . ' - ' . $p->nama }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-lg-6">
+            <label>Kode Indikator</label>
+            <input type="text" class="form-control" name="kode" id="kode" value="{{!empty(old('kode'))? old('kode') : ($actionform == 'update' && $data->kode != ''? $data->kode : old('kode'))}}" required/>
+        </div>
+    </div>
+    <div class="form-group row mb-5">
+        <div class="col-lg-6">
+            <label>Nama</label>
+            <input type="text" class="form-control" name="nama" id="nama" value="{{!empty(old('nama'))? old('nama') : ($actionform == 'update' && $data->nama != ''? $data->nama : old('nama'))}}" required/>
+        </div>
+        <div class="col-lg-6">
+            <label>Satuan Ukur</label>
+            <input type="text" class="form-control" name="satuan_ukur" id="satuan_ukur" value="{{!empty(old('satuan_ukur'))? old('satuan_ukur') : ($actionform == 'update' && $data->satuan_ukur != ''? $data->satuan_ukur : old('satuan_ukur'))}}" required/>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-lg-6">
+            <label>Keterangan</label>
+            <input type="text" class="form-control" name="keterangan" id="keterangan" value="{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $data->keterangan != ''? $data->keterangan : old('keterangan'))}}" />
+        </div>
+    </div>	
     <div class="text-center pt-15">
         <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" data-kt-roles-modal-action="cancel">Discard</button>
         <button id="submit" type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">
@@ -108,12 +106,11 @@
                         swal.fire({
                                 title: data.title,
                                 html: data.msg,
-                                type: data.flag,
+                                icon: data.flag,
 
-                                buttonsStyling: false,
+                                buttonsStyling: true,
 
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                                confirmButtonClass: "btn btn-default"
                         });	                   
 
                         if(data.flag == 'success') {
@@ -142,12 +139,11 @@
                         swal.fire({
                                 title: "Error System",
                                 html: msgerror+', coba ulangi kembali !!!',
-                                type: 'error',
+                                icon: 'error',
 
-                                buttonsStyling: false,
+                                buttonsStyling: true,
 
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                                confirmButtonClass: "btn btn-default"
                         });	                               
                     }
                 });

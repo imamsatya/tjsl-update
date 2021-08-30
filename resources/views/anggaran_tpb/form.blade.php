@@ -2,28 +2,26 @@
 	@csrf
 	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
-	
-    <div class="modal-body">
-		<div class="form-group row mb-5">
-			<div class="col-lg-12">
-                <label>BUMN</label>
-                <select class="form-select form-select-solid form-select2" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" data-allow-clear="true">
-                    <option></option>
-                    @foreach($perusahaan as $p)  
-                        <option value="{{ $p->id }}">{{ $p->nama_lengkap }}</option>
-                    @endforeach
-                </select>
-			</div>
-		</div>
-        <div class="text-center pt-15">
-            <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" data-kt-roles-modal-action="cancel">Discard</button>
-            <button id="submit" type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">
-                <span class="indicator-label">Submit</span>
-                <span class="indicator-progress">Please wait...
-                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-            </button>
+
+    <div class="form-group row mb-5">
+        <div class="col-lg-12">
+            <label>BUMN</label>
+            <select class="form-select form-select-solid form-select2" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" data-allow-clear="true">
+                <option></option>
+                @foreach($perusahaan as $p)  
+                    <option value="{{ $p->id }}">{{ $p->nama_lengkap }}</option>
+                @endforeach
+            </select>
         </div>
-	</div>
+    </div>
+    <div class="text-center pt-15">
+        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" data-kt-roles-modal-action="cancel">Discard</button>
+        <button id="submit" type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">
+            <span class="indicator-label">Submit</span>
+            <span class="indicator-progress">Please wait...
+            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+        </button>
+    </div>
 </form>
 
 <script type="text/javascript">
@@ -80,17 +78,17 @@
                         swal.fire({
                                 title: data.title,
                                 html: data.msg,
-                                type: data.flag,
+                                icon: data.flag,
 
-                                buttonsStyling: false,
+                                buttonsStyling: true,
 
-                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                                confirmButtonClass: "btn btn-default"
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                         });	                   
 
                         if(data.flag == 'success') {
                             $('#winform').modal('hide');
-                            datatable.ajax.reload( null, false );
+                            // datatable.ajax.reload( null, false );
+                            location.reload(); 
                         }
                     },
                     error: function(jqXHR, exception){
@@ -114,12 +112,11 @@
                         swal.fire({
                                 title: "Error System",
                                 html: msgerror+', coba ulangi kembali !!!',
-                                type: 'error',
+                                icon: 'error',
 
-                                buttonsStyling: false,
+                                buttonsStyling: true,
 
-                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                                confirmButtonClass: "btn btn-default"
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                         });	                               
                     }
                 });

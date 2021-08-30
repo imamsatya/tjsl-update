@@ -14,7 +14,7 @@ use Datatables;
 use App\Http\Controllers\Controller;
 
 use App\Models\LaporanManajemen;
-use App\Models\PeriodeManajemen;
+use App\Models\PeriodeLaporan;
 use App\Models\Perusahaan;
 use App\Models\Status;
 
@@ -42,7 +42,7 @@ class LaporanManajemenController extends Controller
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
             'perusahaan' => Perusahaan::get(),
-            'periode' => PeriodeManajemen::get(),
+            'periode' => PeriodeLaporan::get(),
             'status' => Status::get(),
         ]);
     }
@@ -55,7 +55,12 @@ class LaporanManajemenController extends Controller
      */
     public function datatable(Request $request)
     {
-        $laporan = LaporanManajemen::Select('laporan_manajemens.*');
+        $laporan = LaporanManajemen::Select('laporan_manajemens.*')
+                                    ->leftJoin('periode_laporans','periode_laporans.id', 'laporan_manajemens.periode_laporan_id')
+                                    ->where('periode_laporans.jenis_laporan', 'Manajemen')
+                                    ->orderBy('laporan_manajemens.tahun')
+                                    ->orderBy('periode_laporans.urutan')
+                                    ->orderBy('laporan_manajemens.perusahaan_id');
         
         if($request->perusahaan_id){
             $laporan = $laporan->where('laporan_manajemens.perusahaan_id', $request->perusahaan_id);
@@ -65,8 +70,8 @@ class LaporanManajemenController extends Controller
             $laporan = $laporan->where('laporan_manajemens.tahun', $request->tahun);
         }
 
-        if($request->periode_manajemen_id){
-            $laporan = $laporan->where('laporan_manajemens.periode_manajemen_id', $request->periode_manajemen_id);
+        if($request->periode_laporan_id){
+            $laporan = $laporan->where('laporan_manajemens.periode_laporan_id', $request->periode_laporan_id);
         }
 
         if($request->status_id){
@@ -82,7 +87,7 @@ class LaporanManajemenController extends Controller
                 return @$row->perusahaan->nama_lengkap;
             })
             ->addColumn('periode', function ($row){
-                return @$row->periode->nama;
+                return @$row->tahun .' - '. @$row->periode->nama;
             })
             ->addColumn('user', function ($row){
                 return 'Fitri Hidayanti';

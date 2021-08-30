@@ -53,11 +53,11 @@ class RoleController extends Controller
                 $id = (int)$row->id;
                 $button = '<div align="center">';
 
-                $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" data-original-title="Ubah data '.$row->name.'"><i class="bi bi-pencil fs-3"></i></button>';
+                $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data '.$row->name.'"><i class="bi bi-pencil fs-3"></i></button>';
 
                 $button .= '&nbsp;';
 
-                $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->name.'" data-toggle="tooltip" data-original-title="Hapus data '.$row->name.'"><i class="bi bi-trash fs-3"></i></button>';
+                $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->name.'" data-toggle="tooltip" title="Hapus data '.$row->name.'"><i class="bi bi-trash fs-3"></i></button>';
 
                 $button .= '</div>';
                 return $button;

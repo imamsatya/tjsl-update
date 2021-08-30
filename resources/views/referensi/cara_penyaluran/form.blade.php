@@ -3,18 +3,17 @@
 	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
 	
-    <div class="modal-body">
-		<div class="form-group row">
-			<div class="col-lg-6">
-				<label>Nama</label>
-				<input type="text" class="form-control" name="nama" id="nama" value="{{!empty(old('nama'))? old('nama') : ($actionform == 'update' && $data->nama != ''? $data->nama : old('nama'))}}" />
-			</div>
-			<div class="col-lg-6">
-				<label>Keterangan</label>
-				<input type="text" class="form-control" name="keterangan" id="keterangan" value="{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $data->keterangan != ''? $data->keterangan : old('keterangan'))}}" />
-			</div>
-		</div>		
-	</div>
+
+    <div class="form-group row">
+        <div class="col-lg-6">
+            <label>Nama</label>
+            <input type="text" class="form-control" name="nama" id="nama" value="{{!empty(old('nama'))? old('nama') : ($actionform == 'update' && $data->nama != ''? $data->nama : old('nama'))}}" required/>
+        </div>
+        <div class="col-lg-6">
+            <label>Keterangan</label>
+            <input type="text" class="form-control" name="keterangan" id="keterangan" value="{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $data->keterangan != ''? $data->keterangan : old('keterangan'))}}" />
+        </div>
+    </div>
     <div class="text-center pt-15">
         <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" data-kt-roles-modal-action="cancel">Discard</button>
         <button id="submit" type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">
@@ -82,12 +81,11 @@
                         swal.fire({
                                 title: data.title,
                                 html: data.msg,
-                                type: data.flag,
+                                icon: data.flag,
 
-                                buttonsStyling: false,
+                                buttonsStyling: true,
 
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                                confirmButtonClass: "btn btn-default"
                         });	                   
 
                         if(data.flag == 'success') {
@@ -116,12 +114,11 @@
                         swal.fire({
                                 title: "Error System",
                                 html: msgerror+', coba ulangi kembali !!!',
-                                type: 'error',
+                                icon: 'error',
 
-                                buttonsStyling: false,
+                                buttonsStyling: true,
 
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                                confirmButtonClass: "btn btn-default"
                         });	                               
                     }
                 });

@@ -41,6 +41,7 @@
                                 <th>Jenis Perusahaan</th>
                                 <th>Kepemilikan</th>
                                 <th>Tgl Sinkronisasi</th>
+                                <th>Aktif</th>
                                 <th style="text-align:center;" >Aksi</th>
                             </tr>
                         </thead>
@@ -62,6 +63,7 @@
     var urlstore = "{{route('referensi.perusahaan.store')}}";
     var urldatatable = "{{route('referensi.perusahaan.datatable')}}";
     var urldelete = "{{route('referensi.perusahaan.delete')}}";
+    var urlupdateactive = "{{route('referensi.perusahaan.update_active')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
@@ -78,7 +80,10 @@
         $('body').on('click','.cls-button-delete',function(){
             onbtndelete(this);
         });
-        
+
+        $('body').on('change', '#edit_active', function() {
+            onbtneditactive(this);
+        });
 
         setDatatable();
     });
@@ -95,6 +100,7 @@
                 { data: 'jenis_perusahaan', name: 'jenis_perusahaan' },
                 { data: 'kepemilikan', name: 'kepemilikan' },
                 { data: 'tgl_sinkronisasi', name: 'tgl_sinkronisasi' },
+                { data: 'is_active', name: 'is_active' },
                 { data: 'action', name:'action'},
             ],
             drawCallback: function( settings ) {
@@ -111,7 +117,7 @@
         swal.fire({
             title: "Pemberitahuan",
             text: "Yakin hapus data "+$(element).data('nama')+" ?",
-            type: "warning",
+            icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, hapus data",
             cancelButtonText: "Tidak"
@@ -133,12 +139,11 @@
                     swal.fire({
                             title: data.title,
                             html: data.msg,
-                            type: data.flag,
+                            icon: data.flag,
 
-                            buttonsStyling: false,
+                            buttonsStyling: true,
 
                             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                            confirmButtonClass: "btn btn-default"
                     });
 
                     if(data.flag == 'success') {
@@ -167,12 +172,90 @@
                     swal.fire({
                         title: "Error System",
                         html: msgerror+', coba ulangi kembali !!!',
-                        type: 'error',
+                        icon: 'error',
 
-                        buttonsStyling: false,
+                        buttonsStyling: true,
 
                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                        confirmButtonClass: "btn btn-default"
+                    });  
+                    }
+                });
+            }
+        });	
+    }
+    
+    function onbtneditactive(element){
+        var status = 'Tidak Aktif';
+        var is_active = false;
+        if(element.checked) {
+            status = 'Aktif';
+            is_active = true;
+        }
+
+        swal.fire({
+            title: "Pemberitahuan",
+            text: "Ubah data "+$(element).data('nama')+" menjadi "+status+" ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya",
+            cancelButtonText: "Tidak"
+        }).then(function(result) {
+            if (result.value) {
+                $.ajax({
+                url: urlupdateactive,
+                data:{
+                    "id": $(element).data('id'),
+                    "is_active": is_active
+                },
+                type:'post',
+                dataType:'json',
+                beforeSend: function(){
+                    $.blockUI();
+                },
+                success: function(data){
+                    $.unblockUI();
+
+                    swal.fire({
+                            title: data.title,
+                            html: data.msg,
+                            icon: data.flag,
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                    });
+
+                    if(data.flag == 'success') {
+                        datatable.ajax.reload( null, false );
+                    }
+                    
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
                     });  
                     }
                 });

@@ -2,49 +2,47 @@
 	@csrf
 	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
-	
-    <div class="modal-body">
-		<div class="form-group row mb-5">
-			<div class="col-lg-6">
-				<label>Nama Periode</label>
-				<input type="text" class="form-control" name="nama" id="nama" value="{{!empty(old('nama'))? old('nama') : ($actionform == 'update' && $data->nama != ''? $data->nama : old('nama'))}}" />
-			</div>
-			<div class="col-lg-6">
-				<label>Jenis Laporan</label>
-                <select class="form-select form-select-solid form-select2" name="jenis_laporan" data-kt-select2="true" data-placeholder="Pilih Jenis">
-                    <option></option>
-                    @php
-                        $select = ($actionform == 'update' && ($data->jenis_laporan == 'Manajemen') ? 'selected="selected"' : '');
-                    @endphp
-                    <option value="Manajemen" {{$select}} >Manajemen</option>
-                    @php
-                        $select = ($actionform == 'update' && ($data->jenis_laporan == 'PUMK') ? 'selected="selected"' : '');
-                    @endphp
-                    <option value="PUMK" {{$select}} >PUMK</option>
-                </select>
-			</div>
-		</div>
-		<div class="form-group row mb-5">
-			<div class="col-lg-6">
-				<label>Urutan</label>
-				<input type="text" class="form-control" onkeypress="return onlyNumberKey(event)" name="urutan" id="urutan" value="{{!empty(old('urutan'))? old('urutan') : ($actionform == 'update' && $data->urutan != ''? $data->urutan : old('urutan'))}}" />
-			</div>
-			<div class="col-lg-6">
-				<label>Keterangan</label>
-				<input type="text" class="form-control" name="keterangan" id="keterangan" value="{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $data->keterangan != ''? $data->keterangan : old('keterangan'))}}" />
-			</div>
-		</div>	
-		<div class="form-group row mb-5">
-			<div class="col-lg-6">
-				<label>Tanggal Awal</label>
-				<input  id="kt_datepicker_3" type="text" class="form-control" name="tanggal_awal" id="tanggal_awal" value="{{!empty(old('tanggal_awal'))? old('tanggal_awal') : ($actionform == 'update' && $data->tanggal_awal != ''? $data->tanggal_awal : old('tanggal_awal'))}}" />
-			</div>
-			<div class="col-lg-6">
-				<label>Tanggal Akhir</label>
-				<input type="text" class="form-control" name="tanggal_awal" id="tanggal_awal" value="{{!empty(old('tanggal_awal'))? old('tanggal_awal') : ($actionform == 'update' && $data->tanggal_awal != ''? $data->tanggal_awal : old('tanggal_awal'))}}" />
-			</div>
-		</div>	
-	</div>
+
+    <div class="form-group row mb-5">
+        <div class="col-lg-6">
+            <label>Nama Periode</label>
+            <input type="text" class="form-control" name="nama" id="nama" value="{{!empty(old('nama'))? old('nama') : ($actionform == 'update' && $data->nama != ''? $data->nama : old('nama'))}}" required/>
+        </div>
+        <div class="col-lg-6">
+            <label>Jenis Laporan</label>
+            <select class="form-select form-select-solid form-select2" name="jenis_laporan" data-kt-select2="true" data-placeholder="Pilih Jenis" required>
+                <option></option>
+                @php
+                    $select = ($actionform == 'update' && ($data->jenis_laporan == 'Manajemen') ? 'selected="selected"' : '');
+                @endphp
+                <option value="Manajemen" {{$select}} >Manajemen</option>
+                @php
+                    $select = ($actionform == 'update' && ($data->jenis_laporan == 'PUMK') ? 'selected="selected"' : '');
+                @endphp
+                <option value="PUMK" {{$select}} >PUMK</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row mb-5">
+        <div class="col-lg-6">
+            <label>Urutan</label>
+            <input type="text" class="form-control" onkeypress="return onlyNumberKey(event)" name="urutan" id="urutan" value="{{!empty(old('urutan'))? old('urutan') : ($actionform == 'update' && $data->urutan != ''? $data->urutan : old('urutan'))}}" required/>
+        </div>
+        <div class="col-lg-6">
+            <label>Keterangan</label>
+            <input type="text" class="form-control" name="keterangan" id="keterangan" value="{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $data->keterangan != ''? $data->keterangan : old('keterangan'))}}" />
+        </div>
+    </div>	
+    <div class="form-group row mb-5">
+        <div class="col-lg-6">
+            <label>Tanggal Awal</label>
+            <input  type="text" class="form-control input-tanggal" name="tanggal_awal" id="tanggal_awal" value="{{!empty(old('tanggal_awal'))? old('tanggal_awal') : ($actionform == 'update' && $data->tanggal_awal != ''? $data->tanggal_awal : old('tanggal_awal'))}}" />
+        </div>
+        <div class="col-lg-6">
+            <label>Tanggal Akhir</label>
+            <input type="text" class="form-control input-tanggal" name="tanggal_akhir" id="tanggal_akhir" value="{{!empty(old('tanggal_akhir'))? old('tanggal_akhir') : ($actionform == 'update' && $data->tanggal_akhir != ''? $data->tanggal_akhir : old('tanggal_akhir'))}}" />
+        </div>
+    </div>	
     <div class="text-center pt-15">
         <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" data-kt-roles-modal-action="cancel">Discard</button>
         <button id="submit" type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">
@@ -64,6 +62,11 @@
         $('.modal').on('shown.bs.modal', function () {
             setFormValidate();
         });  
+        
+        $('.input-tanggal').flatpickr({
+			enableTime: false,
+			dateFormat: "d M",
+		});
     });
 
     function setFormValidate(){
@@ -113,12 +116,11 @@
                         swal.fire({
                                 title: data.title,
                                 html: data.msg,
-                                type: data.flag,
+                                icon: data.flag,
 
-                                buttonsStyling: false,
+                                buttonsStyling: true,
 
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                                confirmButtonClass: "btn btn-default"
                         });	                   
 
                         if(data.flag == 'success') {
@@ -147,12 +149,11 @@
                         swal.fire({
                                 title: "Error System",
                                 html: msgerror+', coba ulangi kembali !!!',
-                                type: 'error',
+                                icon: 'error',
 
-                                buttonsStyling: false,
+                                buttonsStyling: true,
 
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                                confirmButtonClass: "btn btn-default"
                         });	                               
                     }
                 });

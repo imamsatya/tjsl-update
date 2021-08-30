@@ -1,7 +1,16 @@
 @extends('layouts.app')
 
-@section('content')
+@section('addbeforecss')
+<link href="{{asset('plugins/jquery-treegrid-master/css/jquery.treegrid.css')}}" rel="stylesheet" type="text/css" />
 
+<style>
+.border_bottom {
+    border-bottom: 1px solid #c8c7c7;
+}
+</style>
+@endsection
+
+@section('content')
 <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
     <!--begin::Container-->
     <div id="kt_content_container" class="container">
@@ -20,11 +29,11 @@
                 <div class="card-toolbar">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
-                        <button type="button" class="btn btn-primary btn-sm btn-icon btn-validasi cls-validasi" style="display:none;" data-kt-view-roles-table-select="delete_selected" data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
-                        <button type="button" class="btn btn-danger btn-sm btn-icon btn-cancel-validasi cls-validasi" style="display:none;" data-kt-view-roles-table-select="delete_selected" data-toggle="tooltip" title="Batalkan Validasi"><i class="bi bi-check fs-3"></i></button> 
-                        <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi" data-kt-view-roles-table-select="delete_selected" data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button> &nbsp
-                        <button type="button" class="btn btn-success btn-sm btn-icon cls-add" data-kt-view-roles-table-select="delete_selected" data-toggle="tooltip" title="Tambah Data"><i class="bi bi-plus fs-3"></i></button> &nbsp
-                        <button type="button" class="btn btn-warning btn-sm btn-icon cls-export" data-kt-view-roles-table-select="delete_selected" data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-excel fs-3"></i></button>
+                        <button type="button" class="btn btn-primary btn-sm btn-icon btn-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
+                        <button type="button" class="btn btn-danger btn-sm btn-icon btn-cancel-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Batalkan Validasi"><i class="bi bi-check fs-3"></i></button> 
+                        <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button> &nbsp
+                        <button type="button" class="btn btn-success btn-sm btn-icon cls-add"  data-toggle="tooltip" title="Tambah Data"><i class="bi bi-plus fs-3"></i></button> &nbsp
+                        <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-excel fs-3"></i></button>
                     </div>
                     <!--end::Search-->
                     <!--end::Group actions-->
@@ -41,7 +50,10 @@
                             <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" data-allow-clear="true">
                                 <option></option>
                                 @foreach($perusahaan as $p)  
-                                    <option value="{{ $p->id }}">{{ $p->nama_lengkap }}</option>
+                                    @php
+                                        $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -50,7 +62,10 @@
                             <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun" data-allow-clear="true">
                                 <option></option>
                                 @php for($i = date("Y"); $i>=2020; $i--){ @endphp
-                                <option value="{{$i}}">{{$i}}</option>
+                                    @php
+                                        $select = (($i == $tahun) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{$i}}" {!! $select !!}>{{$i}}</option>
                                 @php } @endphp
                             </select>
                         </div>
@@ -58,19 +73,25 @@
                     <div class="form-group row  mb-5">
                         <div class="col-lg-6">
                             <label>Pilar Pembangunan</label>
-                            <select class="form-select form-select-solid form-select2" name="pilar_pembangunan_id" data-kt-select2="true" data-placeholder="Pilih Pilar" data-allow-clear="true">
+                            <select id="pilar_pembangunan_id" class="form-select form-select-solid form-select2" name="pilar_pembangunan_id" data-kt-select2="true" data-placeholder="Pilih Pilar" data-allow-clear="true">
                                 <option></option>
                                 @foreach($pilar as $p)  
-                                    <option value="{{ $p->id }}">{{ $p->nama }}</option>
+                                    @php
+                                        $select = (($p->id == $pilar_pembangunan_id) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-lg-6">
                             <label>TPB</label>
-                            <select class="form-select form-select-solid form-select2" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB" data-allow-clear="true">
+                            <select id="tpb_id" class="form-select form-select-solid form-select2" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB" data-allow-clear="true">
                                 <option></option>
                                 @foreach($tpb as $p)  
-                                    <option value="{{ $p->id }}">{{ $p->nama }}</option>
+                                    @php
+                                        $select = (($p->id == $tpb_id) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -81,32 +102,66 @@
                         </div>
                     </div>
                     <div class="separator border-gray-200 mb-10"></div>
+                    
                     <!--begin: Datatable -->
-                    <table class="table table-striped- table-bordered table-hover table-checkable" id="datatable">
-                        <thead>
-                            <tr>
-                                <th>No.</th>
-                                <th>BUMN</th>
-                                <!-- <th>Pilar</th> -->
-                                <th>Pilar - TPB</th>
-                                <th>Anggaran</th>
-                                <th>Status</th>
-                                <th style="text-align:center;width:70px;" >Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                        
-                        <tfoot>
-                            <tr>
-                                <th></th>
-                                <th></th>
-                                <th style="text-align:right;">Total</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </tfoot>
-                    </table>
+                    <div class="table-responsive"  style="display:none;" >
+                        <table class="table table-striped table-bordered table-hover tree  table-checkable">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No.</th>
+                                    <th style="font-weight:bold;border-bottom: 1px solid #c8c7c7;">Pilar - TPB</th>
+                                    <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Anggaran</th>
+                                    <th style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">Status</th>
+                                    <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>                 
+                            @php $no=0; $total=0; @endphp
+                            @foreach ($anggaran_pilar as $p)                                  
+                                @php 
+                                    $no++;
+                                    $anggaran_anak = $anggaran->where('pilar_pembangunan_id', $p->pilar_pembangunan_id);
+                                    $status = $anggaran->where('pilar_pembangunan_id', $p->pilar_pembangunan_id)->first();
+                                    $total += $p->sum_anggaran;
+                                @endphp
+                            
+                                <tr class="treegrid-pilar{{@$p->pilar_id}}" >
+                                    <td style="text-align:center;">{{$no}}</td>
+                                    <td>{{$p->pilar_nama}}</td>
+                                    <td style="text-align:right;">{{number_format($p->sum_anggaran,0,',',',')}}</td>
+                                    <td style="text-align:center;">{{@$status->status->nama}}</td>
+                                    <td style="text-align:center;">
+                                        <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pilar" data-id="{{$p->pilar_id}}" data-nama="{{$p->pilar_nama}}" data-toggle="tooltip" title="Hapus data {{$p->pilar_nama}}"><i class="bi bi-trash fs-3"></i></button>
+                                    </td>
+                                </tr>
+                                
+                                @foreach ($anggaran_anak as $a)       
+                                <tr class="treegrid-{{$a->id}} treegrid-parent-pilar{{@$p->pilar_id}} item{{$a->id}}">
+                                    <td></td>
+                                    <td>{{@$a->tpb->no_tpb .' - '. @$a->tpb->nama}}</td>
+                                    <td style="text-align:right;">{{number_format($a->anggaran,0,',',',')}}</td>
+                                    <td style="text-align:center;">{{@$a->status->nama}}</td>
+                                    <td style="text-align:center;">
+                                        <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$a->id}}" data-toggle="tooltip" title="Ubah data {{@$a->tpb->no_tpb}}"><i class="bi bi-pencil fs-3"></i></button>
+                                        <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="{{$a->id}}" data-nama="{{@$a->tpb->no_tpb}}" data-toggle="tooltip" title="Hapus data {{@$a->tpb->no_tpb}}"><i class="bi bi-trash fs-3"></i></button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">Total</th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">{{number_format($total,0,',',',')}}</th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+
+                    </div>
                 </div>
             </div>
             <!--end::Card body-->
@@ -116,6 +171,8 @@
 @endsection
 
 @section('addafterjs')
+<script type="text/javascript" src="{{asset('plugins/jquery-treegrid-master/js/jquery.treegrid.js')}}"></script>
+
 <script>
     var datatable;
     var urlcreate = "{{route('anggaran_tpb.create')}}";
@@ -123,11 +180,18 @@
     var urlstore = "{{route('anggaran_tpb.store')}}";
     var urldatatable = "{{route('anggaran_tpb.datatable')}}";
     var urldelete = "{{route('anggaran_tpb.delete')}}";
+    var urldeletepilar = "{{route('anggaran_tpb.delete_by_pilar')}}";
     var urlexport = "{{route('anggaran_tpb.export')}}";
     var urlvalidasi = "{{route('anggaran_tpb.validasi')}}";
     var urlgetstatus = "{{route('anggaran_tpb.get_status')}}";
 
     $(document).ready(function(){
+        $('.tree').treegrid({
+            initialState : 'collapsed',
+            treeColumn : 1,
+            indentTemplate : '<span style="width: 32px; height: 16px; display: inline-block; position: relative;"></span>'
+        });
+
         $('#page-title').html("{{ $pagetitle }}");
         $('#page-breadcrumb').html("{{ $breadcrumb }}");
 
@@ -141,6 +205,10 @@
 
         $('body').on('click','.cls-button-delete',function(){
             onbtndelete(this);
+        });
+
+        $('body').on('click','.cls-button-delete-pilar',function(){
+            onbtndeletepilar(this);
         });
 
         $('body').on('click','.cls-export',function(){
@@ -160,11 +228,18 @@
         });
         
         $('#proses').on('click', function(event){
-            datatable.ajax.reload();
-            showValidasi();
+            // datatable.ajax.reload()
+            var url = window.location.origin + '/anggaran_tpb/index';
+            var perusahaan_id = $('#perusahaan_id').val();
+            var tahun = $('#tahun').val();
+            var pilar_pembangunan_id = $('#pilar_pembangunan_id').val();
+            var tpb_id = $('#tpb_id').val();
+
+            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&pilar_pembangunan_id=' + pilar_pembangunan_id + '&tpb_id=' + tpb_id;
         });
 
-        setDatatable();
+        showValidasi();
+        // setDatatable();
     });
 
     function addCommas(nStr) {
@@ -228,7 +303,7 @@
         swal.fire({
             title: "Pemberitahuan",
             text: "Yakin hapus data "+$(element).data('nama')+" ?",
-            type: "warning",
+            icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, hapus data",
             cancelButtonText: "Tidak"
@@ -250,16 +325,16 @@
                     swal.fire({
                             title: data.title,
                             html: data.msg,
-                            type: data.flag,
+                            icon: data.flag,
 
-                            buttonsStyling: false,
+                            buttonsStyling: true,
 
-                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                            confirmButtonClass: "btn btn-default"
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                     });
 
                     if(data.flag == 'success') {
-                        datatable.ajax.reload( null, false );
+                        // datatable.ajax.reload( null, false );
+                        location.reload(); 
                     }
                     
                 },
@@ -284,12 +359,83 @@
                     swal.fire({
                         title: "Error System",
                         html: msgerror+', coba ulangi kembali !!!',
-                        type: 'error',
+                        icon: 'error',
 
-                        buttonsStyling: false,
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });  
+                    }
+                });
+            }
+        });	
+    }
+    
+    function onbtndeletepilar(element){
+        swal.fire({
+            title: "Pemberitahuan",
+            text: "Yakin hapus data "+$(element).data('nama')+" ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, hapus data",
+            cancelButtonText: "Tidak"
+        }).then(function(result) {
+            if (result.value) {
+                $.ajax({
+                url: urldeletepilar,
+                data:{
+                    "id": $(element).data('id')
+                },
+                type:'post',
+                dataType:'json',
+                beforeSend: function(){
+                    $.blockUI();
+                },
+                success: function(data){
+                    $.unblockUI();
+
+                    swal.fire({
+                            title: data.title,
+                            html: data.msg,
+                            icon: data.flag,
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });
+
+                    if(data.flag == 'success') {
+                        // datatable.ajax.reload( null, false );
+                        location.reload(); 
+                    }
+                    
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
 
                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                        confirmButtonClass: "btn btn-default"
                     });  
                     }
                 });
@@ -358,12 +504,11 @@
             swal.fire({
                     title: "Error System",
                     html: msgerror+', coba ulangi kembali !!!',
-                    type: 'error',
+                    icon: 'error',
 
-                    buttonsStyling: false,
+                    buttonsStyling: true,
 
                     confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                    confirmButtonClass: "btn btn-default"
             });      
                 
             }
@@ -375,12 +520,11 @@
         swal.fire({
             title: "Gagal",
             html: 'Pilihan BUMN dan Tahun wajib diisi!',
-            type: 'error',
+            icon: 'error',
 
-            buttonsStyling: false,
+            buttonsStyling: true,
 
             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-            confirmButtonClass: "btn btn-default"
         }); 
     }
 
@@ -388,7 +532,7 @@
         swal.fire({
             title: "Pemberitahuan",
             text: "Validasi Data Aggaran TPB "+$("#perusahaan_id option:selected").text() +" tahun "+$("#tahun").val()+" ?",
-            type: "warning",
+            icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, Validasi",
             cancelButtonText: "Tidak"
@@ -412,12 +556,11 @@
                     swal.fire({
                             title: data.title,
                             html: data.msg,
-                            type: data.flag,
+                            icon: data.flag,
 
-                            buttonsStyling: false,
+                            buttonsStyling: true,
 
-                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                            confirmButtonClass: "btn btn-default"
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                     });
 
                     if(data.flag == 'success') {
@@ -447,12 +590,11 @@
                     swal.fire({
                         title: "Error System",
                         html: msgerror+', coba ulangi kembali !!!',
-                        type: 'error',
+                        icon: 'error',
 
-                        buttonsStyling: false,
+                        buttonsStyling: true,
 
-                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                        confirmButtonClass: "btn btn-default"
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                     });  
                     }
                 });
@@ -464,7 +606,7 @@
         swal.fire({
             title: "Pemberitahuan",
             text: "Batalkan Validasi Data Aggaran TPB "+$("#perusahaan_id option:selected").text() +" tahun "+$("#tahun").val()+" ?",
-            type: "warning",
+            icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, Batalkan Validasi",
             cancelButtonText: "Tidak"
@@ -488,12 +630,11 @@
                     swal.fire({
                             title: data.title,
                             html: 'Sukses Batalkan Validasi',
-                            type: data.flag,
+                            icon: data.flag,
 
-                            buttonsStyling: false,
+                            buttonsStyling: true,
 
                             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                            confirmButtonClass: "btn btn-default"
                     });
 
                     if(data.flag == 'success') {
@@ -523,12 +664,11 @@
                     swal.fire({
                         title: "Error System",
                         html: msgerror+', coba ulangi kembali !!!',
-                        type: 'error',
+                        icon: 'error',
 
-                        buttonsStyling: false,
+                        buttonsStyling: true,
 
                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                        confirmButtonClass: "btn btn-default"
                     });  
                     }
                 });
@@ -539,7 +679,13 @@
     function showValidasi(){
         var perusahaan_id = $("select[name='perusahaan_id']").val();
         var tahun = $("select[name='tahun']").val();
-        
+
+        if(perusahaan_id == ''){
+            $('.table-responsive').hide();
+        }else{
+            $('.table-responsive').show();
+        }
+
         if(perusahaan_id == '' || tahun == ''){
             $('.btn-disable-validasi').show();
             $('.btn-validasi').hide();
@@ -574,3 +720,4 @@
     }
 </script>
 @endsection
+

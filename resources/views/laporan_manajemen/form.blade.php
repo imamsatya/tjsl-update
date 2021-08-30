@@ -2,22 +2,20 @@
 	@csrf
 	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
-	
-    <div class="modal-body">
-		<div class="form-group">
-			<div class="col-lg-10">
-                <label>File (*.pdf)</label>
-                <input class="form-control" type="file" name="file_name" accept="application/pdf" />
-			</div>
-		</div>
-        <div class="text-center pt-10">
-            <button id="submit" type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">
-                <span class="indicator-label">Upload</span>
-                <span class="indicator-progress">Please wait...
-                <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-            </button>
+
+    <div class="form-group">
+        <div class="col-lg-10">
+            <label>File (*.pdf)</label>
+            <input class="form-control" type="file" name="file_name" accept="application/pdf" required/>
         </div>
-	</div>
+    </div>
+    <div class="text-center pt-10">
+        <button id="submit" type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">
+            <span class="indicator-label">Upload</span>
+            <span class="indicator-progress">Please wait...
+            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+        </button>
+    </div>
 </form>
 
 <script type="text/javascript">
@@ -73,12 +71,11 @@
                         swal.fire({
                                 title: data.title,
                                 html: data.msg,
-                                type: data.flag,
+                                icon: data.flag,
 
-                                buttonsStyling: false,
+                                buttonsStyling: true,
 
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                                confirmButtonClass: "btn btn-default"
                         });	                   
 
                         if(data.flag == 'success') {
@@ -107,12 +104,11 @@
                         swal.fire({
                                 title: "Error System",
                                 html: msgerror+', coba ulangi kembali !!!',
-                                type: 'error',
+                                icon: 'error',
 
-                                buttonsStyling: false,
+                                buttonsStyling: true,
 
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                                confirmButtonClass: "btn btn-default"
                         });	                               
                     }
                 });
