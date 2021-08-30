@@ -11,9 +11,15 @@
 														<!--end::Avatar-->
 														<!--begin::Username-->
 														<div class="d-flex flex-column">
-															<div class="fw-bolder d-flex align-items-center fs-5">Max Smith
-															<span class="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">Pro</span></div>
-															<a href="#" class="fw-bold text-muted text-hover-primary fs-7">max@kt.com</a>
+															<div class="fw-bolder d-flex align-items-center fs-5">
+																{{ !empty(Auth::user()->name) ? Auth::user()->name : 'undefined'}}
+																{{-- <span class="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">
+																	{{Auth::user()->kategori_user ? Auth::user()->kategori_user : ''}}
+																</span> --}}
+															</div>
+															<a class="fw-bold text-muted text-hover-primary fs-7">
+																{{ !empty(Auth::user()->email) ? Auth::user()->email : 'undefined'}}
+															</a>
 														</div>
 														<!--end::Username-->
 													</div>
@@ -22,7 +28,12 @@
 												<!--begin::Menu separator-->
 												<!--begin::Menu item-->
 												<div class="menu-item px-5">
-													<a href="?page=authentication/flows/basic/sign-in" class="menu-link px-5">Sign Out</a>
+													<a href="{{route('logout')}}" class="menu-link px-5">
+														<strong>
+														<i class="fas fa-sign-out-alt"></i> 
+														&nbsp;Log Out
+														</strong>	
+													</a>
 												</div>
 												<!--end::Menu item-->
 											</div>
