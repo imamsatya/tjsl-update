@@ -20,7 +20,7 @@ use App\Http\Middleware\CasAuth;
 // });
 
 Route::view('forbidden', 'errors.login');
-login dengan cas
+// login dengan cas
 Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
    Route::get('logout', 'App\Http\Controllers\AuthController@logout')->name('logout');
 
