@@ -14,6 +14,7 @@ use Datatables;
 use App\Http\Controllers\Controller;
 
 use App\Models\LaporanManajemen;
+use App\Models\LogLaporanManajemen;
 use App\Models\PeriodeLaporan;
 use App\Models\Perusahaan;
 use App\Models\Status;
@@ -81,7 +82,19 @@ class LaporanManajemenController extends Controller
         try{
             return datatables()->of($laporan)
             ->addColumn('status', function ($row){
-                return @$row->status->nama;
+                $waktu = $row->waktu;
+                if($row->waktu) $waktu = date("d-m-Y", strtotime($row->waktu));
+                
+                $class = 'primary';
+                if($row->status_id == 1){
+                    $class = 'success';
+                }else if($row->status_id == 3){
+                    $class = 'warning';
+                }
+                $status = '<span class="btn cls-log badge badge-light-'.$class.' fw-bolder me-auto px-4 py-3" data-id="'.$row->id.'" >'.@$row->status->nama.'</span>';
+                // $status .= '<br>Fitri Hidayanti, '.$row->waktu;
+
+                return $status;
             })
             ->addColumn('perusahaan', function ($row){
                 return @$row->perusahaan->nama_lengkap;
@@ -90,8 +103,10 @@ class LaporanManajemenController extends Controller
                 return @$row->tahun .' - '. @$row->periode->nama;
             })
             ->addColumn('user', function ($row){
-                return 'Fitri Hidayanti';
-                return @$row->user->nama;
+                $waktu = $row->waktu;
+                if($row->waktu) $waktu = date("d-m-Y", strtotime($row->waktu));
+                $user = 'Fitri Hidayanti<br>'.$row->waktu;
+                return $user;
             })
             ->editColumn('waktu', function ($row){
                 $waktu = $row->waktu;
@@ -118,7 +133,7 @@ class LaporanManajemenController extends Controller
                 $button .= '</div>';
                 return $button;
             })
-            ->rawColumns(['nama','keterangan','action'])
+            ->rawColumns(['nama','keterangan','action','status','user'])
             ->toJson();
         }catch(Exception $e){
             return response([
@@ -128,6 +143,27 @@ class LaporanManajemenController extends Controller
                 'data'            => []
             ]);
         }
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function log_status(Request $request)
+    {
+        $laporan_manajemen = LaporanManajemen::find((int)$request->input('id'));
+        $log_laporan_manajemen = LogLaporanManajemen::where('laporan_manajemen_id', (int)$request->input('id'))
+                                    ->orderBy('created_at')
+                                    ->get();
+
+        return view($this->__route.'.log_status',[
+            'pagetitle' => 'Log Status',
+            'data' => $laporan_manajemen,
+            'log' => $log_laporan_manajemen
+        ]);
+
     }
 
     /**
@@ -167,7 +203,6 @@ class LaporanManajemenController extends Controller
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
-                                  $laporan_manajemen = LaporanManajemen::create((array)$param);
 
                                   DB::commit();
                                   $result = [
@@ -188,12 +223,14 @@ class LaporanManajemenController extends Controller
 
                 case 'update': DB::beginTransaction();
                                try{
-                                $laporan_manajemen = LaporanManajemen::find((int)$request->input('id'));
+                                  $laporan_manajemen = LaporanManajemen::find((int)$request->input('id'));
                                   $dataUpload = $this->uploadFile($request->file('file_name'), (int)$request->input('id'), @$laporan_manajemen->perusahaan->nama_lengkap, @$laporan_manajemen->periode->nama);
                                   $param2['file_name']  = $dataUpload->fileRaw;
                                   $param2['status_id']  = 2;
                                   $param2['waktu']  = date('Y-m-d H:i:s');
                                   $laporan_manajemen->update((array)$param2);
+                                  
+                                  LaporanManajemenController::store_log($laporan_manajemen->id,$param2['status_id']);
 
                                   DB::commit();
                                   $result = [
@@ -257,6 +294,9 @@ class LaporanManajemenController extends Controller
             $data = LaporanManajemen::find((int)$request->input('id'));
             $data->delete();
 
+            $log = LogLaporanManajemen::where('laporan_manajemen_id', (int)$request->input('id'));
+            $log->delete();
+
             DB::commit();
             $result = [
                 'flag'  => 'success',
@@ -315,6 +355,8 @@ class LaporanManajemenController extends Controller
             $param['status_id'] = $request->input('status_id');
             $laporan_manajemen->update($param);
 
+            LaporanManajemenController::store_log($laporan_manajemen->id,$param['status_id']);
+
             DB::commit();
             $result = [
                 'flag'  => 'success',
@@ -330,5 +372,13 @@ class LaporanManajemenController extends Controller
             ];
         }
         return response()->json($result);
+    }
+    
+    public static function store_log($laporan_manajemen_id, $status_id)
+    {  
+        $param['laporan_manajemen_id'] = $laporan_manajemen_id;
+        $param['status_id'] = $status_id;
+        $param['user_id'] = 1;
+        LogLaporanManajemen::create((array)$param);
     }
 }

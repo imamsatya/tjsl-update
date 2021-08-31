@@ -20,11 +20,7 @@
                 <div class="card-toolbar">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
-                        
-                        <a href="{{url('referensi/perusahaan/silababumnsync')}}" class="btn btn-success btn-sm">
-                            <i class="bi bi-refresh"></i>
-                            Sync Data
-                        </a>
+                        <button type="button" class="btn btn-success btn-sm cls-add" data-kt-view-roles-table-select="delete_selected">Tambah Data</button>
                     </div>
                     <!--end::Search-->
                     <!--end::Group actions-->
@@ -41,12 +37,12 @@
                             <tr>
                                 <th>No.</th>
                                 <th>Nama</th>
-                                <th>Nama Singkat</th>
-                                <th>Jenis Perusahaan</th>
-                                <th>Kepemilikan</th>
-                                <th>Tgl Sinkronisasi</th>
-                                <th>Aktif</th>
-                                <!-- <th style="text-align:center;" >Aksi</th> -->
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>No Hp</th>
+                                <th>BUMN</th>
+                                <th>Roles</th>
+                                <th style="text-align:center;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -62,12 +58,11 @@
 @section('addafterjs')
 <script>
     var datatable;
-    var urlcreate = "{{route('referensi.perusahaan.create')}}";
-    var urledit = "{{route('referensi.perusahaan.edit')}}";
-    var urlstore = "{{route('referensi.perusahaan.store')}}";
-    var urldatatable = "{{route('referensi.perusahaan.datatable')}}";
-    var urldelete = "{{route('referensi.perusahaan.delete')}}";
-    var urlupdateactive = "{{route('referensi.perusahaan.update_active')}}";
+    var urlcreate = "{{route('user.create')}}";
+    var urledit = "{{route('user.edit')}}";
+    var urlstore = "{{route('user.store')}}";
+    var urldatatable = "{{route('user.datatable')}}";
+    var urldelete = "{{route('user.delete')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
@@ -84,10 +79,7 @@
         $('body').on('click','.cls-button-delete',function(){
             onbtndelete(this);
         });
-
-        $('body').on('change', '#edit_active', function() {
-            onbtneditactive(this);
-        });
+        
 
         setDatatable();
     });
@@ -99,12 +91,13 @@
             ajax: urldatatable,
             columns: [
                 { data: 'id', orderable: false, searchable: false },
-                { data: 'nama_lengkap', name: 'nama_lengkap' },
-                { data: 'nama_singkat', name: 'nama_singkat' },
-                { data: 'jenis_perusahaan', name: 'jenis_perusahaan' },
-                { data: 'kepemilikan', name: 'kepemilikan' },
-                { data: 'tgl_sinkronisasi', name: 'tgl_sinkronisasi' },
-                { data: 'is_active', name: 'is_active' },
+                { data: 'name', name: 'name' },
+                { data: 'username', name: 'username' },
+                { data: 'email', name: 'email' },
+                { data: 'handphone', name: 'handphone' },
+                { data: 'perusahaan', name: 'perusahaan' },
+                { data: 'roles', name: 'roles' },
+                { data: 'action', name:'action'},
             ],
             drawCallback: function( settings ) {
                 var info = datatable.page.info();
@@ -130,85 +123,6 @@
                 url: urldelete,
                 data:{
                     "id": $(element).data('id')
-                },
-                type:'post',
-                dataType:'json',
-                beforeSend: function(){
-                    $.blockUI();
-                },
-                success: function(data){
-                    $.unblockUI();
-
-                    swal.fire({
-                            title: data.title,
-                            html: data.msg,
-                            icon: data.flag,
-
-                            buttonsStyling: true,
-
-                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                    });
-
-                    if(data.flag == 'success') {
-                        datatable.ajax.reload( null, false );
-                    }
-                    
-                },
-                error: function(jqXHR, exception) {
-                    $.unblockUI();
-                    var msgerror = '';
-                    if (jqXHR.status === 0) {
-                        msgerror = 'jaringan tidak terkoneksi.';
-                    } else if (jqXHR.status == 404) {
-                        msgerror = 'Halaman tidak ditemukan. [404]';
-                    } else if (jqXHR.status == 500) {
-                        msgerror = 'Internal Server Error [500].';
-                    } else if (exception === 'parsererror') {
-                        msgerror = 'Requested JSON parse gagal.';
-                    } else if (exception === 'timeout') {
-                        msgerror = 'RTO.';
-                    } else if (exception === 'abort') {
-                        msgerror = 'Gagal request ajax.';
-                    } else {
-                        msgerror = 'Error.\n' + jqXHR.responseText;
-                    }
-                    swal.fire({
-                        title: "Error System",
-                        html: msgerror+', coba ulangi kembali !!!',
-                        icon: 'error',
-
-                        buttonsStyling: true,
-
-                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                    });  
-                    }
-                });
-            }
-        });	
-    }
-    
-    function onbtneditactive(element){
-        var status = 'Tidak Aktif';
-        var is_active = false;
-        if(element.checked) {
-            status = 'Aktif';
-            is_active = true;
-        }
-
-        swal.fire({
-            title: "Pemberitahuan",
-            text: "Ubah data "+$(element).data('nama')+" menjadi "+status+" ?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Ya",
-            cancelButtonText: "Tidak"
-        }).then(function(result) {
-            if (result.value) {
-                $.ajax({
-                url: urlupdateactive,
-                data:{
-                    "id": $(element).data('id'),
-                    "is_active": is_active
                 },
                 type:'post',
                 dataType:'json',

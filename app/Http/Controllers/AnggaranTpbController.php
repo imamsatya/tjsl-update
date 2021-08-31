@@ -17,6 +17,7 @@ use App\Models\AnggaranTpb;
 use App\Models\Perusahaan;
 use App\Models\PilarPembangunan;
 use App\Models\Tpb;
+use App\Models\LogAnggaranTpb;
 use App\Exports\AnggaranTpbExport;
 
 class AnggaranTpbController extends Controller
@@ -87,6 +88,27 @@ class AnggaranTpbController extends Controller
 
     
     /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function log_status(Request $request)
+    {
+        $anggaran = AnggaranTpb::find((int)$request->input('id'));
+        $log_anggaran_tpb = LogAnggaranTpb::where('anggaran_tpb_id', (int)$request->input('id'))
+                                    ->orderBy('created_at')
+                                    ->get();
+
+        return view($this->__route.'.log_status',[
+            'pagetitle' => 'Log Status',
+            'data' => $anggaran,
+            'log' => $log_anggaran_tpb
+        ]);
+
+    }
+
+    /**
      * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * @throws \Exception
@@ -124,7 +146,16 @@ class AnggaranTpbController extends Controller
                 return @$row->tpb->pilar->nama .'-'.@$row->tpb->nama;
             })
             ->addColumn('status', function ($row){
-                return @$row->status->nama;
+                $class = 'primary';
+                if($row->status_id == 1){
+                    $class = 'success';
+                }else if($row->status_id == 3){
+                    $class = 'warning';
+                }
+                $status = '<span class="badge badge-light-'.$class.' fw-bolder me-auto px-4 py-3">'.@$row->status->nama.'</span>';
+                // $status .= '<br>Fitri Hidayanti, '.$row->waktu;
+
+                return $status;
             })
             ->addColumn('anggaran', function ($row){
                 return number_format($row->anggaran,0,',',',');
@@ -146,7 +177,7 @@ class AnggaranTpbController extends Controller
                 }
                 return $button;
             })
-            ->rawColumns(['nama','keterangan','action'])
+            ->rawColumns(['nama','keterangan','action','status'])
             ->toJson();
         }catch(Exception $e){
             return response([
@@ -202,7 +233,9 @@ class AnggaranTpbController extends Controller
                                     for($i=0; $i<count($tpb_id); $i++){
                                         $param['tpb_id'] = $tpb_id[$i];
                                         $param['anggaran'] = str_replace(',', '', $anggaran[$i]);
-                                        AnggaranTpb::create((array)$param);
+                                        $anggaran = AnggaranTpb::create((array)$param);
+
+                                        AnggaranTpbController::store_log($anggaran->id,$param['status_id']);
                                     }
                                 }
 
@@ -228,6 +261,8 @@ class AnggaranTpbController extends Controller
                                 $anggaran_tpb = AnggaranTpb::find((int)$request->input('id'));
                                 $param['anggaran'] = str_replace(',', '', $request->input('anggaran'));
                                 $anggaran_tpb->update((array)$param);
+                                
+                                AnggaranTpbController::store_log($anggaran_tpb->id,$anggaran_tpb->status_id);
 
                                 DB::commit();
                                 $result = [
@@ -287,6 +322,9 @@ class AnggaranTpbController extends Controller
             $data = AnggaranTpb::find((int)$request->input('id'));
             $data->delete();
 
+            $log = LogAnggaranTpb::where('anggaran_tpb_id', (int)$request->input('id'));
+            $log->delete();
+
             DB::commit();
             $result = [
                 'flag'  => 'success',
@@ -314,6 +352,10 @@ class AnggaranTpbController extends Controller
         try{
             $data = AnggaranTpb::LeftJoin('tpbs','tpbs.id','anggaran_tpbs.tpb_id')
                                     ->where('tpbs.pilar_pembangunan_id', (int)$request->input('id'));
+            foreach($data as $a){
+                $log = LogAnggaranTpb::where('anggaran_tpb_id', $a->id);
+                $log->delete();
+            }
             $data->delete();
 
             DB::commit();
@@ -369,7 +411,7 @@ class AnggaranTpbController extends Controller
 
         $anggaran = $anggaran->get();
         $namaFile = "Data Anggaran TPB ".date('dmY').".xlsx";
-        return Excel::download(new AnggaranTpbExport($anggaran), $namaFile);
+        return Excel::download(new AnggaranTpbExport($anggaran,$request->tahun), $namaFile);
     }
 
     /**
@@ -392,6 +434,12 @@ class AnggaranTpbController extends Controller
         DB::beginTransaction();
         try{
             $param['status_id'] = $request->status_id;
+
+            $anggaran_tpb = $anggaran->get();
+            foreach($anggaran_tpb as $a){
+                AnggaranTpbController::store_log($a->id,$param['status_id']);
+            }
+            
             $anggaran->update($param);
 
             DB::commit();
@@ -404,7 +452,7 @@ class AnggaranTpbController extends Controller
             DB::rollback();
             $result = [
                 'flag'  => 'warning',
-                'msg' => 'Gagal validasi data',
+                'msg' => $e->getMessage(),
                 'title' => 'Gagal'
             ];
         }
@@ -433,5 +481,14 @@ class AnggaranTpbController extends Controller
         $result['status_id'] = @$anggaran->status_id;
 
         return response()->json($result);
+    }
+    
+
+    public static function store_log($anggaran_tpb_id, $status_id)
+    {  
+        $param['anggaran_tpb_id'] = $anggaran_tpb_id;
+        $param['status_id'] = $status_id;
+        $param['user_id'] = 1;
+        LogAnggaranTpb::create((array)$param);
     }
 }

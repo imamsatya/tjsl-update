@@ -54,7 +54,7 @@
 										<div class="d-flex align-items-stretch" id="kt_header_user_menu_toggle">
 											<!--begin::Menu wrapper-->
 											<div class="topbar-item cursor-pointer symbol px-3 px-lg-5 me-n3 me-lg-n5 symbol-30px symbol-md-35px" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
-												<img src="{{ asset('/assets/media/avatars/150-15.jpg') }}" alt="metronic" />
+												<img src="{{ asset('/assets/media/avatars/blank.png') }}" alt="metronic" />
 											</div>
 
 <!--layout-partial:layout/topbar/partials/_user-menu.html-->

@@ -13,6 +13,8 @@ use Datatables;
 use App\Http\Controllers\Controller;
 
 use App\Models\PeriodeLaporan;
+use App\Models\PeriodeHasJenis;
+use App\Models\JenisLaporan;
 use App\Models\LaporanManajemen;
 use App\Models\Perusahaan;
 
@@ -76,7 +78,17 @@ class PeriodeLaporanController extends Controller
                 if($row->tanggal_akhir) $tanggal_akhir = date("d M", strtotime($row->tanggal_akhir));
                 return $tanggal_akhir;
             })
-            ->rawColumns(['nama','keterangan','action'])
+            ->editColumn('jenis_laporan', function ($row){
+                $label = '<ul class="no-margin">';
+                if(!empty(@$row->has_jenis)){
+                    foreach ($row->has_jenis as $v) {
+                        $label .= '<li>'.@$v->jenis->nama.'</li>';
+                    }
+                }
+                $label .= '</ul>';
+                return $label;
+            })
+            ->rawColumns(['nama','keterangan','action','jenis_laporan'])
             ->toJson();
         }catch(Exception $e){
             return response([
@@ -101,6 +113,7 @@ class PeriodeLaporanController extends Controller
         return view($this->__route.'.form',[
             'pagetitle' => $this->pagetitle,
             'actionform' => 'insert',
+            'jenis_laporan' => JenisLaporan::get(),
             'data' => $periode_laporan
         ]);
 
@@ -133,17 +146,27 @@ class PeriodeLaporanController extends Controller
 
                                   $periode_laporan = PeriodeLaporan::create((array)$param);
 
-                                  // create data laporan manajemen all bumn
-                                  if($request->jenis_laporan == 'Manajemen'){
-                                    $perusahaan = Perusahaan::where('is_active', true)->get();
-                                    foreach($perusahaan as $p){
-                                        $param_laporan['perusahaan_id'] = $p->id;
-                                        $param_laporan['periode_laporan_id'] = $periode_laporan->id;
-                                        $param_laporan['status_id'] = 3;
-                                        $param_laporan['tahun'] = date('Y');
-                                        $laporan_manajamen = LaporanManajemen::create((array)$param_laporan);
+                                    #create new transaction
+                                    $create = [''];
+                                    if($request->jenis_laporan){
+                                        foreach($request->jenis_laporan as $key => $data){
+                                            $create['periode_laporan_id'] = $periode_laporan->id;
+                                            $create['jenis_laporan_id'] = $data;
+                                            PeriodeHasJenis::create($create);
+
+                                            // create data laporan manajemen all bumn
+                                            if($data == 1){
+                                                $perusahaan = Perusahaan::where('is_active', true)->get();
+                                                foreach($perusahaan as $p){
+                                                    $param_laporan['perusahaan_id'] = $p->id;
+                                                    $param_laporan['periode_laporan_id'] = $periode_laporan->id;
+                                                    $param_laporan['status_id'] = 3;
+                                                    $param_laporan['tahun'] = date('Y');
+                                                    $laporan_manajamen = LaporanManajemen::create((array)$param_laporan);
+                                                }
+                                            }
+                                        }
                                     }
-                                  }
 
                                   DB::commit();
                                   $result = [
@@ -171,6 +194,20 @@ class PeriodeLaporanController extends Controller
                                   $param['tanggal_akhir'] = $tanggal_akhir;
                                   
                                   $periode_laporan = PeriodeLaporan::find((int)$request->input('id'));
+                                  
+                                    #delete transaction old
+                                    PeriodeHasJenis::where("periode_laporan_id", $request->input('id'))->delete();
+
+                                    #create new transaction
+                                    $create = [''];
+                                    if($request->jenis_laporan){
+                                        foreach($request->jenis_laporan as $key => $data){
+                                            $create['periode_laporan_id'] = $periode_laporan->id;
+                                            $create['jenis_laporan_id'] = $data;
+                                            PeriodeHasJenis::create($create);
+                                        }
+                                    }
+
                                   $periode_laporan->update((array)$param);
 
                                   DB::commit();
@@ -219,6 +256,7 @@ class PeriodeLaporanController extends Controller
                 return view($this->__route.'.form',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
+                    'jenis_laporan' => JenisLaporan::get(),
                     'data' => $periode_laporan
 
                 ]);

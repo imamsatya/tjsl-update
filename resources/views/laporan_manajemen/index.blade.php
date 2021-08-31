@@ -83,9 +83,8 @@
                                 <th>No.</th>
                                 <th>BUMN</th>
                                 <th>Periode </th>
-                                <th>Status</th>
                                 <th>Oleh</th>
-                                <th>Waktu</th>
+                                <th>Status</th>
                                 <th style="text-align:center;width:120px;" >Aksi</th>
                             </tr>
                         </thead>
@@ -108,6 +107,7 @@
     var urldatatable = "{{route('laporan_manajemen.datatable')}}";
     var urldelete = "{{route('laporan_manajemen.delete')}}";
     var urlvalidasi = "{{route('laporan_manajemen.validasi')}}";
+    var urllog = "{{route('laporan_manajemen.log_status')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
@@ -115,6 +115,10 @@
 
         $('body').on('click','.cls-add',function(){
             winform(urlcreate, {}, 'Tambah Data');
+        });
+
+        $('body').on('click','.cls-log',function(){
+            winform(urllog, {'id':$(this).data('id')}, 'Log Status');
         });
 
         $('body').on('click','.cls-button-edit',function(){
@@ -140,21 +144,10 @@
         setDatatable();
     });
 
-    function addCommas(nStr) {
-        nStr += '';
-        var x = nStr.split('.');
-        var x1 = x[0];
-        var x2 = x.length > 1 ? '.' + x[1] : '';
-        var rgx = /(\d+)(\d{3})/;
-        while (rgx.test(x1)) {
-            x1 = x1.replace(rgx, '$1' + ',' + '$2');
-        }
-        return x1 + x2;
-    }
-
     function setDatatable(){
         datatable = $('#datatable').DataTable({
             processing: true,
+            bFilter: false,
             serverSide: true,
             ajax: {
                 url: urldatatable,
@@ -170,23 +163,10 @@
                 { data: 'id', orderable: false, searchable: false },
                 { data: 'perusahaan', name: 'perusahaan' },
                 { data: 'periode', name: 'periode' },
-                { data: 'status', name: 'status' },
-                { data: 'user', name: 'user' },
-                { data: 'waktu', name: 'waktu'},
+                { data: 'user', name: 'user', sClass: 'text-left' },
+                { data: 'status', name: 'status', sClass: 'text-center' },
                 { data: 'action', name:'action'},
             ],
-            footerCallback: function (row, data, start, end, display) {
-                var api = this.api();
-    
-                var intVal = function ( i ) {
-                    return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ? i : 0;
-                };
-                
-                $(api.column(3).footer()).html(api.column(3).data().reduce(function (a, b) {
-                        return addCommas(intVal(a) + intVal(b));
-                    })
-                );
-            },
             drawCallback: function( settings ) {
                 var info = datatable.page.info();
                 $('[data-toggle="tooltip"]').tooltip();

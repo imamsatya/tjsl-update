@@ -30,7 +30,7 @@
             </select>
         </div>
         <div class="col-lg-6">
-            <input type="text" class="form-control input-anggaran" name="anggaran" value="{{  number_format($data->anggaran,0,',',',') }}" required>
+            <input type="text" class="form-control input-anggaran" style="text-align:right;" name="anggaran" value="{{  number_format($data->anggaran,0,',',',') }}" required>
         </div>
     </div>
     <div class="text-center pt-15">

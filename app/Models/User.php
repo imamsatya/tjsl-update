@@ -10,7 +10,7 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use App\Models\GeneralModel;
 use App\Models\Menu;
-use App\Models\Bumn;
+use App\Models\Perusahaan;
 
 class User extends Authenticatable
 {
@@ -23,7 +23,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'username', 'is_external', 'id_bumn', 'kategori_user_id', 'asal_instansi', 'activated', 'is_pejabat'
+        'name', 'email', 'password', 'username', 'is_external', 'id_bumn', 'kategori_user_id', 'asal_instansi', 'activated', 'is_pejabat', 'handphone'
     ];
 
     /**
@@ -55,9 +55,9 @@ class User extends Authenticatable
         }
     }
 
-    public function hasBumn()
+    public function perusahaan()
     {
-        return $this->belongsTo('App\Perusahaan', 'id_bumn');
+        return $this->belongsTo('App\Models\Perusahaan', 'id_bumn');
     }
 
     /*public function bumns()

@@ -121,7 +121,15 @@
                                 @php 
                                     $no++;
                                     $anggaran_anak = $anggaran->where('pilar_pembangunan_id', $p->pilar_pembangunan_id);
+                                    
                                     $status = $anggaran->where('pilar_pembangunan_id', $p->pilar_pembangunan_id)->first();
+                                    $status_class = 'primary';
+                                    if($status->status_id == 1){
+                                        $status_class = 'success';
+                                    }else if($status->status_id == 3){
+                                        $status_class = 'warning';
+                                    }
+                
                                     $total += $p->sum_anggaran;
                                 @endphp
                             
@@ -129,18 +137,30 @@
                                     <td style="text-align:center;">{{$no}}</td>
                                     <td>{{$p->pilar_nama}}</td>
                                     <td style="text-align:right;">{{number_format($p->sum_anggaran,0,',',',')}}</td>
-                                    <td style="text-align:center;">{{@$status->status->nama}}</td>
+                                    <td style="text-align:center;">
+                                        <a class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{@$status->status->nama}}</a>
+                                    </td>
                                     <td style="text-align:center;">
                                         <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pilar" data-id="{{$p->pilar_id}}" data-nama="{{$p->pilar_nama}}" data-toggle="tooltip" title="Hapus data {{$p->pilar_nama}}"><i class="bi bi-trash fs-3"></i></button>
                                     </td>
                                 </tr>
                                 
-                                @foreach ($anggaran_anak as $a)       
+                                @foreach ($anggaran_anak as $a)  
+                                @php 
+                                    $status_class = 'primary';
+                                    if($status->status_id == 1){
+                                        $status_class = 'success';
+                                    }else if($status->status_id == 3){
+                                        $status_class = 'warning';
+                                    }
+                                @endphp     
                                 <tr class="treegrid-{{$a->id}} treegrid-parent-pilar{{@$p->pilar_id}} item{{$a->id}}">
                                     <td></td>
                                     <td>{{@$a->tpb->no_tpb .' - '. @$a->tpb->nama}}</td>
                                     <td style="text-align:right;">{{number_format($a->anggaran,0,',',',')}}</td>
-                                    <td style="text-align:center;">{{@$a->status->nama}}</td>
+                                    <td style="text-align:center;">
+                                        <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$a->id}}">{{@$a->status->nama}}</span>
+                                    </td>
                                     <td style="text-align:center;">
                                         <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$a->id}}" data-toggle="tooltip" title="Ubah data {{@$a->tpb->no_tpb}}"><i class="bi bi-pencil fs-3"></i></button>
                                         <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="{{$a->id}}" data-nama="{{@$a->tpb->no_tpb}}" data-toggle="tooltip" title="Hapus data {{@$a->tpb->no_tpb}}"><i class="bi bi-trash fs-3"></i></button>
@@ -184,6 +204,7 @@
     var urlexport = "{{route('anggaran_tpb.export')}}";
     var urlvalidasi = "{{route('anggaran_tpb.validasi')}}";
     var urlgetstatus = "{{route('anggaran_tpb.get_status')}}";
+    var urllog = "{{route('anggaran_tpb.log_status')}}";
 
     $(document).ready(function(){
         $('.tree').treegrid({
@@ -197,6 +218,10 @@
 
         $('body').on('click','.cls-add',function(){
             winform(urlcreate, {}, 'Tambah Data');
+        });
+
+        $('body').on('click','.cls-log',function(){
+            winform(urllog, {'id':$(this).data('id')}, 'Log Status');
         });
 
         $('body').on('click','.cls-button-edit',function(){
@@ -564,8 +589,8 @@
                     });
 
                     if(data.flag == 'success') {
-                        datatable.ajax.reload( null, false );
-                        showValidasi();
+                        // datatable.ajax.reload( null, false );
+                        location.reload(); 
                     }
                     
                 },
@@ -638,8 +663,8 @@
                     });
 
                     if(data.flag == 'success') {
-                        datatable.ajax.reload( null, false );
-                        showValidasi();
+                        // datatable.ajax.reload( null, false );
+                        location.reload(); 
                     }
                     
                 },

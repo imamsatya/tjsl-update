@@ -5,40 +5,48 @@
 
     <div class="form-group row mb-5">
         <div class="col-lg-6">
-            <label>Nama Periode</label>
-            <input type="text" class="form-control" name="nama" id="nama" value="{{!empty(old('nama'))? old('nama') : ($actionform == 'update' && $data->nama != ''? $data->nama : old('nama'))}}" required/>
+            <label>Nama</label>
+            <input type="text" class="form-control" name="name" id="name" value="{{!empty(old('name'))? old('name') : ($actionform == 'update' && $data->name != ''? $data->name : old('name'))}}" required/>
         </div>
         <div class="col-lg-6">
-            <label>Jenis Laporan</label>
-            <select class="form-select form-select-solid form-select2" name="jenis_laporan[]" data-kt-select2="true" data-placeholder="Pilih Jenis" required multiple="multiple">
-                <option></option>
-                @foreach($jenis_laporan as $p)
-                @php
-                    $select = ($actionform == 'update' && ($p->jenis_laporan == 'PUMK') ? 'selected="selected"' : '');
-                @endphp
-                <option value="{{$p->id}}" {{$select}} >{{$p->nama}}</option>
-                @endforeach
-            </select>
-        </div>
-    </div>
-    <div class="form-group row mb-5">
-        <div class="col-lg-6">
-            <label>Urutan</label>
-            <input type="text" class="form-control" onkeypress="return onlyNumberKey(event)" name="urutan" id="urutan" value="{{!empty(old('urutan'))? old('urutan') : ($actionform == 'update' && $data->urutan != ''? $data->urutan : old('urutan'))}}" required/>
-        </div>
-        <div class="col-lg-6">
-            <label>Keterangan</label>
-            <input type="text" class="form-control" name="keterangan" id="keterangan" value="{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $data->keterangan != ''? $data->keterangan : old('keterangan'))}}" />
+            <label>Username</label>
+            <input type="text" class="form-control" name="username" id="username" value="{{!empty(old('username'))? old('username') : ($actionform == 'update' && $data->username != ''? $data->username : old('username'))}}" required/>
         </div>
     </div>	
     <div class="form-group row mb-5">
         <div class="col-lg-6">
-            <label>Tanggal Awal</label>
-            <input  type="text" class="form-control input-tanggal" name="tanggal_awal" id="tanggal_awal" value="{{!empty(old('tanggal_awal'))? old('tanggal_awal') : ($actionform == 'update' && $data->tanggal_awal != ''? $data->tanggal_awal : old('tanggal_awal'))}}" />
+            <label>Email</label>
+            <input type="text" class="form-control" name="email" id="email" value="{{!empty(old('email'))? old('email') : ($actionform == 'update' && $data->email != ''? $data->email : old('email'))}}" required/>
         </div>
         <div class="col-lg-6">
-            <label>Tanggal Akhir</label>
-            <input type="text" class="form-control input-tanggal" name="tanggal_akhir" id="tanggal_akhir" value="{{!empty(old('tanggal_akhir'))? old('tanggal_akhir') : ($actionform == 'update' && $data->tanggal_akhir != ''? $data->tanggal_akhir : old('tanggal_akhir'))}}" />
+            <label>No HP</label>
+            <input type="text" class="form-control" name="handphone" id="handphone" onkeypress="return onlyNumberKey(event)" value="{{!empty(old('handphone'))? old('handphone') : ($actionform == 'update' && $data->handphone != ''? $data->handphone : old('handphone'))}}" />
+        </div>
+    </div>
+    <div class="form-group row mb-5">
+        <div class="col-lg-6">
+            <label>BUMN</label>            
+            <select class="form-select form-select-solid form-select2" name="id_bumn" data-kt-select2="true" data-placeholder="Pilih BUMN" data-allow-clear="true" data-dropdown-parent="#kt_content_container">
+                <option></option>
+                @foreach($perusahaan as $p)  
+                    @php
+                        $select = ($actionform == 'update' && ($p->id == $data->id_bumn) ? 'selected="selected"' : '');
+                    @endphp
+                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-lg-6">
+            <label>Roles</label>           
+            <select class="form-select form-select-solid form-select2" name="roles" data-kt-select2="true" data-placeholder="Pilih Role" data-allow-clear="true" data-dropdown-parent="#kt_content_container" >
+                <option></option>
+                @foreach($role as $p)  
+                    @php
+                        $select = ($actionform == 'update' && ($p->id == $data->role_id) ? 'selected="selected"' : '');
+                    @endphp
+                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->name }}</option>
+                @endforeach
+            </select>
         </div>
     </div>	
     <div class="text-center pt-15">
@@ -55,27 +63,22 @@
     var title = "{{$actionform == 'update'? 'Update' : 'Tambah'}}" + " {{ $pagetitle }}";
 
     $(document).ready(function(){
-        $('.form-select2').select2();
         $('.modal-title').html(title);
+        $('.form-select').select2();
         $('.modal').on('shown.bs.modal', function () {
             setFormValidate();
         });  
-        
-        $('.input-tanggal').flatpickr({
-			enableTime: false,
-			dateFormat: "d M",
-		});
     });
 
     function setFormValidate(){
         $('#form-edit').validate({
             rules: {
-                nama:{
+                name:{
                         required: true
                 }               		               		                              		               		               
             },
             messages: {
-                nama: {
+                name: {
                     required: "Nama wajib diinput"
                 }                                      		                   		                   
             },	        
@@ -118,7 +121,7 @@
 
                                 buttonsStyling: true,
 
-                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                         });	                   
 
                         if(data.flag == 'success') {
@@ -151,7 +154,7 @@
 
                                 buttonsStyling: true,
 
-                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                         });	                               
                     }
                 });
@@ -159,7 +162,7 @@
         }
         });		
     }
-    
+
     function onlyNumberKey(e) {
         var ASCIICode = (e.which) ? e.which : e.keyCode
         if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))

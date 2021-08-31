@@ -100,7 +100,7 @@
             contentData += '</div>';
             contentData += '<div class="col-lg-6">';
             contentData += '<input type="hidden" class="form-control" name="input_tpb_id[]" value="'+id+'" required>';
-            contentData += '<input type="text" class="form-control anggaran-array" name="input_anggaran[]" required>';
+            contentData += '<input type="text" style="text-align:right;" class="form-control anggaran-array" name="input_anggaran[]" required>';
             contentData += '</div>';
             contentData += '</div>';
         });

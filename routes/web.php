@@ -20,12 +20,12 @@ use App\Http\Middleware\CasAuth;
 // });
 
 Route::view('forbidden', 'errors.login');
-//login dengan cas
+login dengan cas
 Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
    Route::get('logout', 'App\Http\Controllers\AuthController@logout')->name('logout');
 
     // login tanpa cas
-       // Route::get('/', 'App\Http\Controllers\HomeController@index')->name('home');
+       Route::get('/', 'App\Http\Controllers\HomeController@index')->name('home');
         Route::get('/', 'App\Http\Controllers\HomeController@index')->name('dashboard.index');
 
         Route::prefix('role')->group(function(){
@@ -35,6 +35,15 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('store', 'App\Http\Controllers\RoleController@store')->name('role.store');
             Route::post('delete', 'App\Http\Controllers\RoleController@delete')->name('role.delete');
             Route::get('datatable', 'App\Http\Controllers\RoleController@datatable')->name('role.datatable');
+        });
+
+        Route::prefix('user')->group(function(){
+            Route::get('index', 'App\Http\Controllers\UserController@index')->name('user.index');
+            Route::post('create', 'App\Http\Controllers\UserController@create')->name('user.create');
+            Route::post('edit', 'App\Http\Controllers\UserController@edit')->name('user.edit');
+            Route::post('store', 'App\Http\Controllers\UserController@store')->name('user.store');
+            Route::post('delete', 'App\Http\Controllers\UserController@delete')->name('user.delete');
+            Route::get('datatable', 'App\Http\Controllers\UserController@datatable')->name('user.datatable');
         });
 
         Route::prefix('referensi')->group(function () {
@@ -92,6 +101,11 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('store', 'App\Http\Controllers\Referensi\PerusahaanController@store')->name('referensi.perusahaan.store');
                 Route::post('delete', 'App\Http\Controllers\Referensi\PerusahaanController@delete')->name('referensi.perusahaan.delete');
                 Route::get('datatable', 'App\Http\Controllers\Referensi\PerusahaanController@datatable')->name('referensi.perusahaan.datatable');
+                
+                Route::get('silababumnsync', function () {
+                    $exitCode = Artisan::call('silaba:bumnsync');
+                    return redirect('referensi/perusahaan/index');
+                })->name('referensi.perusahaan.silababumnsync');
             });
             
             Route::prefix('periode_laporan')->group(function(){
@@ -126,6 +140,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('export', 'App\Http\Controllers\AnggaranTpbController@export')->name('anggaran_tpb.export');
             Route::post('validasi', 'App\Http\Controllers\AnggaranTpbController@validasi')->name('anggaran_tpb.validasi');
             Route::post('get_status', 'App\Http\Controllers\AnggaranTpbController@getStatus')->name('anggaran_tpb.get_status');
+            Route::post('log_status', 'App\Http\Controllers\AnggaranTpbController@log_status')->name('anggaran_tpb.log_status');
         });
 
         Route::prefix('laporan_manajemen')->group(function(){
@@ -136,6 +151,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('delete', 'App\Http\Controllers\LaporanManajemenController@delete')->name('laporan_manajemen.delete');
             Route::get('datatable', 'App\Http\Controllers\LaporanManajemenController@datatable')->name('laporan_manajemen.datatable');
             Route::post('validasi', 'App\Http\Controllers\LaporanManajemenController@validasi')->name('laporan_manajemen.validasi');
+            Route::post('log_status', 'App\Http\Controllers\LaporanManajemenController@log_status')->name('laporan_manajemen.log_status');
         });
         Auth::routes();
 
