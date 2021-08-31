@@ -12,8 +12,9 @@ use Illuminate\Support\Str;
 use Datatables;
 
 use App\Models\User;
-use App\Models\Role;
+use Spatie\Permission\Models\Role;
 use App\Models\Perusahaan;
+use App\MiddlewareClient;
 
 class UserController extends Controller
 {
@@ -77,7 +78,7 @@ class UserController extends Controller
                 $label .= '</ul>';
                 return $label;
             })
-            ->rawColumns(['nama','keterangan','action'])
+            ->rawColumns(['nama','keterangan','action','roles'])
             ->toJson();
         }catch(Exception $e){
             return response([
@@ -123,19 +124,24 @@ class UserController extends Controller
 
         $validator = $this->validateform($request);
         if (!$validator->fails()) {
-            $param = $request->except('actionform','id');
+            $param = $request->except('actionform','id','roles');
 
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
-                                  $user = User::create((array)$param);
+                                    $res = MiddlewareClient::addUser($request);
+                                    if ($res['status']==false){
+                                        throw new \Exception($res['msg'][0]);
+                                    }
+                                    $user = User::create((array)$param);
+                                    $user->assignRole($request->input('roles'));
 
-                                  DB::commit();
-                                  $result = [
-                                    'flag'  => 'success',
-                                    'msg' => 'Sukses tambah data',
-                                    'title' => 'Sukses'
-                                  ];
+                                    DB::commit();
+                                    $result = [
+                                        'flag'  => 'success',
+                                        'msg' => 'Sukses tambah data',
+                                        'title' => 'Sukses'
+                                    ];
                                }catch(\Exception $e){
                                   DB::rollback();
                                   $result = [
@@ -151,6 +157,8 @@ class UserController extends Controller
                                try{
                                   $user = User::find((int)$request->input('id'));
                                   $user->update((array)$param);
+                                  DB::table('model_has_roles')->where('model_id',(int)$request->input('id'))->delete();
+                                  $user->assignRole($request->input('roles'));
 
                                   DB::commit();
                                   $result = [
@@ -194,11 +202,13 @@ class UserController extends Controller
         try{
 
             $user = User::find((int)$request->input('id'));
+            $userRole = $user->roles->pluck('name','name')->all();
 
                 return view($this->__route.'.form',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
                     'data' => $user,
+                    'userRole' => $userRole,
                     'perusahaan' => Perusahaan::get(),
                     'role' => Role::get(),
 
@@ -215,8 +225,11 @@ class UserController extends Controller
     {
         DB::beginTransaction();
         try{
-            $data = User::find((int)$request->input('id'));
-            $data->delete();
+            $user = User::find((int)$request->input('id'));
+            $response = MiddlewareClient::deleteUser($user->username);
+
+            $user->roles()->detach();
+            $user->delete();
 
             DB::commit();
             $result = [

@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Datatables;
 
-use App\Models\Role;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use App\Models\Menu;
 
 class RoleController extends Controller
 {
@@ -108,11 +110,14 @@ class RoleController extends Controller
         if (!$validator->fails()) {
             $param['name'] = $request->input('name');
             $param['keterangan'] = $request->input('keterangan');
+            $menu = explode(',', $request->input('menu'));
 
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
+                                  $param['guard_name'] = 'web';
                                   $role = Role::create((array)$param);
+                                  $role->menus()->sync($menu);
 
                                   DB::commit();
                                   $result = [
@@ -135,6 +140,7 @@ class RoleController extends Controller
                                try{
                                   $role = Role::find((int)$request->input('id'));
                                   $role->update((array)$param);
+                                  $role->menus()->sync($menu);
 
                                   DB::commit();
                                   $result = [
@@ -228,5 +234,48 @@ class RoleController extends Controller
         $message['name.required'] = 'Nama Role wajib diinput';
 
         return Validator::make($request->all(), $required, $message);
+    }
+    
+    public function gettreemenubyrole($id=null)
+    {
+      try{
+        $result = $this->getarrayrolebymenu((int)$id);
+        return response()->json($result);
+      }catch(Exception $e){
+        return response()->json([]);
+      }
+    }
+
+    private function getarrayrolebymenu($id)
+    {
+      $data = Menu::where('status',true)->orderBy('order')->get();
+      $menurole = [];
+      if((bool)$id){
+        //jika id ada artinya ini bagian edit lakukan pengambilan data referensi
+        $row = Role::find($id);
+        $menurole = $row->menus()->get()->pluck('id')->toArray();
+      }
+      return $this->recursivemenu($data, 0, $menurole);
+    }
+
+    private function recursivemenu($data, $parent_id, $menurole)
+    {
+      $array = [];
+        $result = $data->where('parent_id', (int)$parent_id)->sortBy('order');
+        foreach ($result as $val) {
+          $child = $data->where('parent_id', (int)$val->id)->sortBy('order');
+
+          $array[] = [
+            'id' => (int)$val->id,
+            'text' => $val->label,
+            'state' => [
+              'opened' => (bool)$child->count()? true : false,
+              'selected' => $val->id == 1? true : ((bool)count($menurole)? (in_array($val->id, $menurole)? true : false) : false),
+              'disabled' => $val->id == 1? true : false
+            ],
+            'children' => (bool)$child->count()? $this->recursivemenu($data, (int)$val->id, $menurole) : []
+          ];
+        }
+        return $array;    
     }
 }

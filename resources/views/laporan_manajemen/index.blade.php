@@ -33,10 +33,16 @@
                     <div class="form-group row  mb-5">
                         <div class="col-lg-6">
                             <label>BUMN</label>
-                            <select class="form-select form-select-solid form-select2" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" data-allow-clear="true">
+                            @php
+                                $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
+                            @endphp
+                            <select class="form-select form-select-solid form-select2" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
                                 <option></option>
                                 @foreach($perusahaan as $p)  
-                                    <option value="{{ $p->id }}">{{ $p->nama_lengkap }}</option>
+                                    @php
+                                        $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{ $p->id }}" {{$select}}>{{ $p->nama_lengkap }}</option>
                                 @endforeach
                             </select>
                         </div>

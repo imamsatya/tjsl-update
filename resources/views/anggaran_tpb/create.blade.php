@@ -6,10 +6,16 @@
     <div class="form-group row mb-5">
         <div class="col-lg-12">
             <label>BUMN</label>
-            <select class="form-select form-select-solid form-select2" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN"  data-dropdown-parent="#form-edit" required>
+            @php
+                $disabled = (($admin_bumn) ? 'disabled="true"' : '');
+            @endphp
+            <select class="form-select form-select-solid form-select2" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN"  data-dropdown-parent="#form-edit" required {{$disabled}}>
                 <option></option>
                 @foreach($perusahaan as $p)  
-                    <option value="{{ $p->id }}">{{ $p->nama_lengkap }}</option>
+                    @php
+                        $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
+                    @endphp
+                    <option value="{{ $p->id }}" {{$select}}>{{ $p->nama_lengkap }}</option>
                 @endforeach
             </select>
         </div>
@@ -172,7 +178,7 @@
                     error.insertAfter(element);
                 }
             },
-        submitHandler: function(form){
+            submitHandler: function(form){
                 var typesubmit = $("input[type=submit][clicked=true]").val();
                 var tpb_id = $("input[name='input_tpb_id[]']").map(function(){return $(this).val();}).get();
                 var anggaran = $("input[name='input_anggaran[]']").map(function(){return $(this).val();}).get();

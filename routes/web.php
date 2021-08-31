@@ -25,7 +25,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
    Route::get('logout', 'App\Http\Controllers\AuthController@logout')->name('logout');
 
     // login tanpa cas
-       Route::get('/', 'App\Http\Controllers\HomeController@index')->name('home');
+    //    Route::get('/', 'App\Http\Controllers\HomeController@index')->name('home');
         Route::get('/', 'App\Http\Controllers\HomeController@index')->name('dashboard.index');
 
         Route::prefix('role')->group(function(){
@@ -35,6 +35,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('store', 'App\Http\Controllers\RoleController@store')->name('role.store');
             Route::post('delete', 'App\Http\Controllers\RoleController@delete')->name('role.delete');
             Route::get('datatable', 'App\Http\Controllers\RoleController@datatable')->name('role.datatable');
+            Route::get('gettreemenubyrole/{id?}', 'App\Http\Controllers\RoleController@gettreemenubyrole')->name('role.gettreemenubyrole');
         });
 
         Route::prefix('user')->group(function(){

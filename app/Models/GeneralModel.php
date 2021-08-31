@@ -35,8 +35,7 @@ class GeneralModel extends Model
 	public function getassidemenu()
 	{
 		try{
-			// $html = $this->getrecursivemenu(0, Menu::where('status', true)->orderBy('order','ASC')->get(), User::find((int)Auth::user()->id)->getmenuaccess());
-			$html = $this->getrecursivemenu(0, Menu::where('status', true)->orderBy('order','ASC')->get(), Menu::where('status', (bool)true)->orderBy('order')->get());
+			$html = $this->getrecursivemenu(0, Menu::where('status', true)->orderBy('order','ASC')->get(), User::find((int)Auth::user()->id)->getmenuaccess());
 
 			return $html;
 		}catch(Exception $e){}

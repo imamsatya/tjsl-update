@@ -3,14 +3,18 @@
 	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$role->id : null}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
 
-    <div class="form-group row">
+    <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>Nama</label>
             <input type="text" class="form-control" name="name" id="name" value="{{!empty(old('name'))? old('name') : ($actionform == 'update' && $role->name != ''? $role->name : old('name'))}}" required/>
+            <br>
+            <label>Keterangan</label>
+            <textarea type="text" class="form-control" name="keterangan" id="keterangan"/>{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $role->keterangan != ''? $role->keterangan : old('keterangan'))}}</textarea>
         </div>
         <div class="col-lg-6">
-            <label>Keterangan</label>
-            <input type="text" class="form-control" name="keterangan" id="keterangan" value="{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $role->keterangan != ''? $role->keterangan : old('keterangan'))}}" />
+            <label>Akses Menu</label>
+            <div id="checkTree"></div>
+            <input type="hidden" name="menu" id="menu" readonly="readonly" />
         </div>
     </div>	
     <div class="text-center pt-15">
@@ -25,12 +29,14 @@
 
 <script type="text/javascript">
     var title = "{{$actionform == 'update'? 'Update' : 'Tambah'}}" + " {{ $pagetitle }}";
+    var urlgettreemenubyrole = "{{route('role.gettreemenubyrole')}}";
 
     $(document).ready(function(){
         $('.modal-title').html(title);
         $('.modal').on('shown.bs.modal', function () {
             setFormValidate();
         });  
+        onLoadTreeMenu();
     });
 
     function setFormValidate(){
@@ -125,4 +131,36 @@
         }
         });		
     }
+    
+    function onLoadTreeMenu(){
+    $('#checkTree').jstree({
+        'core' : {
+            'themes' : {
+            'responsive': true
+            },
+                'data': {        
+                    type: "GET",
+                    dataType: 'json',
+                    url: urlgettreemenubyrole+'/'+$('#id').val()
+                }     
+        },
+        'types' : {
+            'default' : {
+                'icon' : 'fa fa-folder'
+            },
+            'file' : {
+                'icon' : 'fa fa-file'
+            }
+        },
+        'plugins' : ['types', 'checkbox']
+    }).on('changed.jstree', function (e, data) {
+    var i, j, r = [];
+    $('#menu').val('');
+    for(i = 0, j = data.selected.length; i < j; i++) {
+        r.push(data.instance.get_node(data.selected[i]).id);    
+    }
+    $('#menu').val(r);
+    });  
+    }
+
 </script>

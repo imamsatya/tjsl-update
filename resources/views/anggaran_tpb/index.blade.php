@@ -31,7 +31,7 @@
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
                         <button type="button" class="btn btn-primary btn-sm btn-icon btn-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
                         <button type="button" class="btn btn-danger btn-sm btn-icon btn-cancel-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Batalkan Validasi"><i class="bi bi-check fs-3"></i></button> 
-                        <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button> &nbsp
+                        <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button> &nbsp
                         <button type="button" class="btn btn-success btn-sm btn-icon cls-add"  data-toggle="tooltip" title="Tambah Data"><i class="bi bi-plus fs-3"></i></button> &nbsp
                         <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-excel fs-3"></i></button>
                     </div>
@@ -47,7 +47,10 @@
                     <div class="form-group row  mb-5">
                         <div class="col-lg-6">
                             <label>BUMN</label>
-                            <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" data-allow-clear="true">
+                            @php
+                                $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
+                            @endphp
+                            <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
                                 <option></option>
                                 @foreach($perusahaan as $p)  
                                     @php
@@ -141,7 +144,9 @@
                                         <a class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{@$status->status->nama}}</a>
                                     </td>
                                     <td style="text-align:center;">
+                                        @if($status->status_id != 1)
                                         <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pilar" data-id="{{$p->pilar_id}}" data-nama="{{$p->pilar_nama}}" data-toggle="tooltip" title="Hapus data {{$p->pilar_nama}}"><i class="bi bi-trash fs-3"></i></button>
+                                        @endif
                                     </td>
                                 </tr>
                                 
@@ -162,8 +167,10 @@
                                         <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$a->id}}">{{@$a->status->nama}}</span>
                                     </td>
                                     <td style="text-align:center;">
+                                        @if($status->status_id != 1)
                                         <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$a->id}}" data-toggle="tooltip" title="Ubah data {{@$a->tpb->no_tpb}}"><i class="bi bi-pencil fs-3"></i></button>
                                         <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="{{$a->id}}" data-nama="{{@$a->tpb->no_tpb}}" data-toggle="tooltip" title="Hapus data {{@$a->tpb->no_tpb}}"><i class="bi bi-trash fs-3"></i></button>
+                                        @endif
                                     </td>
                                 </tr>
                                 @endforeach
@@ -263,8 +270,15 @@
             window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&pilar_pembangunan_id=' + pilar_pembangunan_id + '&tpb_id=' + tpb_id;
         });
 
-        showValidasi();
-        // setDatatable();
+        if(!{{ $admin_bumn }}){
+            showValidasi();
+        }
+        
+        if({{$perusahaan_id}} == ''){
+            $('.table-responsive').hide();
+        }else{
+            $('.table-responsive').show();
+        }
     });
 
     function addCommas(nStr) {
@@ -704,12 +718,6 @@
     function showValidasi(){
         var perusahaan_id = $("select[name='perusahaan_id']").val();
         var tahun = $("select[name='tahun']").val();
-
-        if(perusahaan_id == ''){
-            $('.table-responsive').hide();
-        }else{
-            $('.table-responsive').show();
-        }
 
         if(perusahaan_id == '' || tahun == ''){
             $('.btn-disable-validasi').show();

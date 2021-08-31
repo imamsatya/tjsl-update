@@ -42,7 +42,7 @@
                                 <th>No Hp</th>
                                 <th>BUMN</th>
                                 <th>Roles</th>
-                                <th style="text-align:center;">Aksi</th>
+                                <th style="text-align:center;width:80px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody></tbody>

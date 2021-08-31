@@ -1,5 +1,10 @@
 @extends('layouts.app')
 
+@section('addbeforecss')
+<link href="{{asset('/assets/plugins/custom/jstree/jstree.bundle.css')}}" rel="stylesheet" type="text/css" />
+@endsection
+
+
 @section('content')
 
 <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
@@ -52,6 +57,8 @@
 @endsection
 
 @section('addafterjs')
+<script src="{{asset('/assets/plugins/custom/jstree/jstree.bundle.js')}}" type="text/javascript"></script>
+<script src="{{asset('/assets/plugins/custom/jstree-grid-master/jstreegrid.js')}}" type="text/javascript"></script>
 <script>
     var datatable;
     var urlcreate = "{{route('role.create')}}";

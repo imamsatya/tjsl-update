@@ -18,6 +18,7 @@ use App\Models\LogLaporanManajemen;
 use App\Models\PeriodeLaporan;
 use App\Models\Perusahaan;
 use App\Models\Status;
+use App\Models\User;
 
 class LaporanManajemenController extends Controller
 {
@@ -39,12 +40,25 @@ class LaporanManajemenController extends Controller
      */
     public function index()
     {
+        $id_users = \Auth::user()->id;
+        $perusahaan_id = \Auth::user()->id_bumn;
+        $users = User::where('id', $id_users)->first();
+        
+        $admin_bumn = false;
+        if(!empty($users->getRoleNames())){
+            foreach ($users->getRoleNames() as $v) {
+                if($v == 'Admin BUMN') $admin_bumn = true;
+            }
+        }
+  
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
             'perusahaan' => Perusahaan::get(),
             'periode' => PeriodeLaporan::get(),
             'status' => Status::get(),
+            'admin_bumn' => $admin_bumn,
+            'perusahaan_id' => $perusahaan_id
         ]);
     }
 

@@ -20,13 +20,13 @@
         </div>
         <div class="col-lg-6">
             <label>No HP</label>
-            <input type="text" class="form-control" name="handphone" id="handphone" onkeypress="return onlyNumberKey(event)" value="{{!empty(old('handphone'))? old('handphone') : ($actionform == 'update' && $data->handphone != ''? $data->handphone : old('handphone'))}}" />
+            <input type="text" class="form-control" name="handphone" id="handphone" onkeypress="return onlyNumberKey(event)" value="{{!empty(old('handphone'))? old('handphone') : ($actionform == 'update' && $data->handphone != ''? $data->handphone : old('handphone'))}}" required/>
         </div>
     </div>
     <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>BUMN</label>            
-            <select class="form-select form-select-solid form-select2" name="id_bumn" data-kt-select2="true" data-placeholder="Pilih BUMN" data-allow-clear="true" data-dropdown-parent="#kt_content_container">
+            <select class="form-select form-select-solid form-select2" name="id_bumn" data-kt-select2="true" data-placeholder="Pilih BUMN" data-allow-clear="true" data-dropdown-parent="#kt_content_container" required>
                 <option></option>
                 @foreach($perusahaan as $p)  
                     @php
@@ -38,13 +38,10 @@
         </div>
         <div class="col-lg-6">
             <label>Roles</label>           
-            <select class="form-select form-select-solid form-select2" name="roles" data-kt-select2="true" data-placeholder="Pilih Role" data-allow-clear="true" data-dropdown-parent="#kt_content_container" >
+            <select class="form-select form-select-solid form-select2" name="roles[]" data-kt-select2="true" data-placeholder="Pilih Role" data-allow-clear="true" data-dropdown-parent="#kt_content_container" multiple="multiple">
                 <option></option>
-                @foreach($role as $p)  
-                    @php
-                        $select = ($actionform == 'update' && ($p->id == $data->role_id) ? 'selected="selected"' : '');
-                    @endphp
-                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->name }}</option>
+                @foreach($role as $value)  
+					<option value="{{$value->id}}" {{$actionform == 'update' && in_array($value->name, $userRole) ? 'selected' : ''}}>{{$value->name}}</option>
                 @endforeach
             </select>
         </div>

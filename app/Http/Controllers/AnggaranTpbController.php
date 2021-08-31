@@ -17,6 +17,7 @@ use App\Models\AnggaranTpb;
 use App\Models\Perusahaan;
 use App\Models\PilarPembangunan;
 use App\Models\Tpb;
+use App\Models\User;
 use App\Models\LogAnggaranTpb;
 use App\Exports\AnggaranTpbExport;
 
@@ -40,14 +41,28 @@ class AnggaranTpbController extends Controller
      */
     public function index(Request $request)
     {
+        $id_users = \Auth::user()->id;
+        $users = User::where('id', $id_users)->first();
+        $perusahaan_id = $request->perusahaan_id;
+        
+        $admin_bumn = false;
+        if(!empty($users->getRoleNames())){
+            foreach ($users->getRoleNames() as $v) {
+                if($v == 'Admin BUMN') {
+                    $admin_bumn = true;
+                    $perusahaan_id = \Auth::user()->id_bumn;
+                }
+            }
+        }
+
         $anggaran       = AnggaranTpb::select('tpbs.pilar_pembangunan_id','anggaran_tpbs.*')
                                         ->leftJoin('tpbs','tpbs.id','anggaran_tpbs.tpb_id');
         $anggaran_pilar = AnggaranTpb::leftJoin('tpbs','tpbs.id','anggaran_tpbs.tpb_id')
                                         ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'tpbs.pilar_pembangunan_id');
         
-        if($request->perusahaan_id){
-            $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
-            $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
+        if($perusahaan_id){
+            $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
+            $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
         }
 
         if($request->tahun){
@@ -79,7 +94,8 @@ class AnggaranTpbController extends Controller
             'anggaran_pilar' => $anggaran_pilar,
             'pilar' => PilarPembangunan::get(),
             'tpb' => Tpb::get(),
-            'perusahaan_id' => $request->perusahaan_id,
+            'admin_bumn' => $admin_bumn,
+            'perusahaan_id' => $perusahaan_id,
             'tahun' => $request->tahun,
             'pilar_pembangunan_id' => $request->pilar_pembangunan_id,
             'tpb_id' => $request->tpb_id,
@@ -197,6 +213,19 @@ class AnggaranTpbController extends Controller
 
     public function create()
     {
+        $id_users = \Auth::user()->id;
+        $users = User::where('id', $id_users)->first();
+        $perusahaan_id = \Auth::user()->id_bumn;
+        
+        $admin_bumn = false;
+        if(!empty($users->getRoleNames())){
+            foreach ($users->getRoleNames() as $v) {
+                if($v == 'Admin BUMN') {
+                    $admin_bumn = true;
+                }
+            }
+        }
+        
         $anggaran_tpb = AnggaranTpb::get();
 
         return view($this->__route.'.create',[
@@ -204,6 +233,8 @@ class AnggaranTpbController extends Controller
             'actionform' => 'insert',
             'pilar' => PilarPembangunan::get(),
             'perusahaan' => Perusahaan::get(),
+            'admin_bumn' => $admin_bumn,
+            'perusahaan_id' => $perusahaan_id,
             'data' => $anggaran_tpb
         ]);
 
@@ -227,15 +258,22 @@ class AnggaranTpbController extends Controller
                                 $param['perusahaan_id'] = $request->perusahaan_id;
                                 $param['tahun'] = $request->tahun;
                                 $param['status_id'] = 2;
+                                
+                                if($request->perusahaan_id==''){
+                                    $id_users = \Auth::user()->id;
+                                    $users = User::where('id', $id_users)->first();
+                                    $param['perusahaan_id'] = $users->id_bumn;
+                                }
+
                                 if($request->tpb_id){
                                     $tpb_id = $request->tpb_id;
                                     $anggaran = $request->anggaran;
                                     for($i=0; $i<count($tpb_id); $i++){
                                         $param['tpb_id'] = $tpb_id[$i];
                                         $param['anggaran'] = str_replace(',', '', $anggaran[$i]);
-                                        $anggaran = AnggaranTpb::create((array)$param);
+                                        $data = AnggaranTpb::create((array)$param);
 
-                                        AnggaranTpbController::store_log($anggaran->id,$param['status_id']);
+                                        AnggaranTpbController::store_log($data->id,$param['status_id']);
                                     }
                                 }
 

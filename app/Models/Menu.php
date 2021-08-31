@@ -9,8 +9,8 @@ class Menu extends Model
 {
     protected $guarded = [];
 
-    // public function roles()
-    // {
-    // 	return $this->belongsToMany(Role::class,'role_menu','menu_id','role_id');
-    // }
+    public function roles()
+    {
+    	return $this->belongsToMany(Role::class,'role_menu','menu_id','role_id');
+    }
 }
