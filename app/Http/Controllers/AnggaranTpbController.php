@@ -258,6 +258,7 @@ class AnggaranTpbController extends Controller
                                 $param['perusahaan_id'] = $request->perusahaan_id;
                                 $param['tahun'] = $request->tahun;
                                 $param['status_id'] = 2;
+                                $param['user_id']  = \Auth::user()->id;
                                 
                                 if($request->perusahaan_id==''){
                                     $id_users = \Auth::user()->id;
@@ -526,7 +527,7 @@ class AnggaranTpbController extends Controller
     {  
         $param['anggaran_tpb_id'] = $anggaran_tpb_id;
         $param['status_id'] = $status_id;
-        $param['user_id'] = 1;
+        $param['user_id'] = \Auth::user()->id;
         LogAnggaranTpb::create((array)$param);
     }
 }

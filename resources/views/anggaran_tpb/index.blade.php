@@ -153,9 +153,9 @@
                                 @foreach ($anggaran_anak as $a)  
                                 @php 
                                     $status_class = 'primary';
-                                    if($status->status_id == 1){
+                                    if($a->status_id == 1){
                                         $status_class = 'success';
-                                    }else if($status->status_id == 3){
+                                    }else if($a->status_id == 3){
                                         $status_class = 'warning';
                                     }
                                 @endphp     
@@ -270,11 +270,11 @@
             window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&pilar_pembangunan_id=' + pilar_pembangunan_id + '&tpb_id=' + tpb_id;
         });
 
-        if(!{{ $admin_bumn }}){
+        if(!"{{ $admin_bumn }}"){
             showValidasi();
         }
         
-        if({{$perusahaan_id}} == ''){
+        if("{{ $perusahaan_id }}" == ''){
             $('.table-responsive').hide();
         }else{
             $('.table-responsive').show();

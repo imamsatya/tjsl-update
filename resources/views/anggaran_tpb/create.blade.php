@@ -13,7 +13,7 @@
                 <option></option>
                 @foreach($perusahaan as $p)  
                     @php
-                        $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
+                        $select = (($admin_bumn) && ($p->id == $perusahaan_id) ? 'selected="selected"' : '');
                     @endphp
                     <option value="{{ $p->id }}" {{$select}}>{{ $p->nama_lengkap }}</option>
                 @endforeach

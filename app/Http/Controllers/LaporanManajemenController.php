@@ -119,7 +119,7 @@ class LaporanManajemenController extends Controller
             ->addColumn('user', function ($row){
                 $waktu = $row->waktu;
                 if($row->waktu) $waktu = date("d-m-Y", strtotime($row->waktu));
-                $user = 'Fitri Hidayanti<br>'.$row->waktu;
+                $user = @$row->user->username.'<br>'.$row->waktu;
                 return $user;
             })
             ->editColumn('waktu', function ($row){
@@ -241,6 +241,7 @@ class LaporanManajemenController extends Controller
                                   $dataUpload = $this->uploadFile($request->file('file_name'), (int)$request->input('id'), @$laporan_manajemen->perusahaan->nama_lengkap, @$laporan_manajemen->periode->nama);
                                   $param2['file_name']  = $dataUpload->fileRaw;
                                   $param2['status_id']  = 2;
+                                  $param2['user_id']  = \Auth::user()->id;
                                   $param2['waktu']  = date('Y-m-d H:i:s');
                                   $laporan_manajemen->update((array)$param2);
                                   
@@ -392,7 +393,7 @@ class LaporanManajemenController extends Controller
     {  
         $param['laporan_manajemen_id'] = $laporan_manajemen_id;
         $param['status_id'] = $status_id;
-        $param['user_id'] = 1;
+        $param['user_id'] = \Auth::user()->id;
         LogLaporanManajemen::create((array)$param);
     }
 }
