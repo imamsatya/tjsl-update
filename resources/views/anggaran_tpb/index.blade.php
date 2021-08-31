@@ -167,7 +167,7 @@
                                         <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$a->id}}">{{@$a->status->nama}}</span>
                                     </td>
                                     <td style="text-align:center;">
-                                        @if($status->status_id != 1)
+                                        @if($a->status_id != 1)
                                         <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$a->id}}" data-toggle="tooltip" title="Ubah data {{@$a->tpb->no_tpb}}"><i class="bi bi-pencil fs-3"></i></button>
                                         <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="{{$a->id}}" data-nama="{{@$a->tpb->no_tpb}}" data-toggle="tooltip" title="Hapus data {{@$a->tpb->no_tpb}}"><i class="bi bi-trash fs-3"></i></button>
                                         @endif
