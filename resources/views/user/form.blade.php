@@ -26,7 +26,7 @@
     <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>BUMN</label>            
-            <select class="form-select form-select-solid form-select2" name="id_bumn" data-kt-select2="true" data-placeholder="Pilih BUMN" data-allow-clear="true" data-dropdown-parent="#kt_content_container" required>
+            <select class="form-select form-select-solid form-select2" name="id_bumn" data-kt-select2="true" data-placeholder="Pilih BUMN" data-dropdown-parent="#winform" required>
                 <option></option>
                 @foreach($perusahaan as $p)  
                     @php
@@ -38,7 +38,7 @@
         </div>
         <div class="col-lg-6">
             <label>Roles</label>           
-            <select class="form-select form-select-solid form-select2" name="roles[]" data-kt-select2="true" data-placeholder="Pilih Role" data-allow-clear="true" data-dropdown-parent="#kt_content_container" multiple="multiple">
+            <select class="form-select form-select-solid form-select2" name="roles[]" data-kt-select2="true" data-placeholder="Pilih Role" data-dropdown-parent="#winform">
                 <option></option>
                 @foreach($role as $value)  
 					<option value="{{$value->id}}" {{$actionform == 'update' && in_array($value->name, $userRole) ? 'selected' : ''}}>{{$value->name}}</option>

@@ -69,14 +69,11 @@ class UserController extends Controller
                 return @$row->perusahaan->nama_lengkap;
             })
             ->editColumn('roles', function ($row){
-                $label = '<ul class="no-margin">';
                 if(!empty($row->getRoleNames())){
                     foreach ($row->getRoleNames() as $v) {
-                        $label .= '<li>'.$v.'</li>';
+                        return $v;
                     }
                 }
-                $label .= '</ul>';
-                return $label;
             })
             ->rawColumns(['nama','keterangan','action','roles'])
             ->toJson();
