@@ -49,6 +49,20 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
 
         Route::prefix('referensi')->group(function () {
 
+            Route::prefix('versi_pilar')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\VersiPilarController@index')->name('referensi.versi_pilar.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\VersiPilarController@create')->name('referensi.versi_pilar.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\VersiPilarController@edit')->name('referensi.versi_pilar.edit');
+                Route::post('edit_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@edit_pilar')->name('referensi.versi_pilar.edit_pilar');
+                Route::post('add_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@add_pilar')->name('referensi.versi_pilar.add_pilar');
+                Route::post('store', 'App\Http\Controllers\Referensi\VersiPilarController@store')->name('referensi.versi_pilar.store');
+                Route::post('store_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@store_pilar')->name('referensi.versi_pilar.store_pilar');
+                Route::post('delete', 'App\Http\Controllers\Referensi\VersiPilarController@delete')->name('referensi.versi_pilar.delete');
+                Route::post('delete_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@delete_pilar')->name('referensi.versi_pilar.delete_pilar');
+                Route::post('update_status', 'App\Http\Controllers\Referensi\VersiPilarController@update_status')->name('referensi.versi_pilar.update_status');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\VersiPilarController@datatable')->name('referensi.versi_pilar.datatable');
+            });
+
             Route::prefix('pilar_pembangunan')->group(function(){
                 Route::get('index', 'App\Http\Controllers\Referensi\PilarPembangunanController@index')->name('referensi.pilar_pembangunan.index');
                 Route::post('create', 'App\Http\Controllers\Referensi\PilarPembangunanController@create')->name('referensi.pilar_pembangunan.create');
