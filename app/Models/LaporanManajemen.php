@@ -13,6 +13,11 @@ class LaporanManajemen extends Model
         return $this->belongsTo('App\Models\Perusahaan', 'perusahaan_id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User', 'user_id');
+    }
+
     public function periode()
     {
         return $this->belongsTo('App\Models\PeriodeLaporan', 'periode_laporan_id');

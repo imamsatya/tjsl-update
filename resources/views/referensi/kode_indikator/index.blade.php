@@ -40,6 +40,7 @@
                                 <th>Kode</th>
                                 <th>Nama</th>
                                 <th>Satuan Ukur</th>
+                                <th>Keterangan</th>
                                 <th style="text-align:center;">Aksi</th>
                             </tr>
                         </thead>
@@ -93,6 +94,7 @@
                 { data: 'kode', name: 'kode' },
                 { data: 'nama', name: 'nama' },
                 { data: 'satuan_ukur', name: 'satuan_ukur' },
+                { data: 'keterangan', name: 'keterangan' },
                 { data: 'action', name:'action'},
             ],
             drawCallback: function( settings ) {

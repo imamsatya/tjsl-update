@@ -6,7 +6,7 @@
     <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>TPB</label>
-            <select class="form-select form-select-solid form-select2" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB" data-dropdown-parent="#form-edit" data-allow-clear="true" required>
+            <select class="form-select form-select-solid form-select2" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB" data-dropdown-parent="#form-edit" required>
                 <option></option>
                 @foreach($tpb as $p)  
                     @php
