@@ -9,7 +9,7 @@
             @php
                 $disabled = (($admin_bumn) ? 'disabled="true"' : '');
             @endphp
-            <select class="form-select form-select-solid form-select2" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN"  data-dropdown-parent="#form-edit" required {{$disabled}}>
+            <select class="form-select form-select-solid form-select2" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN"  data-dropdown-parent="#winform" required {{$disabled}}>
                 <option></option>
                 @foreach($perusahaan as $p)  
                     @php
@@ -23,7 +23,7 @@
     <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>Tahun</label>
-            <select class="form-select form-select-solid form-select2" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun"  data-dropdown-parent="#form-edit" required>
+            <select class="form-select form-select-solid form-select2" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun"  data-dropdown-parent="#winform" required>
                 <option></option>
                 @php for($i = date("Y"); $i>=2020; $i--){ @endphp
                 <option value="{{$i}}">{{$i}}</option>
@@ -32,7 +32,7 @@
         </div>
         <div class="col-lg-6">
             <label>Pilar Pembangunan</label>
-            <select class="form-select form-select-solid form-select2" name="pilar_pembangunan_id" data-kt-select2="true" data-placeholder="Pilih Pilar"  data-dropdown-parent="#form-edit" onchange="return onChangePilar(this.value)">
+            <select class="form-select form-select-solid form-select2" name="pilar_pembangunan_id" data-kt-select2="true" data-placeholder="Pilih Pilar"  data-dropdown-parent="#winform" onchange="return onChangePilar(this.value)">
                 <option></option>
                 @foreach($pilar as $p)  
                     <option value="{{ $p->id }}">{{ $p->nama }}</option>
@@ -129,7 +129,7 @@
     
     function onChangePilar(id){
         $.ajax({
-            url: "/fetch/gettpbbypilar?id="+id,
+            url: "/fetch/gettpbbypilar?id="+id+"&versi="+{{$versi_pilar_id}},
             type: "POST",
             dataType: "json", 
             success: function(data){

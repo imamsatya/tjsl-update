@@ -12,10 +12,10 @@ class AnggaranTpb extends Model
     {
         return $this->belongsTo('App\Models\Perusahaan', 'perusahaan_id');
     }
-
-    public function tpb()
+    
+    public function relasi()
     {
-        return $this->belongsTo('App\Models\Tpb', 'tpb_id');
+        return $this->belongsTo('App\Models\RelasiPilarTpb', 'relasi_pilar_tpb_id');
     }
 
     public function status()

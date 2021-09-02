@@ -156,7 +156,7 @@ class PeriodeLaporanController extends Controller
 
                                             // create data laporan manajemen all bumn
                                             if($data == 1){
-                                                $perusahaan = Perusahaan::where('is_active', true)->get();
+                                                $perusahaan = Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get();
                                                 foreach($perusahaan as $p){
                                                     $param_laporan['perusahaan_id'] = $p->id;
                                                     $param_laporan['periode_laporan_id'] = $periode_laporan->id;

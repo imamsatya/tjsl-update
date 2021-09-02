@@ -35,8 +35,8 @@
 <tr>
     <td>{{$num++}}</td>
     <td>{{@$a->perusahaan->nama_lengkap}}</td>
-    <td>{{@$a->tpb->pilar->nama}}</td>
-    <td>{{@$a->tpb->nama}}</td>
+    <td>{{@$a->relasi->pilar->nama}}</td>
+    <td>{{@$a->relasi->tpb->no_tpb}} - {{@$a->relasi->tpb->nama}}</td>
     <td>{{$a->anggaran}}</td>
     <td>{{@$a->status->nama}}</td>
     {{$total += $a->anggaran}}

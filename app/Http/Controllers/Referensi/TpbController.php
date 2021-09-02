@@ -13,7 +13,6 @@ use Datatables;
 use App\Http\Controllers\Controller;
 
 use App\Models\Tpb;
-use App\Models\PilarPembangunan;
 
 class TpbController extends Controller
 {
@@ -49,7 +48,7 @@ class TpbController extends Controller
      */
     public function datatable(Request $request)
     {
-        $tpb = Tpb::orderBy('pilar_pembangunan_id')->orderBy('no_tpb')->get();
+        $tpb = Tpb::orderBy('no_tpb')->get();
         try{
             return datatables()->of($tpb)
             ->addColumn('action', function ($row){
@@ -64,9 +63,6 @@ class TpbController extends Controller
 
                 $button .= '</div>';
                 return $button;
-            })
-            ->addColumn('pilar', function ($row){
-                return @$row->pilar->nama;
             })
             ->rawColumns(['nama','keterangan','action'])
             ->toJson();
@@ -93,8 +89,7 @@ class TpbController extends Controller
         return view($this->__route.'.form',[
             'pagetitle' => $this->pagetitle,
             'actionform' => 'insert',
-            'data' => $tpb,
-            'pilar' => PilarPembangunan::get()
+            'data' => $tpb
         ]);
 
     }
@@ -189,8 +184,7 @@ class TpbController extends Controller
                 return view($this->__route.'.form',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
-                    'data' => $tpb,
-                    'pilar' => PilarPembangunan::get()
+                    'data' => $tpb
                 ]);
         }catch(Exception $e){}
 

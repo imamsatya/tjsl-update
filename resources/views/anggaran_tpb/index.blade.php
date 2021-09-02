@@ -94,7 +94,7 @@
                                     @php
                                         $select = (($p->id == $tpb_id) ? 'selected="selected"' : '');
                                     @endphp
-                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
+                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->no_tpb }} - {{ $p->nama }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -161,7 +161,7 @@
                                 @endphp     
                                 <tr class="treegrid-{{$a->id}} treegrid-parent-pilar{{@$p->pilar_id}} item{{$a->id}}">
                                     <td></td>
-                                    <td>{{@$a->tpb->no_tpb .' - '. @$a->tpb->nama}}</td>
+                                    <td>{{@$a->no_tpb .' - '. @$a->tpb_nama}}</td>
                                     <td style="text-align:right;">{{number_format($a->anggaran,0,',',',')}}</td>
                                     <td style="text-align:center;">
                                         <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$a->id}}">{{@$a->status->nama}}</span>

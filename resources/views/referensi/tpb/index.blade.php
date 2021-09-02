@@ -36,9 +36,9 @@
                         <thead>
                             <tr>
                                 <th>No.</th>
-                                <th>Pilar Pembangunan</th>
-                                <th>Nama</th>
                                 <th>No TPB</th>
+                                <th>Nama</th>
+                                <th>Keterangan</th>
                                 <th style="text-align:center;">Aksi</th>
                             </tr>
                         </thead>
@@ -88,9 +88,9 @@
             ajax: urldatatable,
             columns: [
                 { data: 'id', orderable: false, searchable: false },
-                { data: 'pilar', name: 'pilar' },
-                { data: 'nama', name: 'nama' },
                 { data: 'no_tpb', name: 'no_tpb' },
+                { data: 'nama', name: 'nama' },
+                { data: 'keterangan', name: 'keterangan' },
                 { data: 'action', name:'action'},
             ],
             drawCallback: function( settings ) {

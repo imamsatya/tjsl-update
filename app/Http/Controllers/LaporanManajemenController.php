@@ -57,7 +57,7 @@ class LaporanManajemenController extends Controller
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
-            'perusahaan' => Perusahaan::get(),
+            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
             'periode' => PeriodeLaporan::get(),
             'status' => Status::get(),
             'admin_bumn' => $admin_bumn,
