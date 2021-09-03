@@ -144,6 +144,15 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::get('datatable', 'App\Http\Controllers\MenuController@datatable')->name('menu.datatable');
         });
 
+        Route::prefix('permission')->group(function(){
+            Route::get('index', 'App\Http\Controllers\PermissionController@index')->name('permission.index');
+            Route::post('create', 'App\Http\Controllers\PermissionController@create')->name('permission.create');
+            Route::post('edit', 'App\Http\Controllers\PermissionController@edit')->name('permission.edit');
+            Route::post('store', 'App\Http\Controllers\PermissionController@store')->name('permission.store');
+            Route::post('delete', 'App\Http\Controllers\PermissionController@delete')->name('permission.delete');
+            Route::get('datatable', 'App\Http\Controllers\PermissionController@datatable')->name('permission.datatable');
+        });
+
         Route::prefix('anggaran_tpb')->group(function(){
             Route::get('index', 'App\Http\Controllers\AnggaranTpbController@index')->name('anggaran_tpb.index');
             Route::post('create', 'App\Http\Controllers\AnggaranTpbController@create')->name('anggaran_tpb.create');

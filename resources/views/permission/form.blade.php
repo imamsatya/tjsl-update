@@ -1,36 +1,12 @@
 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
 	@csrf
-	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$role->id : null}}" />
+	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$permission->id : null}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
 
-    <div class="form-group row mb-5">
-        <div class="col-lg-6">
+    <div class="form-group row">
+        <div class="col-lg-12">
             <label>Nama</label>
-            <input type="text" class="form-control" name="name" id="name" value="{{!empty(old('name'))? old('name') : ($actionform == 'update' && $role->name != ''? $role->name : old('name'))}}" required/>
-        </div>
-        <div class="col-lg-6">
-            <label>Keterangan</label>
-            <input type="text" type="text" class="form-control" name="keterangan" id="keterangan" value="{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $role->keterangan != ''? $role->keterangan : old('keterangan'))}}" />
-        </div>
-    </div>	
-    <div class="form-group row mb-5">
-        <div class="col-lg-6">
-            <label>Permission</label>
-            <select class="multi-select" id="permission" name="permission[]" multiple="multiple" >
-                @foreach($permission as $value)
-                            
-                    @php
-                        $select = !empty(old('permission')) && in_array($value->id, old('permission'))? 'selected="selected"' : ($actionform == 'update' && in_array($value->id, $rolePermissions)? 'selected="selected"' : '')
-                    @endphp	                            	        	
-                    <option value="{{ $value->id }}" {!! $select !!}>{{ $value->name }}</option>
-                        
-                @endforeach
-            </select>  				
-        </div>
-        <div class="col-lg-6">
-            <label>Akses Menu</label>
-            <div id="checkTree"></div>
-            <input type="hidden" name="menu" id="menu" readonly="readonly" />
+            <input type="text" class="form-control" name="name" id="name" value="{{!empty(old('name'))? old('name') : ($actionform == 'update' && $permission->name != ''? $permission->name : old('name'))}}" required/>
         </div>
     </div>	
     <div class="text-center pt-15">
@@ -45,15 +21,12 @@
 
 <script type="text/javascript">
     var title = "{{$actionform == 'update'? 'Update' : 'Tambah'}}" + " {{ $pagetitle }}";
-    var urlgettreemenubyrole = "{{route('role.gettreemenubyrole')}}";
 
     $(document).ready(function(){
         $('.modal-title').html(title);
         $('.modal').on('shown.bs.modal', function () {
             setFormValidate();
         });  
-        onLoadTreeMenu();
-        onLoadMultiSelect();
     });
 
     function setFormValidate(){
@@ -149,74 +122,5 @@
         });		
     }
     
-    function onLoadTreeMenu(){
-    $('#checkTree').jstree({
-        'core' : {
-            'themes' : {
-            'responsive': true
-            },
-                'data': {        
-                    type: "GET",
-                    dataType: 'json',
-                    url: urlgettreemenubyrole+'/'+$('#id').val()
-                }     
-        },
-        'types' : {
-            'default' : {
-                'icon' : 'fa fa-folder'
-            },
-            'file' : {
-                'icon' : 'fa fa-file'
-            }
-        },
-        'plugins' : ['types', 'checkbox']
-    }).on('changed.jstree', function (e, data) {
-    var i, j, r = [];
-    $('#menu').val('');
-    for(i = 0, j = data.selected.length; i < j; i++) {
-        r.push(data.instance.get_node(data.selected[i]).id);    
-    }
-    $('#menu').val(r);
-    });  
-    }
 
-
-    function onLoadMultiSelect(){
-        $('.multi-select').multiSelect({
-            selectableOptgroup: false, 
-            selectableHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Cari ...'>",
-            selectionHeader: "<input type='text' class='form-control search-input' autocomplete='off' placeholder='Cari ...'>",
-            afterInit: function (ms) {
-                var that = this,
-                    $selectableSearch = that.$selectableUl.prev(),
-                    $selectionSearch = that.$selectionUl.prev(),
-                    selectableSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selectable:not(.ms-selected)',
-                    selectionSearchString = '#' + that.$container.attr('id') + ' .ms-elem-selection.ms-selected';
-
-                that.qs1 = $selectableSearch.quicksearch(selectableSearchString)
-                    .on('keydown', function (e) {
-                        if (e.which === 40) {
-                            that.$selectableUl.focus();
-                            return false;
-                        }
-                    });
-
-                that.qs2 = $selectionSearch.quicksearch(selectionSearchString)
-                    .on('keydown', function (e) {
-                        if (e.which == 40) {
-                            that.$selectionUl.focus();
-                            return false;
-                        }
-                    });
-            },
-            afterSelect: function () {
-                this.qs1.cache();
-                this.qs2.cache();
-            },
-            afterDeselect: function () {
-                this.qs1.cache();
-                this.qs2.cache();
-            }
-        });  
-    }
 </script>

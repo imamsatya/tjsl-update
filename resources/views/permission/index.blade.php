@@ -2,7 +2,6 @@
 
 @section('addbeforecss')
 <link href="{{asset('/assets/plugins/custom/jstree/jstree.bundle.css')}}" rel="stylesheet" type="text/css" />
-<link href="{{asset('/plugins/multiselect/css/multi-select.css')}}" rel="stylesheet" type="text/css" />
 @endsection
 
 
@@ -25,8 +24,8 @@
                 <!--begin::Card toolbar-->
                 <div class="card-toolbar">
                     <!--begin::Search-->
-                    <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
-                        <button type="button" class="btn btn-success btn-sm cls-add" data-kt-view-roles-table-select="delete_selected">Tambah Data</button>
+                    <div class="d-flex align-items-center position-relative my-1" data-kt-view-permissions-table-toolbar="base">
+                        <button type="button" class="btn btn-success btn-sm cls-add" data-kt-view-permissions-table-select="delete_selected">Tambah Data</button>
                     </div>
                     <!--end::Search-->
                     <!--end::Group actions-->
@@ -43,7 +42,6 @@
                             <tr>
                                 <th>No.</th>
                                 <th>Nama</th>
-                                <th>Keterangan</th>
                                 <th style="text-align:center;">Aksi</th>
                             </tr>
                         </thead>
@@ -58,17 +56,13 @@
 @endsection
 
 @section('addafterjs')
-<script src="{{asset('/assets/plugins/custom/jstree/jstree.bundle.js')}}" type="text/javascript"></script>
-<script src="{{asset('/assets/plugins/custom/jstree-grid-master/jstreegrid.js')}}" type="text/javascript"></script>
-<script src="{{asset('/plugins/multiselect/js/jquery.multi-select.js')}}" type="text/javascript"></script>
-<script src="{{asset('/plugins/jquery-quicksearch/jquery.quicksearch.js')}}" type="text/javascript"></script>
 <script>
     var datatable;
-    var urlcreate = "{{route('role.create')}}";
-    var urledit = "{{route('role.edit')}}";
-    var urlstore = "{{route('role.store')}}";
-    var urldatatable = "{{route('role.datatable')}}";
-    var urldelete = "{{route('role.delete')}}";
+    var urlcreate = "{{route('permission.create')}}";
+    var urledit = "{{route('permission.edit')}}";
+    var urlstore = "{{route('permission.store')}}";
+    var urldatatable = "{{route('permission.datatable')}}";
+    var urldelete = "{{route('permission.delete')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
@@ -98,7 +92,6 @@
             columns: [
                 { data: 'id', orderable: false, searchable: false },
                 { data: 'name', name: 'name' },
-                { data: 'keterangan', name: 'keterangan' },
                 { data: 'action', name:'action'},
             ],
             drawCallback: function( settings ) {
