@@ -78,7 +78,7 @@ class PeriodeLaporanController extends Controller
                 if($row->tanggal_akhir) $tanggal_akhir = date("d M", strtotime($row->tanggal_akhir));
                 return $tanggal_akhir;
             })
-            ->editColumn('jenis_laporan_id', function ($row){
+            ->editColumn('jenis_laporan', function ($row){
                 $label = '<ul class="no-margin">';
                 if(!empty(@$row->has_jenis)){
                     foreach ($row->has_jenis as $v) {
@@ -88,7 +88,7 @@ class PeriodeLaporanController extends Controller
                 $label .= '</ul>';
                 return $label;
             })
-            ->rawColumns(['nama','keterangan','action','jenis_laporan_id'])
+            ->rawColumns(['nama','keterangan','action','jenis_laporan'])
             ->toJson();
         }catch(Exception $e){
             return response([
