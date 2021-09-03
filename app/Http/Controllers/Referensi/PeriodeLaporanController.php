@@ -52,7 +52,7 @@ class PeriodeLaporanController extends Controller
      */
     public function datatable(Request $request)
     {
-        $periode = PeriodeLaporan::orderBy('jenis_laporan')->orderBy('urutan')->get();
+        $periode = PeriodeLaporan::orderBy('jenis_laporan_id')->orderBy('urutan')->get();
         try{
             return datatables()->of($periode)
             ->addColumn('action', function ($row){
@@ -78,7 +78,7 @@ class PeriodeLaporanController extends Controller
                 if($row->tanggal_akhir) $tanggal_akhir = date("d M", strtotime($row->tanggal_akhir));
                 return $tanggal_akhir;
             })
-            ->editColumn('jenis_laporan', function ($row){
+            ->editColumn('jenis_laporan_id', function ($row){
                 $label = '<ul class="no-margin">';
                 if(!empty(@$row->has_jenis)){
                     foreach ($row->has_jenis as $v) {
@@ -88,7 +88,7 @@ class PeriodeLaporanController extends Controller
                 $label .= '</ul>';
                 return $label;
             })
-            ->rawColumns(['nama','keterangan','action','jenis_laporan'])
+            ->rawColumns(['nama','keterangan','action','jenis_laporan_id'])
             ->toJson();
         }catch(Exception $e){
             return response([
