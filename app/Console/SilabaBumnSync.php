@@ -64,7 +64,7 @@ class SilabaBumnSync extends Command
                 //       'created_at' => $now
                 //     ];
 
-                \DB::table('perusahaan')
+                \DB::table('perusahaans')
                   ->updateOrInsert(
                       ['id' => $value->id],
                       [
