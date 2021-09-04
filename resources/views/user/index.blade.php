@@ -63,6 +63,7 @@
     var urlstore = "{{route('user.store')}}";
     var urldatatable = "{{route('user.datatable')}}";
     var urldelete = "{{route('user.delete')}}";
+    var urlcheckuser = "{{route('user.checkuser')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");

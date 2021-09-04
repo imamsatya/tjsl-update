@@ -86,7 +86,7 @@ class AnggaranTpbController extends Controller
                             ->groupBy('relasi_pilar_tpbs.pilar_pembangunan_id', 'pilar_pembangunans.nama', 'pilar_pembangunans.id')
                             ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
                             ->get();
-        $anggaran = $anggaran->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')->get();
+        $anggaran = $anggaran->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')->orderBy('no_tpb')->get();
         
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
@@ -190,24 +190,44 @@ class AnggaranTpbController extends Controller
                                     $param['perusahaan_id'] = $users->id_bumn;
                                 }
 
+                                $validasi = true;
                                 if($request->tpb_id){
                                     $tpb_id = $request->tpb_id;
                                     $anggaran = $request->anggaran;
                                     for($i=0; $i<count($tpb_id); $i++){
                                         $param['relasi_pilar_tpb_id'] = $tpb_id[$i];
                                         $param['anggaran'] = str_replace(',', '', $anggaran[$i]);
-                                        $data = AnggaranTpb::create((array)$param);
 
-                                        AnggaranTpbController::store_log($data->id,$param['status_id']);
+                                        $checkdata = AnggaranTpb::where('perusahaan_id', $param['perusahaan_id'])
+                                                                ->where('tahun', $param['tahun'])
+                                                                ->where('relasi_pilar_tpb_id', $param['relasi_pilar_tpb_id'])
+                                                                ->first();
+
+                                        if($checkdata != null) {
+                                            $validasi = false;
+                                            $validasi_msg = @$checkdata->relasi->tpb->no_tpb . ' - ' .@$checkdata->relasi->tpb->nama;
+                                        }else{
+                                            $data = AnggaranTpb::create((array)$param);
+                                            AnggaranTpbController::store_log($data->id,$param['status_id'],$param['anggaran']);
+                                        }
                                     }
                                 }
 
-                                DB::commit();
-                                $result = [
-                                'flag'  => 'success',
-                                'msg' => 'Sukses tambah data',
-                                'title' => 'Sukses'
-                                ];
+                                if($validasi){
+                                    DB::commit();
+                                    $result = [
+                                    'flag'  => 'success',
+                                    'msg' => 'Sukses tambah data',
+                                    'title' => 'Sukses'
+                                    ];
+                                }else{
+                                    DB::rollback();
+                                    $result = [
+                                    'flag'  => 'warning',
+                                    'msg' => 'Data Anggaran '.$validasi_msg.' sudah ada',
+                                    'title' => 'Gagal'
+                                    ];
+                                }
                             }catch(\Exception $e){
                                 DB::rollback();
                                 $result = [
@@ -225,7 +245,7 @@ class AnggaranTpbController extends Controller
                                 $param['anggaran'] = str_replace(',', '', $request->input('anggaran'));
                                 $anggaran_tpb->update((array)$param);
                                 
-                                AnggaranTpbController::store_log($anggaran_tpb->id,$anggaran_tpb->status_id);
+                                AnggaranTpbController::store_log($anggaran_tpb->id,$anggaran_tpb->status_id,$param['anggaran']);
 
                                 DB::commit();
                                 $result = [
@@ -402,7 +422,7 @@ class AnggaranTpbController extends Controller
 
             $anggaran_tpb = $anggaran->get();
             foreach($anggaran_tpb as $a){
-                AnggaranTpbController::store_log($a->id,$param['status_id']);
+                AnggaranTpbController::store_log($a->id,$param['status_id'],$a->anggaran);
             }
             
             $anggaran->update($param);
@@ -450,8 +470,9 @@ class AnggaranTpbController extends Controller
     }
     
 
-    public static function store_log($anggaran_tpb_id, $status_id)
+    public static function store_log($anggaran_tpb_id, $status_id, $anggaran)
     {  
+        $param['anggaran'] = $anggaran;
         $param['anggaran_tpb_id'] = $anggaran_tpb_id;
         $param['status_id'] = $status_id;
         $param['user_id'] = \Auth::user()->id;

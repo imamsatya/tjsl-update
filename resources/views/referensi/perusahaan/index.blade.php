@@ -21,7 +21,7 @@
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
                         
-                        <a href="{{url('referensi/perusahaan/silababumnsync')}}" class="btn btn-success btn-sm">
+                        <a class="btn btn-success btn-sync btn-sm">
                             <i class="bi bi-refresh"></i>
                             Sync Data
                         </a>
@@ -89,8 +89,60 @@
             onbtneditactive(this);
         });
 
+        $('body').on('click','.btn-sync',function(){
+            sync();
+        });
+
         setDatatable();
     });
+
+    function sync(){
+        $.ajax({
+            type: 'get',
+            url: "{{url('referensi/perusahaan/silababumnsync')}}",
+            data: {
+            },
+            dataType : 'json',
+            beforeSend: function(){
+                $.blockUI({
+                    theme: true,
+                    baseZ: 2000
+                })   
+            },
+            success: function(data){
+                $.unblockUI();
+                datatable.ajax.reload( null, false );
+            },
+            error: function(jqXHR, exception){
+                $.unblockUI();
+                var msgerror = '';
+                if (jqXHR.status === 0) {
+                    msgerror = 'jaringan tidak terkoneksi.';
+                } else if (jqXHR.status == 404) {
+                    msgerror = 'Halaman tidak ditemukan. [404]';
+                } else if (jqXHR.status == 500) {
+                    msgerror = 'Internal Server Error [500].';
+                } else if (exception === 'parsererror') {
+                    msgerror = 'Requested JSON parse gagal.';
+                } else if (exception === 'timeout') {
+                    msgerror = 'RTO.';
+                } else if (exception === 'abort') {
+                    msgerror = 'Gagal request ajax.';
+                } else {
+                    msgerror = 'Error.\n' + jqXHR.responseText;
+                }
+                swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                });	                               
+            }
+        });
+    }
 
     function setDatatable(){
         datatable = $('#datatable').DataTable({

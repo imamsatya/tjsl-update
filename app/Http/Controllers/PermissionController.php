@@ -24,7 +24,6 @@ class PermissionController extends Controller
     {
          $this->__route = 'permission';
          $this->pagetitle = 'Permission';
-        //  $this->middleware(['role:super-admin','permission:publish articles|edit articles']);
          $this->middleware('permission:permission-list');
          $this->middleware('permission:permission-create', ['only' => ['create','store']]);
          $this->middleware('permission:permission-edit', ['only' => ['edit','update']]);

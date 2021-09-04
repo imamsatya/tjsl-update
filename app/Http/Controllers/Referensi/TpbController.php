@@ -110,18 +110,27 @@ class TpbController extends Controller
         if (!$validator->fails()) {
             $param = $request->except('actionform','id','no_tpb');
             $param['no_tpb'] = 'TPB ' . $request->no_tpb;
-
+            
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
-                                  $tpb = Tpb::create((array)$param);
-
-                                  DB::commit();
-                                  $result = [
-                                    'flag'  => 'success',
-                                    'msg' => 'Sukses tambah data',
-                                    'title' => 'Sukses'
-                                  ];
+                                  $exist = Tpb::where('no_tpb', $param['no_tpb'])->first();
+                                  if($exist){
+                                    DB::rollback();
+                                    $result = [
+                                      'flag'  => 'warning',
+                                      'msg' => 'No TPB sudah ada',
+                                      'title' => 'Gagal'
+                                    ];
+                                  }else{
+                                    $tpb = Tpb::create((array)$param);
+                                    DB::commit();
+                                    $result = [
+                                        'flag'  => 'success',
+                                        'msg' => 'Sukses tambah data',
+                                        'title' => 'Sukses'
+                                    ];
+                                  }
                                }catch(\Exception $e){
                                   DB::rollback();
                                   $result = [

@@ -6,7 +6,7 @@
     <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>No TPB</label>
-            <input type="text" onkeypress="return onlyNumberKey(event)" class="form-control" name="no_tpb" id="no_tpb" value="{{!empty(old('no_tpb'))? old('no_tpb') : ($actionform == 'update' && $data->no_tpb != ''? substr($data->no_tpb,4) : old('no_tpb'))}}" required/>
+            <input type="text" onkeypress="return onlyNumberKey(event)" class="form-control" name="no_tpb" id="no_tpb" value="{{!empty(old('no_tpb'))? old('no_tpb') : ($actionform == 'update' && $data->no_tpb != ''? substr($data->no_tpb,4) : old('no_tpb'))}}" {{($actionform == 'update'? 'disabled' : '')}} required/>
         </div>
         <div class="col-lg-6">
             <label>Nama</label>

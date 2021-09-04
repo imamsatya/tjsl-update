@@ -5,12 +5,12 @@
 
     <div class="form-group row mb-5">
         <div class="col-lg-6">
-            <label>Nama</label>
-            <input type="text" class="form-control" name="name" id="name" value="{{!empty(old('name'))? old('name') : ($actionform == 'update' && $data->name != ''? $data->name : old('name'))}}" required/>
-        </div>
-        <div class="col-lg-6">
             <label>Username</label>
             <input type="text" class="form-control" name="username" id="username" value="{{!empty(old('username'))? old('username') : ($actionform == 'update' && $data->username != ''? $data->username : old('username'))}}" required/>
+        </div>
+        <div class="col-lg-6">
+            <label>Nama</label>
+            <input type="text" class="form-control" name="name" id="name" value="{{!empty(old('name'))? old('name') : ($actionform == 'update' && $data->name != ''? $data->name : old('name'))}}" required/>
         </div>
     </div>	
     <div class="form-group row mb-5">
@@ -26,7 +26,7 @@
     <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>BUMN</label>            
-            <select class="form-select form-select-solid form-select2" name="id_bumn" data-kt-select2="true" data-placeholder="Pilih BUMN" data-dropdown-parent="#winform" required>
+            <select class="form-select form-select-solid form-select2" name="id_bumn" id="id_bumn" data-kt-select2="true" data-placeholder="Pilih BUMN" data-dropdown-parent="#winform" required>
                 <option></option>
                 @foreach($perusahaan as $p)  
                     @php
@@ -65,7 +65,77 @@
         $('.modal').on('shown.bs.modal', function () {
             setFormValidate();
         });  
+
+        $("#username").keyup(delay(function (e) {
+            checkUser();
+        }, 500));
     });
+
+    function delay(callback, ms) {
+        var timer = 0;
+        return function() {
+            var context = this, args = arguments;
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+            callback.apply(context, args);
+            }, ms || 0);
+        };
+    }
+
+    function checkUser(){
+        $.ajax({
+            type: 'post',
+            url: urlcheckuser,
+            data: {
+                'username' : $("#username").val()
+            },
+            dataType : 'json',
+            beforeSend: function(){
+                $.blockUI({
+                    theme: true,
+                    baseZ: 2000
+                })   
+            },
+            success: function(data){
+                $.unblockUI();
+                if(data.status){
+                    $("#name").val(data.data.name);
+                    $("#email").val(data.data.email);
+                    $("#handphone").val(data.data.handphone);
+                    $("#email").val(data.data.email);
+                    $("#id_bumn").val(data.data.id_bumn).change();
+                }
+            },
+            error: function(jqXHR, exception){
+                $.unblockUI();
+                var msgerror = '';
+                if (jqXHR.status === 0) {
+                    msgerror = 'jaringan tidak terkoneksi.';
+                } else if (jqXHR.status == 404) {
+                    msgerror = 'Halaman tidak ditemukan. [404]';
+                } else if (jqXHR.status == 500) {
+                    msgerror = 'Internal Server Error [500].';
+                } else if (exception === 'parsererror') {
+                    msgerror = 'Requested JSON parse gagal.';
+                } else if (exception === 'timeout') {
+                    msgerror = 'RTO.';
+                } else if (exception === 'abort') {
+                    msgerror = 'Gagal request ajax.';
+                } else {
+                    msgerror = 'Error.\n' + jqXHR.responseText;
+                }
+                swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                });	                               
+            }
+        });
+    }
 
     function setFormValidate(){
         $('#form-edit').validate({

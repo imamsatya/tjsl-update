@@ -44,6 +44,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('edit', 'App\Http\Controllers\UserController@edit')->name('user.edit');
             Route::post('store', 'App\Http\Controllers\UserController@store')->name('user.store');
             Route::post('delete', 'App\Http\Controllers\UserController@delete')->name('user.delete');
+            Route::post('checkuser', 'App\Http\Controllers\UserController@checkuser')->name('user.checkuser');
             Route::get('datatable', 'App\Http\Controllers\UserController@datatable')->name('user.datatable');
         });
 

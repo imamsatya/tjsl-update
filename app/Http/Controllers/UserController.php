@@ -257,4 +257,20 @@ class UserController extends Controller
 
         return Validator::make($request->all(), $required, $message);
     }
+    
+    public function checkuser(Request $request)
+    {
+      try{
+        /*$res = MiddlewareClient::getUserProfile($username);
+        return return response()->json($this->__gm->checkuserbyparam([
+          'username' => $request->input('username')
+        ]));*/
+        return response()->json(MiddlewareClient::getUserProfile($request->input('username')));          
+      }catch(Exception $e){
+        return response()->json([
+          'data' => false,
+          'result' => 'Data tidak ditemukan'
+        ]);   
+      }
+    }
 }
