@@ -26,7 +26,7 @@
     <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>BUMN</label>            
-            <select class="form-select form-select-solid form-select2" name="id_bumn" id="id_bumn" data-kt-select2="true" data-placeholder="Pilih BUMN" data-dropdown-parent="#winform" required>
+            <select class="form-select form-select-solid form-select2" name="id_bumn" id="id_bumn" data-kt-select2="true" data-placeholder="Pilih BUMN" data-dropdown-parent="#winform" data-allow-clear="true">
                 <option></option>
                 @foreach($perusahaan as $p)  
                     @php
