@@ -42,6 +42,7 @@
                                 <th>Urutan</th>
                                 <th>Tanggal Awal</th>
                                 <th>Tanggal Akhir</th>
+                                <th>Keterangan</th>
                                 <th style="text-align:center;">Aksi</th>
                             </tr>
                         </thead>
@@ -95,6 +96,7 @@
                 { data: 'urutan', name: 'urutan', sClass: 'text-center'},
                 { data: 'tanggal_awal', name: 'tanggal_awal' },
                 { data: 'tanggal_akhir', name: 'tanggal_akhir' },
+                { data: 'keterangan', name: 'keterangan' },
                 { data: 'action', name:'action'},
             ],
             drawCallback: function( settings ) {

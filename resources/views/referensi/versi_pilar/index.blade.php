@@ -108,7 +108,7 @@
                                     @foreach ($tpb as $c)      
                                         <tr class="treegrid-tpb{{$c->id}} treegrid-parent-pilar{{@$a->id}}versi{{@$p->id}} item-tpb{{$c->id}}">
                                             <td></td>
-                                            <td colspan="6">{{$c->nama}}</td>
+                                            <td colspan="6">{{$c->no_tpb}} - {{$c->nama}}</td>
                                         </tr>
                                     @endforeach
                                 @endforeach

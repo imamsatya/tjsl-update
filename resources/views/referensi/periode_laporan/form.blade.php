@@ -23,22 +23,22 @@
     </div>
     <div class="form-group row mb-5">
         <div class="col-lg-6">
-            <label>Urutan</label>
-            <input type="text" class="form-control" onkeypress="return onlyNumberKey(event)" name="urutan" id="urutan" value="{{!empty(old('urutan'))? old('urutan') : ($actionform == 'update' && $data->urutan != ''? $data->urutan : old('urutan'))}}" required/>
-        </div>
-        <div class="col-lg-6">
-            <label>Keterangan</label>
-            <input type="text" class="form-control" name="keterangan" id="keterangan" value="{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $data->keterangan != ''? $data->keterangan : old('keterangan'))}}" />
-        </div>
-    </div>	
-    <div class="form-group row mb-5">
-        <div class="col-lg-6">
             <label>Tanggal Awal</label>
             <input  type="text" class="form-control input-tanggal" name="tanggal_awal" id="tanggal_awal" value="{{!empty(old('tanggal_awal'))? old('tanggal_awal') : ($actionform == 'update' && $data->tanggal_awal != ''? $data->tanggal_awal : old('tanggal_awal'))}}" />
         </div>
         <div class="col-lg-6">
             <label>Tanggal Akhir</label>
             <input type="text" class="form-control input-tanggal" name="tanggal_akhir" id="tanggal_akhir" value="{{!empty(old('tanggal_akhir'))? old('tanggal_akhir') : ($actionform == 'update' && $data->tanggal_akhir != ''? $data->tanggal_akhir : old('tanggal_akhir'))}}" />
+        </div>
+    </div>	
+    <div class="form-group row mb-5">
+        <div class="col-lg-6">
+            <label>Urutan</label>
+            <input type="text" class="form-control" onkeypress="return onlyNumberKey(event)" name="urutan" id="urutan" value="{{!empty(old('urutan'))? old('urutan') : ($actionform == 'update' && $data->urutan != ''? $data->urutan : old('urutan'))}}" required/>
+        </div>
+        <div class="col-lg-6">
+            <label>Keterangan</label>
+            <input type="text" class="form-control" name="keterangan" id="keterangan" value="{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $data->keterangan != ''? $data->keterangan : old('keterangan'))}}" />
         </div>
     </div>	
     <div class="text-center pt-15">
