@@ -68,6 +68,7 @@
     var urldatatable = "{{route('referensi.perusahaan.datatable')}}";
     var urldelete = "{{route('referensi.perusahaan.delete')}}";
     var urlupdateactive = "{{route('referensi.perusahaan.update_active')}}";
+    var urlsilababumnsync = "{{route('referensi.perusahaan.silababumnsync')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
@@ -99,10 +100,7 @@
     function sync(){
         $.ajax({
             type: 'get',
-            url: "{{url('referensi/perusahaan/silababumnsync')}}",
-            data: {
-            },
-            dataType : 'json',
+            url: urlsilababumnsync,
             beforeSend: function(){
                 $.blockUI({
                     theme: true,
