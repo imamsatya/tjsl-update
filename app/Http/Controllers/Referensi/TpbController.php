@@ -109,11 +109,11 @@ class TpbController extends Controller
         $validator = $this->validateform($request);
         if (!$validator->fails()) {
             $param = $request->except('actionform','id','no_tpb');
-            $param['no_tpb'] = 'TPB ' . $request->no_tpb;
             
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
+                                  $param['no_tpb'] = 'TPB ' . $request->no_tpb;
                                   $exist = Tpb::where('no_tpb', $param['no_tpb'])->first();
                                   if($exist){
                                     DB::rollback();
