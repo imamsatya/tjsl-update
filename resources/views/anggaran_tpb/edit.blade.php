@@ -23,7 +23,7 @@
                 <option></option>
                 @foreach($tpb as $p)  
                     @php
-                        $select = ($actionform == 'update' && ($p->id == $data->tpb_id) ? 'selected="selected"' : '');
+                        $select = ($actionform == 'update' && ($p->id == $data->relasi->tpb_id) ? 'selected="selected"' : '');
                     @endphp
                     <option value="{{ $p->id }}" {!! $select !!}>{{ $p->no_tpb . ' - ' . $p->nama }}</option>
                 @endforeach

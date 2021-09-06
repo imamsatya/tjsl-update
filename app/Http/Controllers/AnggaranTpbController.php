@@ -208,7 +208,7 @@ class AnggaranTpbController extends Controller
                                             $validasi_msg = @$checkdata->relasi->tpb->no_tpb . ' - ' .@$checkdata->relasi->tpb->nama;
                                         }else{
                                             $data = AnggaranTpb::create((array)$param);
-                                            AnggaranTpbController::store_log($data->id,$param['status_id'],$param['anggaran']);
+                                            AnggaranTpbController::store_log($data->id,$param['status_id'],$param['anggaran'],'RKA');
                                         }
                                     }
                                 }
@@ -245,7 +245,7 @@ class AnggaranTpbController extends Controller
                                 $param['anggaran'] = str_replace(',', '', $request->input('anggaran'));
                                 $anggaran_tpb->update((array)$param);
                                 
-                                AnggaranTpbController::store_log($anggaran_tpb->id,$anggaran_tpb->status_id,$param['anggaran']);
+                                AnggaranTpbController::store_log($anggaran_tpb->id,$anggaran_tpb->status_id,$param['anggaran'],'RKA Revisi');
 
                                 DB::commit();
                                 $result = [
@@ -422,7 +422,7 @@ class AnggaranTpbController extends Controller
 
             $anggaran_tpb = $anggaran->get();
             foreach($anggaran_tpb as $a){
-                AnggaranTpbController::store_log($a->id,$param['status_id'],$a->anggaran);
+                AnggaranTpbController::store_log($a->id,$param['status_id'],$a->anggaran,'');
             }
             
             $anggaran->update($param);
@@ -470,11 +470,12 @@ class AnggaranTpbController extends Controller
     }
     
 
-    public static function store_log($anggaran_tpb_id, $status_id, $anggaran)
+    public static function store_log($anggaran_tpb_id, $status_id, $anggaran, $keterangan)
     {  
         $param['anggaran'] = $anggaran;
         $param['anggaran_tpb_id'] = $anggaran_tpb_id;
         $param['status_id'] = $status_id;
+        $param['keterangan'] = $keterangan;
         $param['user_id'] = \Auth::user()->id;
         LogAnggaranTpb::create((array)$param);
     }
