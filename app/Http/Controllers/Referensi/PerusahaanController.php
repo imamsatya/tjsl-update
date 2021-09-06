@@ -272,9 +272,9 @@ class PerusahaanController extends Controller
      */
     protected function validateform($request)
     {
-        $required['nama'] = 'required';
+        $required['nama_lengkap'] = 'required';
 
-        $message['nama.required'] = 'Nama wajib diinput';
+        $message['nama_lengkap.required'] = 'Nama wajib diinput';
 
         return Validator::make($request->all(), $required, $message);
     }

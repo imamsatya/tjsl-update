@@ -132,6 +132,33 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('delete', 'App\Http\Controllers\Referensi\PeriodeLaporanController@delete')->name('referensi.periode_laporan.delete');
                 Route::get('datatable', 'App\Http\Controllers\Referensi\PeriodeLaporanController@datatable')->name('referensi.periode_laporan.datatable');
             });
+            
+
+            Route::prefix('provinsi')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\ProvinsiController@index')->name('referensi.provinsi.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\ProvinsiController@create')->name('referensi.provinsi.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\ProvinsiController@edit')->name('referensi.provinsi.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\ProvinsiController@store')->name('referensi.provinsi.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\ProvinsiController@delete')->name('referensi.provinsi.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\ProvinsiController@datatable')->name('referensi.provinsi.datatable');
+                Route::get('apisyncprovinsikota', function () {
+                    $exitCode = Artisan::call('apisync:provinsikota');
+                    return redirect('referensi/provinsi/index');
+                })->name('referensi.provinsi.apisyncprovinsikota');
+            });
+
+            Route::prefix('kota')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\KotaController@index')->name('referensi.kota.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\KotaController@create')->name('referensi.kota.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\KotaController@edit')->name('referensi.kota.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\KotaController@store')->name('referensi.kota.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\KotaController@delete')->name('referensi.kota.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\KotaController@datatable')->name('referensi.kota.datatable');
+                Route::get('apisyncprovinsikota', function () {
+                    $exitCode = Artisan::call('apisync:provinsikota');
+                    return redirect('referensi/kota/index');
+                })->name('referensi.kota.apisyncprovinsikota');
+            });
         });
 
         Route::prefix('menu')->group(function(){

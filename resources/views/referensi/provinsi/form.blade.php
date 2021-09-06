@@ -4,9 +4,17 @@
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
 
     <div class="form-group row">
-        <div class="col-lg-12">
+        <div class="col-lg-6">
             <label>Nama</label>
-            <input type="text" class="form-control" name="nama_lengkap" id="nama_lengkap" value="{{!empty(old('nama_lengkap'))? old('nama_lengkap') : ($actionform == 'update' && $data->nama_lengkap != ''? $data->nama_lengkap : old('nama_lengkap'))}}" required/>
+            <input type="text" class="form-control" name="nama" id="nama" value="{{!empty(old('nama'))? old('nama') : ($actionform == 'update' && $data->nama != ''? $data->nama : old('nama'))}}" required/>
+        </div>
+        <div class="col-lg-6">
+            <label>is luar negeri?</label>
+            <select class="form-select form-select-solid form-select2" name="is_luar_negeri"  data-kt-select2="true" data-placeholder="Pilih" required>
+                <option value=""></option>
+                <option value="0" {{ !empty(old('is_luar_negeri')) && in_array(0, old('is_luar_negeri'))? 'selected="selected"' : ($actionform == 'update' && (0==$data->is_luar_negeri)? 'selected="selected"' : '') }}>False</option>
+                <option value="1" {{ !empty(old('is_luar_negeri')) && in_array(1, old('is_luar_negeri'))? 'selected="selected"' : ($actionform == 'update' && (1==$data->is_luar_negeri)? 'selected="selected"' : '') }}>True</option>
+            </select>
         </div>
     </div>
     <div class="text-center pt-15">
@@ -24,8 +32,7 @@
 
     $(document).ready(function(){
         $('.modal-title').html(title);
-        $('.form-select2').select2();
-
+        $('.form-select').select2();
         $('.modal').on('shown.bs.modal', function () {
             setFormValidate();
         });  
@@ -34,12 +41,12 @@
     function setFormValidate(){
         $('#form-edit').validate({
             rules: {
-                nama_lengkap:{
+                nama:{
                         required: true
                 }               		               		                              		               		               
             },
             messages: {
-                nama_lengkap: {
+                nama: {
                     required: "Nama wajib diinput"
                 }                                      		                   		                   
             },	        
