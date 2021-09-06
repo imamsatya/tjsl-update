@@ -133,7 +133,7 @@ class PeriodeLaporanController extends Controller
 
         $validator = $this->validateform($request);
         if (!$validator->fails()) {
-            $param = $request->except('actionform','id','tanggal_awal','tanggal_akhir');
+            $param = $request->except('actionform','id','tanggal_awal','tanggal_akhir','jenis_laporan');
 
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
