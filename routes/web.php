@@ -202,7 +202,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::prefix('anggaran')->group(function(){
                 Route::get('index', 'App\Http\Controllers\PUMK\AnggaranController@index')->name('pumk.anggaran.index');
                 Route::post('create', 'App\Http\Controllers\PUMK\AnggaranController@create')->name('pumk.anggaran.create');
-                // Route::post('edit', 'App\Http\Controllers\PermissionController@edit')->name('permission.edit');
+                Route::post('edit', 'App\Http\Controllers\PUMK\AnggaranController@edit')->name('pumk.anggaran.edit');
                 Route::post('store', 'App\Http\Controllers\PUMK\AnggaranController@store')->name('pumk.anggaran.store');
                 Route::post('delete', 'App\Http\Controllers\PUMK\AnggaranController@delete')->name('pumk.anggaran.delete');
                 Route::post('updatestatus', 'App\Http\Controllers\PUMK\AnggaranController@update_status')->name('pumk.anggaran.updatestatus');

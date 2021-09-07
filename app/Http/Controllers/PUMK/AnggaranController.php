@@ -137,7 +137,6 @@ class AnggaranController extends Controller
                         ->first();
         return view($this->__route.'.show',[
             'pagetitle' => $this->pagetitle,
-            'actionform' => 'insert',
             'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
@@ -147,6 +146,35 @@ class AnggaranController extends Controller
 
     }
 
+    public function edit(Request $request)
+    {
+        try{
+            $id_users = \Auth::user()->id;
+            $users = User::where('id', $id_users)->first();
+            $perusahaan_id = \Auth::user()->id_bumn;
+            
+            $admin_bumn = false;
+            if(!empty($users->getRoleNames())){
+                foreach ($users->getRoleNames() as $v) {
+                    if($v == 'Admin BUMN') {
+                        $admin_bumn = true;
+                    }
+                }
+            }
+            $data= PumkAnggaran::find((int)$request->input('id'));
+
+                return view($this->__route.'.edit',[
+                    'pagetitle' => $this->pagetitle,
+                    'actionform' => 'update',
+                    'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+                    'admin_bumn' => $admin_bumn,
+                    'perusahaan_id' => $perusahaan_id,
+                    'periode' => PeriodeLaporan::get(),
+                    'data' => $data
+                ]);
+       }catch(Exception $e){}
+
+    }
 
     public function store(Request $request)
     {
@@ -163,6 +191,8 @@ class AnggaranController extends Controller
                                 $validasi = true;
                                 $param = $request->all();
                                 $param = $request->except(['actionform','id','_token']);
+                                $param['created_by'] = \Auth::user()->id;
+                                $param['created_at'] = now(); 
                                 $param['status_id'] = DB::table('statuses')->where('nama','INFILLED')->pluck('id')->first();
                                 $data = PumkAnggaran::create($param);
                                 if($validasi){
@@ -193,11 +223,12 @@ class AnggaranController extends Controller
 
             case 'update': DB::beginTransaction();
                             try{
-                                $anggaran_tpb = AnggaranTpb::find((int)$request->input('id'));
-                                $param['anggaran'] = str_replace(',', '', $request->input('anggaran'));
-                                $anggaran_tpb->update((array)$param);
-                                
-                                AnggaranTpbController::store_log($anggaran_tpb->id,$anggaran_tpb->status_id,$param['anggaran']);
+                                $param = $request->all();
+                                $param = $request->except(['actionform','_token','bumn_id']);
+                                $param['updated_by'] = \Auth::user()->id; 
+                                $param['updated_at'] = now(); 
+                                $data = PumkAnggaran::find($param['id']);
+                                $data->update((array)$param);
 
                                 DB::commit();
                                 $result = [
