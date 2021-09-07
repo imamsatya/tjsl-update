@@ -146,7 +146,7 @@
                                         @if($p->status !== 'FINISH')
                                         <button type="button" class="btn btn-sm btn-success btn-icon cls-button-update-status" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Edit data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-pencil fs-3"></i></button>
                                         @endif
-                                        <button type="button" class="btn btn-sm btn-info btn-icon cls-button-update-status" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Lihat detail data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-eye fs-3"></i></button>
+                                        <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Lihat detail data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-eye fs-3"></i></button>
 
                                         <button type="button" class="btn btn-sm btn-warning btn-icon cls-button-update-status" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="update status {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-check fs-3"></i></button>
                                         @if($p->status !== 'FINISH')
@@ -185,6 +185,7 @@
     var urlcreate = "{{route('pumk.anggaran.create')}}";
     var urledit = "{{route('anggaran_tpb.edit')}}";
     var urlstore = "{{route('pumk.anggaran.store')}}";
+    var urlshow = "{{route('pumk.anggaran.show')}}";
     var urldelete = "{{route('pumk.anggaran.delete')}}";
     var urlupdatestatus = "{{route('pumk.anggaran.updatestatus')}}";
     var urlexport = "";
@@ -214,6 +215,10 @@
 
         $('body').on('click','.cls-button-update-status',function(){
             onbtnupdatestatus(this);
+        });
+
+        $('body').on('click','.cls-button-show',function(){
+            winform(urlshow, {'id':$(this).data('id')}, 'Detail Data');
         });
 
         // $('body').on('click','.cls-export',function(){

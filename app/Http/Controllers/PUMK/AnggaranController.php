@@ -114,6 +114,39 @@ class AnggaranController extends Controller
 
     }
 
+    public function show(Request $request)
+    {
+        $id_users = \Auth::user()->id;
+        $users = User::where('id', $id_users)->first();
+        $perusahaan_id = \Auth::user()->id_bumn;
+        
+        $admin_bumn = false;
+        if(!empty($users->getRoleNames())){
+            foreach ($users->getRoleNames() as $v) {
+                if($v == 'Admin BUMN') {
+                    $admin_bumn = true;
+                }
+            }
+        }
+        
+        $data = PumkAnggaran::select('pumk_anggarans.*','perusahaans.nama_lengkap AS bumn_lengkap','periode_laporans.nama AS periode','statuses.nama AS status')
+                        ->leftJoin('perusahaans','perusahaans.id','pumk_anggarans.bumn_id')
+                        ->leftJoin('periode_laporans', 'periode_laporans.id', 'pumk_anggarans.periode_id')
+                        ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id')
+                        ->where('pumk_anggarans.id',$request->id)
+                        ->first();
+        return view($this->__route.'.show',[
+            'pagetitle' => $this->pagetitle,
+            'actionform' => 'insert',
+            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'admin_bumn' => $admin_bumn,
+            'perusahaan_id' => $perusahaan_id,
+            'periode' => PeriodeLaporan::get(),
+            'data' => $data
+        ]);
+
+    }
+
 
     public function store(Request $request)
     {
