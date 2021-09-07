@@ -304,6 +304,20 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::get('fetchrole', 'App\Http\Controllers\GeneralController@fetchrole')->name('general.fetchrole');
         });
 
+
+        Route::prefix('pumk')->group(function () {
+            Route::prefix('anggaran')->group(function(){
+                Route::get('index', 'App\Http\Controllers\PUMK\AnggaranController@index')->name('pumk.anggaran.index');
+                Route::post('create', 'App\Http\Controllers\PUMK\AnggaranController@create')->name('pumk.anggaran.create');
+                Route::post('edit', 'App\Http\Controllers\PUMK\AnggaranController@edit')->name('pumk.anggaran.edit');
+                Route::post('store', 'App\Http\Controllers\PUMK\AnggaranController@store')->name('pumk.anggaran.store');
+                Route::post('delete', 'App\Http\Controllers\PUMK\AnggaranController@delete')->name('pumk.anggaran.delete');
+                Route::post('updatestatus', 'App\Http\Controllers\PUMK\AnggaranController@update_status')->name('pumk.anggaran.updatestatus');
+                Route::get('datatable', 'App\Http\Controllers\PUMK\AnggaranController@datatable')->name('pumk.anggaran.datatable');
+                Route::post('show', 'App\Http\Controllers\PUMK\AnggaranController@show')->name('pumk.anggaran.show');
+            });
+        });
+
 }); // end login dengan cas
 
 Route::get('cc', function(){
