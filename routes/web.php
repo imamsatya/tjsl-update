@@ -197,6 +197,50 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
 
         });
 
+        
+        Route::prefix('target')->group(function () {
+            Route::prefix('administrasi')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Target\AdministrasiController@index')->name('target.administrasi.index');
+                Route::post('create', 'App\Http\Controllers\Target\AdministrasiController@create')->name('target.administrasi.create');
+                Route::post('upload', 'App\Http\Controllers\Target\AdministrasiController@upload')->name('target.administrasi.upload');
+                Route::post('download_template', 'App\Http\Controllers\Target\AdministrasiController@download_template')->name('target.administrasi.download_template');
+                Route::post('get_status', 'App\Http\Controllers\Target\AdministrasiController@get_status')->name('target.administrasi.get_status');
+                Route::post('edit', 'App\Http\Controllers\Target\AdministrasiController@edit')->name('target.administrasi.edit');
+                Route::post('store', 'App\Http\Controllers\Target\AdministrasiController@store')->name('target.administrasi.store');
+                Route::post('delete', 'App\Http\Controllers\Target\AdministrasiController@delete')->name('target.administrasi.delete');
+                Route::get('datatable', 'App\Http\Controllers\Target\AdministrasiController@datatable')->name('target.administrasi.datatable');
+            });
+
+            Route::prefix('upload_target')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Target\UploadTargetController@index')->name('target.upload_target.index');
+                Route::post('create', 'App\Http\Controllers\Target\UploadTargetController@create')->name('target.upload_target.create');
+                Route::post('edit', 'App\Http\Controllers\Target\UploadTargetController@edit')->name('target.upload_target.edit');
+                Route::post('store', 'App\Http\Controllers\Target\UploadTargetController@store')->name('target.upload_target.store');
+                Route::post('delete', 'App\Http\Controllers\Target\UploadTargetController@delete')->name('target.upload_target.delete');
+                Route::get('datatable', 'App\Http\Controllers\Target\UploadTargetController@datatable')->name('target.upload_target.datatable');
+            });
+        });
+        
+        Route::prefix('realisasi')->group(function () {
+            Route::prefix('administrasi')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Realisasi\AdministrasiController@index')->name('realisasi.administrasi.index');
+                Route::post('create', 'App\Http\Controllers\Realisasi\AdministrasiController@create')->name('realisasi.administrasi.create');
+                Route::post('edit', 'App\Http\Controllers\Realisasi\AdministrasiController@edit')->name('realisasi.administrasi.edit');
+                Route::post('store', 'App\Http\Controllers\Realisasi\AdministrasiController@store')->name('realisasi.administrasi.store');
+                Route::post('delete', 'App\Http\Controllers\Realisasi\AdministrasiController@delete')->name('realisasi.administrasi.delete');
+                Route::get('datatable', 'App\Http\Controllers\Realisasi\AdministrasiController@datatable')->name('realisasi.administrasi.datatable');
+            });
+
+            Route::prefix('upload_realisasi')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Realisasi\UploadRealisasiController@index')->name('realisasi.upload_realisasi.index');
+                Route::post('create', 'App\Http\Controllers\Realisasi\UploadRealisasiController@create')->name('realisasi.upload_realisasi.create');
+                Route::post('edit', 'App\Http\Controllers\Realisasi\UploadRealisasiController@edit')->name('realisasi.upload_realisasi.edit');
+                Route::post('store', 'App\Http\Controllers\Realisasi\UploadRealisasiController@store')->name('realisasi.upload_realisasi.store');
+                Route::post('delete', 'App\Http\Controllers\Realisasi\UploadRealisasiController@delete')->name('realisasi.upload_realisasi.delete');
+                Route::get('datatable', 'App\Http\Controllers\Realisasi\UploadRealisasiController@datatable')->name('realisasi.upload_realisasi.datatable');
+            });
+        });
+        
         Route::prefix('menu')->group(function(){
             Route::get('index', 'App\Http\Controllers\MenuController@index')->name('menu.index');
             Route::post('create', 'App\Http\Controllers\MenuController@create')->name('menu.create');
@@ -227,7 +271,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::get('datatable', 'App\Http\Controllers\AnggaranTpbController@datatable')->name('anggaran_tpb.datatable');
             Route::post('export', 'App\Http\Controllers\AnggaranTpbController@export')->name('anggaran_tpb.export');
             Route::post('validasi', 'App\Http\Controllers\AnggaranTpbController@validasi')->name('anggaran_tpb.validasi');
-            Route::post('get_status', 'App\Http\Controllers\AnggaranTpbController@getStatus')->name('anggaran_tpb.get_status');
+            Route::post('get_status', 'App\Http\Controllers\AnggaranTpbController@get_status')->name('anggaran_tpb.get_status');
             Route::post('log_status', 'App\Http\Controllers\AnggaranTpbController@log_status')->name('anggaran_tpb.log_status');
         });
 
