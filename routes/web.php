@@ -141,6 +141,16 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('delete', 'App\Http\Controllers\Referensi\SkalaUsahaController@delete')->name('referensi.skala_usaha.delete');
                 Route::get('datatable', 'App\Http\Controllers\Referensi\SkalaUsahaController@datatable')->name('referensi.skala_usaha.datatable');
             });
+
+            Route::prefix('core_subject')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\CoreSubjectController@index')->name('referensi.core_subject.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\CoreSubjectController@create')->name('referensi.core_subject.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\CoreSubjectController@edit')->name('referensi.core_subject.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\CoreSubjectController@store')->name('referensi.core_subject.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\CoreSubjectController@delete')->name('referensi.core_subject.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\CoreSubjectController@datatable')->name('referensi.core_subject.datatable');
+            });
+
         });
 
         Route::prefix('menu')->group(function(){
