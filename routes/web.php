@@ -151,6 +151,15 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::get('datatable', 'App\Http\Controllers\Referensi\CoreSubjectController@datatable')->name('referensi.core_subject.datatable');
             });
 
+            Route::prefix('satuan_ukur')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\SatuanUkurController@index')->name('referensi.satuan_ukur.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\SatuanUkurController@create')->name('referensi.satuan_ukur.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\SatuanUkurController@edit')->name('referensi.satuan_ukur.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\SatuanUkurController@store')->name('referensi.satuan_ukur.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\SatuanUkurController@delete')->name('referensi.satuan_ukur.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\SatuanUkurController@datatable')->name('referensi.satuan_ukur.datatable');
+            });
+
         });
 
         Route::prefix('menu')->group(function(){
