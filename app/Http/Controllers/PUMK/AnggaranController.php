@@ -29,7 +29,7 @@ class AnggaranController extends Controller
 {
     public function __construct()
     {
-        $this->__route = 'PUMK.anggaran';
+        $this->__route = 'pumk.anggaran';
         $this->pagetitle = 'Data Anggaran PUMK';
     }
 
@@ -284,17 +284,17 @@ class AnggaranController extends Controller
 
             $status = Status::find((int)$data->status_id);
 
-            if($status->nama == 'INFILLED'){
+            if($status->nama == 'Unfilled'){
                 $data = $data->update([
-                    'status_id' => Status::where('nama','INPROGRESS')->pluck('id')->first(),
+                    'status_id' => Status::where('nama','In Progress')->pluck('id')->first(),
                 ]);
-            }else if($status->nama == 'INPROGRESS'){
+            }else if($status->nama == 'In Progress'){
                     $data = $data->update([
-                        'status_id' => Status::where('nama','FINISH')->pluck('id')->first(),
+                        'status_id' => Status::where('nama','Finish')->pluck('id')->first(),
                     ]);
-            }else if($status->nama == 'FINISH'){
+            }else if($status->nama == 'Finish'){
                     $data = $data->update([
-                        'status_id' => Status::where('nama','INPROGRESS')->pluck('id')->first(),
+                        'status_id' => Status::where('nama','In Progress')->pluck('id')->first(),
                     ]);
             }
             DB::commit();

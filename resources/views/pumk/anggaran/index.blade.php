@@ -143,13 +143,13 @@
                                     <td style="text-align:right;">{{number_format($p->saldo_akhir,0,',',',')}}</td>
                                     <td style="text-align:center;">{{$p->status}}</td>
                                     <td style="text-align:center;width:150px;">
-                                        @if($p->status !== 'FINISH')
+                                        @if($p->status !== 'Finish')
                                         <button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Edit data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-pencil fs-3"></i></button>
                                         @endif
                                         <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Lihat detail data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-eye fs-3"></i></button>
 
                                         <button type="button" class="btn btn-sm btn-warning btn-icon cls-button-update-status" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="update status {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-check fs-3"></i></button>
-                                        @if($p->status !== 'FINISH')
+                                        @if($p->status !== 'Finish')
                                         <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pumkanggaran" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Hapus data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-trash fs-3"></i></button>
                                         @endif
                                     </td>
