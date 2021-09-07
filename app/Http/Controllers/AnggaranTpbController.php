@@ -148,7 +148,7 @@ class AnggaranTpbController extends Controller
         }
         
         $anggaran_tpb = AnggaranTpb::get();
-        $versi = VersiPilar::whereNull('tanggal_akhir')->orWhere('tanggal_akhir','<=',date('Y-m-d'))->first();
+        $versi = VersiPilar::whereNull('tanggal_akhir')->orWhere('tanggal_akhir','>=',date('Y-m-d'))->first();
         $versi_pilar_id = $versi->id;
 
         return view($this->__route.'.create',[
@@ -448,7 +448,7 @@ class AnggaranTpbController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getStatus(Request $request)
+    public function get_status(Request $request)
     {
         $anggaran = AnggaranTpb::Select('anggaran_tpbs.*')
                                 ->leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
