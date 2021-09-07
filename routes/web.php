@@ -133,7 +133,6 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::get('datatable', 'App\Http\Controllers\Referensi\PeriodeLaporanController@datatable')->name('referensi.periode_laporan.datatable');
             });
             
-
             Route::prefix('provinsi')->group(function(){
                 Route::get('index', 'App\Http\Controllers\Referensi\ProvinsiController@index')->name('referensi.provinsi.index');
                 Route::post('create', 'App\Http\Controllers\Referensi\ProvinsiController@create')->name('referensi.provinsi.create');
@@ -159,6 +158,43 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                     return redirect('referensi/kota/index');
                 })->name('referensi.kota.apisyncprovinsikota');
             });
+
+            Route::prefix('skala_usaha')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\SkalaUsahaController@index')->name('referensi.skala_usaha.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\SkalaUsahaController@create')->name('referensi.skala_usaha.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\SkalaUsahaController@edit')->name('referensi.skala_usaha.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\SkalaUsahaController@store')->name('referensi.skala_usaha.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\SkalaUsahaController@delete')->name('referensi.skala_usaha.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\SkalaUsahaController@datatable')->name('referensi.skala_usaha.datatable');
+            });
+
+            Route::prefix('core_subject')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\CoreSubjectController@index')->name('referensi.core_subject.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\CoreSubjectController@create')->name('referensi.core_subject.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\CoreSubjectController@edit')->name('referensi.core_subject.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\CoreSubjectController@store')->name('referensi.core_subject.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\CoreSubjectController@delete')->name('referensi.core_subject.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\CoreSubjectController@datatable')->name('referensi.core_subject.datatable');
+            });
+
+            Route::prefix('satuan_ukur')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\SatuanUkurController@index')->name('referensi.satuan_ukur.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\SatuanUkurController@create')->name('referensi.satuan_ukur.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\SatuanUkurController@edit')->name('referensi.satuan_ukur.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\SatuanUkurController@store')->name('referensi.satuan_ukur.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\SatuanUkurController@delete')->name('referensi.satuan_ukur.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\SatuanUkurController@datatable')->name('referensi.satuan_ukur.datatable');
+            });
+
+            Route::prefix('jenis_program')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\JenisProgramController@index')->name('referensi.jenis_program.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\JenisProgramController@create')->name('referensi.jenis_program.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\JenisProgramController@edit')->name('referensi.jenis_program.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\JenisProgramController@store')->name('referensi.jenis_program.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\JenisProgramController@delete')->name('referensi.jenis_program.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\JenisProgramController@datatable')->name('referensi.jenis_program.datatable');
+            });
+
         });
 
         Route::prefix('menu')->group(function(){
