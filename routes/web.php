@@ -132,6 +132,15 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('delete', 'App\Http\Controllers\Referensi\PeriodeLaporanController@delete')->name('referensi.periode_laporan.delete');
                 Route::get('datatable', 'App\Http\Controllers\Referensi\PeriodeLaporanController@datatable')->name('referensi.periode_laporan.datatable');
             });
+
+            Route::prefix('skala_usaha')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\SkalaUsahaController@index')->name('referensi.skala_usaha.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\SkalaUsahaController@create')->name('referensi.skala_usaha.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\SkalaUsahaController@edit')->name('referensi.skala_usaha.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\SkalaUsahaController@store')->name('referensi.skala_usaha.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\SkalaUsahaController@delete')->name('referensi.skala_usaha.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\SkalaUsahaController@datatable')->name('referensi.skala_usaha.datatable');
+            });
         });
 
         Route::prefix('menu')->group(function(){
