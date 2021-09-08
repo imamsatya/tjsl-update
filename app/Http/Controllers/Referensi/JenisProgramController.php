@@ -19,14 +19,14 @@ class JenisProgramController extends Controller
     public function __construct()
     {
         $this->__route = 'referensi.jenis_program';
-        $this->pagetitle = 'Jenis Program';
+        $this->pagetitle = 'Kriteria Program';
     }
 
     public function index()
     {
         return view($this->__route.'.index', [
             'pagetitle' => $this->pagetitle,
-            'breadcrumb' => 'Referensi - Jenis Program'
+            'breadcrumb' => 'Referensi - Kriteria Program'
         ]);
     }
 
