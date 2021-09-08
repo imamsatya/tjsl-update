@@ -213,6 +213,15 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::get('datatable', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@datatable')->name('referensi.kolekbilitas_pendanaan.datatable');
             });
 
+            Route::prefix('kondisi_pinjaman')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\KondisiPinjamanController@index')->name('referensi.kondisi_pinjaman.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\KondisiPinjamanController@create')->name('referensi.kondisi_pinjaman.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\KondisiPinjamanController@edit')->name('referensi.kondisi_pinjaman.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\KondisiPinjamanController@store')->name('referensi.kondisi_pinjaman.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\KondisiPinjamanController@delete')->name('referensi.kondisi_pinjaman.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\KondisiPinjamanController@datatable')->name('referensi.kondisi_pinjaman.datatable');
+            });
+
         });
 
         
