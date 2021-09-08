@@ -241,10 +241,17 @@
             else if (this.value.length != 0){
                 $(this).css("background-color", "red");
             }
+
         });
-        
-        $("input.sum-incomes").val(sum);
-       $("input.saldo_akhirs").val(sum - Out);
+        var total = sum - (Out.replace(/\D/g, ""));
+        var sums = parseFloat(sum).toLocaleString('en-US', {
+                    style: 'decimal',
+                });
+        var totalIn = parseFloat(total).toLocaleString('en-US', {
+                style: 'decimal',
+                });
+        $("input.sum-incomes").val(sums);
+       $("input.saldo_akhirs").val(totalIn);
     }
 
     function calculateSumOut() {
@@ -259,9 +266,16 @@
                 $(this).css("background-color", "red");
             }
         });
-    
-        $("input.sum-outcomes").val(sum);
-        $("input.saldo_akhirs").val(In - sum);
+
+        var totalOut = (In.replace(/\D/g, "")) - sum;
+        var sumsOut = parseFloat(sum).toLocaleString('en-US', {
+                  style: 'decimal',
+                });
+        var totalsOut = parseFloat(totalOut).toLocaleString('en-US', {
+                  style: 'decimal',
+                });        
+        $("input.sum-outcomes").val(sumsOut);
+        $("input.saldo_akhirs").val(totalsOut);
     }
 
 
