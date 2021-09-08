@@ -84,7 +84,7 @@ class AnggaranController extends Controller
             'filter_status_id' => $request->status_id,
             'filter_tahun' => $request->tahun,
             'anggaran_pumk' => $anggaran_pumk,
-            'periode' => PeriodeLaporan::orderby('urutan','asc'),
+            'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
             'status' => Status::get()
         ]);
     }

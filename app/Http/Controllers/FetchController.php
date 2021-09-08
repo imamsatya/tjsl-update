@@ -9,6 +9,7 @@ use App\Models\RelasiPilarTpb;
 use App\Models\Tpb;
 use App\Models\PumkAnggaran;
 use App\Models\PeriodeLaporan;
+use App\Models\Status;
 use DB;
 
 
@@ -34,14 +35,19 @@ class FetchController extends Controller
     {
             $RKA_id = PeriodeLaporan::where('nama','RKA')->pluck('id')->first();
 
-            $data = PumkAnggaran::select('saldo_awal')
+            $data = PumkAnggaran::select('saldo_awal','status_id')
             ->where('bumn_id',$request->bumn_id)
             ->where('tahun',$request->tahun)
             ->where('periode_id',$RKA_id)
             ->orderby('id','desc')->first();
 
             if($data !== null){
-                $return = number_format($data->saldo_awal);
+                $statusRKA = Status::where('id',$data->status_id)->first();
+                if($statusRKA->nama !== 'Finish'){
+                    $return = 0;                    
+                }else{
+                    $return = number_format($data->saldo_awal);
+                }
             }else{
                 $return = 0;
             }
