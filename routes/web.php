@@ -195,6 +195,15 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::get('datatable', 'App\Http\Controllers\Referensi\JenisProgramController@datatable')->name('referensi.jenis_program.datatable');
             });
 
+            Route::prefix('sektor_usaha')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\SektorUsahaController@index')->name('referensi.sektor_usaha.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\SektorUsahaController@create')->name('referensi.sektor_usaha.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\SektorUsahaController@edit')->name('referensi.sektor_usaha.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\SektorUsahaController@store')->name('referensi.sektor_usaha.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\SektorUsahaController@delete')->name('referensi.sektor_usaha.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\SektorUsahaController@datatable')->name('referensi.sektor_usaha.datatable');
+            });
+
         });
 
         
