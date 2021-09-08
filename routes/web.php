@@ -222,6 +222,15 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::get('datatable', 'App\Http\Controllers\Referensi\KondisiPinjamanController@datatable')->name('referensi.kondisi_pinjaman.datatable');
             });
 
+            Route::prefix('jenis_pembayaran')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\JenisPembayaranController@index')->name('referensi.jenis_pembayaran.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\JenisPembayaranController@create')->name('referensi.jenis_pembayaran.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\JenisPembayaranController@edit')->name('referensi.jenis_pembayaran.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\JenisPembayaranController@store')->name('referensi.jenis_pembayaran.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\JenisPembayaranController@delete')->name('referensi.jenis_pembayaran.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\JenisPembayaranController@datatable')->name('referensi.jenis_pembayaran.datatable');
+            });
+
         });
 
         
