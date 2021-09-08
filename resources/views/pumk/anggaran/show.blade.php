@@ -1,3 +1,9 @@
+
+<style>
+    .incomes,.outcomes,.saldo_akhirs,.sum-outcomes,.sum-incomes{
+        text-align: right;
+    }
+</style>
     <!--begin::Anggaran PUMK-->
         <h4 class="card-title align-items-start flex-column ">
             <span class="card-label fw-bolder fs-3 mb-1" >Anggaran PUMK {{$data->bumn_lengkap == null? '':$data->bumn_lengkap}} {{$data->periode== null? '':'Periode '. $data->periode}} <br>{{$data->tahun== null? '':'Tahun '. $data->tahun}}</span>
@@ -25,7 +31,7 @@
                     </div>
 
                     <div class="col-lg-4 offset-sm-1">
-                        <label style="padding-top: 15px;">&#9658; Dari Mitra Binaan </label> 
+                        <label style="padding-top: 15px;">Dari Mitra Binaan </label> 
                     </div>	
                     <div class="col-lg-7">
                         <div class="col-md-12" style="padding-bottom : 10px;">
@@ -34,7 +40,7 @@
                     </div>
 
                     <div class="col-lg-4 offset-sm-1">
-                        <label style="padding-top: 15px;">&#9658; Dari BUMN Pembina Lain </label> 
+                        <label style="padding-top: 15px;">Dari BUMN Pembina Lain </label> 
                     </div>	
                     <div class="col-lg-7">
                         <div class="col-md-12" style="padding-bottom : 10px;">

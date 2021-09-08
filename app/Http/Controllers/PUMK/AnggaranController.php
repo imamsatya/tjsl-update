@@ -172,6 +172,7 @@ class AnggaranController extends Controller
                     'admin_bumn' => $admin_bumn,
                     'perusahaan_id' => $perusahaan_id,
                     'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
+                    'periode_text' => PeriodeLaporan::where('id',$data->periode_id)->first(),
                     'data' => $data
                 ]);
        }catch(Exception $e){}
