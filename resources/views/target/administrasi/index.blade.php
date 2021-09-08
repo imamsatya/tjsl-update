@@ -204,7 +204,7 @@
                                                 <td></td>
                                                 <td>{{$t->program}}</td>
                                                 <td style="text-align:right;">{{number_format($t->anggaran_alokasi,0,',',',')}}</td>
-                                                <td>{{@$t->kode_indikator->kode_tujuan}}</td>
+                                                <td>{{@$t->kode_indikator->kode_tujuan_tpb}}</td>
                                                 <td style="text-align:center;">
                                                     <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$a->id}}">{{@$t->status->nama}}</span>
                                                 </td>
