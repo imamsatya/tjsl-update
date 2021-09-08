@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('addbeforecss')
+<link href="{{asset('plugins/jquery-treegrid-master/css/jquery.treegrid.css')}}" rel="stylesheet" type="text/css" />
+@endsection
+
 @section('content')
 
 <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
@@ -109,6 +113,128 @@
                     </div>
                     <div class="separator border-gray-200 mb-10"></div>
                     
+                    <!--begin: Datatable -->
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover tree  table-checkable">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No.</th>
+                                    <th style="font-weight:bold;width:550px;border-bottom: 1px solid #c8c7c7;">Pilar - TPB - Program</th>
+                                    <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Anggaran</th>
+                                    <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Kode Tujuan</th>
+                                    <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Status</th>
+                                    <th style="text-align:center;width:220px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>       
+                            @php 
+                                $total=0;
+                                $bumn = $anggaran_bumn;
+                            @endphp       
+                            @foreach ($bumn as $b)     
+                                @php 
+                                    $no=0;
+                                    $sum_bumn = $anggaran_bumn->where('perusahaan_id', $b->id)->first(); 
+                                    $anggaran_pilar_bumn = $anggaran_pilar->where('perusahaan_id', $b->id);
+                                @endphp
+                                @if(!$perusahaan_id)
+                                <tr class="treegrid-bumn{{@$b->id}}" >
+                                    <td style="text-align:center;"></td>
+                                    <td>{{$b->nama_lengkap}}</td>
+                                    <td style="text-align:right;">
+                                        @if($sum_bumn)
+                                        {{number_format($sum_bumn->sum_anggaran,0,',',',')}}
+                                        @endif
+                                    </td>
+                                    <td style="text-align:center;">
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>  
+                                @endif    
+                                @foreach ($anggaran_pilar_bumn as $p)                                  
+                                    @php 
+                                        $no++;
+                                        $anggaran_anak = $anggaran->where('perusahaan_id', $b->id)->where('pilar_pembangunan_id', $p->pilar_pembangunan_id);
+                                        
+                                        $class_parent = '';
+                                        if(!$perusahaan_id){
+                                            $class_parent = 'treegrid-parent-bumn' . $p->perusahaan_id;
+                                        }
+                    
+                                        $total += $p->sum_anggaran;
+                                    @endphp
+                                
+                                    <tr class="treegrid-bumn{{@$b->id}}pilar{{@$p->pilar_id}} {{$class_parent}} item-bumn{{@$b->id}}pilar{{$p->pilar_id}}" >
+                                        <td style="text-align:center;">{{$no}}</td>
+                                        <td>{{$p->pilar_nama}}</td>
+                                        <td style="text-align:right;">{{number_format($p->sum_anggaran,0,',',',')}}</td>
+                                        <td style="text-align:center;">
+                                        </td>
+                                        <td style="text-align:center;">
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    
+                                    @foreach ($anggaran_anak as $a)  
+                                        @php 
+                                            $target_tpb = $target->where('anggaran_tpb_id', $a->id);
+                                        @endphp     
+                                        <tr class="treegrid-bumn{{@$b->id}}tpb{{$a->id}} treegrid-parent-bumn{{@$b->id}}pilar{{@$p->pilar_id}} itembumn{{@$b->id}}tpb{{$a->id}}">
+                                            <td></td>
+                                            <td>{{@$a->no_tpb .' - '. @$a->tpb_nama}}</td>
+                                            <td style="text-align:right;">{{number_format($a->anggaran,0,',',',')}}</td>
+                                            <td style="text-align:center;">
+                                            </td>
+                                            <td style="text-align:center;">
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        @foreach($target_tpb as $t)  
+                                        @php 
+                                            $status_class = 'primary';
+                                            if($t->status_id == 1){
+                                                $status_class = 'success';
+                                            }else if($t->status_id == 3){
+                                                $status_class = 'warning';
+                                            }
+                                        @endphp  
+                                            <tr class="treegrid-target{{$t->id}} treegrid-parent-bumn{{@$b->id}}tpb{{@$a->id}} itemtarget{{$t->id}}">
+                                                <td></td>
+                                                <td>{{$t->program}}</td>
+                                                <td style="text-align:right;">{{number_format($t->anggaran_alokasi,0,',',',')}}</td>
+                                                <td>{{@$t->kode_indikator->kode_tujuan}}</td>
+                                                <td style="text-align:center;">
+                                                    <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$a->id}}">{{@$t->status->nama}}</span>
+                                                </td>
+                                                <td style="text-align:center;">
+                                                    @if($t->status_id != 1)
+                                                    <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$t->id}}" data-toggle="tooltip" title="Ubah data {{@$t->program}}"><i class="bi bi-pencil fs-3"></i></button>
+                                                    <button type="button" class="btn btn-sm btn-light btn-icon btn-warning cls-button-detail" data-id="{{$t->id}}" data-toggle="tooltip" title="Detail data {{@$t->program}}"><i class="bi bi-info fs-3"></i></button>
+                                                    <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="{{$t->id}}" data-nama="{{@$t->program}}" data-toggle="tooltip" title="Hapus data {{@$t->program}}"><i class="bi bi-trash fs-3"></i></button>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endforeach
+                                @endforeach
+                            @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">Total</th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">{{number_format($total,0,',',',')}}</th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+
+                    </div>
                 </div>
             </div>
             <!--end::Card body-->
@@ -118,21 +244,34 @@
 @endsection
 
 @section('addafterjs')
+<script type="text/javascript" src="{{asset('plugins/jquery-treegrid-master/js/jquery.treegrid.js')}}"></script>
+
 <script>
     var urlcreate = "{{route('target.administrasi.create')}}";
     var urlupload = "{{route('target.administrasi.upload')}}";
     var urledit = "{{route('target.administrasi.edit')}}";
+    var urluploadstore = "{{route('target.upload_target.store')}}";
     var urlstore = "{{route('target.administrasi.store')}}";
     var urldelete = "{{route('target.administrasi.delete')}}";
     var urldownloadtemplate = "{{route('target.administrasi.download_template')}}";
     var urlgetstatus = "{{route('target.administrasi.get_status')}}";
+    var urldetail = "{{route('target.administrasi.detail')}}";
 
     $(document).ready(function(){
+        $('.tree').treegrid({
+            initialState : 'collapsed',
+            treeColumn : 1,
+            indentTemplate : '<span style="width: 32px; height: 16px; display: inline-block; position: relative;"></span>'
+        });
         $('#page-title').html("{{ $pagetitle }}");
         $('#page-breadcrumb').html("{{ $breadcrumb }}");
 
         $('body').on('click','.cls-upload',function(){
             winform(urlupload, {}, 'Upload Data');
+        });
+
+        $('body').on('click','.cls-button-detail',function(){
+            winform(urldetail, {'id':$(this).data('id')}, 'Ubah Data');
         });
 
         $('body').on('click','.cls-button-edit',function(){
@@ -161,12 +300,6 @@
 
         if(!"{{ $admin_bumn }}"){
             showValidasi();
-        }
-        
-        if("{{ $perusahaan_id }}" == ''){
-            $('.table-responsive').hide();
-        }else{
-            $('.table-responsive').show();
         }
     });
 
@@ -307,7 +440,8 @@
                     });
 
                     if(data.flag == 'success') {
-                        datatable.ajax.reload( null, false );
+                        // datatable.ajax.reload( null, false );
+                        location.reload(); 
                     }
                     
                 },

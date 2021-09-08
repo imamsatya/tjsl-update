@@ -16,6 +16,12 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Models\User;
 use App\Models\AnggaranTpb;
 use App\Models\TargetTpb;
+use App\Models\TargetMitra;
+use App\Models\KodeIndikator;
+use App\Models\CaraPenyaluran;
+use App\Models\CoreSubject;
+use App\Models\SatuanUkur;
+use App\Models\JenisProgram;
 use App\Models\Perusahaan;
 use App\Models\PilarPembangunan;
 use App\Models\Tpb;
@@ -56,6 +62,61 @@ class AdministrasiController extends Controller
                 }
             }
         }
+        
+        $anggaran       = AnggaranTpb::select('relasi_pilar_tpbs.pilar_pembangunan_id','anggaran_tpbs.*','tpbs.nama as tpb_nama', 'tpbs.no_tpb as no_tpb')
+                                        ->leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
+                                        ->leftJoin('tpbs','tpbs.id','relasi_pilar_tpbs.tpb_id');
+        $anggaran_pilar = AnggaranTpb::leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
+                                        ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id');
+        $anggaran_bumn  = AnggaranTpb::leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
+                                        ->leftJoin('perusahaans','perusahaans.id','anggaran_tpbs.perusahaan_id');
+        
+        if($perusahaan_id){
+            $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
+            $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
+            $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
+        }
+
+        if($request->tahun){
+            $anggaran = $anggaran->where('anggaran_tpbs.tahun', $request->tahun);
+            $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.tahun', $request->tahun);
+            $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.tahun', $request->tahun);
+        }
+
+        if($request->pilar_pembangunan_id){
+            $anggaran = $anggaran->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
+            $anggaran_pilar = $anggaran_pilar->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
+            $anggaran_bumn = $anggaran_bumn->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
+        }
+
+        if($request->tpb_id){
+            $anggaran = $anggaran->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
+            $anggaran_pilar = $anggaran_pilar->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
+            $anggaran_bumn = $anggaran_bumn->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
+        }
+        
+        $anggaran_pilar = $anggaran_pilar->select('anggaran_tpbs.perusahaan_id', 
+                                                    'relasi_pilar_tpbs.pilar_pembangunan_id', 
+                                                    DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'), 
+                                                    'pilar_pembangunans.nama as pilar_nama', 
+                                                    'pilar_pembangunans.id as pilar_id')
+                            ->groupBy('relasi_pilar_tpbs.pilar_pembangunan_id', 
+                                        'anggaran_tpbs.perusahaan_id',
+                                        'pilar_pembangunans.nama', 
+                                        'pilar_pembangunans.id')
+                            ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
+                            ->get();
+        $anggaran_bumn = $anggaran_bumn->select('anggaran_tpbs.perusahaan_id', 
+                                                'perusahaans.nama_lengkap',
+                                                'perusahaans.id',
+                                                DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'))
+                            ->groupBy('anggaran_tpbs.perusahaan_id')
+                            ->groupBy('perusahaans.nama_lengkap')
+                            ->groupBy('perusahaans.id')
+                            ->get();
+        $anggaran = $anggaran->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')->orderBy('no_tpb')->get();
+
+        $target = TargetTpb::get();
 
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
@@ -70,6 +131,10 @@ class AdministrasiController extends Controller
             'pilar_pembangunan_id' => $request->pilar_pembangunan_id,
             'tpb_id' => $request->tpb_id,
             'status_id' => $request->status_id,
+            'anggaran' => $anggaran,
+            'anggaran_pilar' => $anggaran_pilar,
+            'anggaran_bumn' => $anggaran_bumn,
+            'target' => $target
         ]);
     }
 
@@ -81,7 +146,7 @@ class AdministrasiController extends Controller
      */
     public function datatable(Request $request)
     {
-        $kode = TargetTpbs::orderBy('tpb_id')->get();
+        $kode = TargetTpb::orderBy('tpb_id')->get();
         try{
             return datatables()->of($kode)
             ->addColumn('action', function ($row){
@@ -120,7 +185,7 @@ class AdministrasiController extends Controller
 
     public function create()
     {
-        $target = TargetTpbs::get();
+        $target = TargetTpb::get();
 
         return view($this->__route.'.form',[
             'pagetitle' => $this->pagetitle,
@@ -143,61 +208,56 @@ class AdministrasiController extends Controller
             'title' => 'Error'
         ];
 
-        $validator = $this->validateform($request);
-        if (!$validator->fails()) {
-            $param = $request->except('actionform','id');
+        $param = $request->except('actionform','id','mitra_bumn');
+        $param['anggaran_alokasi'] = str_replace(',', '', $param['anggaran_alokasi']);
+        $mitra_bumn = $request->input('mitra_bumn');
+        
+        switch ($request->input('actionform')) {
+            case 'insert': DB::beginTransaction();
+                            try{
+                                $target = TargetTpb::create((array)$param);
+                                $target->mitra_bumn()->sync($mitra_bumn);
 
-            switch ($request->input('actionform')) {
-                case 'insert': DB::beginTransaction();
-                               try{
-                                  $target = TargetTpbs::create((array)$param);
 
-                                  DB::commit();
-                                  $result = [
-                                    'flag'  => 'success',
-                                    'msg' => 'Sukses tambah data',
-                                    'title' => 'Sukses'
-                                  ];
-                               }catch(\Exception $e){
-                                  DB::rollback();
-                                  $result = [
-                                    'flag'  => 'warning',
-                                    'msg' => $e->getMessage(),
-                                    'title' => 'Gagal'
-                                  ];
-                               }
+                                DB::commit();
+                                $result = [
+                                'flag'  => 'success',
+                                'msg' => 'Sukses tambah data',
+                                'title' => 'Sukses'
+                                ];
+                            }catch(\Exception $e){
+                                DB::rollback();
+                                $result = [
+                                'flag'  => 'warning',
+                                'msg' => $e->getMessage(),
+                                'title' => 'Gagal'
+                                ];
+                            }
 
-                break;
+            break;
 
-                case 'update': DB::beginTransaction();
-                               try{
-                                  $target = TargetTpbs::find((int)$request->input('id'));
-                                  $target->update((array)$param);
+            case 'update': DB::beginTransaction();
+                            try{
+                                $target = TargetTpb::find((int)$request->input('id'));
+                                $target->update((array)$param);
+                                $target->mitra_bumn()->sync($mitra_bumn);
 
-                                  DB::commit();
-                                  $result = [
-                                    'flag'  => 'success',
-                                    'msg' => 'Sukses ubah data',
-                                    'title' => 'Sukses'
-                                  ];
-                               }catch(\Exception $e){
-                                  DB::rollback();
-                                  $result = [
-                                    'flag'  => 'warning',
-                                    'msg' => $e->getMessage(),
-                                    'title' => 'Gagal'
-                                  ];
-                               }
+                                DB::commit();
+                                $result = [
+                                'flag'  => 'success',
+                                'msg' => 'Sukses ubah data',
+                                'title' => 'Sukses'
+                                ];
+                            }catch(\Exception $e){
+                                DB::rollback();
+                                $result = [
+                                'flag'  => 'warning',
+                                'msg' => $e->getMessage(),
+                                'title' => 'Gagal'
+                                ];
+                            }
 
-                break;
-            }
-        }else{
-            $messages = $validator->errors()->all('<li>:message</li>');
-            $result = [
-                'flag'  => 'warning',
-                'msg' => '<ul>'.implode('', $messages).'</ul>',
-                'title' => 'Gagal proses data'
-            ];
+            break;
         }
 
         return response()->json($result);
@@ -214,14 +274,45 @@ class AdministrasiController extends Controller
     {
 
         try{
-
-            $target = TargetTpbs::find((int)$request->input('id'));
+            $target = TargetTpb::find((int)$request->input('id'));
+            $mitra_bumn = TargetMitra::where('target_mitras.target_tpb_id',$target->id)->pluck('perusahaan_id','perusahaan_id')->all();
 
                 return view($this->__route.'.form',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
                     'data' => $target,
+                    'kode_indikator' => KodeIndikator::get(),
+                    'satuan_ukur' => SatuanUkur::get(),
+                    'cara_penyaluran' => CaraPenyaluran::get(),
+                    'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+                    'core_subject' => CoreSubject::get(),
+                    'jenis_program' => JenisProgram::get(),
+                    'mitra' => $mitra_bumn,
                     'tpb' => Tpb::get()
+                ]);
+        }catch(Exception $e){}
+
+    }
+    
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+
+    public function detail(Request $request)
+    {
+
+        try{
+            $target = TargetTpb::find((int)$request->input('id'));
+            $mitra_bumn = TargetMitra::where('target_mitras.target_tpb_id',$target->id)->get();
+
+                return view($this->__route.'.detail',[
+                    'pagetitle' => $this->pagetitle,
+                    'actionform' => 'update',
+                    'data' => $target,
+                    'mitra_bumn' => $mitra_bumn,
                 ]);
         }catch(Exception $e){}
 
@@ -235,7 +326,7 @@ class AdministrasiController extends Controller
     {
         DB::beginTransaction();
         try{
-            $data = TargetTpbs::find((int)$request->input('id'));
+            $data = TargetTpb::find((int)$request->input('id'));
             $data->delete();
 
             DB::commit();
@@ -253,19 +344,6 @@ class AdministrasiController extends Controller
             ];
         }
         return response()->json($result);
-    }
-
-    /**
-     * @param $request
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validateform($request)
-    {
-        $required['nama'] = 'required';
-
-        $message['nama.required'] = 'Nama wajib diinput';
-
-        return Validator::make($request->all(), $required, $message);
     }
 
     /**
@@ -299,5 +377,36 @@ class AdministrasiController extends Controller
         $namaFile = "Template Data Target TPB.xlsx";
         
         return Excel::download(new TargetTemplateExcelSheet($perusahaan), $namaFile);
+    }
+    
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function upload()
+    {
+        $id_users = \Auth::user()->id;
+        $users = User::where('id', $id_users)->first();
+        $perusahaan_id = \Auth::user()->id_bumn;
+        
+        $admin_bumn = false;
+        if(!empty($users->getRoleNames())){
+            foreach ($users->getRoleNames() as $v) {
+                if($v == 'Admin BUMN') {
+                    $admin_bumn = true;
+                }
+            }
+        }
+
+        return view('target.upload_target.upload',[
+            'pagetitle' => $this->pagetitle,
+            'actionform' => 'insert',
+            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'admin_bumn' => $admin_bumn,
+            'perusahaan_id' => $perusahaan_id
+        ]);
+
     }
 }

@@ -6,15 +6,18 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use DB;
 use Config;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Datatables;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\RowImport;
 
 use App\Models\User;
 use App\Models\TargetTpb;
+use App\Models\TargetUpload;
 use App\Models\Perusahaan;
 
 class UploadTargetController extends Controller
@@ -70,9 +73,32 @@ class UploadTargetController extends Controller
      */
     public function datatable(Request $request)
     {
-        $kode = TargetTpbs::orderBy('tpb_id')->get();
+        $id_users = \Auth::user()->id;
+        $data = TargetUpload::where('user_id', $id_users)->orderBy('created_at','desc')->get();
         try{
-            return datatables()->of($kode)
+            return datatables()->of($data)
+            ->addColumn('download_berhasil', function ($row){
+                $id = (int)$row->id;
+                $button = '<div align="center">';
+
+                if($row->berhasil>0){
+                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Download data berhasil"><i class="bi bi-download fs-3"></i></button>';
+                }
+
+                $button .= '</div>';
+                return $button;
+            })
+            ->addColumn('download_gagal', function ($row){
+                $id = (int)$row->id;
+                $button = '<div align="center">';
+
+                if($row->gagal>0){
+                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-danger cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Download data gagal"><i class="bi bi-download fs-3"></i></button>';
+                }
+
+                $button .= '</div>';
+                return $button;
+            })
             ->addColumn('action', function ($row){
                 $id = (int)$row->id;
                 $button = '<div align="center">';
@@ -86,10 +112,7 @@ class UploadTargetController extends Controller
                 $button .= '</div>';
                 return $button;
             })
-            ->addColumn('tpb', function ($row){
-                return @$row->tpb->no_tpb . ' - ' . @$row->tpb->nama;
-            })
-            ->rawColumns(['nama','keterangan','action'])
+            ->rawColumns(['nama','keterangan','action','download_berhasil','download_gagal'])
             ->toJson();
         }catch(Exception $e){
             return response([
@@ -132,60 +155,31 @@ class UploadTargetController extends Controller
             'title' => 'Error'
         ];
 
-        $validator = $this->validateform($request);
-        if (!$validator->fails()) {
-            $param = $request->except('actionform','id');
+        $param['file_name'] = $request->input('file_name');
 
-            switch ($request->input('actionform')) {
-                case 'insert': DB::beginTransaction();
-                               try{
-                                  $target = TargetTpbs::create((array)$param);
+        try{
+            $target = TargetUpload::create((array)$param);
 
-                                  DB::commit();
-                                  $result = [
-                                    'flag'  => 'success',
-                                    'msg' => 'Sukses tambah data',
-                                    'title' => 'Sukses'
-                                  ];
-                               }catch(\Exception $e){
-                                  DB::rollback();
-                                  $result = [
-                                    'flag'  => 'warning',
-                                    'msg' => $e->getMessage(),
-                                    'title' => 'Gagal'
-                                  ];
-                               }
+            $dataUpload = $this->uploadFile($request->file('file_name'), $target->id);
+            Excel::import(new RowImport($dataUpload->fileRaw, $target->id), public_path('file_upload/target_tpb/'.$dataUpload->fileRaw));
 
-                break;
+            $param2['file_name']  = $dataUpload->fileRaw;
+            $param2['user_id']  = \Auth::user()->id;
+            $param2['tanggal']  = date('Y-m-d H:i:s');
+            $target->update((array)$param2);
 
-                case 'update': DB::beginTransaction();
-                               try{
-                                  $target = TargetTpbs::find((int)$request->input('id'));
-                                  $target->update((array)$param);
-
-                                  DB::commit();
-                                  $result = [
-                                    'flag'  => 'success',
-                                    'msg' => 'Sukses ubah data',
-                                    'title' => 'Sukses'
-                                  ];
-                               }catch(\Exception $e){
-                                  DB::rollback();
-                                  $result = [
-                                    'flag'  => 'warning',
-                                    'msg' => $e->getMessage(),
-                                    'title' => 'Gagal'
-                                  ];
-                               }
-
-                break;
-            }
-        }else{
-            $messages = $validator->errors()->all('<li>:message</li>');
+            DB::commit();
             $result = [
-                'flag'  => 'warning',
-                'msg' => '<ul>'.implode('', $messages).'</ul>',
-                'title' => 'Gagal proses data'
+            'flag'  => 'success',
+            'msg' => 'Sukses tambah data',
+            'title' => 'Sukses'
+            ];
+        }catch(\Exception $e){
+            DB::rollback();
+            $result = [
+            'flag'  => 'warning',
+            'msg' => $e->getMessage(),
+            'title' => 'Gagal'
             ];
         }
 
@@ -257,4 +251,14 @@ class UploadTargetController extends Controller
         return Validator::make($request->all(), $required, $message);
     }
 
+    protected function uploadFile(UploadedFile $file, $id)
+    {
+        $fileName = $file->getClientOriginalName();
+        $fileRaw  =$fileName = $id.'_'.$fileName;
+        $filePath = 'file_upload'.DIRECTORY_SEPARATOR.'target_tpb'.DIRECTORY_SEPARATOR.$fileName;
+        $destinationPath = public_path().DIRECTORY_SEPARATOR.'file_upload'.DIRECTORY_SEPARATOR.'target_tpb'.DIRECTORY_SEPARATOR;
+        $fileUpload      = $file->move($destinationPath, $fileRaw);
+        $data = (object) array('fileName' => $fileName, 'fileRaw' => $fileRaw, 'filePath' => $filePath);
+        return $data;
+    }
 }

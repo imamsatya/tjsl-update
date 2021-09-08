@@ -241,6 +241,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('upload', 'App\Http\Controllers\Target\AdministrasiController@upload')->name('target.administrasi.upload');
                 Route::post('download_template', 'App\Http\Controllers\Target\AdministrasiController@download_template')->name('target.administrasi.download_template');
                 Route::post('get_status', 'App\Http\Controllers\Target\AdministrasiController@get_status')->name('target.administrasi.get_status');
+                Route::post('detail', 'App\Http\Controllers\Target\AdministrasiController@detail')->name('target.administrasi.detail');
                 Route::post('edit', 'App\Http\Controllers\Target\AdministrasiController@edit')->name('target.administrasi.edit');
                 Route::post('store', 'App\Http\Controllers\Target\AdministrasiController@store')->name('target.administrasi.store');
                 Route::post('delete', 'App\Http\Controllers\Target\AdministrasiController@delete')->name('target.administrasi.delete');
