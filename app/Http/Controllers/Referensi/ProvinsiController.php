@@ -46,7 +46,7 @@ class ProvinsiController extends Controller
     public function datatable(Request $request)
     {
         try{
-            return datatables()->of(Provinsi::query())
+            return datatables()->of(Provinsi::where('is_luar_negeri', 'false')->get())
             ->addColumn('action', function ($row){
                 $id = (int)$row->id;
                 $button = '<div align="center">';

@@ -20,11 +20,12 @@ class TargetTemplateExcelSheet implements WithMultipleSheets
     {
         $sheets = [];
         $sheets[] = new TargetTemplateExport($this->perusahaan);
+        $sheets[] = new ReferensiJenisProgram();
+        $sheets[] = new ReferensiCoreSubject();
         $sheets[] = new ReferensiTpb();
         $sheets[] = new ReferensiKodeIndikator();
-        $sheets[] = new ReferensiCoreSubject();
-        $sheets[] = new ReferensiPerusahaan();
         $sheets[] = new ReferensiCaraPenyaluran();
+        $sheets[] = new ReferensiPerusahaan();
         // $sheets[] = new ReferensiSatuanUkur();
         return $sheets;
     }

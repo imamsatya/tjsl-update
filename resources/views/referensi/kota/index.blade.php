@@ -42,7 +42,6 @@
                                 <th>No.</th>
                                 <th>Nama</th>
                                 <th>Provinsi</th>
-                                <th>is Luar Negeri?</th>
                                 <th>Tanggal Sinkronisasi</th>
                                 <th><div align="center">Aksi</div></th>
                             </tr>
@@ -144,7 +143,6 @@
                 { data: 'id', orderable: false, searchable: false },
                 { data: 'nama', name: 'nama' },
                 { data: 'provinsi', name: 'provinsi' },
-                { data: 'is_luar_negeri', name: 'is_luar_negeri' },
                 { data: 'tgl_sinkronisasi', name: 'tgl_sinkronisasi' },
                 { data: 'action', name:'action'},
             ],
