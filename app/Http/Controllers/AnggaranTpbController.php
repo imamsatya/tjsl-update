@@ -61,30 +61,51 @@ class AnggaranTpbController extends Controller
                                         ->leftJoin('tpbs','tpbs.id','relasi_pilar_tpbs.tpb_id');
         $anggaran_pilar = AnggaranTpb::leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
                                         ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id');
+        $anggaran_bumn  = AnggaranTpb::leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
+                                        ->leftJoin('perusahaans','perusahaans.id','anggaran_tpbs.perusahaan_id');
         
         if($perusahaan_id){
             $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
             $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
+            $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
         }
 
         if($request->tahun){
             $anggaran = $anggaran->where('anggaran_tpbs.tahun', $request->tahun);
             $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.tahun', $request->tahun);
+            $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.tahun', $request->tahun);
         }
 
         if($request->pilar_pembangunan_id){
             $anggaran = $anggaran->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
             $anggaran_pilar = $anggaran_pilar->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
+            $anggaran_bumn = $anggaran_bumn->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
         }
 
         if($request->tpb_id){
             $anggaran = $anggaran->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
             $anggaran_pilar = $anggaran_pilar->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
+            $anggaran_bumn = $anggaran_bumn->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
         }
         
-        $anggaran_pilar = $anggaran_pilar->select('relasi_pilar_tpbs.pilar_pembangunan_id', DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'), 'pilar_pembangunans.nama as pilar_nama', 'pilar_pembangunans.id as pilar_id')
-                            ->groupBy('relasi_pilar_tpbs.pilar_pembangunan_id', 'pilar_pembangunans.nama', 'pilar_pembangunans.id')
+        $anggaran_pilar = $anggaran_pilar->select('anggaran_tpbs.perusahaan_id', 
+                                                    'relasi_pilar_tpbs.pilar_pembangunan_id', 
+                                                    DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'), 
+                                                    'pilar_pembangunans.nama as pilar_nama', 
+                                                    'pilar_pembangunans.id as pilar_id')
+                            ->groupBy('relasi_pilar_tpbs.pilar_pembangunan_id', 
+                                        'anggaran_tpbs.perusahaan_id',
+                                        'pilar_pembangunans.nama', 
+                                        'pilar_pembangunans.id')
                             ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
+                            ->get();
+        $anggaran_bumn = $anggaran_bumn->select('anggaran_tpbs.perusahaan_id', 
+                                                'perusahaans.nama_lengkap',
+                                                'perusahaans.id',
+                                                DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'))
+                            ->groupBy('anggaran_tpbs.perusahaan_id')
+                            ->groupBy('perusahaans.nama_lengkap')
+                            ->groupBy('perusahaans.id')
                             ->get();
         $anggaran = $anggaran->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')->orderBy('no_tpb')->get();
         
@@ -94,6 +115,7 @@ class AnggaranTpbController extends Controller
             'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
             'anggaran' => $anggaran,
             'anggaran_pilar' => $anggaran_pilar,
+            'anggaran_bumn' => $anggaran_bumn,
             'pilar' => PilarPembangunan::get(),
             'tpb' => Tpb::get(),
             'admin_bumn' => $admin_bumn,
