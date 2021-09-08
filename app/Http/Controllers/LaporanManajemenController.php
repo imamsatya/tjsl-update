@@ -75,7 +75,8 @@ class LaporanManajemenController extends Controller
     {
         $laporan = LaporanManajemen::Select('laporan_manajemens.*')
                                     ->leftJoin('periode_laporans','periode_laporans.id', 'laporan_manajemens.periode_laporan_id')
-                                    ->where('periode_laporans.jenis_laporan_id', 1)
+                                    ->leftJoin('periode_has_jenis','periode_has_jenis.periode_laporan_id', 'periode_laporans.id')
+                                    ->where('periode_has_jenis.jenis_laporan_id', 1)
                                     ->orderBy('laporan_manajemens.tahun')
                                     ->orderBy('periode_laporans.urutan')
                                     ->orderBy('laporan_manajemens.perusahaan_id');

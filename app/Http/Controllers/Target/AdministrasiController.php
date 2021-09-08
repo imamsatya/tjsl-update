@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Referensi;
+namespace App\Http\Controllers\Target;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -11,11 +11,19 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Datatables;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 
+use App\Models\User;
+use App\Models\AnggaranTpb;
+use App\Models\TargetTpb;
+use App\Models\Perusahaan;
+use App\Models\PilarPembangunan;
 use App\Models\Tpb;
-use App\Models\KodeIndikator;
+use App\Models\Status;
+use App\Exports\TargetTemplateExport;
+use App\Exports\TargetTemplateExcelSheet;
 
-class KodeIndikatorController extends Controller
+class AdministrasiController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -24,8 +32,8 @@ class KodeIndikatorController extends Controller
      */
     public function __construct()
     {
-        $this->__route = 'referensi.kode_indikator';
-        $this->pagetitle = 'Kode Indikator';
+        $this->__route = 'target.administrasi';
+        $this->pagetitle = 'Data Target TPB';
     }
 
     /**
@@ -33,11 +41,35 @@ class KodeIndikatorController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
+        $id_users = \Auth::user()->id;
+        $users = User::where('id', $id_users)->first();
+        $perusahaan_id = $request->perusahaan_id;
+        
+        $admin_bumn = false;
+        if(!empty($users->getRoleNames())){
+            foreach ($users->getRoleNames() as $v) {
+                if($v == 'Admin BUMN') {
+                    $admin_bumn = true;
+                    $perusahaan_id = \Auth::user()->id_bumn;
+                }
+            }
+        }
+
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
-            'breadcrumb' => 'Referensi - Kode Indikator'
+            'breadcrumb' => 'Target - Administrasi',
+            'pilar' => PilarPembangunan::get(),
+            'status' => Status::get(),
+            'tpb' => Tpb::get(),
+            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'admin_bumn' => $admin_bumn,
+            'perusahaan_id' => $perusahaan_id,
+            'tahun' => ($request->tahun?$request->tahun:date('Y')),
+            'pilar_pembangunan_id' => $request->pilar_pembangunan_id,
+            'tpb_id' => $request->tpb_id,
+            'status_id' => $request->status_id,
         ]);
     }
 
@@ -49,7 +81,7 @@ class KodeIndikatorController extends Controller
      */
     public function datatable(Request $request)
     {
-        $kode = KodeIndikator::orderBy('kode')->get();
+        $kode = TargetTpbs::orderBy('tpb_id')->get();
         try{
             return datatables()->of($kode)
             ->addColumn('action', function ($row){
@@ -66,10 +98,9 @@ class KodeIndikatorController extends Controller
                 return $button;
             })
             ->addColumn('tpb', function ($row){
-                $tpb = @$row->tpb->no_tpb . ' - ' . @$row->tpb->nama;
-                return $tpb;
+                return @$row->tpb->no_tpb . ' - ' . @$row->tpb->nama;
             })
-            ->rawColumns(['nama','keterangan','action','tpb'])
+            ->rawColumns(['nama','keterangan','action'])
             ->toJson();
         }catch(Exception $e){
             return response([
@@ -89,13 +120,12 @@ class KodeIndikatorController extends Controller
 
     public function create()
     {
-        $kode_indikator = KodeIndikator::get();
+        $target = TargetTpbs::get();
 
         return view($this->__route.'.form',[
             'pagetitle' => $this->pagetitle,
             'actionform' => 'insert',
-            'data' => $kode_indikator,
-            'hastpb' => null,
+            'data' => $target,
             'tpb' => Tpb::get()
         ]);
 
@@ -120,7 +150,7 @@ class KodeIndikatorController extends Controller
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
-                                  $kode_indikator = KodeIndikator::create((array)$param);
+                                  $target = TargetTpbs::create((array)$param);
 
                                   DB::commit();
                                   $result = [
@@ -141,8 +171,8 @@ class KodeIndikatorController extends Controller
 
                 case 'update': DB::beginTransaction();
                                try{
-                                  $kode_indikator = KodeIndikator::find((int)$request->input('id'));
-                                  $kode_indikator->update((array)$param);
+                                  $target = TargetTpbs::find((int)$request->input('id'));
+                                  $target->update((array)$param);
 
                                   DB::commit();
                                   $result = [
@@ -185,12 +215,12 @@ class KodeIndikatorController extends Controller
 
         try{
 
-            $kode_indikator = KodeIndikator::find((int)$request->input('id'));
+            $target = TargetTpbs::find((int)$request->input('id'));
 
                 return view($this->__route.'.form',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
-                    'data' => $kode_indikator,
+                    'data' => $target,
                     'tpb' => Tpb::get()
                 ]);
         }catch(Exception $e){}
@@ -205,7 +235,7 @@ class KodeIndikatorController extends Controller
     {
         DB::beginTransaction();
         try{
-            $data = KodeIndikator::find((int)$request->input('id'));
+            $data = TargetTpbs::find((int)$request->input('id'));
             $data->delete();
 
             DB::commit();
@@ -236,5 +266,38 @@ class KodeIndikatorController extends Controller
         $message['nama.required'] = 'Nama wajib diinput';
 
         return Validator::make($request->all(), $required, $message);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function get_status(Request $request)
+    {
+        $anggaran = AnggaranTpb::Select('anggaran_tpbs.*')
+                                ->leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
+                                ->leftJoin('tpbs','tpbs.id','relasi_pilar_tpbs.tpb_id');
+        
+        if($request->perusahaan_id){
+            $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
+        }
+
+        if($request->tahun){
+            $anggaran = $anggaran->where('anggaran_tpbs.tahun', $request->tahun);
+        }
+        
+        $anggaran = $anggaran->first();
+
+        $result['status_id'] = @$anggaran->status_id;
+
+        return response()->json($result);
+    }
+
+    public function download_template(Request $request)
+    {
+        $perusahaan = Perusahaan::where('id', $request->perusahaan_id)->first();
+        $namaFile = "Template Data Target TPB.xlsx";
+        
+        return Excel::download(new TargetTemplateExcelSheet($perusahaan), $namaFile);
     }
 }

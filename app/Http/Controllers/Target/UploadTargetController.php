@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Referensi;
+namespace App\Http\Controllers\Target;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -11,11 +11,13 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Datatables;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 
-use App\Models\Tpb;
-use App\Models\KodeIndikator;
+use App\Models\User;
+use App\Models\TargetTpb;
+use App\Models\Perusahaan;
 
-class KodeIndikatorController extends Controller
+class UploadTargetController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -24,8 +26,8 @@ class KodeIndikatorController extends Controller
      */
     public function __construct()
     {
-        $this->__route = 'referensi.kode_indikator';
-        $this->pagetitle = 'Kode Indikator';
+        $this->__route = 'target.upload_target';
+        $this->pagetitle = 'Upload Data Target TPB';
     }
 
     /**
@@ -33,11 +35,30 @@ class KodeIndikatorController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
+        $id_users = \Auth::user()->id;
+        $users = User::where('id', $id_users)->first();
+        $perusahaan_id = $request->perusahaan_id;
+        
+        $admin_bumn = false;
+        if(!empty($users->getRoleNames())){
+            foreach ($users->getRoleNames() as $v) {
+                if($v == 'Admin BUMN') {
+                    $admin_bumn = true;
+                    $perusahaan_id = \Auth::user()->id_bumn;
+                }
+            }
+        }
+
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
-            'breadcrumb' => 'Referensi - Kode Indikator'
+            'breadcrumb' => 'Target - Upload',
+            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'admin_bumn' => $admin_bumn,
+            'tahun' => ($request->tahun?$request->tahun:date('Y')),
+            'data' => null,
+            'perusahaan_id' => $perusahaan_id,
         ]);
     }
 
@@ -49,7 +70,7 @@ class KodeIndikatorController extends Controller
      */
     public function datatable(Request $request)
     {
-        $kode = KodeIndikator::orderBy('kode')->get();
+        $kode = TargetTpbs::orderBy('tpb_id')->get();
         try{
             return datatables()->of($kode)
             ->addColumn('action', function ($row){
@@ -66,10 +87,9 @@ class KodeIndikatorController extends Controller
                 return $button;
             })
             ->addColumn('tpb', function ($row){
-                $tpb = @$row->tpb->no_tpb . ' - ' . @$row->tpb->nama;
-                return $tpb;
+                return @$row->tpb->no_tpb . ' - ' . @$row->tpb->nama;
             })
-            ->rawColumns(['nama','keterangan','action','tpb'])
+            ->rawColumns(['nama','keterangan','action'])
             ->toJson();
         }catch(Exception $e){
             return response([
@@ -89,13 +109,12 @@ class KodeIndikatorController extends Controller
 
     public function create()
     {
-        $kode_indikator = KodeIndikator::get();
+        $target = TargetTpbs::get();
 
         return view($this->__route.'.form',[
             'pagetitle' => $this->pagetitle,
             'actionform' => 'insert',
-            'data' => $kode_indikator,
-            'hastpb' => null,
+            'data' => $target,
             'tpb' => Tpb::get()
         ]);
 
@@ -120,7 +139,7 @@ class KodeIndikatorController extends Controller
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
-                                  $kode_indikator = KodeIndikator::create((array)$param);
+                                  $target = TargetTpbs::create((array)$param);
 
                                   DB::commit();
                                   $result = [
@@ -141,8 +160,8 @@ class KodeIndikatorController extends Controller
 
                 case 'update': DB::beginTransaction();
                                try{
-                                  $kode_indikator = KodeIndikator::find((int)$request->input('id'));
-                                  $kode_indikator->update((array)$param);
+                                  $target = TargetTpbs::find((int)$request->input('id'));
+                                  $target->update((array)$param);
 
                                   DB::commit();
                                   $result = [
@@ -185,12 +204,12 @@ class KodeIndikatorController extends Controller
 
         try{
 
-            $kode_indikator = KodeIndikator::find((int)$request->input('id'));
+            $target = TargetTpbs::find((int)$request->input('id'));
 
                 return view($this->__route.'.form',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
-                    'data' => $kode_indikator,
+                    'data' => $target,
                     'tpb' => Tpb::get()
                 ]);
         }catch(Exception $e){}
@@ -205,7 +224,7 @@ class KodeIndikatorController extends Controller
     {
         DB::beginTransaction();
         try{
-            $data = KodeIndikator::find((int)$request->input('id'));
+            $data = TargetTpbs::find((int)$request->input('id'));
             $data->delete();
 
             DB::commit();
@@ -237,4 +256,5 @@ class KodeIndikatorController extends Controller
 
         return Validator::make($request->all(), $required, $message);
     }
+
 }

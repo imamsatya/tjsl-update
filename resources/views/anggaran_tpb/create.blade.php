@@ -23,8 +23,7 @@
     <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>Tahun</label>
-            <select class="form-select form-select-solid form-select2" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun"  data-dropdown-parent="#winform" required>
-                <option></option>
+            <select class="form-select form-select-solid form-select2" name="tahun" data-kt-select2="true" data-dropdown-parent="#winform" required>
                 @php for($i = date("Y"); $i>=2020; $i--){ @endphp
                 <option value="{{$i}}">{{$i}}</option>
                 @php } @endphp
