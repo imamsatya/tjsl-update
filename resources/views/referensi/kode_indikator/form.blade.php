@@ -40,7 +40,7 @@
     <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>Nama Indikator</label>
-            <input type="text" class="form-control" name="nama" id="nama" value="{{!empty(old('nama'))? old('nama') : ($actionform == 'update' && $data->nama != ''? $data->nama : old('nama'))}}" required/>
+            <input type="text" class="form-control" name="nama" id="nama" value="{{!empty(old('nama'))? old('nama') : ($actionform == 'update' && $data->nama != ''? $data->nama : old('nama'))}}"/>
         </div>
     </div>
     <div class="text-center pt-15">
@@ -67,15 +67,9 @@
 
     function setFormValidate(){
         $('#form-edit').validate({
-            rules: {
-                nama:{
-                        required: true
-                }               		               		                              		               		               
+            rules: {             		               		                              		               		               
             },
-            messages: {
-                nama: {
-                    required: "Nama wajib diinput"
-                }                                      		                   		                   
+            messages: {                                    		                   		                   
             },	        
             highlight: function(element) {
                 $(element).closest('.form-control').addClass('is-invalid');
