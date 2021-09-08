@@ -291,6 +291,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
         // Fetch Route
         Route::prefix('fetch')->group(function(){
             Route::post('/gettpbbypilar', 'App\Http\Controllers\FetchController@getTpbByPilar');
+            Route::post('/getpumkanggaranbyperiode', 'App\Http\Controllers\FetchController@getPumkAnggaranByPeriode');
         });
 
         Route::prefix('general')->group(function(){

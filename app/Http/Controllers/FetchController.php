@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 
 use App\Models\RelasiPilarTpb;
 use App\Models\Tpb;
+use App\Models\PumkAnggaran;
+use App\Models\PeriodeLaporan;
 use DB;
 
 
@@ -25,6 +27,26 @@ class FetchController extends Controller
         foreach($data as $item){
             $return[] = ['id' => $item->id, 'nama' => $item->no_tpb . ' - ' . $item->nama];
         }
+        return response()->json($return);
+    }
+
+    public function getPumkAnggaranByPeriode(Request $request)
+    {
+            $RKA_id = PeriodeLaporan::where('nama','RKA')->pluck('id')->first();
+
+            $data = PumkAnggaran::select('saldo_awal')
+            ->where('bumn_id',$request->bumn_id)
+            ->where('tahun',$request->tahun)
+            ->where('periode_id',$RKA_id)
+            ->orderby('id','desc')->first();
+
+            if($data !== null){
+                $return = number_format($data->saldo_awal);
+            }else{
+                $return = 0;
+            }
+
+
         return response()->json($return);
     }
 }

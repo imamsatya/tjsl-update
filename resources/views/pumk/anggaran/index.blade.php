@@ -199,7 +199,7 @@
 
         $('#page-title').html("{{ $pagetitle }}");
         $('#page-breadcrumb').html("{{ $breadcrumb }}");
-        $('#form-cari').hide();
+        // $('#form-cari').hide();
 
         $('body').on('click','.cls-add',function(){
             winform(urlcreate, {}, 'Tambah Data');
@@ -239,14 +239,16 @@
             window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&periode_id=' + periode_id + '&status_id=' + status_id;
         });
 
-        if(!"{{ $admin_bumn }}"){
-            showValidasi();
-        }
+        // if(!"{{ $admin_bumn }}"){
+        //     showValidasi();
+        // }
         
-        if("{{ $filter_bumn_id }}" == ''){
-            $('.table-responsive').hide();
-        }else{
+        if("{{ $filter_bumn_id }}" == '' && "{{ $super_admin }}"){
             $('.table-responsive').show();
+        }else if("{{ $filter_bumn_id }}" !== '' && "{{ $admin_bumn }}"){
+            $('.table-responsive').show();
+        }else{
+            $('.table-responsive').hide();
         }
     });
 

@@ -1,3 +1,8 @@
+<style>
+    .incomes,.outcomes,.saldo_akhirs,.sum-outcomes,.sum-incomes{
+        text-align: right;
+    }
+</style>
 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
 	@csrf
 	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
@@ -9,7 +14,7 @@
             @php
                 $disabled = (($admin_bumn) ? 'readonly' : '');
             @endphp
-            <select class="form-select form-select-solid form-select2" name="bumn_id" data-kt-select2="true" data-placeholder="Pilih BUMN"  data-dropdown-parent="#winform" required {{$disabled}}>
+            <select class="form-select form-select-solid form-select2" id="bumn_id" name="bumn_id" data-kt-select2="true" data-placeholder="Pilih BUMN"  data-dropdown-parent="#winform" required {{$disabled}}>
                 <option></option>
                 @foreach($perusahaan as $p)  
                     @php
@@ -23,7 +28,7 @@
     <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>Periode Laporan</label>
-            <select id="periode_id" class="form-select form-select-solid form-select2" name="periode_id" data-kt-select2="true" data-placeholder="Pilih Periode" data-allow-clear="true" required>
+            <select id="periode_ids" class="form-select form-select-solid form-select2" name="periode_id" data-kt-select2="true" data-placeholder="Pilih Periode" data-allow-clear="true"  required>
                 <option></option>
                 @foreach($periode as $p)  
                     <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
@@ -32,12 +37,13 @@
         </div>
         <div class="col-lg-6">
             <label>Tahun</label>
-            <select class="form-select form-select-solid form-select2" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun"  data-dropdown-parent="#winform" required>
+            <input type="text" class="form-control" id="tahuns" name="tahun" value="{{date('Y')}}" style="background-color: #F5F8FA" readonly>
+            {{-- <select class="form-select form-select-solid form-select2" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun"  data-dropdown-parent="#winform" required>
                 <option></option>
                 @php for($i = date("Y"); $i>=2020; $i--){ @endphp
                 <option value="{{$i}}">{{$i}}</option>
                 @php } @endphp
-            </select>
+            </select> --}}
         </div>
     </div>
     <div class="form-group">
@@ -79,20 +85,20 @@
                     </div>
 
                     <div class="col-lg-4 offset-sm-1">
-                        <label style="padding-top: 15px;">&#9658; Dari Mitra Binaan </label> 
+                        <label style="padding-top: 15px;"> Dari Mitra Binaan </label> 
                     </div>	
                     <div class="col-lg-7">
                         <div class="col-md-12" style="padding-bottom : 10px;">
-                            <input type="text" class="form-control input-income-mitra-binaan incomes" name="income_mitra_binaan" style="bottom: 20px;">
+                            <input type="text" class="form-control input-income-mitra-binaan number-separator incomes" name="income_mitra_binaan" style="bottom: 20px;">
                         </div>
                     </div>
 
                     <div class="col-lg-4 offset-sm-1">
-                        <label style="padding-top: 15px;">&#9658; Dari BUMN Pembina Lain </label> 
+                        <label style="padding-top: 15px;"> Dari BUMN Pembina Lain </label> 
                     </div>	
                     <div class="col-lg-7">
                         <div class="col-md-12" style="padding-bottom : 10px;">
-                            <input type="text" class="form-control input-income-pembina-lain incomes" name="income_bumn_pembina_lain" style="bottom: 20px;">
+                            <input type="text" class="form-control input-income-pembina-lain number-separator incomes" name="income_bumn_pembina_lain" style="bottom: 20px;">
                         </div>
                     </div>
 
@@ -101,7 +107,7 @@
                     </div>	
                     <div class="col-lg-7">
                         <div class="col-md-12" style="padding-bottom : 10px;">
-                            <input type="text" class="form-control  input-income-jasa-adm-pumk incomes" name="income_jasa_adm_pumk" style="bottom: 20px;">
+                            <input type="text" class="form-control  input-income-jasa-adm-pumk number-separator incomes" name="income_jasa_adm_pumk" style="bottom: 20px;">
                         </div>
                     </div>
 
@@ -110,7 +116,7 @@
                     </div>	
                     <div class="col-lg-7">
                         <div class="col-md-12" style="padding-bottom : 10px;">
-                            <input type="text" class="form-control input-income-adm-bank incomes" name="income_adm_bank" style="bottom: 20px;">
+                            <input type="text" class="form-control input-income-adm-bank number-separator incomes" name="income_adm_bank" style="bottom: 20px;">
                         </div>
                     </div>
 
@@ -119,7 +125,7 @@
                     </div>	
                     <div class="col-lg-7">
                         <div class="col-md-12" style="padding-bottom : 10px;">
-                            <input type="text" class="form-control sum-incomes" name="income_total" style="bottom: 20px;background-color:rgb(210, 226, 235)" readonly>
+                            <input type="text" class="form-control number-separator sum-incomes" name="income_total" style="bottom: 20px;background-color:rgb(210, 226, 235)" readonly>
                         </div>
                     </div>
 
@@ -135,7 +141,7 @@
                 </div>	
                 <div class="col-lg-7">
                     <div class="col-md-12" style="padding-bottom : 10px;">
-                        <input type="text" class="form-control outcomes" name="outcome_mandiri" style="bottom: 20px;">
+                        <input type="text" class="form-control number-separator outcomes" name="outcome_mandiri" style="bottom: 20px;">
                     </div>
                 </div>
 
@@ -144,7 +150,7 @@
                 </div>	
                 <div class="col-lg-7">
                     <div class="col-md-12" style="padding-bottom : 10px;">
-                        <input type="text" class="form-control outcomes" name="outcome_kolaborasi_bumn" style="bottom: 20px;">
+                        <input type="text" class="form-control number-separator outcomes" name="outcome_kolaborasi_bumn" style="bottom: 20px;">
                     </div>
                 </div>
 
@@ -153,7 +159,7 @@
                 </div>	
                 <div class="col-lg-7">
                     <div class="col-md-12" style="padding-bottom : 10px;">
-                        <input type="text" class="form-control outcomes" name="outcome_bumn_khusus" style="bottom: 20px;">
+                        <input type="text" class="form-control number-separator outcomes" name="outcome_bumn_khusus" style="bottom: 20px;">
                     </div>
                 </div>
 
@@ -165,7 +171,6 @@
                         <input type="text" class="form-control sum-outcomes" name="outcome_total" style="bottom: 20px;background-color:rgb(210, 226, 235)" readonly>
                     </div>
                 </div>
-
 
                 <div class="col-lg-5" style="padding-top : 15px;">
                    <strong>III. Saldo Akhir</strong> 
@@ -187,6 +192,7 @@
     </div>
 </form>
 
+<script src="{{asset('js/easy-number-separator.js')}}"></script>
 <script type="text/javascript">
     var title = "{{$actionform == 'update'? 'Update' : 'Tambah'}}" + " {{ $pagetitle }}";
 
@@ -208,7 +214,18 @@
 
         $('.outcomes').keyup(function() {
             calculateSumOut();
-        });    
+        });
+
+        $('.input-saldo-awal').prop( "readonly", true );
+        $('.input-saldo-awal').css("background-color", "#D2E2EB");
+        // $('.incomes,.outcomes').keyup(function(event) {
+        //     if(event.which >= 37 && event.which <= 40) return;
+        //         $(this).val(function(index, value) {
+        //         return value
+        //             .replace(/\D/g, "")
+        //             .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        //     });
+        // });    
 
     });
     
@@ -217,15 +234,15 @@
         var sum = 0;
        var Out = $('.sum-outcomes').val();
         $('.incomes').each(function() {
-            if (!isNaN(this.value) && this.value.length != 0) {
-                sum += parseInt(this.value);
-                $(this).css("background-color", "#FEFFB0");
+            if (this.value.length != 0) {
+                Ins = this.value.replace(/\D/g, "");
+                sum += parseInt(Ins);
             }
             else if (this.value.length != 0){
                 $(this).css("background-color", "red");
             }
         });
-    
+        
         $("input.sum-incomes").val(sum);
        $("input.saldo_akhirs").val(sum - Out);
     }
@@ -234,9 +251,9 @@
         var sum = 0;
         var In = $('.sum-incomes').val();
         $('.outcomes').each(function() {
-            if (!isNaN(this.value) && this.value.length != 0) {
-                sum += parseInt(this.value);
-                $(this).css("background-color", "#FEFFB0");
+            if (this.value.length != 0) {
+                Outs = this.value.replace(/\D/g, "");
+                sum += parseInt(Outs);
             }
             else if (this.value.length != 0){
                 $(this).css("background-color", "red");
@@ -251,8 +268,29 @@
     function onbtnproses(){
         $('.anggaran-header').show();
         $('.anggaran-footer').show();
+        onChangePeriode();
     }
     
+    function onChangePeriode(id){
+        var periode_id = $('#periode_ids').val();
+        var bumn = $('#bumn_id').val();
+        var tahun = $('#tahuns').val();
+        $.ajax({
+            url: "/fetch/getpumkanggaranbyperiode?periode_id="+id+"&bumn_id="+bumn+"&tahun="+tahun,
+            type: "POST",
+            dataType: "json", 
+            success: function(data){
+                $(".input-saldo-awal").val(data);
+
+            }                       
+        });
+
+        if(periode_id == 4){
+            $('.input-saldo-awal').prop( "readonly", false );
+            $('.input-saldo-awal').css("background-color", "white");
+        }
+    }
+
 
     function setFormValidate(){
         $('#form-edit').validate({
