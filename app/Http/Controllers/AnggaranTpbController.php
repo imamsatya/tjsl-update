@@ -98,7 +98,7 @@ class AnggaranTpbController extends Controller
             'tpb' => Tpb::get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
-            'tahun' => $request->tahun,
+            'tahun' => ($request->tahun?$request->tahun:date('Y')),
             'pilar_pembangunan_id' => $request->pilar_pembangunan_id,
             'tpb_id' => $request->tpb_id,
         ]);

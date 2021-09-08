@@ -20,11 +20,7 @@
                 <div class="card-toolbar">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
-                        <button type="button" class="btn btn-success btn-sm btn-icon cls-add" data-kt-view-roles-table-select="delete_selected"><i class="bi bi-plus"></i></button> &nbsp;
-                        <a class="btn btn-warning btn-sync btn-sm">
-                            <i class="la la-refresh"></i>
-                            Sync Data
-                        </a>
+                        <button type="button" class="btn btn-success btn-sm cls-add" data-kt-view-roles-table-select="delete_selected">Tambah Data</button>
                     </div>
                     <!--end::Search-->
                     <!--end::Group actions-->
@@ -41,9 +37,8 @@
                             <tr>
                                 <th>No.</th>
                                 <th>Nama</th>
-                                <th>Provinsi</th>
-                                <th>Tanggal Sinkronisasi</th>
-                                <th><div align="center">Aksi</div></th>
+                                <th>Keterangan</th>
+                                <th style="text-align:center;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -59,12 +54,11 @@
 @section('addafterjs')
 <script>
     var datatable;
-    var urlcreate = "{{route('referensi.kota.create')}}";
-    var urledit = "{{route('referensi.kota.edit')}}";
-    var urlstore = "{{route('referensi.kota.store')}}";
-    var urldatatable = "{{route('referensi.kota.datatable')}}";
-    var urldelete = "{{route('referensi.kota.delete')}}";
-    var urlkotasync = "{{route('referensi.kota.apisyncprovinsikota')}}";
+    var urlcreate = "{{route('referensi.kolekbilitas_pendanaan.create')}}";
+    var urledit = "{{route('referensi.kolekbilitas_pendanaan.edit')}}";
+    var urlstore = "{{route('referensi.kolekbilitas_pendanaan.store')}}";
+    var urldatatable = "{{route('referensi.kolekbilitas_pendanaan.datatable')}}";
+    var urldelete = "{{route('referensi.kolekbilitas_pendanaan.delete')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
@@ -82,57 +76,9 @@
             onbtndelete(this);
         });
         
-        $('body').on('click','.btn-sync',function(){
-            sync();
-        });
 
         setDatatable();
     });
-
-    function sync(){
-        $.ajax({
-            type: 'get',
-            url: urlkotasync,
-            beforeSend: function(){
-                $.blockUI({
-                    theme: true,
-                    baseZ: 2000
-                })   
-            },
-            success: function(data){
-                $.unblockUI();
-                datatable.ajax.reload( null, false );
-            },
-            error: function(jqXHR, exception){
-                $.unblockUI();
-                var msgerror = '';
-                if (jqXHR.status === 0) {
-                    msgerror = 'jaringan tidak terkoneksi.';
-                } else if (jqXHR.status == 404) {
-                    msgerror = 'Halaman tidak ditemukan. [404]';
-                } else if (jqXHR.status == 500) {
-                    msgerror = 'Internal Server Error [500].';
-                } else if (exception === 'parsererror') {
-                    msgerror = 'Requested JSON parse gagal.';
-                } else if (exception === 'timeout') {
-                    msgerror = 'RTO.';
-                } else if (exception === 'abort') {
-                    msgerror = 'Gagal request ajax.';
-                } else {
-                    msgerror = 'Error.\n' + jqXHR.responseText;
-                }
-                swal.fire({
-                        title: "Error System",
-                        html: msgerror+', coba ulangi kembali !!!',
-                        icon: 'error',
-
-                        buttonsStyling: true,
-
-                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
-                });	                               
-            }
-        });
-    }
 
     function setDatatable(){
         datatable = $('#datatable').DataTable({
@@ -142,8 +88,7 @@
             columns: [
                 { data: 'id', orderable: false, searchable: false },
                 { data: 'nama', name: 'nama' },
-                { data: 'provinsi', name: 'provinsi' },
-                { data: 'tgl_sinkronisasi', name: 'tgl_sinkronisasi' },
+                { data: 'keterangan', name: 'keterangan' },
                 { data: 'action', name:'action'},
             ],
             drawCallback: function( settings ) {
@@ -219,7 +164,7 @@
 
                         buttonsStyling: true,
 
-                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                     });  
                     }
                 });

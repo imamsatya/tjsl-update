@@ -2,51 +2,38 @@
 
 namespace App\Http\Controllers\Referensi;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use App\Models\Provinsi;
+use Carbon\Carbon;
 use DB;
+use Config;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Datatables;
+use App\Http\Controllers\Controller;
 
-class ProvinsiController extends Controller
+use App\Models\KondisiPinjaman;
+
+class KondisiPinjamanController extends Controller
 {
-    protected $__route;
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    
-    function __construct()
+    public function __construct()
     {
-         $this->__route = 'referensi.provinsi';
-         $this->pagetitle = 'Provinsi';
-         // $this->middleware('permission:provinsi-list');
-         // $this->middleware('permission:provinsi-create');
-         // $this->middleware('permission:provinsi-edit');
-         // $this->middleware('permission:provinsi-delete');
+        $this->__route = 'referensi.kondisi_pinjaman';
+        $this->pagetitle = 'Kondisi Pinjaman';
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-
-    public function index(Request $request)
-
+    public function index()
     {
-        return view($this->__route.'.index',[
+        return view($this->__route.'.index', [
             'pagetitle' => $this->pagetitle,
-            'breadcrumb' => 'Referensi - Provinsi'
+            'breadcrumb' => 'Referensi - Kondisi Pinjaman'
         ]);
-
     }
 
     public function datatable(Request $request)
     {
         try{
-            return datatables()->of(Provinsi::where('is_luar_negeri', 'false')->get())
+            return datatables()->of(KondisiPinjaman::query())
             ->addColumn('action', function ($row){
                 $id = (int)$row->id;
                 $button = '<div align="center">';
@@ -60,7 +47,7 @@ class ProvinsiController extends Controller
                 $button .= '</div>';
                 return $button;
             })
-            ->rawColumns(['nama','is_luar_negeri','action'])
+            ->rawColumns(['nama','keterangan','action'])
             ->toJson();
         }catch(Exception $e){
             return response([
@@ -72,20 +59,14 @@ class ProvinsiController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-
     public function create()
     {
-        $provinsi = Provinsi::get();
-       
+        $kondisipinjaman = KondisiPinjaman::get();
+
         return view($this->__route.'.form',[
             'pagetitle' => $this->pagetitle,
             'actionform' => 'insert',
-            'provinsi' => $provinsi
+            'data' => $kondisipinjaman
         ]);
 
     }
@@ -96,17 +77,17 @@ class ProvinsiController extends Controller
             'flag' => 'error',
             'msg' => 'Error System',
             'title' => 'Error'
-        ];      
+        ];
 
-        $validator = $this->validateform($request);   
+        $validator = $this->validateform($request);
         if (!$validator->fails()) {
             $param['nama'] = $request->input('nama');
-            $param['is_luar_negeri'] = $request->input('is_luar_negeri');
+            $param['keterangan'] = $request->input('keterangan');
 
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
-                                  $provinsi = Provinsi::create((array)$param);
+                                  $kondisipinjaman = KondisiPinjaman::create((array)$param);
 
                                   DB::commit();
                                   $result = [
@@ -124,11 +105,11 @@ class ProvinsiController extends Controller
                                }
 
                 break;
-                
+
                 case 'update': DB::beginTransaction();
                                try{
-                                  $provinsi = Provinsi::find((int)$request->input('id'));
-                                  $provinsi->update((array)$param);
+                                  $kondisipinjaman = KondisiPinjaman::find((int)$request->input('id'));
+                                  $kondisipinjaman->update((array)$param);
 
                                   DB::commit();
                                   $result = [
@@ -140,7 +121,7 @@ class ProvinsiController extends Controller
                                   DB::rollback();
                                   $result = [
                                     'flag'  => 'warning',
-                                    'msg' => 'Gagal ubah data',
+                                    'msg' => $e->getMessage(),
                                     'title' => 'Gagal'
                                   ];
                                }
@@ -153,41 +134,32 @@ class ProvinsiController extends Controller
                 'flag'  => 'warning',
                 'msg' => '<ul>'.implode('', $messages).'</ul>',
                 'title' => 'Gagal proses data'
-            ];                      
+            ];
         }
 
         return response()->json($result);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-
     public function edit(Request $request)
     {
-
         try{
 
-            $provinsi = Provinsi::find((int)$request->input('id'));
+            $kondisipinjaman = KondisiPinjaman::find((int)$request->input('id'));
 
                 return view($this->__route.'.form',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
-                    'data' => $provinsi
+                    'data' => $kondisipinjaman
 
                 ]);
         }catch(Exception $e){}
-
     }
 
     public function delete(Request $request)
     {
         DB::beginTransaction();
         try{
-            $data = Provinsi::find((int)$request->input('id'));
+            $data = KondisiPinjaman::find((int)$request->input('id'));
             $data->delete();
 
             DB::commit();
@@ -204,15 +176,16 @@ class ProvinsiController extends Controller
                 'title' => 'Gagal'
             ];
         }
-        return response()->json($result);       
+        return response()->json($result);
     }
 
     protected function validateform($request)
     {
         $required['nama'] = 'required';
 
-        $message['nama.required'] = 'Nama Provinsi wajib diinput';
+        $message['nama.required'] = 'Nama wajib diinput';
 
-        return Validator::make($request->all(), $required, $message);       
+        return Validator::make($request->all(), $required, $message);
     }
+
 }

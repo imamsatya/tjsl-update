@@ -195,6 +195,42 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::get('datatable', 'App\Http\Controllers\Referensi\JenisProgramController@datatable')->name('referensi.jenis_program.datatable');
             });
 
+            Route::prefix('sektor_usaha')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\SektorUsahaController@index')->name('referensi.sektor_usaha.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\SektorUsahaController@create')->name('referensi.sektor_usaha.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\SektorUsahaController@edit')->name('referensi.sektor_usaha.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\SektorUsahaController@store')->name('referensi.sektor_usaha.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\SektorUsahaController@delete')->name('referensi.sektor_usaha.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\SektorUsahaController@datatable')->name('referensi.sektor_usaha.datatable');
+            });
+
+            Route::prefix('kolekbilitas_pendanaan')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@index')->name('referensi.kolekbilitas_pendanaan.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@create')->name('referensi.kolekbilitas_pendanaan.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@edit')->name('referensi.kolekbilitas_pendanaan.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@store')->name('referensi.kolekbilitas_pendanaan.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@delete')->name('referensi.kolekbilitas_pendanaan.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@datatable')->name('referensi.kolekbilitas_pendanaan.datatable');
+            });
+
+            Route::prefix('kondisi_pinjaman')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\KondisiPinjamanController@index')->name('referensi.kondisi_pinjaman.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\KondisiPinjamanController@create')->name('referensi.kondisi_pinjaman.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\KondisiPinjamanController@edit')->name('referensi.kondisi_pinjaman.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\KondisiPinjamanController@store')->name('referensi.kondisi_pinjaman.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\KondisiPinjamanController@delete')->name('referensi.kondisi_pinjaman.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\KondisiPinjamanController@datatable')->name('referensi.kondisi_pinjaman.datatable');
+            });
+
+            Route::prefix('jenis_pembayaran')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\JenisPembayaranController@index')->name('referensi.jenis_pembayaran.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\JenisPembayaranController@create')->name('referensi.jenis_pembayaran.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\JenisPembayaranController@edit')->name('referensi.jenis_pembayaran.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\JenisPembayaranController@store')->name('referensi.jenis_pembayaran.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\JenisPembayaranController@delete')->name('referensi.jenis_pembayaran.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\JenisPembayaranController@datatable')->name('referensi.jenis_pembayaran.datatable');
+            });
+
         });
 
         

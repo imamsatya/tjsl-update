@@ -3,44 +3,14 @@
 	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
 
-    <div class="form-group row mb-5">
-        <div class="col-lg-12">
-            <label>TPB</label>
-            <select class="form-select form-select-solid form-select2" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB" data-dropdown-parent="#form-edit" required>
-                <option></option>
-                @foreach($tpb as $p)  
-                    @php
-                        $select = ($actionform == 'update' && $p->id==$data->tpb_id ? 'selected="selected"' : '');
-                    @endphp 
-                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->no_tpb . ' - ' . $p->nama }}</option>
-                @endforeach
-            </select>
-        </div>
-    </div>
-    <div class="form-group row mb-5">
+    <div class="form-group row">
         <div class="col-lg-6">
-            <label>Kode Tujuan TPB</label>
-            <input type="text" class="form-control" name="kode_tujuan_tpb" id="kode_tujuan_tpb" value="{{!empty(old('kode_tujuan_tpb'))? old('kode_tujuan_tpb') : ($actionform == 'update' && $data->kode_tujuan_tpb != ''? $data->kode_tujuan_tpb : old('kode_tujuan_tpb'))}}" required/>
-        </div>
-        <div class="col-lg-6">
-            <label>Kode Indikator</label>
-            <input type="text" class="form-control" name="kode" id="kode" value="{{!empty(old('kode'))? old('kode') : ($actionform == 'update' && $data->kode != ''? $data->kode : old('kode'))}}" required/>
-        </div>
-    </div>
-    <div class="form-group row mb-5">
-        <div class="col-lg-6">
-            <label>Keterangan Tujuan TPB</label>
-            <textarea class="form-control" name="keterangan_tujuan_tpb" id="keterangan_tujuan_tpb" required/>{{!empty(old('keterangan_tujuan_tpb'))? old('keterangan_tujuan_tpb') : ($actionform == 'update' && $data->keterangan_tujuan_tpb != ''? $data->keterangan_tujuan_tpb : old('keterangan_tujuan_tpb'))}}</textarea>
-        </div>
-        <div class="col-lg-6">
-            <label>Keterangan Indikator</label>
-            <textarea class="form-control" name="keterangan" id="keterangan" required/>{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $data->keterangan != ''? $data->keterangan : old('keterangan'))}}</textarea>
-        </div>
-    </div>
-    <div class="form-group row mb-5">
-        <div class="col-lg-6">
-            <label>Nama Indikator</label>
+            <label>Nama</label>
             <input type="text" class="form-control" name="nama" id="nama" value="{{!empty(old('nama'))? old('nama') : ($actionform == 'update' && $data->nama != ''? $data->nama : old('nama'))}}" required/>
+        </div>
+        <div class="col-lg-6">
+            <label>Keterangan</label>
+            <input type="text" class="form-control" name="keterangan" id="keterangan" value="{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $data->keterangan != ''? $data->keterangan : old('keterangan'))}}" />
         </div>
     </div>
     <div class="text-center pt-15">
@@ -58,8 +28,6 @@
 
     $(document).ready(function(){
         $('.modal-title').html(title);
-        $('.form-select2').select2();
-
         $('.modal').on('shown.bs.modal', function () {
             setFormValidate();
         });  

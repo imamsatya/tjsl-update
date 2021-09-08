@@ -49,7 +49,7 @@ class KodeIndikatorController extends Controller
      */
     public function datatable(Request $request)
     {
-        $kode = KodeIndikator::orderBy('tpb_id')->get();
+        $kode = KodeIndikator::orderBy('kode')->get();
         try{
             return datatables()->of($kode)
             ->addColumn('action', function ($row){
@@ -66,9 +66,10 @@ class KodeIndikatorController extends Controller
                 return $button;
             })
             ->addColumn('tpb', function ($row){
-                return @$row->tpb->no_tpb . ' - ' . @$row->tpb->nama;
+                $tpb = @$row->tpb->no_tpb . ' - ' . @$row->tpb->nama;
+                return $tpb;
             })
-            ->rawColumns(['nama','keterangan','action'])
+            ->rawColumns(['nama','keterangan','action','tpb'])
             ->toJson();
         }catch(Exception $e){
             return response([
@@ -94,6 +95,7 @@ class KodeIndikatorController extends Controller
             'pagetitle' => $this->pagetitle,
             'actionform' => 'insert',
             'data' => $kode_indikator,
+            'hastpb' => null,
             'tpb' => Tpb::get()
         ]);
 
