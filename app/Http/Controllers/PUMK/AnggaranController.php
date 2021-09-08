@@ -19,6 +19,7 @@ use App\Models\User;
 use App\Models\PeriodeLaporan;
 use App\Models\Status;
 use App\Models\PumkAnggaran;
+use App\Exports\AnggaranPumkExport;
 
 class AnggaranController extends Controller
 {
@@ -336,5 +337,38 @@ class AnggaranController extends Controller
             ];
         }
         return response()->json($result);
+    }
+
+
+    public function export(Request $request)
+    {
+
+        $anggaran_pumk = PumkAnggaran::select('pumk_anggarans.*','perusahaans.nama_lengkap AS bumn_lengkap','periode_laporans.nama AS periode','statuses.nama AS status')
+                        ->leftJoin('perusahaans','perusahaans.id','pumk_anggarans.bumn_id')
+                        ->leftJoin('periode_laporans', 'periode_laporans.id', 'pumk_anggarans.periode_id')
+                        ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id');
+        
+                        if($request->perusahaan_id !== null){
+                            $anggaran_pumk  = $anggaran_pumk->where('bumn_id', $perusahaan_id);
+                        }
+                
+                        if($request->periode_id !== null){
+                            $anggaran_pumk  = $anggaran_pumk->where('periode_id', $request->periode_id);
+                        }
+                
+                        if($request->status_id !== null){
+                            $anggaran_pumk  = $anggaran_pumk->where('status_id', $request->status_id);
+                        }
+                
+                        if($request->tahun !== null){
+                            $anggaran_pumk  = $anggaran_pumk->where('tahun', $request->tahun);
+                        }        
+                        
+                        $anggaran_pumk = $anggaran_pumk->orderBy('tahun','desc');
+
+        $anggaran_pumk = $anggaran_pumk->get();
+
+        $namaFile = "Data Anggaran PUMK ".date('dmY').".xlsx";
+        return Excel::download(new AnggaranPumkExport($anggaran_pumk,$request->tahun), $namaFile);
     }
 }

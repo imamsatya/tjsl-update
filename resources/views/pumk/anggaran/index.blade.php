@@ -188,7 +188,7 @@
     var urlshow = "{{route('pumk.anggaran.show')}}";
     var urldelete = "{{route('pumk.anggaran.delete')}}";
     var urlupdatestatus = "{{route('pumk.anggaran.updatestatus')}}";
-    var urlexport = "";
+    var urlexport = "{{route('pumk.anggaran.export')}}";
 
     $(document).ready(function(){
         $('.tree').treegrid({
@@ -221,9 +221,9 @@
             winform(urlshow, {'id':$(this).data('id')}, 'Detail Data');
         });
 
-        // $('body').on('click','.cls-export',function(){
-        //     exportExcel();
-        // });
+        $('body').on('click','.cls-export',function(){
+            exportExcel();
+        });
 
         $('body').on('click','.btn-search',function(){
             $('#form-cari').toggle(600);
@@ -397,78 +397,78 @@
         });	
     }
 
-    // function exportExcel()
-    // {
-    //     $.ajax({
-    //         type: 'post',
-    //         data: {
-    //             'perusahaan_id' : $("select[name='perusahaan_id']").val(),
-    //             'tahun' : $("select[name='tahun']").val(),
-    //             'pilar_pembangunan_id' : $("select[name='pilar_pembangunan_id']").val(),
-    //             'tpb_id' : $("select[name='tpb_id']").val()
-    //         },
-    //         beforeSend: function () {
-    //             $.blockUI();
-    //         },
-    //         url: urlexport,
-    //         xhrFields: {
-    //             responseType: 'blob',
-    //         },
-    //         success: function(data){
-    //             $.unblockUI();
+    function exportExcel()
+    {
+        $.ajax({
+            type: 'post',
+            data: {
+                'perusahaan_id' : $("select[name='perusahaan_id']").val(),
+                'tahun' : $("select[name='tahun']").val(),
+                'status' : $("select[name='status_id']").val(),
+                'periode_id' : $("select[name='periode_id']").val()
+            },
+            beforeSend: function () {
+                $.blockUI();
+            },
+            url: urlexport,
+            xhrFields: {
+                responseType: 'blob',
+            },
+            success: function(data){
+                $.unblockUI();
 
-    //             var today = new Date();
-    //             var dd = String(today.getDate()).padStart(2, '0');
-    //             var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    //             var yyyy = today.getFullYear();
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
                 
-    //             today = dd + '-' + mm + '-' + yyyy;
-    //             var filename = 'Data Anggaran TPB '+today+'.xlsx';
+                today = dd + '-' + mm + '-' + yyyy;
+                var filename = 'Data Anggaran PUMK '+today+'.xlsx';
 
-    //             var blob = new Blob([data], {
-    //                 type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    //             });
-    //             var link = document.createElement('a');
-    //             link.href = window.URL.createObjectURL(blob);
-    //             link.download = filename;
+                var blob = new Blob([data], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
 
-    //             document.body.appendChild(link);
+                document.body.appendChild(link);
 
-    //             link.click();
-    //             document.body.removeChild(link);
-    //         },
-    //         error: function(jqXHR, exception){
-    //             $.unblockUI();
-    //                 var msgerror = '';
-    //                 if (jqXHR.status === 0) {
-    //                     msgerror = 'jaringan tidak terkoneksi.';
-    //                 } else if (jqXHR.status == 404) {
-    //                     msgerror = 'Halaman tidak ditemukan. [404]';
-    //                 } else if (jqXHR.status == 500) {
-    //                     msgerror = 'Internal Server Error [500].';
-    //                 } else if (exception === 'parsererror') {
-    //                     msgerror = 'Requested JSON parse gagal.';
-    //                 } else if (exception === 'timeout') {
-    //                     msgerror = 'RTO.';
-    //                 } else if (exception === 'abort') {
-    //                     msgerror = 'Gagal request ajax.';
-    //                 } else {
-    //                     msgerror = 'Error.\n' + jqXHR.responseText;
-    //                 }
-    //         swal.fire({
-    //                 title: "Error System",
-    //                 html: msgerror+', coba ulangi kembali !!!',
-    //                 icon: 'error',
+                link.click();
+                document.body.removeChild(link);
+            },
+            error: function(jqXHR, exception){
+                $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+            swal.fire({
+                    title: "Error System",
+                    html: msgerror+', coba ulangi kembali !!!',
+                    icon: 'error',
 
-    //                 buttonsStyling: true,
+                    buttonsStyling: true,
 
-    //                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-    //         });      
+                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+            });      
                 
-    //         }
-    //     });
-    //     return false;
-    // }
+            }
+        });
+        return false;
+    }
     
 </script>
 @endsection

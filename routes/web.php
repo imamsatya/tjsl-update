@@ -352,6 +352,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('updatestatus', 'App\Http\Controllers\PUMK\AnggaranController@update_status')->name('pumk.anggaran.updatestatus');
                 Route::get('datatable', 'App\Http\Controllers\PUMK\AnggaranController@datatable')->name('pumk.anggaran.datatable');
                 Route::post('show', 'App\Http\Controllers\PUMK\AnggaranController@show')->name('pumk.anggaran.show');
+                Route::post('export', 'App\Http\Controllers\PUMK\AnggaranController@export')->name('pumk.anggaran.export');
             });
         });
 
