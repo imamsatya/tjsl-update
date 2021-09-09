@@ -384,7 +384,8 @@ class AdministrasiController extends Controller
 
     public function download_template(Request $request)
     {
-        $perusahaan = Perusahaan::where('id', $request->perusahaan_id)->first();
+        $perusahaan_id =  ($request->perusahaan_id?$request->perusahaan_id:1);
+        $perusahaan = Perusahaan::where('id', $perusahaan_id)->first();
         $namaFile = "Template Data Target TPB.xlsx";
         
         return Excel::download(new TargetTemplateExcelSheet($perusahaan), $namaFile);
