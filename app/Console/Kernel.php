@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         SilabaBumnSync::class,
         ProvinsiKotaSync::class,
+        BankAccountSync::class,
     ];
 
     /**
