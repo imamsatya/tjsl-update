@@ -37,9 +37,10 @@
                             <tr>
                                 <th>No.</th>
                                 <th>TPB</th>
-                                <th>Kode</th>
-                                <th>Nama</th>
-                                <th>Satuan Ukur</th>
+                                <th>Kode Tujuan TPB</th>
+                                <th>Keterangan Tujuan TPB</th>
+                                <th>Kode Indikator</th>
+                                <th>Nama Indikator</th>
                                 <th>Keterangan</th>
                                 <th style="text-align:center;">Aksi</th>
                             </tr>
@@ -91,9 +92,10 @@
             columns: [
                 { data: 'id', orderable: false, searchable: false },
                 { data: 'tpb', name: 'tpb' },
+                { data: 'kode_tujuan_tpb', name: 'kode_tujuan_tpb' },
+                { data: 'keterangan_tujuan_tpb', name: 'keterangan_tujuan_tpb' },
                 { data: 'kode', name: 'kode' },
                 { data: 'nama', name: 'nama' },
-                { data: 'satuan_ukur', name: 'satuan_ukur' },
                 { data: 'keterangan', name: 'keterangan' },
                 { data: 'action', name:'action'},
             ],

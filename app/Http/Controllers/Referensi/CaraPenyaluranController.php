@@ -24,7 +24,7 @@ class CaraPenyaluranController extends Controller
     public function __construct()
     {
         $this->__route = 'referensi.cara_penyaluran';
-        $this->pagetitle = 'Cara Penyaluran';
+        $this->pagetitle = 'Pelaksanaan Program';
     }
 
     /**

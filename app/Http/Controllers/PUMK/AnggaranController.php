@@ -15,15 +15,12 @@ use Maatwebsite\Excel\Facades\Excel;
 
 use App\Models\AnggaranTpb;
 use App\Models\Perusahaan;
-use App\Models\PilarPembangunan;
-use App\Models\Tpb;
-use App\Models\VersiPilar;
 use App\Models\User;
-use App\Models\LogAnggaranTpb;
 use App\Models\PeriodeLaporan;
 use App\Models\Status;
 use App\Models\PumkAnggaran;
-use App\Exports\AnggaranTpbExport;
+use App\Models\LogPumkAnggaran;
+use App\Exports\AnggaranPumkExport;
 
 class AnggaranController extends Controller
 {
@@ -38,13 +35,24 @@ class AnggaranController extends Controller
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
         $perusahaan_id = $request->perusahaan_id;
-        
+
         $admin_bumn = false;
+        $super_admin = false;
+        $admin_tjsl = false;
+
         if(!empty($users->getRoleNames())){
             foreach ($users->getRoleNames() as $v) {
                 if($v == 'Admin BUMN') {
                     $admin_bumn = true;
                     $perusahaan_id = \Auth::user()->id_bumn;
+                }
+                if($v == 'Super Admin') {
+                    $super_admin = true;
+                    $perusahaan_id;
+                }
+                if($v == 'Admin TJSL') {
+                    $admin_tjsl = true;
+                    $perusahaan_id;
                 }
             }
         }
@@ -78,12 +86,14 @@ class AnggaranController extends Controller
             'breadcrumb' => '',
             'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
+            'admin_tjsl' => $admin_tjsl,
+            'super_admin' => $super_admin,
             'filter_bumn_id' => $perusahaan_id,
             'filter_periode_id' => $request->periode_id,
             'filter_status_id' => $request->status_id,
             'filter_tahun' => $request->tahun,
             'anggaran_pumk' => $anggaran_pumk,
-            'periode' => PeriodeLaporan::get(),
+            'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
             'status' => Status::get()
         ]);
     }
@@ -109,7 +119,7 @@ class AnggaranController extends Controller
             'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
-            'periode' => PeriodeLaporan::get()
+            'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
         ]);
 
     }
@@ -140,7 +150,7 @@ class AnggaranController extends Controller
             'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
-            'periode' => PeriodeLaporan::get(),
+            'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
             'data' => $data
         ]);
 
@@ -169,7 +179,8 @@ class AnggaranController extends Controller
                     'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
                     'admin_bumn' => $admin_bumn,
                     'perusahaan_id' => $perusahaan_id,
-                    'periode' => PeriodeLaporan::get(),
+                    'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
+                    'periode_text' => PeriodeLaporan::where('id',$data->periode_id)->first(),
                     'data' => $data
                 ]);
        }catch(Exception $e){}
@@ -178,7 +189,6 @@ class AnggaranController extends Controller
 
     public function store(Request $request)
     {
-
         $result = [
             'flag' => 'error',
             'msg' => 'Error System',
@@ -191,10 +201,22 @@ class AnggaranController extends Controller
                                 $validasi = true;
                                 $param = $request->all();
                                 $param = $request->except(['actionform','id','_token']);
+                                $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^0-9]/','',$request->saldo_awal);
+                                $param['income_mitra_binaan'] = $request->income_mitra_binaan == null? 0 : preg_replace('/[^0-9]/','',$request->income_mitra_binaan);
+                                $param['income_bumn_pembina_lain'] = $request->income_bumn_pembina_lain == null? 0 : preg_replace('/[^0-9]/','',$request->income_bumn_pembina_lain);
+                                $param['income_jasa_adm_pumk'] = $request->income_jasa_adm_pumk == null? 0 : preg_replace('/[^0-9]/','',$request->income_jasa_adm_pumk);
+                                $param['income_adm_bank'] = $request->income_adm_bank == null? 0 : preg_replace('/[^0-9]/','',$request->income_adm_bank);
+                                $param['income_total'] = $request->income_total == null? 0 : preg_replace('/[^0-9]/','',$request->income_total);
+                                $param['outcome_mandiri'] = $request->outcome_mandiri == null? 0 : preg_replace('/[^0-9]/','',$request->outcome_mandiri);
+                                $param['outcome_kolaborasi_bumn'] = $request->outcome_kolaborasi_bumn == null? 0 : preg_replace('/[^0-9]/','',$request->outcome_kolaborasi_bumn);
+                                $param['outcome_bumn_khusus'] = $request->outcome_bumn_khusus == null? 0 :preg_replace('/[^0-9]/','',$request->outcome_bumn_khusus);
+                                $param['outcome_total'] = $request->outcome_total == null? 0 :preg_replace('/[^0-9]/','',$request->outcome_total);
+                                $param['saldo_akhir'] = $request->saldo_akhir == null? 0 :preg_replace('/[^0-9]/','',$request->saldo_akhir);
                                 $param['created_by'] = \Auth::user()->id;
                                 $param['created_at'] = now(); 
-                                $param['status_id'] = DB::table('statuses')->where('nama','INFILLED')->pluck('id')->first();
+                                $param['status_id'] = DB::table('statuses')->where('nama','Unfilled')->pluck('id')->first();
                                 $data = PumkAnggaran::create($param);
+
                                 if($validasi){
                                     DB::commit();
                                     $result = [
@@ -225,10 +247,28 @@ class AnggaranController extends Controller
                             try{
                                 $param = $request->all();
                                 $param = $request->except(['actionform','_token','bumn_id']);
+                                $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^0-9]/','',$request->saldo_awal);
+                                $param['income_mitra_binaan'] = $request->income_mitra_binaan == null? 0 : preg_replace('/[^0-9]/','',$request->income_mitra_binaan);
+                                $param['income_bumn_pembina_lain'] = $request->income_bumn_pembina_lain == null? 0 : preg_replace('/[^0-9]/','',$request->income_bumn_pembina_lain);
+                                $param['income_jasa_adm_pumk'] = $request->income_jasa_adm_pumk == null? 0 : preg_replace('/[^0-9]/','',$request->income_jasa_adm_pumk);
+                                $param['income_adm_bank'] = $request->income_adm_bank == null? 0 : preg_replace('/[^0-9]/','',$request->income_adm_bank);
+                                $param['income_total'] = $request->income_total == null? 0 : preg_replace('/[^0-9]/','',$request->income_total);
+                                $param['outcome_mandiri'] = $request->outcome_mandiri == null? 0 : preg_replace('/[^0-9]/','',$request->outcome_mandiri);
+                                $param['outcome_kolaborasi_bumn'] = $request->outcome_kolaborasi_bumn == null? 0 : preg_replace('/[^0-9]/','',$request->outcome_kolaborasi_bumn);
+                                $param['outcome_bumn_khusus'] = $request->outcome_bumn_khusus == null? 0 :preg_replace('/[^0-9]/','',$request->outcome_bumn_khusus);
+                                $param['outcome_total'] = $request->outcome_total == null? 0 :preg_replace('/[^0-9]/','',$request->outcome_total);
+                                $param['saldo_akhir'] = $request->saldo_akhir == null? 0 :preg_replace('/[^0-9]/','',$request->saldo_akhir);
                                 $param['updated_by'] = \Auth::user()->id; 
                                 $param['updated_at'] = now(); 
                                 $data = PumkAnggaran::find($param['id']);
                                 $data->update((array)$param);
+
+                                $log['pumk_anggaran_id'] = (int)$param['id'];
+                                $log['status_id'] = (int)$param['status_id'];
+                                $log['created_by_id'] = (int)$param['updated_by'];
+                                $log['created_at'] = now();
+
+                                AnggaranController::store_log($log);
 
                                 DB::commit();
                                 $result = [
@@ -312,5 +352,59 @@ class AnggaranController extends Controller
             ];
         }
         return response()->json($result);
+    }
+
+
+    public function export(Request $request)
+    {
+
+        $anggaran_pumk = PumkAnggaran::select('pumk_anggarans.*','perusahaans.nama_lengkap AS bumn_lengkap','periode_laporans.nama AS periode','statuses.nama AS status')
+                        ->leftJoin('perusahaans','perusahaans.id','pumk_anggarans.bumn_id')
+                        ->leftJoin('periode_laporans', 'periode_laporans.id', 'pumk_anggarans.periode_id')
+                        ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id');
+        
+                        if($request->perusahaan_id !== null){
+                            $anggaran_pumk  = $anggaran_pumk->where('bumn_id', $perusahaan_id);
+                        }
+                
+                        if($request->periode_id !== null){
+                            $anggaran_pumk  = $anggaran_pumk->where('periode_id', $request->periode_id);
+                        }
+                
+                        if($request->status_id !== null){
+                            $anggaran_pumk  = $anggaran_pumk->where('status_id', $request->status_id);
+                        }
+                
+                        if($request->tahun !== null){
+                            $anggaran_pumk  = $anggaran_pumk->where('tahun', $request->tahun);
+                        }        
+                        
+                        $anggaran_pumk = $anggaran_pumk->orderBy('tahun','desc');
+
+        $anggaran_pumk = $anggaran_pumk->get();
+
+        $namaFile = "Data Anggaran PUMK ".date('dmY').".xlsx";
+        return Excel::download(new AnggaranPumkExport($anggaran_pumk,$request->tahun), $namaFile);
+    }
+
+    public static function store_log($log)
+    {  
+        LogPumkAnggaran::insert($log);
+    }
+
+    public function log_status(Request $request)
+    {
+        $log = LogPumkAnggaran::select('log_pumk_anggarans.*','users.name AS user','statuses.nama AS status')
+                                    ->leftjoin('users','users.id','=','log_pumk_anggarans.created_by_id')
+                                    ->leftjoin('statuses','statuses.id','=','log_pumk_anggarans.status_id')
+                                    ->where('pumk_anggaran_id', (int)$request->input('id'))
+                                    ->orderBy('created_at')
+                                    ->get();
+
+        return view($this->__route.'.log_status',[
+            'pagetitle' => 'Log Status',
+            'log' => $log
+        ]);
+
     }
 }

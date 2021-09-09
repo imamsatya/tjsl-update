@@ -62,8 +62,7 @@
                         </div>
                         <div class="col-lg-6">
                             <label>Tahun</label>
-                            <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun" data-allow-clear="true">
-                                <option></option>
+                            <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true" >
                                 @php for($i = date("Y"); $i>=2020; $i--){ @endphp
                                     @php
                                         $select = (($i == $tahun) ? 'selected="selected"' : '');
@@ -107,7 +106,7 @@
                     <div class="separator border-gray-200 mb-10"></div>
                     
                     <!--begin: Datatable -->
-                    <div class="table-responsive"  style="display:none;" >
+                    <div class="table-responsive">
                         <table class="table table-striped table-bordered table-hover tree  table-checkable">
                             <thead>
                                 <tr>
@@ -118,61 +117,104 @@
                                     <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>                 
-                            @php $no=0; $total=0; @endphp
-                            @foreach ($anggaran_pilar as $p)                                  
+                            <tbody>       
+                            @php 
+                                $total=0;
+                                $bumn = $anggaran_bumn;
+                            @endphp       
+                            @foreach ($bumn as $b)     
                                 @php 
-                                    $no++;
-                                    $anggaran_anak = $anggaran->where('pilar_pembangunan_id', $p->pilar_pembangunan_id);
+                                    $no=0;
+                                    $sum_bumn = $anggaran_bumn->where('perusahaan_id', $b->id)->first(); 
+                                    $anggaran_pilar_bumn = $anggaran_pilar->where('perusahaan_id', $b->id);
                                     
-                                    $status = $anggaran->where('pilar_pembangunan_id', $p->pilar_pembangunan_id)->first();
-                                    $status_class = 'primary';
-                                    if($status->status_id == 1){
-                                        $status_class = 'success';
-                                    }else if($status->status_id == 3){
-                                        $status_class = 'warning';
+                                    $status = $anggaran->where('perusahaan_id', $b->id)->first();
+                                    if($status){
+                                        $status_class = 'primary';
+                                        if($status->status_id == 1){
+                                            $status_class = 'success';
+                                        }else if($status->status_id == 3){
+                                            $status_class = 'warning';
+                                        }
                                     }
-                
-                                    $total += $p->sum_anggaran;
                                 @endphp
-                            
-                                <tr class="treegrid-pilar{{@$p->pilar_id}}" >
-                                    <td style="text-align:center;">{{$no}}</td>
-                                    <td>{{$p->pilar_nama}}</td>
-                                    <td style="text-align:right;">{{number_format($p->sum_anggaran,0,',',',')}}</td>
+                                @if(!$perusahaan_id)
+                                <tr class="treegrid-bumn{{@$b->id}}" >
+                                    <td style="text-align:center;"></td>
+                                    <td>{{$b->nama_lengkap}}</td>
+                                    <td style="text-align:right;">
+                                        @if($sum_bumn)
+                                        {{number_format($sum_bumn->sum_anggaran,0,',',',')}}
+                                        @endif
+                                    </td>
                                     <td style="text-align:center;">
+                                        @if($status)
                                         <a class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{@$status->status->nama}}</a>
-                                    </td>
-                                    <td style="text-align:center;">
-                                        @if($status->status_id != 1)
-                                        <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pilar" data-id="{{$p->pilar_id}}" data-nama="{{$p->pilar_nama}}" data-toggle="tooltip" title="Hapus data {{$p->pilar_nama}}"><i class="bi bi-trash fs-3"></i></button>
                                         @endif
                                     </td>
-                                </tr>
-                                
-                                @foreach ($anggaran_anak as $a)  
-                                @php 
-                                    $status_class = 'primary';
-                                    if($a->status_id == 1){
-                                        $status_class = 'success';
-                                    }else if($a->status_id == 3){
-                                        $status_class = 'warning';
-                                    }
-                                @endphp     
-                                <tr class="treegrid-{{$a->id}} treegrid-parent-pilar{{@$p->pilar_id}} item{{$a->id}}">
                                     <td></td>
-                                    <td>{{@$a->no_tpb .' - '. @$a->tpb_nama}}</td>
-                                    <td style="text-align:right;">{{number_format($a->anggaran,0,',',',')}}</td>
-                                    <td style="text-align:center;">
-                                        <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$a->id}}">{{@$a->status->nama}}</span>
-                                    </td>
-                                    <td style="text-align:center;">
-                                        @if($a->status_id != 1)
-                                        <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$a->id}}" data-toggle="tooltip" title="Ubah data {{@$a->tpb->no_tpb}}"><i class="bi bi-pencil fs-3"></i></button>
-                                        <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="{{$a->id}}" data-nama="{{@$a->tpb->no_tpb}}" data-toggle="tooltip" title="Hapus data {{@$a->tpb->no_tpb}}"><i class="bi bi-trash fs-3"></i></button>
-                                        @endif
-                                    </td>
-                                </tr>
+                                    <td></td>
+                                </tr>  
+                                @endif    
+                                @foreach ($anggaran_pilar_bumn as $p)                                  
+                                    @php 
+                                        $no++;
+                                        $anggaran_anak = $anggaran->where('perusahaan_id', $b->id)->where('pilar_pembangunan_id', $p->pilar_pembangunan_id);
+                                        
+                                        $status = $anggaran->where('perusahaan_id', $b->id)->where('pilar_pembangunan_id', $p->pilar_pembangunan_id)->first();
+                                        $status_class = 'primary';
+                                        if($status->status_id == 1){
+                                            $status_class = 'success';
+                                        }else if($status->status_id == 3){
+                                            $status_class = 'warning';
+                                        }
+                                        
+                                        $class_parent = '';
+                                        if(!$perusahaan_id){
+                                            $class_parent = 'treegrid-parent-bumn' . $p->perusahaan_id;
+                                        }
+                    
+                                        $total += $p->sum_anggaran;
+                                    @endphp
+                                
+                                    <tr class="treegrid-bumn{{@$b->id}}pilar{{@$p->pilar_id}} {{$class_parent}} item-bumn{{@$b->id}}pilar{{$p->pilar_id}}" >
+                                        <td style="text-align:center;">{{$no}}</td>
+                                        <td>{{$p->pilar_nama}}</td>
+                                        <td style="text-align:right;">{{number_format($p->sum_anggaran,0,',',',')}}</td>
+                                        <td style="text-align:center;">
+                                            <a class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{@$status->status->nama}}</a>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            @if($status->status_id != 1)
+                                            <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pilar" data-id="{{$p->pilar_id}}" data-nama="{{$p->pilar_nama}}" data-toggle="tooltip" title="Hapus data {{$p->pilar_nama}}"><i class="bi bi-trash fs-3"></i></button>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    
+                                    @foreach ($anggaran_anak as $a)  
+                                    @php 
+                                        $status_class = 'primary';
+                                        if($a->status_id == 1){
+                                            $status_class = 'success';
+                                        }else if($a->status_id == 3){
+                                            $status_class = 'warning';
+                                        }
+                                    @endphp     
+                                    <tr class="treegrid-{{$a->id}} treegrid-parent-bumn{{@$b->id}}pilar{{@$p->pilar_id}} item{{$a->id}}">
+                                        <td></td>
+                                        <td>{{@$a->no_tpb .' - '. @$a->tpb_nama}}</td>
+                                        <td style="text-align:right;">{{number_format($a->anggaran,0,',',',')}}</td>
+                                        <td style="text-align:center;">
+                                            <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$a->id}}">{{@$a->status->nama}}</span>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            @if($a->status_id != 1)
+                                            <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$a->id}}" data-toggle="tooltip" title="Ubah data {{@$a->tpb->no_tpb}}"><i class="bi bi-pencil fs-3"></i></button>
+                                            <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="{{$a->id}}" data-nama="{{@$a->tpb->no_tpb}}" data-toggle="tooltip" title="Hapus data {{@$a->tpb->no_tpb}}"><i class="bi bi-trash fs-3"></i></button>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @endforeach
                                 @endforeach
                             @endforeach
                             </tbody>
@@ -272,12 +314,6 @@
 
         if(!"{{ $admin_bumn }}"){
             showValidasi();
-        }
-        
-        if("{{ $perusahaan_id }}" == ''){
-            $('.table-responsive').hide();
-        }else{
-            $('.table-responsive').show();
         }
     });
 

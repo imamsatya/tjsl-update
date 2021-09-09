@@ -254,7 +254,9 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('upload', 'App\Http\Controllers\Target\AdministrasiController@upload')->name('target.administrasi.upload');
                 Route::post('download_template', 'App\Http\Controllers\Target\AdministrasiController@download_template')->name('target.administrasi.download_template');
                 Route::post('get_status', 'App\Http\Controllers\Target\AdministrasiController@get_status')->name('target.administrasi.get_status');
+                Route::post('detail', 'App\Http\Controllers\Target\AdministrasiController@detail')->name('target.administrasi.detail');
                 Route::post('edit', 'App\Http\Controllers\Target\AdministrasiController@edit')->name('target.administrasi.edit');
+                Route::post('export', 'App\Http\Controllers\Target\AdministrasiController@export')->name('target.administrasi.export');
                 Route::post('store', 'App\Http\Controllers\Target\AdministrasiController@store')->name('target.administrasi.store');
                 Route::post('delete', 'App\Http\Controllers\Target\AdministrasiController@delete')->name('target.administrasi.delete');
                 Route::get('datatable', 'App\Http\Controllers\Target\AdministrasiController@datatable')->name('target.administrasi.datatable');
@@ -340,6 +342,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
         // Fetch Route
         Route::prefix('fetch')->group(function(){
             Route::post('/gettpbbypilar', 'App\Http\Controllers\FetchController@getTpbByPilar');
+            Route::post('/getpumkanggaranbyperiode', 'App\Http\Controllers\FetchController@getPumkAnggaranByPeriode');
         });
 
         Route::prefix('general')->group(function(){
@@ -364,6 +367,8 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('updatestatus', 'App\Http\Controllers\PUMK\AnggaranController@update_status')->name('pumk.anggaran.updatestatus');
                 Route::get('datatable', 'App\Http\Controllers\PUMK\AnggaranController@datatable')->name('pumk.anggaran.datatable');
                 Route::post('show', 'App\Http\Controllers\PUMK\AnggaranController@show')->name('pumk.anggaran.show');
+                Route::post('export', 'App\Http\Controllers\PUMK\AnggaranController@export')->name('pumk.anggaran.export');
+                Route::post('log', 'App\Http\Controllers\PUMK\AnggaranController@log_status')->name('pumk.anggaran.log');
             });
         });
 

@@ -7,6 +7,9 @@
 .border_bottom {
     border-bottom: 1px solid #c8c7c7;
 }
+.cls-button-log:hover{
+    background-color: rgb(211, 249, 250);
+}
 </style>
 @endsection
 
@@ -91,20 +94,20 @@
                         <div class="col-lg-6">
                             <label>Tahun</label>
                             <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun" data-allow-clear="true">
+                                @php
+                                    for($i = date("Y"); $i>=2020; $i--){ @endphp
+                                    <option value="{{$i}}">{{$i}}</option>
+                                    @php }
+                                    $select = (($i == date("Y")) ? 'selected="selected"' : '');
+                                @endphp
                                 <option></option>
-                                @php for($i = date("Y"); $i>=2020; $i--){ @endphp
-                                    @php
-                                        $select = (($i == $filter_tahun) ? 'selected="selected"' : '');
-                                    @endphp
-                                    <option value="{{$i}}" {!! $select !!}>{{$i}}</option>
-                                @php } @endphp
                             </select>
                         </div>
                     </div>
                     <div class="form-group row  mb-5">
                         <div class="col-lg-6">
                             <button id="proses" class="btn-small btn-success me-3 text-white"><i class="fa fa-search text-white"></i> Filter</button>
-                            <button  onclick="location.reload();" class="btn-small btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
+                            <button  onclick="window.location.href='{{route('pumk.anggaran.index')}}'" class="btn-small btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
                         </div>
                     </div>
                     <div class="separator border-gray-200 mb-10"></div>
@@ -141,7 +144,11 @@
                                     <td style="text-align:right;">{{number_format($p->income_total,0,',',',')}}</td>
                                     <td style="text-align:right;">{{number_format($p->outcome_total,0,',',',')}}</td>
                                     <td style="text-align:right;">{{number_format($p->saldo_akhir,0,',',',')}}</td>
-                                    <td style="text-align:center;">{{$p->status}}</td>
+                                    <td style="text-align:center;">
+                                        <button type="button" class="btn btn-sm cls-button-log" data-id="{{$p->id}}" data-nama="Log {{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Log data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}">
+                                            {{$p->status}}
+                                        </button>
+                                    </td>
                                     <td style="text-align:center;width:150px;">
                                         @if($p->status !== 'Finish')
                                         <button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Edit data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-pencil fs-3"></i></button>
@@ -188,7 +195,8 @@
     var urlshow = "{{route('pumk.anggaran.show')}}";
     var urldelete = "{{route('pumk.anggaran.delete')}}";
     var urlupdatestatus = "{{route('pumk.anggaran.updatestatus')}}";
-    var urlexport = "";
+    var urlexport = "{{route('pumk.anggaran.export')}}";
+    var urllog = "{{route('pumk.anggaran.log')}}";
 
     $(document).ready(function(){
         $('.tree').treegrid({
@@ -199,10 +207,14 @@
 
         $('#page-title').html("{{ $pagetitle }}");
         $('#page-breadcrumb').html("{{ $breadcrumb }}");
-        $('#form-cari').hide();
+        // $('#form-cari').hide();
 
         $('body').on('click','.cls-add',function(){
             winform(urlcreate, {}, 'Tambah Data');
+        });
+
+        $('body').on('click','.cls-button-log',function(){
+            winform(urllog, {'id':$(this).data('id')}, 'Log Data');
         });
 
         $('body').on('click','.cls-button-edit',function(){
@@ -221,9 +233,9 @@
             winform(urlshow, {'id':$(this).data('id')}, 'Detail Data');
         });
 
-        // $('body').on('click','.cls-export',function(){
-        //     exportExcel();
-        // });
+        $('body').on('click','.cls-export',function(){
+            exportExcel();
+        });
 
         $('body').on('click','.btn-search',function(){
             $('#form-cari').toggle(600);
@@ -239,14 +251,16 @@
             window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&periode_id=' + periode_id + '&status_id=' + status_id;
         });
 
-        if(!"{{ $admin_bumn }}"){
-            showValidasi();
-        }
+        // if(!"{{ $admin_bumn }}"){
+        //     showValidasi();
+        // }
         
-        if("{{ $filter_bumn_id }}" == ''){
-            $('.table-responsive').hide();
-        }else{
+        if("{{ $filter_bumn_id }}" == '' && "{{ $super_admin }}"){
             $('.table-responsive').show();
+        }else if("{{ $filter_bumn_id }}" !== '' && "{{ $admin_bumn }}"){
+            $('.table-responsive').show();
+        }else{
+            $('.table-responsive').hide();
         }
     });
 
@@ -395,78 +409,78 @@
         });	
     }
 
-    // function exportExcel()
-    // {
-    //     $.ajax({
-    //         type: 'post',
-    //         data: {
-    //             'perusahaan_id' : $("select[name='perusahaan_id']").val(),
-    //             'tahun' : $("select[name='tahun']").val(),
-    //             'pilar_pembangunan_id' : $("select[name='pilar_pembangunan_id']").val(),
-    //             'tpb_id' : $("select[name='tpb_id']").val()
-    //         },
-    //         beforeSend: function () {
-    //             $.blockUI();
-    //         },
-    //         url: urlexport,
-    //         xhrFields: {
-    //             responseType: 'blob',
-    //         },
-    //         success: function(data){
-    //             $.unblockUI();
+    function exportExcel()
+    {
+        $.ajax({
+            type: 'post',
+            data: {
+                'perusahaan_id' : $("select[name='perusahaan_id']").val(),
+                'tahun' : $("select[name='tahun']").val(),
+                'status' : $("select[name='status_id']").val(),
+                'periode_id' : $("select[name='periode_id']").val()
+            },
+            beforeSend: function () {
+                $.blockUI();
+            },
+            url: urlexport,
+            xhrFields: {
+                responseType: 'blob',
+            },
+            success: function(data){
+                $.unblockUI();
 
-    //             var today = new Date();
-    //             var dd = String(today.getDate()).padStart(2, '0');
-    //             var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    //             var yyyy = today.getFullYear();
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
                 
-    //             today = dd + '-' + mm + '-' + yyyy;
-    //             var filename = 'Data Anggaran TPB '+today+'.xlsx';
+                today = dd + '-' + mm + '-' + yyyy;
+                var filename = 'Data Anggaran PUMK '+today+'.xlsx';
 
-    //             var blob = new Blob([data], {
-    //                 type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    //             });
-    //             var link = document.createElement('a');
-    //             link.href = window.URL.createObjectURL(blob);
-    //             link.download = filename;
+                var blob = new Blob([data], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
 
-    //             document.body.appendChild(link);
+                document.body.appendChild(link);
 
-    //             link.click();
-    //             document.body.removeChild(link);
-    //         },
-    //         error: function(jqXHR, exception){
-    //             $.unblockUI();
-    //                 var msgerror = '';
-    //                 if (jqXHR.status === 0) {
-    //                     msgerror = 'jaringan tidak terkoneksi.';
-    //                 } else if (jqXHR.status == 404) {
-    //                     msgerror = 'Halaman tidak ditemukan. [404]';
-    //                 } else if (jqXHR.status == 500) {
-    //                     msgerror = 'Internal Server Error [500].';
-    //                 } else if (exception === 'parsererror') {
-    //                     msgerror = 'Requested JSON parse gagal.';
-    //                 } else if (exception === 'timeout') {
-    //                     msgerror = 'RTO.';
-    //                 } else if (exception === 'abort') {
-    //                     msgerror = 'Gagal request ajax.';
-    //                 } else {
-    //                     msgerror = 'Error.\n' + jqXHR.responseText;
-    //                 }
-    //         swal.fire({
-    //                 title: "Error System",
-    //                 html: msgerror+', coba ulangi kembali !!!',
-    //                 icon: 'error',
+                link.click();
+                document.body.removeChild(link);
+            },
+            error: function(jqXHR, exception){
+                $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+            swal.fire({
+                    title: "Error System",
+                    html: msgerror+', coba ulangi kembali !!!',
+                    icon: 'error',
 
-    //                 buttonsStyling: true,
+                    buttonsStyling: true,
 
-    //                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-    //         });      
+                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+            });      
                 
-    //         }
-    //     });
-    //     return false;
-    // }
+            }
+        });
+        return false;
+    }
     
 </script>
 @endsection
