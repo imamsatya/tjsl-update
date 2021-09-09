@@ -14,6 +14,7 @@
 @endsection
 
 @section('content')
+
 <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
     <!--begin::Container-->
     <div id="kt_content_container" class="container">
@@ -57,11 +58,11 @@
                             @endphp
                             <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
                                 <option></option>
-                                @foreach($perusahaan as $p)  
+                                @foreach($perusahaan as $bumn)  
                                     @php
-                                        $select = (($p->id == $filter_bumn_id) ? 'selected="selected"' : '');
+                                        $select = (($bumn->id == $filter_bumn_id) ? 'selected="selected"' : '');
                                     @endphp
-                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
+                                    <option value="{{ $bumn->id }}" {!! $select !!}>{{ $bumn->nama_lengkap }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -113,7 +114,7 @@
                     <div class="separator border-gray-200 mb-10"></div>
                 </div>   
                     <!--begin: Datatable -->
-                    <div class="table-responsive"  style="display:none;" >
+                    <div class="table-responsive"  >
                         <table class="table table-striped table-bordered table-hover table-checkable">
                             <thead>
                                 <tr style="background-color:#c4e4e4; ">
@@ -251,17 +252,15 @@
             window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&periode_id=' + periode_id + '&status_id=' + status_id;
         });
 
-        // if(!"{{ $admin_bumn }}"){
-        //     showValidasi();
-        // }
-        
-        if("{{ $filter_bumn_id }}" == '' && "{{ $super_admin }}"){
-            $('.table-responsive').show();
-        }else if("{{ $filter_bumn_id }}" !== '' && "{{ $admin_bumn }}"){
-            $('.table-responsive').show();
-        }else{
-            $('.table-responsive').hide();
+        if("{{ $admin_bumn }}"){
+            $('.cls-export').hide();
+            $('.cls-button-update-status').hide();
         }
+        if("{{ $admin_tjsl }}"){
+            $('.cls-add').hide();
+            $('.cls-button-edit').hide();
+        }
+
     });
 
     

@@ -77,7 +77,7 @@
                         <label style="padding-top: 20px;">Saldo Awal</label> 
                     </div>	
                     <div class="col-lg-7">
-                        <input type="text" class="form-control input-saldo-awal incomes" name="saldo_awal">
+                        <input type="text" class="form-control number-separator input-saldo-awal incomes" name="saldo_awal">
                     </div>
                     
                     <div class="col-lg-4 offset-sm-1">
