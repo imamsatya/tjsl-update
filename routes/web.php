@@ -231,6 +231,19 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::get('datatable', 'App\Http\Controllers\Referensi\JenisPembayaranController@datatable')->name('referensi.jenis_pembayaran.datatable');
             });
 
+            Route::prefix('bank_account')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\BankAccountController@index')->name('referensi.bank_account.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\BankAccountController@create')->name('referensi.bank_account.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\BankAccountController@edit')->name('referensi.bank_account.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\BankAccountController@store')->name('referensi.bank_account.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\BankAccountController@delete')->name('referensi.bank_account.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\BankAccountController@datatable')->name('referensi.bank_account.datatable');
+                Route::get('apisyncbankaccount', function () {
+                    $exitCode = Artisan::call('apisync:bankaccount');
+                    return redirect('referensi/bank_account/index');
+                })->name('referensi.bank_account.apisyncbankaccount');
+            });
+
         });
 
         
