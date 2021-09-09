@@ -7,6 +7,9 @@
 .border_bottom {
     border-bottom: 1px solid #c8c7c7;
 }
+.cls-button-log:hover{
+    background-color: rgb(211, 249, 250);
+}
 </style>
 @endsection
 
