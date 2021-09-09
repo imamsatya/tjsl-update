@@ -28,82 +28,37 @@
             <div class="card-body p-0">
                 <!--begin::Heading-->
                 <div class="card-px py-10">
-                    <div class="form-group row  mb-5">
-                        <div class="col-lg-6">
-                            <label>BUMN</label>
-                            @php
-                                $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
-                            @endphp
-                            <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
-                                <option></option>
-                                @foreach($perusahaan as $p)  
-                                    @php
-                                        $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
-                                    @endphp
-                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-lg-6">
-                            <label>Tahun</label>
-                            <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true">
-                                @php for($i = date("Y"); $i>=2020; $i--){ @endphp
-                                    @php
-                                        $select = (($i == $tahun) ? 'selected="selected"' : '');
-                                    @endphp
-                                    <option value="{{$i}}" {!! $select !!}>{{$i}}</option>
-                                @php } @endphp
-                            </select>
-                        </div>
-                    </div>
+                <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
+	                @csrf
                     <div class="form-group row  mb-5">
                         <div class="col-lg-6 ">
-                            <label>File</label>
+                            <label>File (*.xlsx)</label>
                             <input class="form-control" type="file" name="file_name" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" required/>
                         </div>
                         <div class="col-lg-4 pt-6">
-                            <button id="proses" class="btn btn-success me-3">Proses</button>
+                            <button  id="submit" type="submit" class="btn btn-success me-3">Proses</button>
                         </div>
                     </div>
                     <div class="separator border-gray-200 mb-10"></div>
-                    <table class="table table-striped- table-bordered table-hover table-checkable" id="datatable_log">
+                    <table class="table table-striped- table-bordered table-hover table-checkable" id="datatable">
                         <thead>
                             <tr>
-                                <th rowspan="2" style="font-weight:bold;border: 1px solid #c8c7c7;text-align:center;vertical-align:middle">No.</th>
-                                <th rowspan="2" style="font-weight:bold;border: 1px solid #c8c7c7;text-align:center;vertical-align:middle">Tanggal</th>
-                                <th rowspan="2" style="font-weight:bold;border: 1px solid #c8c7c7;text-align:center;vertical-align:middle">Nama File</th>
-                                <th colspan="2" style="font-weight:bold;border: 1px solid #c8c7c7;text-align:center;vertical-align:middle">Hasil Upload</th>
-                                <th colspan="2" style="font-weight:bold;border: 1px solid #c8c7c7;text-align:center;vertical-align:middle">File </th>
-                                <th rowspan="2" style="font-weight:bold;border: 1px solid #c8c7c7;text-align:center;vertical-align:middle">Keterangan</th>
+                                <th rowspan="2" style="text-align:center;vertical-align:middle">No.</th>
+                                <th rowspan="2" style="text-align:center;vertical-align:middle">Tanggal</th>
+                                <th rowspan="2" style="text-align:center;vertical-align:middle">Nama File</th>
+                                <th colspan="2" style="text-align:center;vertical-align:middle">Hasil Upload</th>
+                                <th colspan="2" style="text-align:center;vertical-align:middle">File </th>
+                                <th rowspan="2" style="text-align:center;vertical-align:middle">Keterangan</th>
                             </tr>
                             <tr>
-                                <th style="font-weight:bold;border: 1px solid #c8c7c7;text-align:center;vertical-align:middle">Berhasil</th>
-                                <th style="font-weight:bold;border: 1px solid #c8c7c7;text-align:center;vertical-align:middle">Gagal</th>
-                                <th style="font-weight:bold;border: 1px solid #c8c7c7;text-align:center;vertical-align:middle">Berhasil</th>
-                                <th style="font-weight:bold;border: 1px solid #c8c7c7;text-align:center;vertical-align:middle">Gagal</th>
+                                <th style="text-align:center;vertical-align:middle">Berhasil</th>
+                                <th style="text-align:center;vertical-align:middle">Gagal</th>
+                                <th style="text-align:center;vertical-align:middle">Berhasil</th>
+                                <th style="text-align:center;vertical-align:middle">Gagal</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @php $no=1; @endphp
-                            <tr>
-                                <td style="border: 1px solid #c8c7c7;text-align:center;vertical-align:middle">{{$no++}}</td>
-                                <td style="border: 1px solid #c8c7c7;text-align:center;vertical-align:middle">{{date('Y-m-d H:i:s')}}</td>
-                                <td style="border: 1px solid #c8c7c7;text-align:center;vertical-align:middle">template target TPB.xls</td>
-                                <td style="border: 1px solid #c8c7c7;text-align:center;vertical-align:middle">20</td>
-                                <td style="border: 1px solid #c8c7c7;text-align:center;vertical-align:middle">20</td>
-                                <td style="border: 1px solid #c8c7c7;text-align:center;vertical-align:middle"><button type="button" class="btn btn-primary btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-download fs-3"></i></button></td>
-                                <td style="border: 1px solid #c8c7c7;text-align:center;vertical-align:middle"><button type="button" class="btn btn-primary btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-download fs-3"></i></button></td>
-                                <td style="border: 1px solid #c8c7c7;text-align:left;vertical-align:middle">
-                                    1. Baris 1 isian tidak sesuai kode<br>
-                                    2. Baris 2 isian tidak sesuai kode<br>
-                                    3. Baris 3 isian tidak sesuai kode<br>
-                                </td>
-                            </tr>
-                            <tr>
-                                <!-- <td colspan="4" style="text-align:center;font-style:italic">Tidak ada data</td> -->
-                            </tr>
-                        </tbody>
                     </table>
+                </form>
                 </div>
             </div>
             <!--end::Card body-->
@@ -114,28 +69,129 @@
 
 @section('addafterjs')
 <script>
-    var urlstore = "{{route('target.upload_target.store')}}";
+    var urluploadstore = "{{route('target.upload_target.store')}}";
+    var urldatatable = "{{route('target.upload_target.datatable')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
         $('#page-breadcrumb').html("{{ $breadcrumb }}");
 
-        $('body').on('click','.cls-upload',function(){
-            winform(urlupload, {}, 'Upload Data');
-        });
-        
-        $('#cari').on('click', function(event){
-            // datatable.ajax.reload()
-            var url = window.location.origin + '/target/upload/index';
-            var perusahaan_id = $('#perusahaan_id').val();
-            var tahun = $('#tahun').val();
-            var pilar_pembangunan_id = $('#pilar_pembangunan_id').val();
-            var tpb_id = $('#tpb_id').val();
-            var status_id = $('#status_id').val();
-
-            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&pilar_pembangunan_id=' + pilar_pembangunan_id + '&tpb_id=' + tpb_id + '&status_id=' + status_id;
-        });
+        setFormValidate();
+        setDatatable();
     });
+
+    function setFormValidate(){
+        $('#form-edit').validate({
+            rules: {            		               		                              		               		               
+            },
+            messages: {                                   		                   		                   
+            },	        
+            highlight: function(element) {
+                $(element).closest('.form-control').addClass('is-invalid');
+            },
+            unhighlight: function(element) {
+                $(element).closest('.form-control').removeClass('is-invalid');
+            },
+            errorElement: 'div',
+            errorClass: 'invalid-feedback',
+            errorPlacement: function(error, element) {
+                if(element.parent('.validated').length) {
+                    error.insertAfter(element.parent());
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+        submitHandler: function(form){
+                var typesubmit = $("input[type=submit][clicked=true]").val();
+                
+                $(form).ajaxSubmit({
+                    type: 'post',
+                    url: urluploadstore,
+                    data: {source : typesubmit},
+                    dataType : 'json',
+                    beforeSend: function(){
+                        $.blockUI({
+                            theme: true,
+                            baseZ: 2000
+                        })    
+                    },
+                    success: function(data){
+                        $.unblockUI();
+
+                        swal.fire({
+                                title: data.title,
+                                html: data.msg,
+                                icon: data.flag,
+
+                                buttonsStyling: true,
+
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                        });	                   
+
+                        if(data.flag == 'success') {
+                            // $('#winform').modal('hide');
+                            // datatable.ajax.reload( null, false );
+                            location.reload(); 
+                        }
+                    },
+                    error: function(jqXHR, exception){
+                        $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                        swal.fire({
+                                title: "Error System",
+                                html: msgerror+', coba ulangi kembali !!!',
+                                icon: 'error',
+
+                                buttonsStyling: true,
+
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                        });	                               
+                    }
+                });
+                return false;
+        }
+        });		
+    }
+
+    function setDatatable(){
+        datatable = $('#datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: urldatatable,
+            columns: [
+                { data: 'id', orderable: false, searchable: false },
+                { data: 'tanggal', name: 'tanggal' },
+                { data: 'file_name', name: 'file_name' },
+                { data: 'berhasil', name: 'berhasil' },
+                { data: 'gagal', name: 'gagal' },
+                { data: 'download_berhasil', name: 'download_berhasil' },
+                { data: 'download_gagal', name: 'download_gagal' },
+                { data: 'keterangan', name: 'keterangan' },
+            ],
+            drawCallback: function( settings ) {
+                var info = datatable.page.info();
+                $('[data-toggle="tooltip"]').tooltip();
+                datatable.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+                    cell.innerHTML = info.start + i + 1;
+                } );
+            }
+        });
+    }
 
 </script>
 @endsection
