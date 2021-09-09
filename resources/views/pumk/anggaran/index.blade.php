@@ -156,7 +156,12 @@
                                         @endif
                                         <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Lihat detail data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-eye fs-3"></i></button>
 
+                                        @if($p->status !== 'Finish')
                                         <button type="button" class="btn btn-sm btn-warning btn-icon cls-button-update-status" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="update status {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-check fs-3"></i></button>
+                                        @else
+                                        <button type="button" class="btn btn-sm btn-secondary btn-icon cls-button-aktivasi-status" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Aktivasi kembali status {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-layer-backward fs-3"></i></button>
+                                        @endif
+
                                         @if($p->status !== 'Finish')
                                         <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pumkanggaran" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Hapus data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-trash fs-3"></i></button>
                                         @endif
@@ -228,6 +233,10 @@
 
         $('body').on('click','.cls-button-update-status',function(){
             onbtnupdatestatus(this);
+        });
+
+        $('body').on('click','.cls-button-aktivasi-status',function(){
+            onbtnaktivasistatus(this);
         });
 
         $('body').on('click','.cls-button-show',function(){
@@ -343,6 +352,79 @@
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, update status",
+            cancelButtonText: "Tidak"
+        }).then(function(result) {
+            if (result.value) {
+                $.ajax({
+                url: urlupdatestatus,
+                data:{
+                    "id": $(element).data('id')
+                },
+                type:'post',
+                dataType:'json',
+                beforeSend: function(){
+                    $.blockUI();
+                },
+                success: function(data){
+                    $.unblockUI();
+
+                    swal.fire({
+                            title: data.title,
+                            html: data.msg,
+                            icon: data.flag,
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });
+
+                    if(data.flag == 'success') {
+                        // datatable.ajax.reload( null, false );
+                        location.reload(); 
+                    }
+                    
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });  
+                    }
+                });
+            }
+        });	
+    }
+
+
+    function onbtnaktivasistatus(element){
+        swal.fire({
+            title: "Pemberitahuan",
+            text: "Apakah anda yakin ingin melakukan aktivasi kembali status data "+$(element).data('nama')+" ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, aktivasi",
             cancelButtonText: "Tidak"
         }).then(function(result) {
             if (result.value) {
