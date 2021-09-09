@@ -299,6 +299,10 @@
                     $('.anggaran-header').hide();
                     $('.anggaran-footer').hide();
                     $('#notif').show();
+                }else if(data == 1){
+                    $('.anggaran-header').show();
+                    $('.anggaran-footer').show();
+                    $(".input-saldo-awal").val(0);
                 }else{
                     $('.anggaran-header').show();
                     $('.anggaran-footer').show();

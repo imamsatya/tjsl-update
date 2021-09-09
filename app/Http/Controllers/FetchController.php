@@ -49,7 +49,7 @@ class FetchController extends Controller
                     $return = number_format($data->saldo_awal);
                 }
             }else{
-                $return = 0;
+                $return = 1;
             }
 
 
