@@ -424,7 +424,8 @@ class AdministrasiController extends Controller
     
     public function export(Request $request)
     {
-        $target = TargetTpb::leftJoin('anggaran_tpbs', 'anggaran_tpbs.id', 'target_tpbs.anggaran_tpb_id');
+        $target = TargetTpb::select('target_tpbs.*')
+                            ->leftJoin('anggaran_tpbs', 'anggaran_tpbs.id', 'target_tpbs.anggaran_tpb_id');
         
         if($request->perusahaan_id){
             $target = $target->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
