@@ -484,12 +484,13 @@ class AdministrasiController extends Controller
         DB::beginTransaction();
         try{
             $param['status_id'] = $request->status_id;
-            $target->update($param);
 
-            $target = $target->get();
-            foreach($target as $a){
+            $target_tpb = $target->get();
+            foreach($target_tpb as $a){
                 AdministrasiController::store_log($a->id,$a->status_id);
             }
+
+            $target->update($param);
             
             DB::commit();
             $result = [
