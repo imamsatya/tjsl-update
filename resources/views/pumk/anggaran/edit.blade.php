@@ -82,7 +82,7 @@
                         <label style="padding-top: 20px;">Saldo Awal</label> 
                     </div>	
                     <div class="col-lg-7">
-                        <input type="text" class="form-control input-saldo-awal incomes" name="saldo_awal" value="{{$data->saldo_awal == null? 0 : number_format($data->saldo_awal,0,',',',')}}">
+                        <input type="text" class="form-control number-separator input-saldo-awal incomes" name="saldo_awal" value="{{$data->saldo_awal == null? 0 : number_format($data->saldo_awal,0,',',',')}}">
                     </div>
                     
                     <div class="col-lg-4 offset-sm-1">

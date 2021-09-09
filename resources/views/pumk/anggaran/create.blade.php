@@ -37,7 +37,7 @@
         </div>
         <div class="col-lg-6">
             <label>Tahun</label>
-            <select class="form-select form-select-solid form-select2" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun"  data-dropdown-parent="#winform" required>
+            <select class="form-select form-select-solid form-select2" name="tahun" id="tahuns" data-kt-select2="true" data-placeholder="Pilih Tahun"  data-dropdown-parent="#winform" required>
                 @php
                     for($i = date("Y"); $i>=2020; $i--){ @endphp
                     <option value="{{$i}}">{{$i}}</option>
@@ -48,16 +48,17 @@
             </select>
         </div>
     </div>
-    <div class="form-group">
-        <div class="col-lg-12">
-            <div class="checkbox-tpb">
-            </div>
-        </div>	
-    </div>	
     <div class="text-left pt-10">
         <a id="proses" class="btn btn-primary btn-proses">Proses</a>
     </div>
-
+    <div class="form-group" id="notif" style="display: none;">
+        <div class="col-lg-12">
+            <div class="col-md-12">
+                <br>
+                <p style="color: red;"><strong>Belum dapat diproses! Status RKA belum Finish.</strong> </p>
+            </div>
+        </div>	
+    </div>	
     <!--begin::Anggaran PUMK-->
     <div class="anggaran-header" style="display:none;">
         <h3 class="card-title align-items-start flex-column mt-10">
@@ -77,7 +78,7 @@
                         <label style="padding-top: 20px;">Saldo Awal</label> 
                     </div>	
                     <div class="col-lg-7">
-                        <input type="text" class="form-control input-saldo-awal incomes" name="saldo_awal">
+                        <input type="text" class="form-control number-separator input-saldo-awal incomes" name="saldo_awal">
                     </div>
                     
                     <div class="col-lg-4 offset-sm-1">
@@ -282,22 +283,32 @@
 
 
     function onbtnproses(){
-        $('.anggaran-header').show();
-        $('.anggaran-footer').show();
         onChangePeriode();
     }
-    
+
     function onChangePeriode(id){
         var periode_id = $('#periode_ids').val();
         var bumn = $('#bumn_id').val();
         var tahun = $('#tahuns').val();
         $.ajax({
-            url: "/fetch/getpumkanggaranbyperiode?periode_id="+id+"&bumn_id="+bumn+"&tahun="+tahun,
+            url: "/fetch/getpumkanggaranbyperiode?periode_id="+periode_id+"&bumn_id="+bumn+"&tahun="+tahun,
             type: "POST",
             dataType: "json", 
             success: function(data){
-                $(".input-saldo-awal").val(data);
-
+                if(data == 0){
+                    $('.anggaran-header').hide();
+                    $('.anggaran-footer').hide();
+                    $('#notif').show();
+                }else if(data == 1){
+                    $('.anggaran-header').show();
+                    $('.anggaran-footer').show();
+                    $(".input-saldo-awal").val(0);
+                    $('#notif').hide();
+                }else{
+                    $('.anggaran-header').show();
+                    $('.anggaran-footer').show();
+                    $(".input-saldo-awal").val(data);
+                }
             }                       
         });
 

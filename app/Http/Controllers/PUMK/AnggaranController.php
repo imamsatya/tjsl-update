@@ -32,6 +32,7 @@ class AnggaranController extends Controller
 
     public function index(Request $request)
     {
+        
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
         $perusahaan_id = $request->perusahaan_id;
@@ -48,11 +49,11 @@ class AnggaranController extends Controller
                 }
                 if($v == 'Super Admin') {
                     $super_admin = true;
-                    $perusahaan_id;
+                    $perusahaan_id = $request->perusahaan_id;
                 }
                 if($v == 'Admin TJSL') {
                     $admin_tjsl = true;
-                    $perusahaan_id;
+                    $perusahaan_id = $request->perusahaan_id;
                 }
             }
         }
@@ -63,15 +64,15 @@ class AnggaranController extends Controller
                         ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id');
                                         
         if($perusahaan_id){
-            $anggaran_pumk  = $anggaran_pumk->where('bumn_id', $perusahaan_id);
+            $anggaran_pumk  = $anggaran_pumk->where('bumn_id', (int)$perusahaan_id);
         }
 
         if($request->periode_id){
-            $anggaran_pumk  = $anggaran_pumk->where('periode_id', $request->periode_id);
+            $anggaran_pumk  = $anggaran_pumk->where('periode_id', (int)$request->periode_id);
         }
 
         if($request->status_id){
-            $anggaran_pumk  = $anggaran_pumk->where('status_id', $request->status_id);
+            $anggaran_pumk  = $anggaran_pumk->where('status_id', (int)$request->status_id);
         }
 
         if($request->tahun){
@@ -213,8 +214,13 @@ class AnggaranController extends Controller
                                 $param['outcome_total'] = $request->outcome_total == null? 0 :preg_replace('/[^0-9]/','',$request->outcome_total);
                                 $param['saldo_akhir'] = $request->saldo_akhir == null? 0 :preg_replace('/[^0-9]/','',$request->saldo_akhir);
                                 $param['created_by'] = \Auth::user()->id;
-                                $param['created_at'] = now(); 
-                                $param['status_id'] = DB::table('statuses')->where('nama','Unfilled')->pluck('id')->first();
+                                $param['created_at'] = now();
+                                if($param['saldo_awal'] == 0 || $param['saldo_awal'] == null || $param['saldo_awal'] == ""){
+                                    $param['status_id'] = DB::table('statuses')->where('nama','Unfilled')->pluck('id')->first();
+                                }else{
+                                    $param['status_id'] = DB::table('statuses')->where('nama','ilike','%In Progress%')->pluck('id')->first();
+                                } 
+
                                 $data = PumkAnggaran::create($param);
 
                                 if($validasi){
@@ -246,8 +252,28 @@ class AnggaranController extends Controller
             case 'update': DB::beginTransaction();
                             try{
                                 $param = $request->all();
+
                                 $param = $request->except(['actionform','_token','bumn_id']);
                                 $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^0-9]/','',$request->saldo_awal);
+                                if((int)$param['saldo_awal'] !== 0){
+                                    $status_ids = (int)$param['status_id'];
+                                    $status = Status::find((int)$status_ids);
+
+                                    if($status->nama == 'Unfilled'){
+                                        $data_status = Status::where('nama','In Progress')->pluck('id')->first();
+                                        $param['status_id'] = $data_status; 
+                                    }else if($status->nama == 'In Progress'){
+                                        $data_status = Status::where('nama','Finish')->pluck('id')->first();
+                                        $param['status_id'] = $data_status; 
+                                    }else if($status->nama == 'Finish'){
+                                        $data_status = Status::where('nama','In Progress')->pluck('id')->first();
+                                        $param['status_id'] = $data_status; 
+                                    }
+                                }else{
+                                    $data_status = Status::where('nama','Unfilled')->pluck('id')->first();
+                                    $param['status_id'] = $data_status;
+                                }
+                                
                                 $param['income_mitra_binaan'] = $request->income_mitra_binaan == null? 0 : preg_replace('/[^0-9]/','',$request->income_mitra_binaan);
                                 $param['income_bumn_pembina_lain'] = $request->income_bumn_pembina_lain == null? 0 : preg_replace('/[^0-9]/','',$request->income_bumn_pembina_lain);
                                 $param['income_jasa_adm_pumk'] = $request->income_jasa_adm_pumk == null? 0 : preg_replace('/[^0-9]/','',$request->income_jasa_adm_pumk);
@@ -261,10 +287,16 @@ class AnggaranController extends Controller
                                 $param['updated_by'] = \Auth::user()->id; 
                                 $param['updated_at'] = now(); 
                                 $data = PumkAnggaran::find($param['id']);
+                                $cekPeriode = PeriodeLaporan::where('id',$data['periode_id'])->first();
                                 $data->update((array)$param);
 
                                 $log['pumk_anggaran_id'] = (int)$param['id'];
                                 $log['status_id'] = (int)$param['status_id'];
+                                if($cekPeriode->nama == 'RKA'){
+                                    $log['nilai_rka'] = (int)$param['saldo_awal'];
+                                }else{
+                                    $log['nilai_rka'] = null;
+                                }
                                 $log['created_by_id'] = (int)$param['updated_by'];
                                 $log['created_at'] = now();
 
@@ -317,7 +349,7 @@ class AnggaranController extends Controller
 
     public function update_status(Request $request)
     {
-        
+
        DB::beginTransaction();
        try{
             $data = PumkAnggaran::find((int)$request->input('id'));

@@ -49,7 +49,11 @@ class FetchController extends Controller
                     $return = number_format($data->saldo_awal);
                 }
             }else{
-                $return = 0;
+                if($request->periode_id == $RKA_id){
+                    $return = 1;
+                }else{
+                    $return = 0;
+                }
             }
 
 

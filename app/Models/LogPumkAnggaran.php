@@ -10,6 +10,7 @@ class LogPumkAnggaran extends Model
     protected $fillable = [
         'pumk_anggaran_id', 
         'status_id',
+        'nilai_rka',
         'created_by_id',
         'created_at'
     ];

@@ -17,16 +17,20 @@
     <body>
     <table cellspacing="0" border="0">
     <tr>
-        <td colspan="6" style="width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">Rekapitulasi Data Anggaran PUMK {{$tahun == null? '': 'Tahun '.$tahun}}</font></b></td>
+        <td colspan="6" style="width:5px;"  align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">Rekapitulasi Data Anggaran PUMK </font></b></td>
     </tr>
     <tr>
-        <td colspan="6" style="width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">Waktu Cetak : {{date('d-F-Y h:i:s')}} </font></b></td>
+        <td colspan="6" style="width:5px;"  align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">{{$tahun == null? '':$tahun}}</font></b></td>
     </tr>
+    <tr>
+        <td colspan="6" style="width:5px;"  align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">Waktu Cetak : {{date('d-F-Y')}} </font></b></td>
+    </tr>
+    <tr></tr>
     <tr>
         <td rowspan="2" style="width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">No</font></b></td>
         <td rowspan="2" style="width:10px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Tahun</font></b></td>
-        <td rowspan="2" style="width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Perusahaan</font></b></td>
-        <td rowspan="2" style="width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Periode Laporan</font></b></td>
+        <td rowspan="2" style="width:40px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Perusahaan</font></b></td>
+        <td rowspan="2" style="width:20px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Periode Laporan</font></b></td>
         <td rowspan="2" style="width:15px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Status</font></b></td>
         <td colspan="6" style="width:15px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Dana Tersedia</font></b></td>
         <td colspan="4" style="width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Dana Disalurkan</font></b></td>
@@ -48,7 +52,7 @@
     @php $num = 1; $total=0; @endphp
     @foreach($anggaran_pumk as $a)
     <tr>
-        <td>{{$num++}}</td>
+        <td align="center">{{$num++}}</td>
         <td align="center">{{$a->tahun}}</td>
         <td>{{$a->bumn_lengkap}}</td>
         <td>{{$a->periode}}</td>
