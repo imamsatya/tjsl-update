@@ -48,16 +48,17 @@
             </select>
         </div>
     </div>
-    <div class="form-group">
-        <div class="col-lg-12">
-            <div class="checkbox-tpb">
-            </div>
-        </div>	
-    </div>	
     <div class="text-left pt-10">
         <a id="proses" class="btn btn-primary btn-proses">Proses</a>
     </div>
-
+    <div class="form-group" id="notif" style="display: none;">
+        <div class="col-lg-12">
+            <div class="col-md-12">
+                <br>
+                <p style="color: red;"><strong>Belum dapat diproses! Status RKA belum Finish.</strong> </p>
+            </div>
+        </div>	
+    </div>	
     <!--begin::Anggaran PUMK-->
     <div class="anggaran-header" style="display:none;">
         <h3 class="card-title align-items-start flex-column mt-10">
@@ -282,11 +283,9 @@
 
 
     function onbtnproses(){
-        $('.anggaran-header').show();
-        $('.anggaran-footer').show();
         onChangePeriode();
     }
-    
+
     function onChangePeriode(id){
         var periode_id = $('#periode_ids').val();
         var bumn = $('#bumn_id').val();
@@ -296,8 +295,15 @@
             type: "POST",
             dataType: "json", 
             success: function(data){
-                $(".input-saldo-awal").val(data);
-
+                if(data == 0){
+                    $('.anggaran-header').hide();
+                    $('.anggaran-footer').hide();
+                    $('#notif').show();
+                }else{
+                    $('.anggaran-header').show();
+                    $('.anggaran-footer').show();
+                    $(".input-saldo-awal").val(data);
+                }
             }                       
         });
 
