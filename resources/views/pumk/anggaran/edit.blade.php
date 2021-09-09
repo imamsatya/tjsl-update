@@ -8,6 +8,7 @@
 	@csrf
 	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
+    <input type="hidden" name="status_id" readonly="readonly" value="{{$data->status_id}}">
 	
     <div class="form-group row mb-5">
         <div class="col-lg-12">

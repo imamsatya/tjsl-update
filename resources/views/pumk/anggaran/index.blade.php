@@ -141,7 +141,11 @@
                                     <td style="text-align:right;">{{number_format($p->income_total,0,',',',')}}</td>
                                     <td style="text-align:right;">{{number_format($p->outcome_total,0,',',',')}}</td>
                                     <td style="text-align:right;">{{number_format($p->saldo_akhir,0,',',',')}}</td>
-                                    <td style="text-align:center;">{{$p->status}}</td>
+                                    <td style="text-align:center;">
+                                        <button type="button" class="btn btn-sm cls-button-log" data-id="{{$p->id}}" data-nama="Log {{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Log data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}">
+                                            {{$p->status}}
+                                        </button>
+                                    </td>
                                     <td style="text-align:center;width:150px;">
                                         @if($p->status !== 'Finish')
                                         <button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Edit data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-pencil fs-3"></i></button>
@@ -189,6 +193,7 @@
     var urldelete = "{{route('pumk.anggaran.delete')}}";
     var urlupdatestatus = "{{route('pumk.anggaran.updatestatus')}}";
     var urlexport = "{{route('pumk.anggaran.export')}}";
+    var urllog = "{{route('pumk.anggaran.log')}}";
 
     $(document).ready(function(){
         $('.tree').treegrid({
@@ -203,6 +208,10 @@
 
         $('body').on('click','.cls-add',function(){
             winform(urlcreate, {}, 'Tambah Data');
+        });
+
+        $('body').on('click','.cls-button-log',function(){
+            winform(urllog, {'id':$(this).data('id')}, 'Log Data');
         });
 
         $('body').on('click','.cls-button-edit',function(){
