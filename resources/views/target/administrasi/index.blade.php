@@ -256,6 +256,7 @@
     var urldownloadtemplate = "{{route('target.administrasi.download_template')}}";
     var urlgetstatus = "{{route('target.administrasi.get_status')}}";
     var urldetail = "{{route('target.administrasi.detail')}}";
+    var urlexport = "{{route('target.administrasi.export')}}";
 
     $(document).ready(function(){
         $('.tree').treegrid({
@@ -265,6 +266,10 @@
         });
         $('#page-title').html("{{ $pagetitle }}");
         $('#page-breadcrumb').html("{{ $breadcrumb }}");
+
+        $('body').on('click','.cls-export',function(){
+            exportExcel();
+        });
 
         $('body').on('click','.cls-upload',function(){
             winform(urlupload, {}, 'Upload Data');
@@ -302,6 +307,80 @@
             showValidasi();
         }
     });
+
+    function exportExcel()
+    {
+        $.ajax({
+            type: 'post',
+            data: {
+                'perusahaan_id' : $("select[name='perusahaan_id']").val(),
+                'tahun' : $("select[name='tahun']").val(),
+                'pilar_pembangunan_id' : $("select[name='pilar_pembangunan_id']").val(),
+                'status_id' : $("select[name='status_id']").val(),
+                'tpb_id' : $("select[name='tpb_id']").val()
+            },
+            beforeSend: function () {
+                $.blockUI();
+            },
+            url: urlexport,
+            xhrFields: {
+                responseType: 'blob',
+            },
+            success: function(data){
+                $.unblockUI();
+
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+                
+                today = dd + '-' + mm + '-' + yyyy;
+                var filename = 'Data Target TPB '+today+'.xlsx';
+
+                var blob = new Blob([data], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
+
+                document.body.appendChild(link);
+
+                link.click();
+                document.body.removeChild(link);
+            },
+            error: function(jqXHR, exception){
+                $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+            swal.fire({
+                    title: "Error System",
+                    html: msgerror+', coba ulangi kembali !!!',
+                    icon: 'error',
+
+                    buttonsStyling: true,
+
+                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+            });      
+                
+            }
+        });
+        return false;
+    }
 
     function downloadTemplate()
     {

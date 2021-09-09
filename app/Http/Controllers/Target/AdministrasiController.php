@@ -28,6 +28,7 @@ use App\Models\Tpb;
 use App\Models\Status;
 use App\Exports\TargetTemplateExport;
 use App\Exports\TargetTemplateExcelSheet;
+use App\Exports\TargetTpbExport;
 
 class AdministrasiController extends Controller
 {
@@ -408,5 +409,35 @@ class AdministrasiController extends Controller
             'perusahaan_id' => $perusahaan_id
         ]);
 
+    }
+    
+    public function export(Request $request)
+    {
+        $anggaran = AnggaranTpb::Select('anggaran_tpbs.*')
+                                ->leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
+                                ->leftJoin('tpbs','tpbs.id','relasi_pilar_tpbs.tpb_id');
+        
+        if($request->perusahaan_id){
+            $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
+        }
+
+        if($request->tahun){
+            $anggaran = $anggaran->where('anggaran_tpbs.tahun', $request->tahun);
+        }
+
+        if($request->pilar_pembangunan_id){
+            $anggaran = $anggaran->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
+        }
+
+        if($request->tpb_id){
+            $anggaran = $anggaran->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
+        }
+
+        $anggaran = $anggaran->get();
+
+        $target = TargetTpb::get();
+
+        $namaFile = "Data Target TPB ".date('dmY').".xlsx";
+        return Excel::download(new TargetTpbExport($target,$anggaran,$request->tahun), $namaFile);
     }
 }
