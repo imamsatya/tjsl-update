@@ -217,14 +217,23 @@
                                     @endforeach
                                 @endforeach
                             @endforeach
+                            @if($total==0)
+                                <td></td>
+                                <td style="text-align:left;">-</td>
+                                <td style="text-align:center;">-</td>
+                                <td style="text-align:center;"><span class="btn cls-log badge badge-light-warning fw-bolder me-auto px-4 py-3">Unfilled</span></td>
+                                <td></td>
+                            @endif
                             </tbody>
                             <tfoot>
                                 <tr>
+                                    @if($total>0)
                                     <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
                                     <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">Total</th>
                                     <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">{{number_format($total,0,',',',')}}</th>
                                     <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
                                     <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
+                                    @endif
                                 </tr>
                             </tfoot>
                         </table>

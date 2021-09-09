@@ -16,9 +16,8 @@ use DB;
 class TargetTpbExport implements FromView , WithTitle, WithColumnFormatting
 {
     const FORMAT_NUMBER_CUSTOM = '#,##0';
-    public function __construct($target,$anggaran,$tahun){
+    public function __construct($target,$tahun){
         $this->target = $target ;
-        $this->anggaran = $anggaran ;
         $this->tahun = $tahun ;
     }
 
@@ -33,7 +32,6 @@ class TargetTpbExport implements FromView , WithTitle, WithColumnFormatting
 
       return view('target.administrasi.export', [
           'target' => $this->target, 
-          'anggaran' => $this->anggaran, 
           'tahun' => $tahun, 
           'tanggal' => date('d-m-Y'),
         //   'user' => $users->username,

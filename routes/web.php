@@ -260,6 +260,17 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('store', 'App\Http\Controllers\Target\AdministrasiController@store')->name('target.administrasi.store');
                 Route::post('delete', 'App\Http\Controllers\Target\AdministrasiController@delete')->name('target.administrasi.delete');
                 Route::get('datatable', 'App\Http\Controllers\Target\AdministrasiController@datatable')->name('target.administrasi.datatable');
+                Route::post('validasi', 'App\Http\Controllers\Target\AdministrasiController@validasi')->name('target.administrasi.validasi');
+                Route::post('log_status', 'App\Http\Controllers\Target\AdministrasiController@log_status')->name('target.administrasi.log_status');
+            });
+
+            Route::prefix('kegiatan')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Target\KegiatanController@index')->name('target.kegiatan.index');
+                Route::post('create', 'App\Http\Controllers\Target\KegiatanController@create')->name('target.kegiatan.create');
+                Route::post('edit', 'App\Http\Controllers\Target\KegiatanController@edit')->name('target.kegiatan.edit');
+                Route::post('store', 'App\Http\Controllers\Target\KegiatanController@store')->name('target.kegiatan.store');
+                Route::post('delete', 'App\Http\Controllers\Target\KegiatanController@delete')->name('target.kegiatan.delete');
+                Route::get('datatable', 'App\Http\Controllers\Target\KegiatanController@datatable')->name('target.kegiatan.datatable');
             });
 
             Route::prefix('upload_target')->group(function(){

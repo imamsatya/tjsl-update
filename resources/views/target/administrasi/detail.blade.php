@@ -24,8 +24,14 @@ td{
             <tr>
                 <td><b>Kode Indikator</b></td>
                 <td>{{@$data->kode_indikator->kode}}</td>
-                <td><b>Nama Indikator</b></td>
-                <td>{{@$data->kode_indikator->nama}}</td>
+                <td><b>Kode Tujuan TPB</b></td>
+                <td>{{@$data->kode_indikator->kode_tujuan_tpb}}</td>
+            </tr>
+            <tr>
+                <td><b>Keterangan Indikator</b></td>
+                <td>{{@$data->kode_indikator->keterangan}}</td>
+                <td><b>Keterangan Tujuan TPB</b></td>
+                <td>{{@$data->kode_indikator->keterangan_tujuan_tpb}}</td>
             </tr>
             <tr>
                 <td><b>Program</b></td>
@@ -58,7 +64,7 @@ td{
         </tbody>
     </table>
     
-    <table class="table table-striped- table-bordered table-hover table-checkable" style="border: 1px solid black;" id="datatable_target">
+    <table class="table table-striped- table-bordered table-hover table-checkable" style="border: 1px solid black;display:none;" id="datatable_target">
         <thead>
             <tr>
                 <th style="border: 1px solid black;font-weight:bold;">No</th>

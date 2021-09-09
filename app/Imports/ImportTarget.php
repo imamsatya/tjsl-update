@@ -20,6 +20,7 @@ use App\Models\Perusahaan;
 use App\Models\TargetMitra;
 use App\Models\TargetUpload;
 use App\Models\TargetUploadGagal;
+use App\Http\Controllers\Target\AdministrasiController;
 
 class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets 
 {
@@ -79,6 +80,8 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'jangka_waktu' => rtrim($ar['jangka_waktu_penerapan_dalam_tahun']) ,
                         'anggaran_alokasi' => rtrim($ar['alokasi_anggaran_tahun_2021_dalam_rupiah']) ,
                     ]);
+                    
+                    AdministrasiController::store_log($target->id,$target->status_id);
                 }catch(\Exception $e){
                     DB::rollback();
 

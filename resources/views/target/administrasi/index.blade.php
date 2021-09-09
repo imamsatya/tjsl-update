@@ -27,7 +27,8 @@
                         <button type="button" class="btn btn-primary btn-sm btn-icon btn-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
                         <button type="button" class="btn btn-danger btn-sm btn-icon btn-cancel-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Batalkan Validasi"><i class="bi bi-check fs-3"></i></button> 
                         <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button> &nbsp
-                        <button type="button" class="btn btn-success btn-sm btn-icon cls-upload"  data-toggle="tooltip" title="Upload Data"><i class="bi bi-upload fs-3"></i></button> &nbsp
+                        <button type="button" class="btn btn-success btn-sm btn-icon cls-upload"  data-toggle="tooltip" title="Upload Data Program"><i class="bi bi-upload fs-3"></i></button> &nbsp
+                        <button type="button" class="btn btn-info btn-sm btn-icon cls-add-kegiatan"  data-toggle="tooltip" title="Input Data Kegiatan"><i class="bi bi-plus fs-3"></i></button> &nbsp
                         <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-excel fs-3"></i></button>
                     </div>
                     <!--end::Search-->
@@ -121,7 +122,7 @@
                                     <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No.</th>
                                     <th style="font-weight:bold;width:550px;border-bottom: 1px solid #c8c7c7;">Pilar - TPB - Program</th>
                                     <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Anggaran</th>
-                                    <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Kode Tujuan</th>
+                                    <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Jangka Waktu</th>
                                     <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Status</th>
                                     <th style="text-align:center;width:220px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
                                 </tr>
@@ -204,9 +205,9 @@
                                                 <td></td>
                                                 <td>{{$t->program}}</td>
                                                 <td style="text-align:right;">{{number_format($t->anggaran_alokasi,0,',',',')}}</td>
-                                                <td>{{@$t->kode_indikator->kode_tujuan_tpb}}</td>
+                                                <td>{{@$t->jangka_waktu}} tahun</td>
                                                 <td style="text-align:center;">
-                                                    <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$a->id}}">{{@$t->status->nama}}</span>
+                                                    <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$t->id}}">{{@$t->status->nama}}</span>
                                                 </td>
                                                 <td style="text-align:center;">
                                                     @if($t->status_id != 1)
@@ -257,6 +258,8 @@
     var urlgetstatus = "{{route('target.administrasi.get_status')}}";
     var urldetail = "{{route('target.administrasi.detail')}}";
     var urlexport = "{{route('target.administrasi.export')}}";
+    var urllog = "{{route('target.administrasi.log_status')}}";
+    var urlvalidasi = "{{route('target.administrasi.validasi')}}";
 
     $(document).ready(function(){
         $('.tree').treegrid({
@@ -291,6 +294,30 @@
             downloadTemplate();
         });
         
+        $('body').on('click','.cls-log',function(){
+            winform(urllog, {'id':$(this).data('id')}, 'Log Status');
+        });
+        
+        $('body').on('click','.btn-validasi',function(){
+            onbtnvalidasi(this);
+        });
+
+        $('body').on('click','.btn-cancel-validasi',function(){
+            onbtncancelvalidasi(this);
+        });
+
+        $('body').on('click','.btn-disable-validasi',function(){
+            onbtndisablevalidasi(this);
+        });
+
+        $('body').on('click','.cls-add-kegiatan',function(){
+            var url = window.location.origin + '/target/kegiatan/index';
+            var perusahaan_id = $('#perusahaan_id').val();
+            var tahun = $('#tahun').val();
+
+            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun;
+        });
+
         $('#cari').on('click', function(event){
             // datatable.ajax.reload()
             var url = window.location.origin + '/target/administrasi/index';
@@ -307,6 +334,166 @@
             showValidasi();
         }
     });
+    
+    function onbtndisablevalidasi(){
+        swal.fire({
+            title: "Gagal",
+            html: 'Pilihan BUMN dan Tahun wajib diisi!',
+            icon: 'error',
+
+            buttonsStyling: true,
+
+            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+        }); 
+    }
+
+    function onbtnvalidasi(){
+        swal.fire({
+            title: "Pemberitahuan",
+            text: "Validasi Data Target TPB "+$("#perusahaan_id option:selected").text() +" tahun "+$("#tahun").val()+" ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, Validasi",
+            cancelButtonText: "Tidak"
+        }).then(function(result) {
+            if (result.value) {
+                $.ajax({
+                url: urlvalidasi,
+                data: {
+                    'perusahaan_id' : $("select[name='perusahaan_id']").val(),
+                    'tahun' : $("select[name='tahun']").val(),
+                    'status_id' : 1,
+                },
+                type:'post',
+                dataType:'json',
+                beforeSend: function(){
+                    $.blockUI();
+                },
+                success: function(data){
+                    $.unblockUI();
+
+                    swal.fire({
+                            title: data.title,
+                            html: data.msg,
+                            icon: data.flag,
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });
+
+                    if(data.flag == 'success') {
+                        // datatable.ajax.reload( null, false );
+                        location.reload(); 
+                    }
+                    
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });  
+                    }
+                });
+            }
+        });	
+    }
+    
+    function onbtncancelvalidasi(){
+        swal.fire({
+            title: "Pemberitahuan",
+            text: "Batalkan Validasi Data Aggaran TPB "+$("#perusahaan_id option:selected").text() +" tahun "+$("#tahun").val()+" ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, Batalkan Validasi",
+            cancelButtonText: "Tidak"
+        }).then(function(result) {
+            if (result.value) {
+                $.ajax({
+                url: urlvalidasi,
+                data: {
+                    'perusahaan_id' : $("select[name='perusahaan_id']").val(),
+                    'tahun' : $("select[name='tahun']").val(),
+                    'status_id' : 2,
+                },
+                type:'post',
+                dataType:'json',
+                beforeSend: function(){
+                    $.blockUI();
+                },
+                success: function(data){
+                    $.unblockUI();
+
+                    swal.fire({
+                            title: data.title,
+                            html: 'Sukses Batalkan Validasi',
+                            icon: data.flag,
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                    });
+
+                    if(data.flag == 'success') {
+                        // datatable.ajax.reload( null, false );
+                        location.reload(); 
+                    }
+                    
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                    });  
+                    }
+                });
+            }
+        });	
+    }
 
     function exportExcel()
     {

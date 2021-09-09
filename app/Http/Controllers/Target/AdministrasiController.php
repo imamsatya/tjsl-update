@@ -26,6 +26,7 @@ use App\Models\Perusahaan;
 use App\Models\PilarPembangunan;
 use App\Models\Tpb;
 use App\Models\Status;
+use App\Models\LogTargetTpb;
 use App\Exports\TargetTemplateExport;
 use App\Exports\TargetTemplateExcelSheet;
 use App\Exports\TargetTpbExport;
@@ -118,6 +119,9 @@ class AdministrasiController extends Controller
         $anggaran = $anggaran->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')->orderBy('no_tpb')->get();
 
         $target = TargetTpb::get();
+        if($request->status_id){
+            $target = TargetTpb::where('target_tpbs.status_id', $request->status_id)->get();
+        }
 
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
@@ -219,6 +223,8 @@ class AdministrasiController extends Controller
                                 $target = TargetTpb::create((array)$param);
                                 $target->mitra_bumn()->sync($mitra_bumn);
 
+                                AdministrasiController::store_log($target->id,$target->status_id);
+
 
                                 DB::commit();
                                 $result = [
@@ -242,6 +248,8 @@ class AdministrasiController extends Controller
                                 $target = TargetTpb::find((int)$request->input('id'));
                                 $target->update((array)$param);
                                 $target->mitra_bumn()->sync($mitra_bumn);
+                                
+                                AdministrasiController::store_log($target->id,$target->status_id);
 
                                 DB::commit();
                                 $result = [
@@ -330,6 +338,9 @@ class AdministrasiController extends Controller
             $data = TargetTpb::find((int)$request->input('id'));
             $data->delete();
 
+            $log = LogTargetTpb::where('target_tpb_id', (int)$request->input('id'));
+            $log->delete();
+
             DB::commit();
             $result = [
                 'flag'  => 'success',
@@ -353,21 +364,20 @@ class AdministrasiController extends Controller
      */
     public function get_status(Request $request)
     {
-        $anggaran = AnggaranTpb::Select('anggaran_tpbs.*')
-                                ->leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
-                                ->leftJoin('tpbs','tpbs.id','relasi_pilar_tpbs.tpb_id');
+        $target = TargetTpb::Select('target_tpbs.*')
+                                ->leftJoin('anggaran_tpbs','anggaran_tpbs.id','target_tpbs.anggaran_tpb_id');
         
         if($request->perusahaan_id){
-            $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
+            $target = $target->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
         }
 
         if($request->tahun){
-            $anggaran = $anggaran->where('anggaran_tpbs.tahun', $request->tahun);
+            $target = $target->where('anggaran_tpbs.tahun', $request->tahun);
         }
         
-        $anggaran = $anggaran->first();
+        $target = $target->first();
 
-        $result['status_id'] = @$anggaran->status_id;
+        $result['status_id'] = @$target->status_id;
 
         return response()->json($result);
     }
@@ -413,31 +423,86 @@ class AdministrasiController extends Controller
     
     public function export(Request $request)
     {
-        $anggaran = AnggaranTpb::Select('anggaran_tpbs.*')
-                                ->leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
-                                ->leftJoin('tpbs','tpbs.id','relasi_pilar_tpbs.tpb_id');
+        $target = TargetTpb::leftJoin('anggaran_tpbs', 'anggaran_tpbs.id', 'target_tpbs.anggaran_tpb_id');
         
         if($request->perusahaan_id){
-            $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
+            $target = $target->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
         }
 
         if($request->tahun){
-            $anggaran = $anggaran->where('anggaran_tpbs.tahun', $request->tahun);
+            $target = $target->where('anggaran_tpbs.tahun', $request->tahun);
         }
 
-        if($request->pilar_pembangunan_id){
-            $anggaran = $anggaran->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
-        }
-
-        if($request->tpb_id){
-            $anggaran = $anggaran->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
-        }
-
-        $anggaran = $anggaran->get();
-
-        $target = TargetTpb::get();
+        $target = $target->get();
 
         $namaFile = "Data Target TPB ".date('dmY').".xlsx";
-        return Excel::download(new TargetTpbExport($target,$anggaran,$request->tahun), $namaFile);
+        return Excel::download(new TargetTpbExport($target,$request->tahun), $namaFile);
+    }
+    
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function log_status(Request $request)
+    {
+        $target_tpb = TargetTpb::find((int)$request->input('id'));
+        $log_target_tpb = LogTargetTpb::where('target_tpb_id', (int)$request->input('id'))
+                                    ->orderBy('created_at')
+                                    ->get();
+
+        return view($this->__route.'.log_status',[
+            'pagetitle' => 'Log Status',
+            'data' => $target_tpb,
+            'log' => $log_target_tpb
+        ]);
+
+    }
+    
+    public static function store_log($target_tpb_id, $status_id)
+    {  
+        $param['target_tpb_id'] = $target_tpb_id;
+        $param['status_id'] = $status_id;
+        $param['user_id'] = \Auth::user()->id;
+        LogTargetTpb::create((array)$param);
+    }
+    
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function validasi(Request $request)
+    {
+        $target = TargetTpb::Select('target_tpbs.*')
+                                ->leftJoin('anggaran_tpbs','anggaran_tpbs.id','target_tpbs.anggaran_tpb_id')
+                                ->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id)
+                                ->where('anggaran_tpbs.tahun', $request->tahun);
+
+        DB::beginTransaction();
+        try{
+            $param['status_id'] = $request->status_id;
+            $target->update($param);
+
+            $target = $target->get();
+            foreach($target as $a){
+                AdministrasiController::store_log($a->id,$a->status_id);
+            }
+            
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses validasi data',
+                'title' => 'Sukses'
+            ];
+        }catch(\Exception $e){
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
     }
 }
