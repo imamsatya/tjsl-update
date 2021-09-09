@@ -303,6 +303,7 @@
                     $('.anggaran-header').show();
                     $('.anggaran-footer').show();
                     $(".input-saldo-awal").val(0);
+                    $('#notif').hide();
                 }else{
                     $('.anggaran-header').show();
                     $('.anggaran-footer').show();
