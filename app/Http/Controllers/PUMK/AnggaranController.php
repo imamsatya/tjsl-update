@@ -252,8 +252,28 @@ class AnggaranController extends Controller
             case 'update': DB::beginTransaction();
                             try{
                                 $param = $request->all();
+
                                 $param = $request->except(['actionform','_token','bumn_id']);
                                 $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^0-9]/','',$request->saldo_awal);
+                                if((int)$param['saldo_awal'] !== 0){
+                                    $status_ids = (int)$param['status_id'];
+                                    $status = Status::find((int)$status_ids);
+
+                                    if($status->nama == 'Unfilled'){
+                                        $data_status = Status::where('nama','In Progress')->pluck('id')->first();
+                                        $param['status_id'] = $data_status; 
+                                    }else if($status->nama == 'In Progress'){
+                                        $data_status = Status::where('nama','Finish')->pluck('id')->first();
+                                        $param['status_id'] = $data_status; 
+                                    }else if($status->nama == 'Finish'){
+                                        $data_status = Status::where('nama','In Progress')->pluck('id')->first();
+                                        $param['status_id'] = $data_status; 
+                                    }
+                                }else{
+                                    $data_status = Status::where('nama','Unfilled')->pluck('id')->first();
+                                    $param['status_id'] = $data_status;
+                                }
+                                
                                 $param['income_mitra_binaan'] = $request->income_mitra_binaan == null? 0 : preg_replace('/[^0-9]/','',$request->income_mitra_binaan);
                                 $param['income_bumn_pembina_lain'] = $request->income_bumn_pembina_lain == null? 0 : preg_replace('/[^0-9]/','',$request->income_bumn_pembina_lain);
                                 $param['income_jasa_adm_pumk'] = $request->income_jasa_adm_pumk == null? 0 : preg_replace('/[^0-9]/','',$request->income_jasa_adm_pumk);
@@ -329,7 +349,7 @@ class AnggaranController extends Controller
 
     public function update_status(Request $request)
     {
-        
+
        DB::beginTransaction();
        try{
             $data = PumkAnggaran::find((int)$request->input('id'));
