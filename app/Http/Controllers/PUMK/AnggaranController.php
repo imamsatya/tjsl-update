@@ -261,10 +261,16 @@ class AnggaranController extends Controller
                                 $param['updated_by'] = \Auth::user()->id; 
                                 $param['updated_at'] = now(); 
                                 $data = PumkAnggaran::find($param['id']);
+                                $cekPeriode = PeriodeLaporan::where('id',$data['periode_id'])->first();
                                 $data->update((array)$param);
 
                                 $log['pumk_anggaran_id'] = (int)$param['id'];
                                 $log['status_id'] = (int)$param['status_id'];
+                                if($cekPeriode->nama == 'RKA'){
+                                    $log['nilai_rka'] = (int)$param['saldo_awal'];
+                                }else{
+                                    $log['nilai_rka'] = null;
+                                }
                                 $log['created_by_id'] = (int)$param['updated_by'];
                                 $log['created_at'] = now();
 

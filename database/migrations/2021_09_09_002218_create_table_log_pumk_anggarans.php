@@ -17,6 +17,7 @@ class CreateTableLogPumkAnggarans extends Migration
             $table->increments('id');
             $table->integer('pumk_anggaran_id')->nullable();
             $table->integer('status_id')->nullable();
+            $table->bigInteger('nilai_rka')->nullable();
             $table->integer('created_by_id')->nullable();
             $table->integer('updated_by_id')->nullable();
             $table->timestamps();
