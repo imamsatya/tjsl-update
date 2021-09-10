@@ -54,7 +54,7 @@ class BankAccountSync extends Command
                       'nama' => $value->nama,
                       'keterangan' => $value->keterangan,
                       'created_at' => $now,
-                    //   'tgl_sinkronisasi' => $now
+                      'tgl_sinkronisasi' => $now
                     ];
             }
             if(count($data) > 0){

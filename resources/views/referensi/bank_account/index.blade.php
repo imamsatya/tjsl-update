@@ -43,6 +43,7 @@
                                 <th>Kode Bank</th>
                                 <th>Nama Bank</th>
                                 <th>Keterangan</th>
+                                <th>Tanggal Sinkronisasi</th>
                                 <th><div align="center">Aksi</div></th>
                             </tr>
                         </thead>
@@ -144,6 +145,7 @@
                 { data: 'kode_bank', name: 'kode_bank' },
                 { data: 'nama', name: 'nama' },
                 { data: 'keterangan', name: 'keterangan' },
+                { data: 'tgl_sinkronisasi', name: 'tgl_sinkronisasi' },
                 { data: 'action', name:'action'},
             ],
             drawCallback: function( settings ) {
