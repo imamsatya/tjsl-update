@@ -396,7 +396,7 @@ class AnggaranController extends Controller
                         ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id');
         
                         if($request->perusahaan_id !== null){
-                            $anggaran_pumk  = $anggaran_pumk->where('bumn_id', $perusahaan_id);
+                            $anggaran_pumk  = $anggaran_pumk->where('bumn_id',$request->perusahaan_id);
                         }
                 
                         if($request->periode_id !== null){

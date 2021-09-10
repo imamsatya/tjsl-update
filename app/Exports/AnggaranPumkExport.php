@@ -15,7 +15,7 @@ use DB;
 
 class AnggaranPumkExport implements FromView , WithTitle, WithColumnFormatting
 {
-    const FORMAT_NUMBER_CUSTOM = '#,##0';
+    const FORMAT_NUMBER_CUSTOM = '#,';
     public function __construct($anggaran_pumk,$tahun){
         $this->anggaran_pumk = $anggaran_pumk ;
         $this->tahun = $tahun ;
@@ -46,17 +46,17 @@ class AnggaranPumkExport implements FromView , WithTitle, WithColumnFormatting
     public function columnFormats(): array
     {
         return [
-            'F' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2,
-            'G' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2,
-            'H' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2,
-            'I' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2,
-            'J' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2,
-            'K' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2,
-            'L' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2,
-            'M' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2,
-            'N' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2,
-            'O' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2,
-            'P' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2,
+            'F' => NumberFormat::FORMAT_NUMBER,
+            'G' => NumberFormat::FORMAT_NUMBER,
+            'H' => NumberFormat::FORMAT_NUMBER,
+            'I' => NumberFormat::FORMAT_NUMBER,
+            'J' => NumberFormat::FORMAT_NUMBER,
+            'K' => NumberFormat::FORMAT_NUMBER,
+            'L' => NumberFormat::FORMAT_NUMBER,
+            'M' => NumberFormat::FORMAT_NUMBER,
+            'N' => NumberFormat::FORMAT_NUMBER,
+            'O' => NumberFormat::FORMAT_NUMBER,
+            'P' => NumberFormat::FORMAT_NUMBER,
         ];
     }
 }
