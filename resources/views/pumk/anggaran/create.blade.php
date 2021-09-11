@@ -219,8 +219,8 @@
             calculateSumOut();
         });
 
-        $('.input-saldo-awal').prop( "readonly", true );
-        $('.input-saldo-awal').css("background-color", "#D2E2EB");
+        // $('.input-saldo-awal').prop( "readonly", true );
+        // $('.input-saldo-awal').css("background-color", "#D2E2EB");
         // $('.incomes,.outcomes').keyup(function(event) {
         //     if(event.which >= 37 && event.which <= 40) return;
         //         $(this).val(function(index, value) {
@@ -307,15 +307,15 @@
                 }else{
                     $('.anggaran-header').show();
                     $('.anggaran-footer').show();
-                    $(".input-saldo-awal").val(data);
+                    $(".input-saldo-awal").val("");
                 }
             }                       
         });
 
-        if(periode_id == 4){
-            $('.input-saldo-awal').prop( "readonly", false );
-            $('.input-saldo-awal').css("background-color", "white");
-        }
+        // if(periode_id == 4){
+        //     $('.input-saldo-awal').prop( "readonly", false );
+        //     $('.input-saldo-awal').css("background-color", "white");
+        // }
     }
 
 

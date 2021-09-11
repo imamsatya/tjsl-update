@@ -223,11 +223,11 @@
             calculateSumOut();
         });
 
-        var periode_text = "{{ $periode_text->nama }}";
-        if(periode_text !== 'RKA'){
-            $('.input-saldo-awal').prop( "readonly", true );
-            $('.input-saldo-awal').css("background-color", "#D2E2EB");
-        }
+        // var periode_text = "{{ $periode_text->nama }}";
+        // if(periode_text !== 'RKA'){
+        //     $('.input-saldo-awal').prop( "readonly", true );
+        //     $('.input-saldo-awal').css("background-color", "#D2E2EB");
+        // }
 
     });
     
@@ -299,10 +299,10 @@
             }                       
         });
 
-        if(periode_id == 4){
-            $('.input-saldo-awal').prop( "readonly", false );
-            $('.input-saldo-awal').css("background-color", "white");
-        }
+        // if(periode_id == 4){
+        //     $('.input-saldo-awal').prop( "readonly", false );
+        //     $('.input-saldo-awal').css("background-color", "white");
+        // }
     }
 
 

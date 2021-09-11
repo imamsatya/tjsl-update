@@ -118,7 +118,7 @@
                         <table class="table table-striped table-bordered table-hover table-checkable">
                             <thead>
                                 <tr style="background-color:#c4e4e4; ">
-                                    <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No.</th>
+                                    <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No</th>
                                     <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Tahun</th>
                                     <th style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">BUMN</th>
                                     <th style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">Periode Laporan</th>
@@ -170,7 +170,7 @@
                             @endforeach
                             </tbody>
                             <tfoot>
-                                <tr style="background-color:#c4e4e4; ">
+                                <tr style="background-color:#c4e4e4;display:none;" id="total">
                                     <th style="text-align:center;font-weight:bold;border-top: 1px solid #c8c7c7;" colspan="4">Total</th>
                                     <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">{{number_format($total_income,0,',',',')}}</th>
                                     <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">{{number_format($total_outcome,0,',',',')}}</th>
@@ -272,6 +272,7 @@
 
     });
 
+    
     
     function onbtndeletepumkanggaran(element){
         swal.fire({

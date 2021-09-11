@@ -1,8 +1,9 @@
 
 <style>
-    .incomes,.outcomes,.saldo_akhirs,.sum-outcomes,.sum-incomes{
+    .text-right{
         text-align: right;
     }
+
 </style>
     <!--begin::Anggaran PUMK-->
         <h4 class="card-title align-items-start flex-column ">
@@ -10,121 +11,105 @@
         </h4>
 
             <div class="separator border-gray-200 mb-3"></div>
-                <div class="form-group row">
-                    <div class="col-lg-5">
-                        <strong> I. Dana Tersedia</strong>
+                <div class="form-group row" style="border:ridge;">
+                    <div class="col-lg-12" style="background-color:#AED6F1;">
+                        <strong>Dana Tersedia</strong>
                     </div>	
-                    <div class="col-lg-7">
-                    </div>
-
-                    <div class="col-lg-4 offset-sm-1">
-                        <label style="padding-top: 20px;">Saldo Awal</label> 
-                    </div>	
-                    <div class="col-lg-7">
-                        <input type="text" class="form-control input-saldo-awal incomes" name="saldo_awal" value="{{$data->saldo_awal == null? '-' : 'Rp. '.number_format($data->saldo_awal,0,',',',').',-'}}" readonly>
-                    </div>
                     
-                    <div class="col-lg-4 offset-sm-1">
-                        <label style="padding-top: 20px;">Pengembalian Dana PUMK :</label> 
-                    </div>	
-                    <div class="col-lg-7">
-                    </div>
-
-                    <div class="col-lg-4 offset-sm-1">
-                        <label style="padding-top: 15px;">Dari Mitra Binaan </label> 
-                    </div>	
-                    <div class="col-lg-7">
-                        <div class="col-md-12" style="padding-bottom : 10px;">
-                            <input type="text" class="form-control input-income-mitra-binaan incomes" name="income_mitra_binaan" style="bottom: 20px;" value="{{$data->income_mitra_binaan == null? '-' : 'Rp. '.number_format($data->income_mitra_binaan,0,',',',').',-'}}" readonly>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4 offset-sm-1">
-                        <label style="padding-top: 15px;">Dari BUMN Pembina Lain </label> 
-                    </div>	
-                    <div class="col-lg-7">
-                        <div class="col-md-12" style="padding-bottom : 10px;">
-                            <input type="text" class="form-control input-income-pembina-lain incomes" name="income_bumn_pembina_lain" style="bottom: 20px;" value="{{$data->income_bumn_pembina_lain == null? '-' : 'Rp. '.number_format($data->income_bumn_pembina_lain,0,',',',').',-'}}" readonly>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4 offset-sm-1">
-                        <label style="padding-top: 15px;">Pendapatan Jasa Admin PUMK</label> 
-                    </div>	
-                    <div class="col-lg-7">
-                        <div class="col-md-12" style="padding-bottom : 10px;">
-                            <input type="text" class="form-control  input-income-jasa-adm-pumk incomes" name="income_jasa_adm_pumk" style="bottom: 20px;" value="{{$data->income_jasa_adm_pumk == null? '-' : 'Rp. '.number_format($data->income_jasa_adm_pumk,0,',',',').',-'}}" readonly>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4 offset-sm-1">
-                        <label style="padding-top: 15px;">Pendapatan Jasa Bank (Net)</label> 
-                    </div>	
-                    <div class="col-lg-7">
-                        <div class="col-md-12" style="padding-bottom : 10px;">
-                            <input type="text" class="form-control input-income-adm-bank incomes" name="income_adm_bank" style="bottom: 20px;" value="{{$data->income_adm_bank == null? '-' : 'Rp. '.number_format($data->income_adm_bank,0,',',',').',-'}}" readonly>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4 offset-sm-1">
-                        <label style="padding-top: 15px;">Total Dana Tersedia </label> 
-                    </div>	
-                    <div class="col-lg-7">
-                        <div class="col-md-12" style="padding-bottom : 10px;">
-                            <input type="text" class="form-control sum-incomes" name="income_total" style="bottom: 20px;background-color:rgb(210, 226, 235)" value="{{$data->income_total == null? '-' : 'Rp. '.number_format($data->income_total,0,',',',').',-'}}" readonly>
-                        </div>
-                    </div>
-
-
-                    <div class="col-lg-6">
-                        <strong> II. Dana Disalurkan</strong>
-                    </div>	
-                    <div class="col-lg-6">
-                    </div>
-
-                <div class="col-lg-4 offset-sm-1">
-                    <label style="padding-top: 20px;">Penyaluran Mandiri</label> 
-                </div>	
-                <div class="col-lg-7">
-                    <div class="col-md-12" style="padding-bottom : 10px;">
-                        <input type="text" class="form-control outcomes" name="outcome_mandiri" style="bottom: 20px;" value="{{$data->outcome_mandiri == null? '-' : 'Rp. '.number_format($data->outcome_mandiri,0,',',',').',-'}}" readonly>
+                    <div class="container">
+                        <table class="table table-striped table-bordered table-hover table-checkable">
+                            <thead>
+                                <tr style="border-bottom:ridge;">
+                                    <th width="40%"></th>
+                                    <th class="text-right"><strong>RKA</strong></th>
+                                    <th class="text-right"><strong>{{$data->periode  == null? 'Periode': $data->periode}}</strong></th>
+                                    <th class="text-right"><strong>(%)</strong></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Saldo Awal</td>
+                                    <td class="text-right">{{$data_rka->saldo_awal == null? 0 : number_format($data_rka->saldo_awal,0,'.','.')}}</td>
+                                    <td class="text-right">{{$data->saldo_awal == null? 0 : number_format($data->saldo_awal,0,'.','.')}}</td>
+                                    <td class="text-right">{{number_format($p_saldo_awal, 2, ',', ' ')}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Pengembalian Dana Dari Mitra Binaan</td>
+                                    <td class="text-right">{{$data_rka->income_mitra_binaan == null? 0 : number_format($data_rka->income_mitra_binaan,0,'.','.')}}</td>
+                                    <td class="text-right">{{$data->income_mitra_binaan == null? 0 : number_format($data->income_mitra_binaan,0,'.','.')}}</td>
+                                    <td class="text-right">{{number_format($p_income_mitra_binaan, 2, ',', ' ')}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Pengembalian Dana Dari BUMN Pembina Lain</td>
+                                    <td class="text-right">{{$data_rka->income_bumn_pembina_lain == null? 0 : number_format($data_rka->income_bumn_pembina_lain,0,'.','.')}}</td>
+                                    <td class="text-right">{{$data->income_bumn_pembina_lain == null? 0 : number_format($data->income_bumn_pembina_lain,0,'.','.')}}</td>
+                                    <td class="text-right">{{number_format($p_income_bumn_pembina_lain, 2, ',', ' ')}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Pendapatan Jasa Admin PUMK</td>
+                                    <td class="text-right">{{$data_rka->income_jasa_adm_pumk == null? 0 : number_format($data_rka->income_jasa_adm_pumk,0,'.','.')}}</td>
+                                    <td class="text-right">{{$data->income_jasa_adm_pumk == null? 0 : number_format($data->income_jasa_adm_pumk,0,'.','.')}}</td>
+                                    <td class="text-right">{{number_format($p_income_jasa_adm_pumk, 2, ',', ' ')}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Pendapatan Jasa Bank (Net)</td>
+                                    <td class="text-right">{{$data_rka->income_adm_bank == null? 0 : number_format($data_rka->income_adm_bank,0,'.','.')}}</td>
+                                    <td class="text-right">{{$data->income_adm_bank == null? 0 : number_format($data->income_adm_bank,0,'.','.')}}</td>
+                                    <td class="text-right">{{number_format($p_income_adm_bank, 2, ',', ' ')}}</td>
+                                </tr>
+                                <tr style="border-top:ridge;">
+                                    <td><strong>Total Dana Tersedia</strong></td>
+                                    <td class="text-right"><strong>{{$data_rka->income_total == null? 0 : number_format($data_rka->income_total,0,'.','.')}}</strong></td>
+                                    <td class="text-right"><strong>{{$data->income_total == null? 0 : number_format($data->income_total,0,'.','.')}}</strong></td>
+                                    <td class="text-right"><strong>{{number_format($p_income_total, 2, ',', ' ')}}</strong></td>
+                                </tr>               
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-
-                <div class="col-lg-4 offset-sm-1">
-                    <label style="padding-top: 15px;">Penyaluran Kolaborasi/BUMN </label> 
-                </div>	
-                <div class="col-lg-7">
-                    <div class="col-md-12" style="padding-bottom : 10px;">
-                        <input type="text" class="form-control outcomes" name="outcome_kolaborasi_bumn" style="bottom: 20px;" value="{{$data->outcome_kolaborasi_bumn == null? '-' : 'Rp. '.number_format($data->outcome_kolaborasi_bumn,0,',',',').',-'}}" readonly>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 offset-sm-1">
-                    <label style="padding-top: 15px;">Penyaluran BUMN Khusus </label> 
-                </div>	
-                <div class="col-lg-7">
-                    <div class="col-md-12" style="padding-bottom : 10px;">
-                        <input type="text" class="form-control outcomes" name="outcome_bumn_khusus" style="bottom: 20px;" value="{{$data->outcome_bumn_khusus == null? '-' : 'Rp. '.number_format($data->outcome_bumn_khusus,0,',',',').',-'}}" readonly>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 offset-sm-1">
-                    <label style="padding-top: 15px;">Total Dana Disalurkan </label> 
-                </div>	
-                <div class="col-lg-7">
-                    <div class="col-md-12" style="padding-bottom : 10px;">
-                        <input type="text" class="form-control sum-outcomes" name="outcome_total" style="bottom: 20px;background-color:rgb(210, 226, 235)" value="{{$data->outcome_total == null? '-' : 'Rp. '.number_format($data->outcome_total,0,',',',').',-'}}" readonly>
-                    </div>
-                </div>
-
-
-                <div class="col-lg-5" style="padding-top : 15px;">
-                   <strong>III. Saldo Akhir</strong> 
-                </div>	
-                <div class="col-lg-7">
-                    <div class="col-md-12" style="padding-bottom : 10px;">
-                        <input type="text" class="form-control saldo_akhirs" name="saldo_akhir" style="bottom: 20px;background-color:rgb(210, 226, 235)" value="{{$data->saldo_akhir == null? '-' : 'Rp. '.number_format($data->saldo_akhir,0,',',',').',-'}}" readonly>
+                <br>
+                <div class="form-group row" style="border:ridge;">
+                    <div class="col-lg-12" style="background-color:#F8C471 ;">
+                        <strong>Dana Disalurkan</strong>
+                    </div>	
+                    
+                    <div class="container">
+                        <table class="table table-striped table-bordered table-hover table-checkable">
+                            <thead>
+                                <tr style="border-bottom:ridge;">
+                                    <th width="40%"></th>
+                                    <th class="text-right"><strong>RKA</strong></th>
+                                    <th class="text-right"><strong>{{$data->periode == null? 'Periode': $data->periode}}</strong></th>
+                                    <th class="text-right"><strong>(%)</strong></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Penyaluran Mandiri</td>
+                                    <td class="text-right">{{$data_rka->outcome_mandiri == null? 0 : number_format($data_rka->outcome_mandiri,0,'.','.')}}</td>
+                                    <td class="text-right">{{$data->outcome_mandiri == null? 0 : number_format($data->outcome_mandiri,0,'.','.')}}</td>
+                                    <td class="text-right">{{number_format($p_outcome_mandiri, 2, ',', ' ')}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Penyaluran Kolaborasi/BUMN</td>
+                                    <td class="text-right">{{$data_rka->outcome_kolaborasi_bumn == null? 0 : number_format($data_rka->outcome_kolaborasi_bumn,0,'.','.')}}</td>
+                                    <td class="text-right">{{$data->outcome_kolaborasi_bumn == null? 0 : number_format($data->outcome_kolaborasi_bumn,0,'.','.')}}</td>
+                                    <td class="text-right">{{number_format($p_outcome_kolaborasi_bumn, 2, ',', ' ')}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Penyaluran BUMN Khusus</td>
+                                    <td class="text-right">{{$data_rka->outcome_bumn_khusus == null? 0 : number_format($data_rka->outcome_bumn_khusus,0,'.','.')}}</td>
+                                    <td class="text-right">{{$data->outcome_bumn_khusus == null? 0 : number_format($data->outcome_bumn_khusus,0,'.','.')}}</td>
+                                    <td class="text-right">{{number_format($p_outcome_bumn_khusus, 2, ',', ' ')}}</td>
+                                </tr>
+                                <tr style="border-top:ridge;">
+                                    <td><strong>Total Dana Disalurkan</strong></td>
+                                    <td class="text-right"><strong>{{$data_rka->outcome_total == null? 0 : number_format($data_rka->outcome_total,0,'.','.')}}</strong></td>
+                                    <td class="text-right"><strong>{{$data->outcome_total == null? 0 : number_format($data->outcome_total,0,'.','.')}}</strong></td>
+                                    <td class="text-right"><strong>{{number_format($p_outcome_total, 2, ',', ' ')}}</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
