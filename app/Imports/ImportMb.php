@@ -52,13 +52,14 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets
         $gagal = 0;
         $keterangan = '';
        foreach ($row as $ar) {
+       
             $cek_identitas = 0;
             $cek_kolektibilitas = 0;
             $s_gagal = false;
 
             $cek_identitas = PumkMitraBinaan::where('no_identitas',$ar['no_identitas'] )
                                  ->count();
-            $cek_kolektibilitas = PumkMitraBinaan::where('kolektibilitas_id',(int)$ar['kolektibilitas_pendanaan'] )
+            $cek_kolektibilitas = PumkMitraBinaan::where('kolektibilitas_id',(int)$ar['id_kolektibilitas_pendanaan'] )
                                  ->count();
 
             //buat data baru jika identitas & kolek belum ada
@@ -67,14 +68,14 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets
                     $mitra = PumkMitraBinaan::create([
                         'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                         'no_identitas' => rtrim($ar['no_identitas']),
-                        'provinsi_id' => rtrim($ar['provinsi']),
-                        'kota_id' => rtrim($ar['kota']),
-                        'sektor_usaha_id' => rtrim($ar['sektor_usaha']),
-                        'cara_penyaluran_id' => rtrim($ar['cara_penyaluran']),
-                        'kolektibilitas_id' => rtrim($ar['kolektibilitas_pendanaan']),
-                        'kondisi_pinjaman_id' => rtrim($ar['kondisi_pinjaman']),
-                        'jenis_pembayaran_id' => rtrim($ar['jenis_pembayaran']),
-                        'bank_account_id' => rtrim($ar['bank_account']),
+                        'provinsi_id' => rtrim($ar['id_provinsi']),
+                        'kota_id' => rtrim($ar['id_kota']),
+                        'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
+                        'cara_penyaluran_id' => rtrim($ar['id_cara_penyaluran']),
+                        'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
+                        'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
+                        'jenis_pembayaran_id' => rtrim($ar['id_jenis_pembayaran']),
+                        'bank_account_id' => rtrim($ar['id_bank_account']),
                         'nilai_aset' => rtrim($ar['nilai_aset']),
                         'nilai_omset' => rtrim($ar['nilai_omset']),
                         'no_pinjaman' => rtrim($ar['no_pinjaman']),
@@ -108,14 +109,14 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets
                         $mitra = UploadGagalPumkMitraBinaan::create([
                             'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                             'no_identitas' => rtrim($ar['no_identitas']),
-                            'provinsi_id' => rtrim($ar['provinsi']),
-                            'kota_id' => rtrim($ar['kota']),
-                            'sektor_usaha_id' => rtrim($ar['sektor_usaha']),
-                            'cara_penyaluran_id' => rtrim($ar['cara_penyaluran']),
-                            'kolektibilitas_id' => rtrim($ar['kolektibilitas_pendanaan']),
-                            'kondisi_pinjaman_id' => rtrim($ar['kondisi_pinjaman']),
-                            'jenis_pembayaran_id' => rtrim($ar['jenis_pembayaran']),
-                            'bank_account_id' => rtrim($ar['bank_account']),
+                            'provinsi_id' => rtrim($ar['id_provinsi']),
+                            'kota_id' => rtrim($ar['id_kota']),
+                            'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
+                            'cara_penyaluran_id' => rtrim($ar['id_cara_penyaluran']),
+                            'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
+                            'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
+                            'jenis_pembayaran_id' => rtrim($ar['id_jenis_pembayaran']),
+                            'bank_account_id' => rtrim($ar['id_bank_account']),
                             'nilai_aset' => rtrim($ar['nilai_aset']),
                             'nilai_omset' => rtrim($ar['nilai_omset']),
                             'no_pinjaman' => rtrim($ar['no_pinjaman']),
@@ -148,14 +149,14 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets
                         ->update([
                         'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                         //'no_identitas' => rtrim($ar['no_identitas']), //no identitas primary 
-                        'provinsi_id' => rtrim($ar['provinsi']),
-                        'kota_id' => rtrim($ar['kota']),
-                        'sektor_usaha_id' => rtrim($ar['sektor_usaha']),
-                        'cara_penyaluran_id' => rtrim($ar['cara_penyaluran']),
-                        'kolektibilitas_id' => rtrim($ar['kolektibilitas_pendanaan']),
-                        'kondisi_pinjaman_id' => rtrim($ar['kondisi_pinjaman']),
-                        'jenis_pembayaran_id' => rtrim($ar['jenis_pembayaran']),
-                        'bank_account_id' => rtrim($ar['bank_account']),
+                        'provinsi_id' => rtrim($ar['id_provinsi']),
+                        'kota_id' => rtrim($ar['id_kota']),
+                        'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
+                        'cara_penyaluran_id' => rtrim($ar['id_cara_penyaluran']),
+                        'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
+                        'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
+                        'jenis_pembayaran_id' => rtrim($ar['id_jenis_pembayaran']),
+                        'bank_account_id' => rtrim($ar['id_bank_account']),
                         'nilai_aset' => rtrim($ar['nilai_aset']),
                         'nilai_omset' => rtrim($ar['nilai_omset']),
                         'no_pinjaman' => rtrim($ar['no_pinjaman']),
@@ -190,14 +191,14 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets
                         $mitra = UploadGagalPumkMitraBinaan::create([
                             'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                             'no_identitas' => rtrim($ar['no_identitas']),
-                            'provinsi_id' => rtrim($ar['provinsi']),
-                            'kota_id' => rtrim($ar['kota']),
-                            'sektor_usaha_id' => rtrim($ar['sektor_usaha']),
-                            'cara_penyaluran_id' => rtrim($ar['cara_penyaluran']),
-                            'kolektibilitas_id' => rtrim($ar['kolektibilitas_pendanaan']),
-                            'kondisi_pinjaman_id' => rtrim($ar['kondisi_pinjaman']),
-                            'jenis_pembayaran_id' => rtrim($ar['jenis_pembayaran']),
-                            'bank_account_id' => rtrim($ar['bank_account']),
+                            'provinsi_id' => rtrim($ar['id_provinsi']),
+                            'kota_id' => rtrim($ar['id_kota']),
+                            'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
+                            'cara_penyaluran_id' => rtrim($ar['id_cara_penyaluran']),
+                            'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
+                            'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
+                            'jenis_pembayaran_id' => rtrim($ar['id_jenis_pembayaran']),
+                            'bank_account_id' => rtrim($ar['id_bank_account']),
                             'nilai_aset' => rtrim($ar['nilai_aset']),
                             'nilai_omset' => rtrim($ar['nilai_omset']),
                             'no_pinjaman' => rtrim($ar['no_pinjaman']),
