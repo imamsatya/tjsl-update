@@ -1,64 +1,73 @@
 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
 	@csrf
-	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
+	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->kegiatan_realisasi_id : null}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
+	
 
     <div class="form-group row mb-5">
         <div class="col-lg-6">
+            <label>Bulan</label>
+            <select id="bulan" class="form-select form-select-solid form-select2" name="bulan" data-kt-select2="true" data-placeholder="Pilih Bulan" required>
+                <option></option>
+                @foreach($bulans as $p)  
+                    @php
+                        $select = ($actionform == 'update' && ($p->id == $data->bulan) ? 'selected="selected"' : '');
+                    @endphp
+                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-lg-6">
+            <label>Tahun</label>
+            <select id="tahun" class="form-select form-select-solid form-select2" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun" required>
+                <option></option>
+                @php for($i = date("Y"); $i>=2020; $i--){ @endphp
+                    @php
+                        $select = (($i == $data->tahun) ? 'selected="selected"' : '');
+                    @endphp
+                    <option value="{{$i}}" {!! $select !!}>{{$i}}</option>
+                @php } @endphp
+            </select>
+        </div>
+    </div>
+    <div class="form-group row mb-5">
+        <div class="col-lg-6">
             <label>Program</label>
-            <input type="text" class="form-control" name="program" id="program" value="{{!empty(old('program'))? old('program') : ($actionform == 'update' && $data->program != ''? $data->program : old('program'))}}" required/>
+            <select id="target_tpb_id" class="form-select form-select-solid form-select2" name="target_tpb_id" data-kt-select2="true" data-placeholder="Pilih Program" required>
+                <option></option>
+                @foreach($target_tpb as $p)  
+                    @php
+                        $select = ($actionform == 'update' && ($p->id == $data->target_tpb_id) ? 'selected="selected"' : '');
+                    @endphp
+                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->program }}</option>
+                @endforeach
+            </select>
         </div>
         <div class="col-lg-6">
-            <label>Unit Owner</label>
-            <input type="text" class="form-control" name="unit_owner" id="unit_owner" value="{{!empty(old('unit_owner'))? old('unit_owner') : ($actionform == 'update' && $data->unit_owner != ''? $data->unit_owner : old('unit_owner'))}}" required/>
+            <label>Kegiatan</label>
+            <input type="text" class="form-control" name="kegiatan" id="kegiatan" value="{{!empty(old('kegiatan'))? old('kegiatan') : ($actionform == 'update' && $data->kegiatan != ''? $data->kegiatan : old('kegiatan'))}}"  required/>
         </div>
     </div>
     <div class="form-group row mb-5">
         <div class="col-lg-6">
-            <label>Kriteria Program</label>
-            <select class="form-select form-select-solid form-select2" name="jenis_program_id" data-kt-select2="true" data-placeholder="Pilih jenis program" data-dropdown-parent="#winform" required>
+            <label>Provinsi</label>
+            <select id="provinsi_id" class="form-select form-select-solid form-select2" name="provinsi_id" data-kt-select2="true" data-placeholder="Pilih Provinsi" required>
                 <option></option>
-                @foreach($jenis_program as $p)  
+                @foreach($provinsi as $p)  
                     @php
-                        $select = ($actionform == 'update' && ($p->id == $data->jenis_program_id) ? 'selected="selected"' : '');
+                        $select = ($actionform == 'update' && ($p->id == $data->provinsi_id) ? 'selected="selected"' : '');
                     @endphp
                     <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
                 @endforeach
             </select>
         </div>
         <div class="col-lg-6">
-            <label>Core Subject</label>
-            <select class="form-select form-select-solid form-select2" name="core_subject_id" data-kt-select2="true" data-placeholder="Pilih Core Subject" data-dropdown-parent="#winform" required>
+            <label>Kota</label>
+            <select id="kota_id" class="form-select form-select-solid form-select2" name="kota_id" data-kt-select2="true" data-placeholder="Pilih Kota" required>
                 <option></option>
-                @foreach($core_subject as $p)  
+                @foreach($kota as $p)  
                     @php
-                        $select = ($actionform == 'update' && ($p->id == $data->core_subject_id) ? 'selected="selected"' : '');
-                    @endphp
-                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
-                @endforeach
-            </select>
-        </div>
-    </div>
-    <div class="form-group row mb-5">
-        <div class="col-lg-6">
-            <label>Kode Indikator - Kode Tujuan TPB</label>
-            <select class="form-select form-select-solid form-select2" name="kode_indikator_id" data-kt-select2="true" data-placeholder="Pilih Kode Indikator" data-dropdown-parent="#winform" required>
-                <option></option>
-                @foreach($kode_indikator as $p)  
-                    @php
-                        $select = ($actionform == 'update' && ($p->id == $data->kode_indikator_id) ? 'selected="selected"' : '');
-                    @endphp
-                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->kode }} - {{ $p->kode_tujuan_tpb }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="col-lg-6">
-            <label>Pelaksanaaan Program</label>
-            <select class="form-select form-select-solid form-select2" name="cara_penyaluran_id" data-kt-select2="true" data-placeholder="Pilih Pelaksanaaan Program" data-dropdown-parent="#winform" required>
-                <option></option>
-                @foreach($cara_penyaluran as $p)  
-                    @php
-                        $select = ($actionform == 'update' && ($p->id == $data->cara_penyaluran_id) ? 'selected="selected"' : '');
+                        $select = ($actionform == 'update' && ($p->id == $data->kota_id) ? 'selected="selected"' : '');
                     @endphp
                     <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
                 @endforeach
@@ -66,27 +75,41 @@
         </div>
     </div>
     <div class="form-group row mb-5">
-        <div class="col-lg-12">
-            <label>Mitra BUMN</label>
-            <select class="form-select form-select-solid form-select2" name="mitra_bumn[]" data-kt-select2="true" data-placeholder="Pilih Mitra BUMN" data-dropdown-parent="#winform" multiple="multiple">
+        <div class="col-lg-6">
+            <label>Indikator Capaian Kegiatan</label>
+            <input type="text" class="form-control" name="indikator" id="indikator" value="{{!empty(old('indikator'))? old('indikator') : ($actionform == 'update' && $data->indikator != ''? $data->indikator : old('indikator'))}}"  required/>
+        </div>
+        <div class="col-lg-6">
+            <label>Satuan Ukur</label>
+            <select id="satuan_ukur_id" class="form-select form-select-solid form-select2" name="satuan_ukur_id" data-kt-select2="true" data-placeholder="Pilih Satuan Ukur"  required>
                 <option></option>
-                @foreach($perusahaan as $p)  
+                @foreach($satuan_ukur as $p)  
                     @php
-                        $select = ($actionform == 'update' && in_array($p->id, $mitra) ? 'selected="selected"' : '');
+                        $select = ($actionform == 'update' && ($p->id == $data->satuan_ukur_id) ? 'selected="selected"' : '');
                     @endphp
-                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
+                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
                 @endforeach
             </select>
         </div>
     </div>
     <div class="form-group row mb-5">
         <div class="col-lg-6">
-            <label>Jangka waktu penerapan (dalam tahun)</label>
-            <input type="text" style="text-align:right;" class="form-control" name="jangka_waktu" id="jangka_waktu" value="{{@$data->jangka_waktu}}"  onkeypress="return onlyNumberKey(event)"/>
+            <label>Target</label>
+            <input type="text" style="text-align:right;" class="form-control" name="target" id="target" value="{{!empty(old('target'))? old('target') : ($actionform == 'update' && $data->target != ''?  number_format($data->target,0,',',',') : old('target'))}}"  required/>
         </div>
+        <div class="col-lg-6">
+            <label>Realisasi</label>
+            <input type="text" style="text-align:right;" class="form-control" name="realisasi" id="realisasi" value="{{!empty(old('realisasi'))? old('realisasi') : ($actionform == 'update' && $data->realisasi != ''?  number_format($data->realisasi,0,',',',') : old('realisasi'))}}"  required/>
+        </div>
+    </div>
+    <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>Alokasi Anggaran</label>
-            <input type="text" style="text-align:right;" class="form-control" id="anggaran_alokasi" name="anggaran_alokasi" value="{{number_format($data->anggaran_alokasi,0,',',',')}}"/>
+            <input type="text" style="text-align:right;" class="form-control" name="anggaran_alokasi" id="anggaran_alokasi" value="{{!empty(old('anggaran_alokasi'))? old('anggaran_alokasi') : ($actionform == 'update' && $data->anggaran_alokasi != ''?  number_format($data->anggaran_alokasi,0,',',',') : old('anggaran_alokasi'))}}"  required/>
+        </div>
+        <div class="col-lg-6">
+            <label>Realisasi Anggaran</label>
+            <input type="text" style="text-align:right;" class="form-control" name="anggaran" id="anggaran" value="{{!empty(old('anggaran'))? old('anggaran') : ($actionform == 'update' && $data->anggaran != ''?  number_format($data->anggaran,0,',',',') : old('anggaran'))}}"  required/>
         </div>
     </div>
     <div class="text-center pt-15">
@@ -100,43 +123,18 @@
 </form>
 
 <script type="text/javascript">
-    var title = "{{$actionform == 'update'? 'Update' : 'Tambah'}}" + " {{ $pagetitle }}";
+    var title = "{{$actionform == 'update'? 'Update' : 'Tambah'}}" + " Kegiatan";
 
     $(document).ready(function(){
         $('.modal-title').html(title);
         $('.form-select2').select2();
-
         $('.modal').on('shown.bs.modal', function () {
             setFormValidate();
         });  
-        
-        $('#anggaran_alokasi').keyup(function(event) {
-
-            // skip for arrow keys
-            if(event.which >= 37 && event.which <= 40) return;
-
-            // format number
-            $(this).val(function(index, value) {
-            return value
-            .replace(/\D/g, "")
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-            ;
-            });
-        });
     });
 
     function setFormValidate(){
-        $('#form-edit').validate({
-            rules: {
-                nama:{
-                        required: true
-                }               		               		                              		               		               
-            },
-            messages: {
-                nama: {
-                    required: "Nama wajib diinput"
-                }                                      		                   		                   
-            },	        
+        $('#form-edit').validate({      
             highlight: function(element) {
                 $(element).closest('.form-control').addClass('is-invalid');
             },
@@ -181,8 +179,7 @@
 
                         if(data.flag == 'success') {
                             $('#winform').modal('hide');
-                            // datatable.ajax.reload( null, false );
-                            location.reload();
+                            datatable.ajax.reload( null, false );
                         }
                     },
                     error: function(jqXHR, exception){
@@ -217,12 +214,5 @@
                 return false;
         }
         });		
-    }
-    
-    function onlyNumberKey(e) {
-        var ASCIICode = (e.which) ? e.which : e.keyCode
-        if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
-            return false;
-        return true;
     }
 </script>

@@ -27,4 +27,9 @@ class Kegiatan extends Model
     {
     	return $this->belongsTo('App\Models\SatuanUkur', 'satuan_ukur_id');
     }
+
+    public function bulan_nama()
+    {
+    	return $this->belongsTo('App\Models\Bulan', 'bulan');
+    }
 }

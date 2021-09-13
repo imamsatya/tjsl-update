@@ -290,7 +290,14 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('edit', 'App\Http\Controllers\Realisasi\AdministrasiController@edit')->name('realisasi.administrasi.edit');
                 Route::post('store', 'App\Http\Controllers\Realisasi\AdministrasiController@store')->name('realisasi.administrasi.store');
                 Route::post('delete', 'App\Http\Controllers\Realisasi\AdministrasiController@delete')->name('realisasi.administrasi.delete');
+                Route::post('export', 'App\Http\Controllers\Realisasi\AdministrasiController@export')->name('realisasi.administrasi.export');
                 Route::get('datatable', 'App\Http\Controllers\Realisasi\AdministrasiController@datatable')->name('realisasi.administrasi.datatable');
+                Route::post('detail', 'App\Http\Controllers\Realisasi\AdministrasiController@detail')->name('realisasi.administrasi.detail');
+                Route::post('download_template', 'App\Http\Controllers\Realisasi\AdministrasiController@download_template')->name('realisasi.administrasi.download_template');
+                Route::post('upload', 'App\Http\Controllers\Realisasi\AdministrasiController@upload')->name('realisasi.administrasi.upload');
+                Route::post('log_status', 'App\Http\Controllers\Realisasi\AdministrasiController@log_status')->name('realisasi.administrasi.log_status');
+                Route::post('validasi', 'App\Http\Controllers\Realisasi\AdministrasiController@validasi')->name('realisasi.administrasi.validasi');
+                Route::post('get_status', 'App\Http\Controllers\Realisasi\AdministrasiController@get_status')->name('realisasi.administrasi.get_status');
             });
 
             Route::prefix('upload_realisasi')->group(function(){

@@ -1,24 +1,24 @@
 <?php
 namespace App\Exports;
 
-use App\Models\CaraPenyaluran;
+use App\Models\TargetTpb;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\FromView;
 use Illuminate\Contracts\View\View;
 
-class ReferensiCaraPenyaluran implements FromView , WithTitle
+class ReferensiProgram implements FromView , WithTitle
 {
      public function view(): View
     {
-        return view('target.administrasi.referensi_cara_penyaluran', [
-            'cara_penyaluran' => CaraPenyaluran::all()
+        return view('realisasi.administrasi.referensi_program', [
+            'target_tpb' => TargetTpb::get()
         ]);
     }
 
     public function title(): string
     {
-        return 'Referensi Pelaksanaaan Program' ;
+        return 'Referensi Program' ;
     }
 }
 ?>
