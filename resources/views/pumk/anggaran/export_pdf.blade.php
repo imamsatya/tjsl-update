@@ -16,7 +16,7 @@
     }
     .text-left{
         text-align: left;
-        padding-left: 35px;
+        padding-left: 15px;
         padding-right: 10px;
     }
     .text-center{

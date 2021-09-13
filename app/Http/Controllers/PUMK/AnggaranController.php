@@ -27,7 +27,7 @@ class AnggaranController extends Controller
     public function __construct()
     {
         $this->__route = 'pumk.anggaran';
-        $this->pagetitle = 'Data Anggaran PUMK';
+        $this->pagetitle = 'Data PUMK';
     }
 
     public function index(Request $request)
@@ -639,6 +639,6 @@ class AnggaranController extends Controller
             'p_outcome_total' => $p_outcome_total,
         ]);
 
-        return $pdf_doc->download('pdf.pdf');
+        return $pdf_doc->download('Data_PUMK_'.date('d_m_Y').'.pdf');
     }   
 }

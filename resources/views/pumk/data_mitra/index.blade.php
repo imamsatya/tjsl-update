@@ -53,7 +53,7 @@
                                 $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
                             @endphp
                             <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
-                                <option></option>
+                                <option value=""></option>
                                 @foreach($perusahaan as $bumn)  
                                     @php
                                         $select = (($bumn->id == $filter_bumn_id) ? 'selected="selected"' : '');
@@ -102,7 +102,7 @@
                         </div>
                         <div class="col-lg-3">
                             <label>Skala Usaha</label>
-                            <select class="form-select form-select-solid form-select2" id="skala_id" name="skala_id" data-kt-select2="true" data-placeholder="Pilih Skala Usaha" data-allow-clear="true">
+                            <select class="form-select form-select-solid form-select2" id="skala_usaha_id" name="skala_usaha_id" data-kt-select2="true" data-placeholder="Pilih Skala Usaha" data-allow-clear="true">
                                 <option></option>
                                 @foreach($skala_usaha as $su)  
                                     <option value="{{ $su->id }}" >{{ $su->name }}</option>
@@ -149,13 +149,13 @@
                         </div>
                         <div class="col-lg-6">
                             <label>No. Identitas</label>
-                            <input type="text" class="form-control " name="identitas" placeholder="masukan nomor identitas..." >
+                            <input type="text" class="form-control " id="identitas" name="identitas" placeholder="masukan nomor identitas..." >
                         </div>
                     </div>
                     <div class="form-group row  mb-5">
                         <div class="col-lg-6">
                             <button id="proses" class="btn-small btn-success me-3 text-white"><i class="fa fa-search text-white"></i> Cari</button>
-                            <button  onclick="window.location.href='{{route('pumk.anggaran.index')}}'" class="btn-small btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
+                            <button id="reset" class="btn-small btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
                         </div>
                     </div>
                     <div class="separator border-gray-200 mb-10"></div>
@@ -199,7 +199,50 @@
     var urldatatable = "{{route('pumk.data_mitra.datatable')}}";
 
     $(document).ready(function(){
-        setDatatable();
+        $.ajaxSetup({
+              headers: {
+                       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+              });
+            
+        $('#datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            "dom": 'lrtip',
+            ajax: {
+                    url: urldatatable,
+                    type: 'GET',
+                    data: function (d) {
+                        d.identitas = $('#identitas').val();
+                        d.perusahaan_id =  $("#perusahaan_id").val();
+                        d.provinsi_id =  $("#provinsi_id").val();
+                        d.kota_id =  $("#kota_id").val();
+                        d.sektor_usaha_id =  $("#sektor_usaha_id").val();
+                        d.cara_penyaluran_id =  $("#cp_id").val();
+                        d.skala_usaha_id =  $("#skala_usaha_id").val();
+                        d.kolektibilitas_id =  $("#kolekbilitas_id").val();
+                        d.kondisi_pinjaman_id =  $("#kondisi_id").val();
+                        d.jenis_pembayaran_id =  $("#jp_id").val();
+                        d.bank_account_id =  $("#bank_account_id").val();
+                    }
+            },
+            columns: [
+                      {data: "id",
+                        render: function (data, type, row, meta) {
+                                return meta.row + meta.settings._iDisplayStart + 1;
+                            }
+                        },
+                        { data: 'nama_mitra', name: 'nama_mitra' },
+                        { data: 'provinsi', name: 'provinsi' },
+                        // { data: 'kota', name: 'kota' },
+                        { data: 'sektor_usaha', name: 'sektor_usaha' },
+                        { data: 'nominal_pendanaan', name: 'nominal_pendanaan' },
+                        { data: 'saldo_pokok_pendanaan', name: 'saldo_pokok_pendanaan' },
+                        { data: 'kolektibilitas', name: 'kolektibilitas' },
+                        { data: 'action', name:'action'},
+                     ],
+            order: [[0, 'desc']]
+        });
 
         $('#page-title').html("{{ $pagetitle }}");
         $('#page-breadcrumb').html("{{ $breadcrumb }}");
@@ -232,57 +275,28 @@
         //     $('.cls-add').hide();
         //     $('.cls-button-edit').hide();
         // }
-
+        
     });
 
-    function setDatatable(data){
-        datatable = $('#datatable').DataTable({
-            sDom: 'lrtip',
-            processing: true,
-            serverSide: true,
-            ajax: urldatatable,
-            columns: [
-                {data: "id",
-                    render: function (data, type, row, meta) {
-                        return meta.row + meta.settings._iDisplayStart + 1;
-                    }
-                },
-                { data: 'nama_mitra', name: 'nama_mitra' },
-                { data: 'provinsi', name: 'provinsi' },
-                // { data: 'kota', name: 'kota' },
-                { data: 'sektor_usaha', name: 'sektor_usaha' },
-                { data: 'nominal_pendanaan', name: 'nominal_pendanaan' },
-                { data: 'saldo_pokok_pendanaan', name: 'saldo_pokok_pendanaan' },
-                { data: 'kolektibilitas', name: 'kolektibilitas' },
-                { data: 'action', name:'action'},
-            ],
-            drawCallback: function( settings ) {
-                var info = datatable.page.info();
-                $('[data-toggle="tooltip"]').tooltip();
-                datatable.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-                    cell.innerHTML = info.start + i + 1;
-                } );
-            }
-        });
-    }
+    $('#proses').click(function(){
+        $('#datatable').DataTable().draw(true);
+    }); 
 
-    $('#proses').on('click', function(event){
-      var url = urldatatable;
-      var perusahaan_id = $('#perusahaan_id').val();
-      $.ajax({
-                url: url,
-                type:'GET',
-                dataType:'json',
-                data:{
-                    "perusahaan_id":perusahaan_id
-                },
-                success: function(response) {
-                    var data = jQuery.parseJSON(response);
-                    
-                }
-            });
+    $('#reset').click(function(){
+       $('#perusahaan_id').val("").trigger('change');
+       $('#identitas').val("").trigger('change');
+       $("#perusahaan_id").val("").trigger('change');
+       $("#provinsi_id").val("").trigger('change');
+       $("#kota_id").val("").trigger('change');
+       $("#sektor_usaha_id").val("").trigger('change');
+       $("#cp_id").val("").trigger('change');
+       $("#skala_usaha_id").val("").trigger('change');
+       $("#kolekbilitas_id").val("").trigger('change');
+       $("#kondisi_id").val("").trigger('change');
+       $("#jp_id").val("").trigger('change');
+       $("#bank_account_id").val("").trigger('change');
+       $('#proses').trigger('click');
     });
-
 
     function onbtndeletemitra(element){
         swal.fire({

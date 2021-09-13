@@ -22,6 +22,7 @@ class CreateTablePumkMitraBinaan extends Migration
             $table->integer('kota_id')->nullable();
             $table->integer('sektor_usaha_id')->nullable();
             $table->integer('cara_penyaluran_id')->nullable();
+            $table->integer('skala_usaha_id')->nullable();
             $table->integer('kolektibilitas_id')->nullable();
             $table->integer('kondisi_pinjaman_id')->nullable();
             $table->integer('jenis_pembayaran_id')->nullable();
