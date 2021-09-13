@@ -87,10 +87,10 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
                 $kegiatan = Kegiatan::where('target_tpb_id',rtrim($ar['id_program']))
                                     ->where('kegiatan',rtrim($ar['kegiatan']))
                                     ->where('provinsi_id',rtrim($ar['id_propinsi_kegiatan']))
-                                    ->where('kota_id',rtrim($ar['id_kabupaten_kotamadya_kegiatan']))
-                                    ->first();
+                                    ->where('kota_id',rtrim($ar['id_kabupaten_kotamadya_kegiatan']));
                 
                 if($kegiatan->count()>0){
+                    $kegiatan = $kegiatan->first();
                     $kegiatan->update([
                         'indikator' => rtrim($ar['indikator_capaian_kegiatan']) ,
                         'satuan_ukur_id' => rtrim($ar['id_satuan_ukur']) ,
@@ -123,7 +123,7 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'realisasi' => rtrim($ar[$param_realisasi]),
                         'anggaran' => rtrim($ar[$param_anggaran]),
                     ]);
-                    
+
                     $realisasi_total = KegiatanRealisasi::select(DB::Raw('sum(kegiatan_realisasis.anggaran) as total'))
                                                         ->where('kegiatan_id',$kegiatan->id)
                                                         ->where('bulan','<',$this->bulan)
