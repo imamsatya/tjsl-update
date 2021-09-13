@@ -380,6 +380,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('show', 'App\Http\Controllers\PUMK\AnggaranController@show')->name('pumk.anggaran.show');
                 Route::post('export', 'App\Http\Controllers\PUMK\AnggaranController@export')->name('pumk.anggaran.export');
                 Route::post('log', 'App\Http\Controllers\PUMK\AnggaranController@log_status')->name('pumk.anggaran.log');
+                Route::get('create-pdf/{id?}', 'App\Http\Controllers\PUMK\AnggaranController@exportPDF')->name('pumk.anggaran.create-pdf');
             });
 
             Route::prefix('data_mitra')->group(function(){

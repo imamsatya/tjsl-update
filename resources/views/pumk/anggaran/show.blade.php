@@ -113,3 +113,14 @@
                     </div>
                 </div>
             </div>
+            <br>
+            <div style="text-align: center;">
+                <button class="btn-sm btn-info" id="btn-pdf"><i class="fa fa-print text-white"></i> Cetak PDF</button>
+            </div>
+
+
+<script type="text/javascript">
+    $("#btn-pdf").on('click',function () {
+       window.location.href = "{{ route('pumk.anggaran.create-pdf',$data->id) }}";
+    });
+</script>

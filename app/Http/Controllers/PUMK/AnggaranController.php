@@ -10,9 +10,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Datatables;
+use PDF;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
-
 use App\Models\AnggaranTpb;
 use App\Models\Perusahaan;
 use App\Models\User;
@@ -527,4 +527,118 @@ class AnggaranController extends Controller
         ]);
 
     }
+
+    public function exportPDF($id) {
+        $id_users = \Auth::user()->id;
+        $users = User::where('id', $id_users)->first();
+        $perusahaan_id = \Auth::user()->id_bumn;
+        
+        $admin_bumn = false;
+        if(!empty($users->getRoleNames())){
+            foreach ($users->getRoleNames() as $v) {
+                if($v == 'Admin BUMN') {
+                    $admin_bumn = true;
+                }
+            }
+        }
+        
+        $data = PumkAnggaran::select('pumk_anggarans.*','perusahaans.nama_lengkap AS bumn_lengkap','periode_laporans.nama AS periode','statuses.nama AS status')
+                        ->leftJoin('perusahaans','perusahaans.id','pumk_anggarans.bumn_id')
+                        ->leftJoin('periode_laporans', 'periode_laporans.id', 'pumk_anggarans.periode_id')
+                        ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id')
+                        ->where('pumk_anggarans.id',$id)
+                        ->first();
+
+        $data_rka = PumkAnggaran::select('pumk_anggarans.*','perusahaans.nama_lengkap AS bumn_lengkap','periode_laporans.nama AS periode','statuses.nama AS status')
+                        ->leftJoin('perusahaans','perusahaans.id','pumk_anggarans.bumn_id')
+                        ->leftJoin('periode_laporans', 'periode_laporans.id', 'pumk_anggarans.periode_id')
+                        ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id')
+                        ->where('pumk_anggarans.bumn_id',$data->bumn_id)
+                        ->where('periode_laporans.nama','ilike','%RKA%')
+                        ->where('statuses.nama','ilike','%Finish%')
+                        ->first();
+
+        //hitung persentase
+        $const = 100;
+            //dana tersedia
+            $p_saldo_awal = 0;
+            if($data->saldo_awal == null || $data_rka->saldo_awal == null){
+                $p_saldo_awal;
+            }else{
+                $p_saldo_awal = $data->saldo_awal/$data_rka->saldo_awal * $const;
+            }
+            $p_income_mitra_binaan = 0;
+            if($data->income_mitra_binaan == null || $data_rka->income_mitra_binaan == null){
+                $p_income_mitra_binaan;
+            }else{
+                $p_income_mitra_binaan = $data->income_mitra_binaan/$data_rka->income_mitra_binaan * $const;
+            }
+            $p_income_bumn_pembina_lain = 0;
+            if($data->income_bumn_pembina_lain == null || $data_rka->income_bumn_pembina_lain == null){
+                $p_income_bumn_pembina_lain;
+            }else{
+                $p_income_bumn_pembina_lain = $data->income_bumn_pembina_lain/$data_rka->income_bumn_pembina_lain * $const;
+            }
+            $p_income_jasa_adm_pumk = 0;
+            if($data->income_jasa_adm_pumk == null || $data_rka->income_jasa_adm_pumk == null){
+                $p_income_jasa_adm_pumk;
+            }else{
+                $p_income_jasa_adm_pumk = $data->income_jasa_adm_pumk/$data_rka->income_jasa_adm_pumk * $const;
+            }
+            $p_income_adm_bank = 0;
+            if($data->income_adm_bank == null || $data_rka->income_adm_bank == null){
+                $p_income_adm_bank;
+            }else{
+                $p_income_adm_bank = $data->income_adm_bank/$data_rka->income_adm_bank * $const;
+            }
+            $p_income_total = 0;
+            if($data->income_total == null || $data_rka->income_total == null){
+                $p_income_total;
+            }else{
+                $p_income_total = $data->income_total/$data_rka->income_total * $const;
+            }
+
+            //dana disalurkan
+            $p_outcome_mandiri = 0;
+            if($data->outcome_mandiri == null || $data_rka->outcome_mandiri == null){
+                $p_outcome_mandiri;
+            }else{
+                $p_outcome_mandiri = $data->outcome_mandiri/$data_rka->outcome_mandiri * $const;
+            }
+            $p_outcome_kolaborasi_bumn = 0;
+            if($data->outcome_kolaborasi_bumn == null || $data_rka->outcome_kolaborasi_bumn == null){
+                $p_outcome_kolaborasi_bumn;
+            }else{
+                $p_outcome_kolaborasi_bumn = $data->outcome_kolaborasi_bumn/$data_rka->outcome_kolaborasi_bumn * $const;
+            }
+            $p_outcome_bumn_khusus = 0;
+            if($data->outcome_bumn_khusus == null || $data_rka->outcome_bumn_khusus == null){
+                $p_outcome_bumn_khusus;
+            }else{
+                $p_outcome_bumn_khusus = $data->outcome_bumn_khusus/$data_rka->outcome_bumn_khusus * $const;
+            }
+            $p_outcome_total = 0;
+            if($data->outcome_total == null || $data_rka->outcome_total == null){
+                $p_outcome_total;
+            }else{
+                $p_outcome_total = $data->outcome_total/$data_rka->outcome_total * $const;
+            }
+
+        $pdf_doc = PDF::loadView($this->__route.'.export_pdf',[
+            'data' => $data,
+            'data_rka' => $data_rka,
+            'p_saldo_awal' => $p_saldo_awal,
+            'p_income_mitra_binaan' => $p_income_mitra_binaan,
+            'p_income_bumn_pembina_lain' => $p_income_bumn_pembina_lain,
+            'p_income_jasa_adm_pumk' => $p_income_jasa_adm_pumk,
+            'p_income_adm_bank' => $p_income_adm_bank,
+            'p_income_total' => $p_income_total,
+            'p_outcome_mandiri' => $p_outcome_mandiri,
+            'p_outcome_kolaborasi_bumn' => $p_outcome_kolaborasi_bumn,
+            'p_outcome_bumn_khusus' => $p_outcome_bumn_khusus,
+            'p_outcome_total' => $p_outcome_total,
+        ]);
+
+        return $pdf_doc->download('pdf.pdf');
+    }   
 }
