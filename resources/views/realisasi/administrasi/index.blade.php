@@ -487,69 +487,77 @@
 
     function downloadTemplate()
     {
-        $.ajax({
-            type: 'post',
-            data: {
-                'perusahaan_id' : $("select[name='filter_perusahaan_id']").val(),
-                'tahun' : $("select[name='filter_tahun']").val(),
-                'target_tpb_id' : $("select[name='filter_target_tpb_id']").val(),
-                'pilar_pembangunan_id' : $("select[name='filter_pilar_pembangunan_id']").val(),
-                'tpb_id' : $("select[name='filter_tpb_id']").val(),
-                'bulan' : $("select[name='filter_bulan']").val(),
-            },
-            beforeSend: function () {
-                $.blockUI();
-            },
-            url: urldownloadtemplate,
-            xhrFields: {
-                responseType: 'blob',
-            },
-            success: function(data){
-                $.unblockUI();
-                var filename = 'Template Kegiatan.xlsx';
+        var filter_perusahaan_id = $("select[name='filter_perusahaan_id']").val();
+        var filter_tahun = $("select[name='filter_tahun']").val();
+        var filter_bulan = $("select[name='filter_bulan']").val();
 
-                var blob = new Blob([data], {
-                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                });
-                var link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.download = filename;
+        if(filter_perusahaan_id == '' || filter_tahun == '' || filter_bulan == ''){
+            onbtndisablevalidasi();
+        }else{
+            $.ajax({
+                type: 'post',
+                data: {
+                    'perusahaan_id' : $("select[name='filter_perusahaan_id']").val(),
+                    'tahun' : $("select[name='filter_tahun']").val(),
+                    'target_tpb_id' : $("select[name='filter_target_tpb_id']").val(),
+                    'pilar_pembangunan_id' : $("select[name='filter_pilar_pembangunan_id']").val(),
+                    'tpb_id' : $("select[name='filter_tpb_id']").val(),
+                    'bulan' : $("select[name='filter_bulan']").val(),
+                },
+                beforeSend: function () {
+                    $.blockUI();
+                },
+                url: urldownloadtemplate,
+                xhrFields: {
+                    responseType: 'blob',
+                },
+                success: function(data){
+                    $.unblockUI();
+                    var filename = 'Template Kegiatan.xlsx';
 
-                document.body.appendChild(link);
+                    var blob = new Blob([data], {
+                        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    });
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = filename;
 
-                link.click();
-                document.body.removeChild(link);
-            },
-            error: function(jqXHR, exception){
-                $.unblockUI();
-                    var msgerror = '';
-                    if (jqXHR.status === 0) {
-                        msgerror = 'jaringan tidak terkoneksi.';
-                    } else if (jqXHR.status == 404) {
-                        msgerror = 'Halaman tidak ditemukan. [404]';
-                    } else if (jqXHR.status == 500) {
-                        msgerror = 'Internal Server Error [500].';
-                    } else if (exception === 'parsererror') {
-                        msgerror = 'Requested JSON parse gagal.';
-                    } else if (exception === 'timeout') {
-                        msgerror = 'RTO.';
-                    } else if (exception === 'abort') {
-                        msgerror = 'Gagal request ajax.';
-                    } else {
-                        msgerror = 'Error.\n' + jqXHR.responseText;
-                    }
-            swal.fire({
-                    title: "Error System",
-                    html: msgerror+', coba ulangi kembali !!!',
-                    icon: 'error',
+                    document.body.appendChild(link);
 
-                    buttonsStyling: true,
+                    link.click();
+                    document.body.removeChild(link);
+                },
+                error: function(jqXHR, exception){
+                    $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
 
-                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-            });      
-                
-            }
-        });
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                });      
+                    
+                }
+            });
+        }
         return false;
     }
 
