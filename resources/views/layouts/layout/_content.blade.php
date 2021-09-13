@@ -4,9 +4,9 @@
 								
 								<!--begin::Row-->
 								<div class="row gy-5 g-xl-8">
-									<div class="col-xxl-4">
+									{{-- <div class="col-xxl-4"> --}}
                                     @yield('content')
-                                    </div>
+                                    {{-- </div> --}}
                                 </div>
 								<!--begin::Row-->
 								<div class="row gy-5 g-xl-8">
