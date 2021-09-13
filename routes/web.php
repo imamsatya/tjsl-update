@@ -381,6 +381,20 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('export', 'App\Http\Controllers\PUMK\AnggaranController@export')->name('pumk.anggaran.export');
                 Route::post('log', 'App\Http\Controllers\PUMK\AnggaranController@log_status')->name('pumk.anggaran.log');
             });
+
+            Route::prefix('data_mitra')->group(function(){
+                Route::get('index', 'App\Http\Controllers\PUMK\MitraBinaanController@index')->name('pumk.data_mitra.index');
+                Route::get('datatable', 'App\Http\Controllers\PUMK\MitraBinaanController@datatable')->name('pumk.data_mitra.datatable');
+                Route::post('delete', 'App\Http\Controllers\PUMK\MitraBinaanController@delete')->name('pumk.data_mitra.delete');
+            });
+
+            Route::prefix('upload_data_mitra')->group(function(){
+                Route::get('index', 'App\Http\Controllers\PUMK\UploadMitraBinaanController@index')->name('pumk.upload_data_mitra.index');
+                Route::get('download_template', 'App\Http\Controllers\PUMK\UploadMitraBinaanController@download_template')->name('pumk.upload_data_mitra.download_template');
+                Route::post('store', 'App\Http\Controllers\PUMK\UploadMitraBinaanController@store')->name('pumk.upload_data_mitra.store');
+                Route::get('datatable', 'App\Http\Controllers\PUMK\UploadMitraBinaanController@datatable')->name('pumk.upload_data_mitra.datatable');
+                // Route::post('delete', 'App\Http\Controllers\PUMK\MitraBinaanController@delete')->name('pumk.data_mitra.delete');
+            });
         });
 
 }); // end login dengan cas
