@@ -206,4 +206,82 @@ class MitraBinaanController extends Controller
         }
         return response()->json($result);
     }
+
+    public function edit(Request $request)
+    {
+        
+       // try{
+            $id_users = \Auth::user()->id;
+            $users = User::where('id', $id_users)->first();
+            $perusahaan_id = \Auth::user()->id_bumn;
+            
+            $admin_bumn = false;
+            if(!empty($users->getRoleNames())){
+                foreach ($users->getRoleNames() as $v) {
+                    if($v == 'Admin BUMN') {
+                        $admin_bumn = true;
+                    }
+                }
+            }
+
+            $data = PumkMitraBinaan::find($request->id);
+                return view($this->__route.'.edit',[
+                    'pagetitle' => $this->pagetitle,
+                    'actionform' => 'update',
+                    'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+                    'provinsi' => Provinsi::where('is_luar_negeri',false)->get(),
+                    'kota' => Kota::where('is_luar_negeri',false)->get(),
+                    'sektor_usaha' => SektorUsaha::get(),
+                    'cara_penyaluran' => CaraPenyaluran::get(),
+                    'skala_usaha' => SkalaUsaha::get(),
+                    'kolektibilitas_pendanaan' => KolekbilitasPendanaan::get(),
+                    'kondisi_pinjaman' => KondisiPinjaman::get(),
+                    'jenis_pembayaran' => JenisPembayaran::get(),
+                    'bank_account' => BankAccount::get(),
+                    'admin_bumn' => $admin_bumn,
+                    'perusahaan_id' => $perusahaan_id,
+                    'data' => $data
+                ]);
+    //    }catch(Exception $e){}
+
+    }
+
+    public function store(Request $request)
+    {
+        $result = [
+            'flag' => 'error',
+            'msg' => 'Error System',
+            'title' => 'Error'
+        ];
+      DB::beginTransaction();
+      try{
+           $param = $request->all();
+           $param = $request->except(['actionform','_token']);
+           $param['nilai_aset'] = (int)preg_replace('/[^0-9]/','',$request->nilai_aset);
+           $param['nilai_omset'] = (int)preg_replace('/[^0-9]/','',$request->nilai_omset);
+           $param['saldo_pokok_pendanaan'] = (int)preg_replace('/[^0-9]/','',$request->saldo_pokok_pendanaan);
+           $param['saldo_jasa_adm_pendanaan'] =(int) preg_replace('/[^0-9]/','',$request->saldo_jasa_adm_pendanaan);
+           $param['penerimaan_pokok_bulan_berjalan'] = (int)preg_replace('/[^0-9]/','',$request->penerimaan_pokok_bulan_berjalan);
+           $param['penerimaan_jasa_bulan_berjalan'] = (int)preg_replace('/[^0-9]/','',$request->penerimaan_jasa_bulan_berjalan);
+           $param['kelebihan_angsuran'] = (int)preg_replace('/[^0-9]/','',$request->kelebihan_angsuran);
+           $data = PumkMitraBinaan::find((int)$param['id']);
+           $data->update($param);
+
+        DB::commit();
+        $result = [
+                    'flag'  => 'success',
+                    'msg' => 'Sukses ubah data',
+                    'title' => 'Sukses'
+                   ];
+        }catch(\Exception $e){
+                DB::rollback();
+                $result = [
+                        'flag'  => 'warning',
+                        'msg' => $e->getMessage(),
+                        'title' => 'Gagal'
+                       ];
+        }
+
+        return response()->json($result);
+    }
 }

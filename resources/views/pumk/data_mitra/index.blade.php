@@ -192,7 +192,7 @@
 
 <script>
     var datatable;
-    var urledit = "{{route('pumk.anggaran.edit')}}";
+    var urledit = "{{route('pumk.data_mitra.edit')}}";
     var urlshow = "{{route('pumk.anggaran.show')}}";
     var urldelete = "{{route('pumk.data_mitra.delete')}}";
     var urlexport = "{{route('pumk.anggaran.export')}}";

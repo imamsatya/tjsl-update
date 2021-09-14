@@ -61,7 +61,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets
                                  ->count();
             $cek_kolektibilitas = PumkMitraBinaan::where('kolektibilitas_id',(int)$ar['id_kolektibilitas_pendanaan'] )
                                  ->count();
-
+           
             //buat data baru jika identitas & kolek belum ada
             if(($cek_identitas && $cek_kolektibilitas) == 0){
                 try{
@@ -71,6 +71,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'provinsi_id' => rtrim($ar['id_provinsi']),
                         'kota_id' => rtrim($ar['id_kota']),
                         'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
+                        'skala_usaha_id' => rtrim($ar['id_skala_usaha']),
                         'cara_penyaluran_id' => rtrim($ar['id_cara_penyaluran']),
                         'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
                         'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
@@ -93,7 +94,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'subsektor' => rtrim($ar['subsektor']),
                         'hasil_produk_jasa' => rtrim($ar['produkjasa_yang_dihasilkan']),
                         'created_by_id' => \Auth::user()->id,
-                        'perusahaan_id' => $perusahaan->id
+                        'perusahaan_id' => Perusahaan::where('nama_lengkap', $this->perusahaan)->pluck('id')->first()
                     ]);
                     $berhasil++;
                 }catch(\Exception $e){
@@ -112,6 +113,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets
                             'provinsi_id' => rtrim($ar['id_provinsi']),
                             'kota_id' => rtrim($ar['id_kota']),
                             'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
+                            'skala_usaha_id' => rtrim($ar['id_skala_usaha']),
                             'cara_penyaluran_id' => rtrim($ar['id_cara_penyaluran']),
                             'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
                             'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
@@ -134,7 +136,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets
                             'subsektor' => rtrim($ar['subsektor']),
                             'hasil_produk_jasa' => rtrim($ar['produkjasa_yang_dihasilkan']),
                             'created_by_id' => \Auth::user()->id,
-                            'perusahaan_id' => $perusahaan->id
+                            'perusahaan_id' => Perusahaan::where('nama_lengkap', $this->perusahaan)->pluck('id')->first()
                         ]);
                         DB::commit();
                     }catch(\Exception $e){
@@ -152,6 +154,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'provinsi_id' => rtrim($ar['id_provinsi']),
                         'kota_id' => rtrim($ar['id_kota']),
                         'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
+                        'skala_usaha_id' => rtrim($ar['id_skala_usaha']),
                         'cara_penyaluran_id' => rtrim($ar['id_cara_penyaluran']),
                         'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
                         'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
@@ -174,7 +177,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'subsektor' => rtrim($ar['subsektor']),
                         'hasil_produk_jasa' => rtrim($ar['produkjasa_yang_dihasilkan']),
                         'updated_by_id' => \Auth::user()->id,
-                        'perusahaan_id' => $perusahaan->id
+                        'perusahaan_id' => Perusahaan::where('nama_lengkap', $this->perusahaan)->pluck('id')->first()
                     ]);
 
                     $update++;
@@ -194,6 +197,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets
                             'provinsi_id' => rtrim($ar['id_provinsi']),
                             'kota_id' => rtrim($ar['id_kota']),
                             'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
+                            'skala_usaha_id' => rtrim($ar['id_skala_usaha']),
                             'cara_penyaluran_id' => rtrim($ar['id_cara_penyaluran']),
                             'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
                             'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
@@ -216,7 +220,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets
                             'subsektor' => rtrim($ar['subsektor']),
                             'hasil_produk_jasa' => rtrim($ar['produkjasa_yang_dihasilkan']),
                             'created_by_id' => \Auth::user()->id,
-                            'perusahaan_id' => $perusahaan->id
+                            'perusahaan_id' => Perusahaan::where('nama_lengkap', $this->perusahaan)->pluck('id')->first()
                         ]);
                         DB::commit();
                     }catch(\Exception $e){

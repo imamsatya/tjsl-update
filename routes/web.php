@@ -387,6 +387,8 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::get('index', 'App\Http\Controllers\PUMK\MitraBinaanController@index')->name('pumk.data_mitra.index');
                 Route::get('datatable', 'App\Http\Controllers\PUMK\MitraBinaanController@datatable')->name('pumk.data_mitra.datatable');
                 Route::post('delete', 'App\Http\Controllers\PUMK\MitraBinaanController@delete')->name('pumk.data_mitra.delete');
+                Route::post('edit', 'App\Http\Controllers\PUMK\MitraBinaanController@edit')->name('pumk.data_mitra.edit');
+                Route::post('store', 'App\Http\Controllers\PUMK\MitraBinaanController@store')->name('pumk.data_mitra.store');
             });
 
             Route::prefix('upload_data_mitra')->group(function(){
