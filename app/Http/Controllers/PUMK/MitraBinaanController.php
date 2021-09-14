@@ -163,11 +163,9 @@ class MitraBinaanController extends Controller
             ->addColumn('action', function ($row){
                 $id = (int)$row->id;
                 $button = 
-                            '<button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Edit data"><i class="bi bi-pencil fs-3"></i></button>
-
-                            <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="'.$id.'"  data-toggle="tooltip" title="Lihat detail"><i class="bi bi-eye fs-3"></i></button>
-                            
-                            <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-mitra" data-id="'.$id.'" data-nama="'.$row->nama.'" data-toggle="tooltip" title="Hapus data '.$row->nama.'"><i class="bi bi-trash fs-3"></i></button>
+                            '<div style="width:120px;text-align:center;"><span><button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Edit data"><i class="bi bi-pencil fs-3"></i></button>&nbsp;
+                            <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show-mitra" data-id="'.$id.'"  data-toggle="tooltip" title="Lihat detail"><i class="bi bi-info fs-3"></i></button>&nbsp;
+                            <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-mitra" data-id="'.$id.'" data-nama="'.$row->nama.'" data-toggle="tooltip" title="Hapus data '.$row->nama.'"><i class="bi bi-trash fs-3"></i></button></span><div>
                             ';
                 return $button;
             })
@@ -210,7 +208,7 @@ class MitraBinaanController extends Controller
     public function edit(Request $request)
     {
         
-       // try{
+       try{
             $id_users = \Auth::user()->id;
             $users = User::where('id', $id_users)->first();
             $perusahaan_id = \Auth::user()->id_bumn;
@@ -242,7 +240,36 @@ class MitraBinaanController extends Controller
                     'perusahaan_id' => $perusahaan_id,
                     'data' => $data
                 ]);
-    //    }catch(Exception $e){}
+       }catch(Exception $e){}
+
+    }
+
+    public function show(Request $request)
+    {
+        
+       try{
+            $select = ['pumk_mitra_binaans.*','perusahaans.nama_lengkap AS perusahaan_text','provinsis.nama AS prov_text','kotas.nama AS kota_text','sektor_usaha.nama AS sektor_usaha_text','cara_penyalurans.nama AS cara_penyaluran_text','skala_usahas.name AS skala_usaha_text','kolekbilitas_pendanaan.nama AS kolektibilitas_text','kondisi_pinjaman.nama AS kondisi_pinjaman_text','jenis_pembayaran.nama AS jenis_pembayaran_text','bank_account.nama AS bank_account_text','users.name AS user_create_text'];
+
+            $data = PumkMitraBinaan::select($select)
+                    ->leftjoin('perusahaans','perusahaans.id','=','pumk_mitra_binaans.perusahaan_id')
+                    ->leftjoin('provinsis','provinsis.id','=','pumk_mitra_binaans.provinsi_id')
+                    ->leftjoin('kotas','kotas.id','=','pumk_mitra_binaans.kota_id')
+                    ->leftjoin('sektor_usaha','sektor_usaha.id','=','pumk_mitra_binaans.sektor_usaha_id')
+                    ->leftjoin('cara_penyalurans','cara_penyalurans.id','=','pumk_mitra_binaans.cara_penyaluran_id')
+                    ->leftjoin('skala_usahas','skala_usahas.id','=','pumk_mitra_binaans.skala_usaha_id')
+                    ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','=','pumk_mitra_binaans.kolektibilitas_id')
+                    ->leftjoin('kondisi_pinjaman','kondisi_pinjaman.id','=','pumk_mitra_binaans.kondisi_pinjaman_id')
+                    ->leftjoin('jenis_pembayaran','jenis_pembayaran.id','=','pumk_mitra_binaans.jenis_pembayaran_id')
+                    ->leftjoin('bank_account','bank_account.id','=','pumk_mitra_binaans.bank_account_id')
+                    ->leftjoin('users','users.id','=','pumk_mitra_binaans.created_by_id')
+                    ->where('pumk_mitra_binaans.id',(int)$request->id)
+                    ->first();
+
+            return view($this->__route.'.show',[
+                    'pagetitle' => $this->pagetitle,
+                    'data' => $data
+                ]);
+       }catch(Exception $e){}
 
     }
 

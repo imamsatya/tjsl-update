@@ -193,7 +193,7 @@
 <script>
     var datatable;
     var urledit = "{{route('pumk.data_mitra.edit')}}";
-    var urlshow = "{{route('pumk.anggaran.show')}}";
+    var urlshow = "{{route('pumk.data_mitra.show')}}";
     var urldelete = "{{route('pumk.data_mitra.delete')}}";
     var urlexport = "{{route('pumk.anggaran.export')}}";
     var urldatatable = "{{route('pumk.data_mitra.datatable')}}";
@@ -231,15 +231,16 @@
                         render: function (data, type, row, meta) {
                                 return meta.row + meta.settings._iDisplayStart + 1;
                             }
+                            ,sClass:'text-center'
                         },
                         { data: 'nama_mitra', name: 'nama_mitra' },
                         { data: 'provinsi', name: 'provinsi' },
                         // { data: 'kota', name: 'kota' },
                         { data: 'sektor_usaha', name: 'sektor_usaha' },
-                        { data: 'nominal_pendanaan', name: 'nominal_pendanaan' },
-                        { data: 'saldo_pokok_pendanaan', name: 'saldo_pokok_pendanaan' },
-                        { data: 'kolektibilitas', name: 'kolektibilitas' },
-                        { data: 'action', name:'action'},
+                        { data: 'nominal_pendanaan', name: 'nominal_pendanaan' ,sClass:'text-center'},
+                        { data: 'saldo_pokok_pendanaan', name: 'saldo_pokok_pendanaan' ,sClass:'text-center'},
+                        { data: 'kolektibilitas', name: 'kolektibilitas' ,sClass:'text-center'},
+                        { data: 'action', name:'action' ,sClass:'text-center'},
                      ],
             order: [[0, 'desc']]
         });
@@ -255,7 +256,7 @@
             onbtndeletemitra(this);
         });
 
-        $('body').on('click','.cls-button-show',function(){
+        $('body').on('click','.cls-button-show-mitra',function(){
             winform(urlshow, {'id':$(this).data('id')}, 'Detail Data');
         });
 
