@@ -42,7 +42,7 @@
         </div>
         <div class="col-lg-6">
             <label>Penerimaan Jasa Bulan Berjalan</label>
-            <input type="text" class="form-control number-separator" id="penerimaan_jasa_bulan_berjalan" name="penerimaan_jasa_bulan_berjalan" value="{{$data->penerimaan_jasa_bulan_berjalan?number_format($data->penerimaan_jasa_bulan_berjalan,0,',',',') : 0}}">
+            <input type="text" class="form-control number-separator" id="penerimaan_jasa_bulan_berjalan" name="penerimaan_jasa_bulan_berjalan" value="{{$data->penerimaan_jasa_adm_bulan_berjalan?number_format($data->penerimaan_jasa_adm_bulan_berjalan,0,',',',') : 0}}">
         </div>
     </div>
     <div class="form-group row  mb-5" >

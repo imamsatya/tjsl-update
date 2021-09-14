@@ -223,6 +223,8 @@ class MitraBinaanController extends Controller
             }
 
             $data = PumkMitraBinaan::find($request->id);
+            $data->tgl_penerimaan_terakhir = date('Y-m-d',strtotime($data->tgl_penerimaan_terakhir));
+
                 return view($this->__route.'.edit',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
