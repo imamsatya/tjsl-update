@@ -115,7 +115,7 @@
                 </div>   
                     <!--begin: Datatable -->
                     <div class="table-responsive"  >
-                        <table class="table table-striped table-bordered table-hover table-checkable">
+                        <table class="table table-striped table-bordered table-hover table-checkable" id="datatable">
                             <thead>
                                 <tr style="background-color:#c4e4e4; ">
                                     <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No</th>
@@ -129,7 +129,8 @@
                                     <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>                 
+                            <tbody></tbody>
+                            {{--                  
                             @php $no=1; $total_income = 0; $total_outcome = 0; $total_saldo_akhir = 0;  @endphp
                             @foreach ($anggaran_pumk as $p)
                             @php
@@ -137,39 +138,7 @@
                                 $total_outcome += $p->outcome_total;
                                 $total_saldo_akhir += $p->saldo_akhir;
                             @endphp                                  
-                                <tr>
-                                    <td style="text-align:center;">{{$no++}}</td>
-                                    <td style="text-align:center;">{{$p->tahun}}</td>
-                                    <td >{{$p->bumn_singkat}}</td>
-                                    <td style="text-align:center;">{{$p->periode}}</td>
-                                    <td style="text-align:right;">{{number_format($p->income_total,0,',',',')}}</td>
-                                    <td style="text-align:right;">{{number_format($p->outcome_total,0,',',',')}}</td>
-                                    <td style="text-align:right;">{{number_format($p->saldo_akhir,0,',',',')}}</td>
-                                    <td style="text-align:center;">
-                                        <button type="button" class="btn btn-sm cls-button-log" data-id="{{$p->id}}" data-nama="Log {{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Log data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}">
-                                            {{$p->status}}
-                                        </button>
-                                    </td>
-                                    <td style="text-align:center;width:150px;">
-                                        @if($p->status !== 'Finish')
-                                        <button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Edit data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-pencil fs-3"></i></button>
-                                        @endif
-                                        <button style="display: none;" type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Lihat detail data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-info fs-3"></i></button>
-
-                                        @if($p->status !== 'Finish')
-                                        <button type="button" class="btn btn-sm btn-warning btn-icon cls-button-update-status" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="update status {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-check fs-3"></i></button>
-                                        @else
-                                        <button type="button" class="btn btn-sm btn-secondary btn-icon cls-button-aktivasi-status" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Aktivasi kembali status {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-layer-backward fs-3"></i></button>
-                                        @endif
-
-                                        @if($p->status !== 'Finish')
-                                        <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pumkanggaran" data-id="{{$p->id}}" data-nama="{{$p->bumn_singkat}} periode {{$p->periode}} Tahun {{$p->tahun}}" data-toggle="tooltip" title="Hapus data {{$p->bumn_singkat}} Tahun {{$p->tahun}} Periode {{$p->periode}}"><i class="bi bi-trash fs-3"></i></button>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                            <tfoot>
+                            {{-- <tfoot>
                                 <tr style="background-color:#c4e4e4;display:none;" id="total">
                                     <th style="text-align:center;font-weight:bold;border-top: 1px solid #c8c7c7;" colspan="4">Total</th>
                                     <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">{{number_format($total_income,0,',',',')}}</th>
@@ -177,7 +146,7 @@
                                     <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">{{number_format($total_saldo_akhir,0,',',',')}}</th>
                                     <th style="text-align:left;font-weight:bold;border-top: 1px solid #c8c7c7;" colspan="2"></th>
                                 </tr>
-                            </tfoot>
+                            </tfoot> --}}
                         </table>
 
 
@@ -203,13 +172,48 @@
     var urlupdatestatus = "{{route('pumk.anggaran.updatestatus')}}";
     var urlexport = "{{route('pumk.anggaran.export')}}";
     var urllog = "{{route('pumk.anggaran.log')}}";
+    var urldatatable = "{{route('pumk.anggaran.datatable')}}";
 
     $(document).ready(function(){
-        $('.tree').treegrid({
-            initialState : 'collapsed',
-            treeColumn : 1,
-            indentTemplate : '<span style="width: 32px; height: 16px; display: inline-block; position: relative;"></span>'
+        $.ajaxSetup({
+              headers: {
+                       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+              });
+            
+        $('#datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            "dom": 'lrtip',
+            ajax: {
+                    url: urldatatable,
+                    type: 'GET',
+                    data: function (d) {
+                        d.perusahaan_id =  $("#perusahaan_id").val();
+                        d.periode_id =  $("#periode_id").val();
+                        d.status_id =  $("#status_id").val();
+                        d.tahun =  $("#tahun").val();
+                    }
+            },
+            columns: [
+                      {data: "id",
+                        render: function (data, type, row, meta) {
+                                return meta.row + meta.settings._iDisplayStart + 1;
+                            }
+                            ,sClass:'text-center'
+                        },
+                        { data: 'tahun', name: 'tahun' ,sClass:'text-center' },
+                        { data: 'bumn_singkat', name: 'bumn_singkat' },
+                        { data: 'periode', name: 'periode' ,sClass:'text-center' },
+                        { data: 'income_total', name: 'income_total',sClass:'text-center' },
+                        { data: 'outcome_total', name: 'outcome_total' ,sClass:'text-center'},
+                        { data: 'saldo_akhir', name: 'saldo_akhir' ,sClass:'text-center'},
+                        { data: 'status', name: 'status' },
+                        { data: 'action', name:'action' ,sClass:'text-center'},
+                     ],
+            order: [[0, 'desc']]
         });
+
 
         $('#page-title').html("{{ $pagetitle }}");
         $('#page-breadcrumb').html("{{ $breadcrumb }}");
@@ -251,16 +255,6 @@
             $('#form-cari').toggle(600);
         });
         
-        $('#proses').on('click', function(event){
-            var url = window.location.origin + '/pumk/anggaran/index';
-            var perusahaan_id = $('#perusahaan_id').val();
-            var tahun = $('#tahun').val();
-            var periode_id = $('#periode_id').val();
-            var status_id = $('#status_id').val();
-
-            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&periode_id=' + periode_id + '&status_id=' + status_id;
-        });
-
         if("{{ $admin_bumn }}"){
             $('.cls-export').hide();
             $('.cls-button-update-status').hide();
@@ -272,7 +266,17 @@
 
     });
 
-    
+    $('#proses').click(function(){
+        $('#datatable').DataTable().draw(true);
+    }); 
+
+    $('#reset').click(function(){
+       $('#perusahaan_id').val("").trigger('change');
+       $('#periode_id').val("").trigger('change');
+       $("#status_id").val("").trigger('change');
+       $("#tahun").val("").trigger('change');
+       $('#proses').trigger('click');
+    });    
     
     function onbtndeletepumkanggaran(element){
         swal.fire({

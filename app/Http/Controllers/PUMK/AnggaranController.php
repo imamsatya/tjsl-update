@@ -57,28 +57,28 @@ class AnggaranController extends Controller
             }
         }
 
-        $anggaran_pumk = PumkAnggaran::select('pumk_anggarans.*','perusahaans.nama_singkat AS bumn_singkat','periode_laporans.nama AS periode','statuses.nama AS status')
-                        ->leftJoin('perusahaans','perusahaans.id','pumk_anggarans.bumn_id')
-                        ->leftJoin('periode_laporans', 'periode_laporans.id', 'pumk_anggarans.periode_id')
-                        ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id');
+        // $anggaran_pumk = PumkAnggaran::select('pumk_anggarans.*','perusahaans.nama_singkat AS bumn_singkat','periode_laporans.nama AS periode','statuses.nama AS status')
+        //                 ->leftJoin('perusahaans','perusahaans.id','pumk_anggarans.bumn_id')
+        //                 ->leftJoin('periode_laporans', 'periode_laporans.id', 'pumk_anggarans.periode_id')
+        //                 ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id');
                                         
-        if($perusahaan_id){
-            $anggaran_pumk  = $anggaran_pumk->where('bumn_id', (int)$perusahaan_id);
-        }
+        // if($perusahaan_id){
+        //     $anggaran_pumk  = $anggaran_pumk->where('bumn_id', (int)$perusahaan_id);
+        // }
 
-        if($request->periode_id){
-            $anggaran_pumk  = $anggaran_pumk->where('periode_id', (int)$request->periode_id);
-        }
+        // if($request->periode_id){
+        //     $anggaran_pumk  = $anggaran_pumk->where('periode_id', (int)$request->periode_id);
+        // }
 
-        if($request->status_id){
-            $anggaran_pumk  = $anggaran_pumk->where('status_id', (int)$request->status_id);
-        }
+        // if($request->status_id){
+        //     $anggaran_pumk  = $anggaran_pumk->where('status_id', (int)$request->status_id);
+        // }
 
-        if($request->tahun){
-            $anggaran_pumk  = $anggaran_pumk->where('tahun', $request->tahun);
-        }        
+        // if($request->tahun){
+        //     $anggaran_pumk  = $anggaran_pumk->where('tahun', $request->tahun);
+        // }        
         
-        $anggaran_pumk = $anggaran_pumk->orderBy('tahun','desc')->get();
+        // $anggaran_pumk = $anggaran_pumk->orderBy('tahun','desc')->get();
 
 
         return view($this->__route.'.index',[
@@ -92,10 +92,125 @@ class AnggaranController extends Controller
             'filter_periode_id' => $request->periode_id,
             'filter_status_id' => $request->status_id,
             'filter_tahun' => $request->tahun,
-            'anggaran_pumk' => $anggaran_pumk,
+            // 'anggaran_pumk' => $anggaran_pumk,
             'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
             'status' => Status::get()
         ]);
+    }
+
+    public function datatable(Request $request)
+    {
+
+        $id_users = \Auth::user()->id;
+        $users = User::where('id', $id_users)->first();
+        $perusahaan_id = $request->perusahaan_id;
+
+        $admin_bumn = false;
+        $super_admin = false;
+        $admin_tjsl = false;
+
+        if(!empty($users->getRoleNames())){
+            foreach ($users->getRoleNames() as $v) {
+                if($v == 'Admin BUMN') {
+                    $admin_bumn = true;
+                    $perusahaan_id = \Auth::user()->id_bumn;
+                }
+                if($v == 'Super Admin') {
+                    $super_admin = true;
+                    $perusahaan_id = $request->perusahaan_id;
+                }
+                if($v == 'Admin TJSL') {
+                    $admin_tjsl = true;
+                    $perusahaan_id = $request->perusahaan_id;
+                }
+            }
+        }
+        try{
+            $anggaran_pumk = PumkAnggaran::select('pumk_anggarans.*','perusahaans.nama_singkat AS bumn_singkat','periode_laporans.nama AS periode','statuses.nama AS status')
+            ->leftJoin('perusahaans','perusahaans.id','pumk_anggarans.bumn_id')
+            ->leftJoin('periode_laporans', 'periode_laporans.id', 'pumk_anggarans.periode_id')
+            ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id');
+                            
+            if($perusahaan_id){
+            $anggaran_pumk  = $anggaran_pumk->where('bumn_id', (int)$perusahaan_id);
+            }
+
+            if($request->periode_id){
+            $anggaran_pumk  = $anggaran_pumk->where('periode_id', (int)$request->periode_id);
+            }
+
+            if($request->status_id){
+            $anggaran_pumk  = $anggaran_pumk->where('status_id', (int)$request->status_id);
+            }
+
+            if($request->tahun){
+            $anggaran_pumk  = $anggaran_pumk->where('tahun', $request->tahun);
+            }        
+
+            $data = $anggaran_pumk->orderBy('perusahaans.nama_singkat','asc')->orderBy('periode_laporans.nama','asc');
+
+            return datatables()->of($data->get())
+            ->editColumn('outcome_total', function ($row){
+                $nominal = 0;
+                if($row->outcome_total){
+                    $nominal = number_format($row->outcome_total,0,',',',');
+                }else{
+                    $nominal;
+                }
+                return $nominal;
+            })
+            ->editColumn('income_total', function ($row){
+                $saldo = 0;
+                if($row->income_total){
+                    $saldo = number_format($row->income_total,0,',',',');
+                }else{
+                    $saldo;
+                }
+                return $saldo;
+            })
+            ->editColumn('saldo_akhir', function ($row){
+                $saldo = 0;
+                if($row->saldo_akhir){
+                    $saldo = number_format($row->saldo_akhir,0,',',',');
+                }else{
+                    $saldo;
+                }
+                return $saldo;
+            })
+            ->editColumn('status', function ($p){
+                $log = '<div style="width:120px;text-align:center;"><span><button type="button" class="btn btn-sm cls-button-log" data-id="'.$p->id.'" data-nama="Log '.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Log data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'">
+                '.$p->status.'</button></span><div>';
+                return $log;
+            })
+            ->addColumn('action', function ($p){
+                $id = (int)$p->id;
+                if($p->status !== 'Finish'){
+                    $btn = '<div style="width:120px;text-align:center;"><span>
+                    <button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Edit data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-pencil fs-3"></i></button>
+                    <button type="button" class="btn btn-sm btn-warning btn-icon cls-button-update-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="update status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-check fs-3"></i></button>
+                    <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pumkanggaran" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Hapus data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-trash fs-3"></i></button>
+                    <button style="display: none;" type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Lihat detail data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-info fs-3"></i></button>
+                    </span><div>
+                    ';
+                   
+                }else{
+                    $btn = '
+                    <button type="button" class="btn btn-sm btn-secondary btn-icon cls-button-aktivasi-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'"" data-toggle="tooltip" title="Aktivasi kembali status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-layer-backward fs-3"></i></button>
+                    ';
+                }
+                return $btn;
+
+            })
+            ->rawColumns(['status','action'])
+            ->toJson();
+        }catch(Exception $e){
+            return response([
+                'draw'            => 0,
+                'recordsTotal'    => 0,
+                'recordsFiltered' => 0,
+                'data'            => []
+            ]);
+        }
     }
 
     public function create()
