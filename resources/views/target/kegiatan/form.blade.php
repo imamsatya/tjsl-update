@@ -7,7 +7,7 @@
     <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>Program</label>
-            <select id="target_tpb_id" class="form-select form-select-solid form-select2" name="target_tpb_id" data-kt-select2="true" data-placeholder="Pilih Program" data-allow-clear="true">
+            <select id="target_tpb_id" class="form-select form-select-solid form-select2" name="target_tpb_id" data-kt-select2="true" data-placeholder="Pilih Program">
                 <option></option>
                 @foreach($target_tpb as $p)  
                     @php
@@ -25,7 +25,7 @@
     <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>Provinsi</label>
-            <select id="provinsi_id" class="form-select form-select-solid form-select2" name="provinsi_id" data-kt-select2="true" data-placeholder="Pilih Provinsi" data-allow-clear="true">
+            <select id="provinsi_id" class="form-select form-select-solid form-select2" name="provinsi_id" data-kt-select2="true" data-placeholder="Pilih Provinsi">
                 <option></option>
                 @foreach($provinsi as $p)  
                     @php
@@ -37,7 +37,7 @@
         </div>
         <div class="col-lg-6">
             <label>Kota</label>
-            <select id="kota_id" class="form-select form-select-solid form-select2" name="kota_id" data-kt-select2="true" data-placeholder="Pilih Kota" data-allow-clear="true">
+            <select id="kota_id" class="form-select form-select-solid form-select2" name="kota_id" data-kt-select2="true" data-placeholder="Pilih Kota">
                 <option></option>
                 @foreach($kota as $p)  
                     @php
@@ -55,7 +55,7 @@
         </div>
         <div class="col-lg-6">
             <label>Satuan Ukur</label>
-            <select id="satuan_ukur_id" class="form-select form-select-solid form-select2" name="satuan_ukur_id" data-kt-select2="true" data-placeholder="Pilih Satuan Ukur" data-allow-clear="true">
+            <select id="satuan_ukur_id" class="form-select form-select-solid form-select2" name="satuan_ukur_id" data-kt-select2="true" data-placeholder="Pilih Satuan Ukur">
                 <option></option>
                 @foreach($satuan_ukur as $p)  
                     @php

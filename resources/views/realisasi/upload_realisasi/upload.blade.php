@@ -1,108 +1,40 @@
-
-@section('addbeforecss')
-<style>
-td{
-    border-bottom: 1px solid #c8c7c7;
-}
-</style>
-@endsection
-
-
 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
 	@csrf
 	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
-
-    <table class="table table-striped- table-bordered table-hover table-checkable" id="datatable_log">
-        <tbody>
-            <tr>
-                <td><b>Pilar Pembangunan</b></td>
-                <td>{{@$data->anggaran_tpb->relasi->pilar->nama}}</td>
-                <td><b>TPB</b></td>
-                <td>{{@$data->anggaran_tpb->relasi->tpb->no_tpb}} -  {{@$data->anggaran_tpb->relasi->tpb->nama}}</td>
-            </tr>
-            <tr>
-                <td><b>Kode Indikator</b></td>
-                <td>{{@$data->kode_indikator->kode}}</td>
-                <td><b>Kode Tujuan TPB</b></td>
-                <td>{{@$data->kode_indikator->kode_tujuan_tpb}}</td>
-            </tr>
-            <tr>
-                <td><b>Keterangan Indikator</b></td>
-                <td>{{@$data->kode_indikator->keterangan}}</td>
-                <td><b>Keterangan Tujuan TPB</b></td>
-                <td>{{@$data->kode_indikator->keterangan_tujuan_tpb}}</td>
-            </tr>
-            <tr>
-                <td><b>Program</b></td>
-                <td>{{@$data->program}}</td>
-                <td><b>Unit Owner</b></td>
-                <td>{{@$data->unit_owner}}</td>
-            </tr>
-            <tr>
-                <td><b>Core Subject</b></td>
-                <td>{{@$data->core_subject->nama}}</td>
-                <td><b>Satuan Ukur</b></td>
-                <td>{{@$data->satuan_ukur->nama}}</td>
-            </tr>
-            <tr>
-                <td><b>Pelaksanaaan Program</b></td>
-                <td>{{@$data->cara_penyaluran->nama}}</td>
-                <td><b>Mitra BUMN</b></td>
-                <td>
-                    @foreach($mitra_bumn as $mitra)
-                        {{$mitra->perusahaan->nama_lengkap}} <br>
-                    @endforeach
-                </td>
-            </tr>
-            <tr>
-                <td><b>Jangka Waktu</b></td>
-                <td>{{@$data->jangka_waktu}} tahun</td>
-                <td><b>Alokasi Anggaran</b></td>
-                <td>Rp. {{number_format($data->anggaran_alokasi,0,',',',')}}</td>
-            </tr>
-        </tbody>
-    </table>
-    
+	
+    <div class="form-group row mb-5">
+        <div class="col-lg-10">
+            <label>File (*.xlsx)</label>
+            <input class="form-control" type="file" name="file_name" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" required/>
+        </div>
+    </div>
+    <div class="text-center pt-15">
+        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" data-kt-roles-modal-action="cancel">Discard</button>
+        <button id="submit" type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">
+            <span class="indicator-label">Submit</span>
+            <span class="indicator-progress">Please wait...
+            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+        </button>
+    </div>
 </form>
 
 <script type="text/javascript">
-    var title = "Detail Target TPB";
+    var title = "Upload File Kegiatan";
 
     $(document).ready(function(){
-        $('.modal-title').html(title);
         $('.form-select2').select2();
-
+        $('.modal-title').html(title);
         $('.modal').on('shown.bs.modal', function () {
             setFormValidate();
         });  
-        
-        $('#anggaran_alokasi').keyup(function(event) {
-
-            // skip for arrow keys
-            if(event.which >= 37 && event.which <= 40) return;
-
-            // format number
-            $(this).val(function(index, value) {
-            return value
-            .replace(/\D/g, "")
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-            ;
-            });
-        });
     });
-    
+
     function setFormValidate(){
         $('#form-edit').validate({
-            rules: {
-                nama:{
-                        required: true
-                }               		               		                              		               		               
+            rules: {            		               		                              		               		               
             },
-            messages: {
-                nama: {
-                    required: "Nama wajib diinput"
-                }                                      		                   		                   
+            messages: {                                   		                   		                   
             },	        
             highlight: function(element) {
                 $(element).closest('.form-control').addClass('is-invalid');
@@ -124,7 +56,7 @@ td{
                 
                 $(form).ajaxSubmit({
                     type: 'post',
-                    url: urlstore,
+                    url: urluploadstore,
                     data: {source : typesubmit},
                     dataType : 'json',
                     beforeSend: function(){
@@ -147,8 +79,9 @@ td{
                         });	                   
 
                         if(data.flag == 'success') {
-                            $('#winform').modal('hide');
-                            datatable.ajax.reload( null, false );
+                            // $('#winform').modal('hide');
+                            // datatable.ajax.reload( null, false );
+                            location.reload(); 
                         }
                     },
                     error: function(jqXHR, exception){
@@ -184,5 +117,4 @@ td{
         }
         });		
     }
-
 </script>

@@ -28,7 +28,6 @@
                         <button type="button" class="btn btn-danger btn-sm btn-icon btn-cancel-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Batalkan Validasi"><i class="bi bi-check fs-3"></i></button> 
                         <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button> &nbsp
                         <button type="button" class="btn btn-success btn-sm btn-icon cls-upload"  data-toggle="tooltip" title="Upload Data Program"><i class="bi bi-upload fs-3"></i></button> &nbsp
-                        <button type="button" class="btn btn-info btn-sm btn-icon cls-add-kegiatan"  data-toggle="tooltip" title="Input Data Kegiatan"><i class="bi bi-plus fs-3"></i></button> &nbsp
                         <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-excel fs-3"></i></button>
                     </div>
                     <!--end::Search-->
@@ -212,7 +211,9 @@
                                                 <td style="text-align:center;">
                                                     @if($t->status_id != 1)
                                                     <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$t->id}}" data-toggle="tooltip" title="Ubah data {{@$t->program}}"><i class="bi bi-pencil fs-3"></i></button>
-                                                    <button type="button" class="btn btn-sm btn-light btn-icon btn-warning cls-button-detail" data-id="{{$t->id}}" data-toggle="tooltip" title="Detail data {{@$t->program}}"><i class="bi bi-info fs-3"></i></button>
+                                                    @endif
+                                                    <button type="button" class="btn btn-sm btn-light btn-icon btn-info cls-button-detail" data-id="{{$t->id}}" data-toggle="tooltip" title="Detail data {{@$t->program}}"><i class="bi bi-info fs-3"></i></button>
+                                                    @if($t->status_id != 1)
                                                     <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="{{$t->id}}" data-nama="{{@$t->program}}" data-toggle="tooltip" title="Hapus data {{@$t->program}}"><i class="bi bi-trash fs-3"></i></button>
                                                     @endif
                                                 </td>
