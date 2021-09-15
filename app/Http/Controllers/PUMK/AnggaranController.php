@@ -148,7 +148,7 @@ class AnggaranController extends Controller
             }        
 
             $data = $anggaran_pumk->orderBy('perusahaans.nama_singkat','asc')->orderBy('periode_laporans.nama','asc');
-
+            
             return datatables()->of($data->get())
             ->editColumn('outcome_total', function ($row){
                 $nominal = 0;
@@ -185,18 +185,36 @@ class AnggaranController extends Controller
             ->addColumn('action', function ($p){
                 $id = (int)$p->id;
                 if($p->status !== 'Finish'){
-                    $btn = '<div style="width:120px;text-align:center;"><span>
-                    <button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Edit data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-pencil fs-3"></i></button>
-                    <button type="button" class="btn btn-sm btn-warning btn-icon cls-button-update-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="update status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-check fs-3"></i></button>
-                    <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pumkanggaran" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Hapus data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-trash fs-3"></i></button>
-                    <button style="display: none;" type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Lihat detail data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-info fs-3"></i></button>
-                    </span><div>
-                    ';
+
+                    if($p->periode !== 'RKA'){
+                        $btn = '<div style="width:120px;text-align:center;"><span>
+                        <button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Edit data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-pencil fs-3"></i></button>
+                        <button type="button" class="btn btn-sm btn-warning btn-icon cls-button-update-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="update status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-check fs-3"></i></button>
+                        <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pumkanggaran" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Hapus data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-trash fs-3"></i></button>
+                        <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Lihat detail data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-info fs-3"></i></button>
+                        </span><div>
+                        ';
+                    }else{
+                        $btn = '<div style="width:120px;text-align:center;"><span>
+                        <button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Edit data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-pencil fs-3"></i></button>
+                        <button type="button" class="btn btn-sm btn-warning btn-icon cls-button-update-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="update status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-check fs-3"></i></button>
+                        <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pumkanggaran" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Hapus data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-trash fs-3"></i></button>
+                        </span><div>
+                        ';
+                    }
                    
                 }else{
-                    $btn = '
-                    <button type="button" class="btn btn-sm btn-secondary btn-icon cls-button-aktivasi-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'"" data-toggle="tooltip" title="Aktivasi kembali status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-layer-backward fs-3"></i></button>
-                    ';
+
+                    if($p->periode !== 'RKA'){
+                        $btn = '
+                        <button type="button" class="btn btn-sm btn-secondary btn-icon cls-button-aktivasi-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'"" data-toggle="tooltip" title="Aktivasi kembali status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-layer-backward fs-3"></i></button>
+                        <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Lihat detail data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-info fs-3"></i></button>
+                        ';
+                    }else{
+                        $btn = '
+                        <button type="button" class="btn btn-sm btn-secondary btn-icon cls-button-aktivasi-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'"" data-toggle="tooltip" title="Aktivasi kembali status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-layer-backward fs-3"></i></button>
+                        ';                    
+                    }
                 }
                 return $btn;
 
