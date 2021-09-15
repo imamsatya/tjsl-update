@@ -403,9 +403,10 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::prefix('upload_data_mitra')->group(function(){
                 Route::get('index', 'App\Http\Controllers\PUMK\UploadMitraBinaanController@index')->name('pumk.upload_data_mitra.index');
                 Route::get('download_template', 'App\Http\Controllers\PUMK\UploadMitraBinaanController@download_template')->name('pumk.upload_data_mitra.download_template');
+                Route::get('download_upload_berhasil/{kode?}', 'App\Http\Controllers\PUMK\UploadMitraBinaanController@download_upload_berhasil')->name('pumk.upload_data_mitra.download_upload_berhasil');
+                Route::get('download_upload_gagal/{kode?}', 'App\Http\Controllers\PUMK\UploadMitraBinaanController@download_upload_gagal')->name('pumk.upload_data_mitra.download_upload_gagal');
                 Route::post('store', 'App\Http\Controllers\PUMK\UploadMitraBinaanController@store')->name('pumk.upload_data_mitra.store');
                 Route::get('datatable', 'App\Http\Controllers\PUMK\UploadMitraBinaanController@datatable')->name('pumk.upload_data_mitra.datatable');
-                // Route::post('delete', 'App\Http\Controllers\PUMK\MitraBinaanController@delete')->name('pumk.data_mitra.delete');
             });
         });
 

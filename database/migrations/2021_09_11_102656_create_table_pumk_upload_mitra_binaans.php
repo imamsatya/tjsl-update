@@ -19,10 +19,10 @@ class CreateTablePumkUploadMitraBinaans extends Migration
             $table->string('tahun')->nullable();
             $table->integer('perusahaan_id')->nullable();
             $table->integer('berhasil')->nullable();
-            $table->integer('update')->nullable();
             $table->integer('gagal')->nullable();
             $table->text('keterangan')->nullable();
             $table->integer('upload_by_id')->nullable();
+            $table->text('kode_upload')->nullable();
             $table->timestamps();
         });
     }

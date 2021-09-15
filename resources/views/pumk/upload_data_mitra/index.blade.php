@@ -49,13 +49,12 @@
                                 <th rowspan="2" style="text-align:center;vertical-align:middle">No.</th>
                                 <th rowspan="2" style="text-align:center;vertical-align:middle">Tanggal</th>
                                 <th rowspan="2" style="text-align:center;vertical-align:middle">Nama File</th>
-                                <th colspan="3" style="text-align:center;vertical-align:middle">Hasil Upload</th>
+                                <th colspan="2" style="text-align:center;vertical-align:middle">Hasil Upload</th>
                                 <th colspan="2" style="text-align:center;vertical-align:middle">File </th>
-                                <th rowspan="2" style="text-align:center;vertical-align:middle">Keterangan</th>
+                                {{-- <th rowspan="2" style="text-align:center;vertical-align:middle">Keterangan</th> --}}
                             </tr>
                             <tr>
                                 <th style="text-align:center;vertical-align:middle">Berhasil</th>
-                                <th style="text-align:center;vertical-align:middle">Update</th>
                                 <th style="text-align:center;vertical-align:middle">Gagal</th>
                                 <th style="text-align:center;vertical-align:middle">Berhasil</th>
                                 <th style="text-align:center;vertical-align:middle">Gagal</th>
@@ -76,6 +75,7 @@
     var urluploadstore = "{{route('pumk.upload_data_mitra.store')}}";
     var urldatatable = "{{route('pumk.upload_data_mitra.datatable')}}";
     var urldownloadtemplatemb = "{{route('pumk.upload_data_mitra.download_template')}}";
+    var urldownloaduploadberhasil = "{{route('pumk.upload_data_mitra.download_upload_berhasil')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
@@ -85,9 +85,43 @@
             downloadTemplateMitra();
         });
 
+        // $('body').on('click','.btn-download-berhasil',function(){           
+        //     downloadFileSukses(this);
+        // });
+
+        // $('body').on('click','.cls-download-gagal',function(){
+        //     downloadTemplateMitra();
+        // });
+
         setFormValidate();
         setDatatable();
     });
+
+    function setDatatable(){
+        datatable = $('#datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: urldatatable,
+            columns: [
+                { data: 'id', orderable: false, searchable: false },
+                { data: 'created_at', name: 'created_at' },
+                { data: 'file_name', name: 'file_name' },
+                { data: 'berhasil', name: 'berhasil' },
+                { data: 'gagal', name: 'gagal' },
+                { data: 'download_berhasil', name: 'download_berhasil' },
+                { data: 'download_gagal', name: 'download_gagal' },
+                // { data: 'keterangan', name: 'keterangan' },
+            ],
+            drawCallback: function( settings ) {
+                var info = datatable.page.info();
+                $('[data-toggle="tooltip"]').tooltip();
+                datatable.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+                    cell.innerHTML = info.start + i + 1;
+                } );
+            }
+        });
+    }
+
 
     function downloadTemplateMitra()
     {
@@ -237,31 +271,7 @@
         });		
     }
 
-    function setDatatable(){
-        datatable = $('#datatable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: urldatatable,
-            columns: [
-                { data: 'id', orderable: false, searchable: false },
-                { data: 'created_at', name: 'created_at' },
-                { data: 'file_name', name: 'file_name' },
-                { data: 'berhasil', name: 'berhasil' },
-                { data: 'update', name: 'update' },
-                { data: 'gagal', name: 'gagal' },
-                { data: 'download_berhasil', name: 'download_berhasil' },
-                { data: 'download_gagal', name: 'download_gagal' },
-                { data: 'keterangan', name: 'keterangan' },
-            ],
-            drawCallback: function( settings ) {
-                var info = datatable.page.info();
-                $('[data-toggle="tooltip"]').tooltip();
-                datatable.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-                    cell.innerHTML = info.start + i + 1;
-                } );
-            }
-        });
-    }
+
 
 </script>
 @endsection

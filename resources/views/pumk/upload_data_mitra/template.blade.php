@@ -25,7 +25,13 @@
     <tr>
         <td colspan="28" style="background-color : #e3e3e3 ;width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">{{ $periode }}</font></b></td>
     </tr>
-    <tr></tr>
+    <tr>
+        <td colspan="12"></td>
+        <td style="color: red;text-align:center;">(format tgl : hh/bb/tttt)</td>
+        <td style="color: red;text-align:center;">(format tgl : hh/bb/tttt)</td>
+        <td colspan="5"></td>
+        <td style="color: red;text-align:center;">(format tgl : hh/bb/tttt)</td>
+    </tr>
     <tr>
         <td style="background-color : #e3e3e3 ;width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">No</font></b></td>
         <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Nama Mitra Binaan</font></b></td>
@@ -91,6 +97,9 @@
             <td>{{$val->kelebihan_angsuran?$val->kelebihan_angsuran:""}}</td>
             <td>{{$val->subsektor?$val->subsektor:""}}</td>
             <td>{{$val->hasil_produk_jasa?$val->hasil_produk_jasa:""}}</td>
+            @if($val->keterangan_gagal)
+            <td style="color:red;"><b>{{$val->keterangan_gagal?$val->keterangan_gagal:""}}</b></td>
+            @endif
         </tr>
         @endforeach
     @endif

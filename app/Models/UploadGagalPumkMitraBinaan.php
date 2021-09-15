@@ -10,6 +10,7 @@ class UploadGagalPumkMitraBinaan extends Model
     protected $guard = [];
     protected $table = 'pumk_mitra_binaan_upload_gagals';
     protected $fillable = [
+        'perusahaan_id','skala_usaha_id','kode_upload',
         'nama_mitra', 'no_identitas', 'provinsi_id', 'kota_id', 
         'sektor_usaha_id', 'cara_penyaluran_id', 
         'kolektibilitas_id', 'kondisi_pinjaman_id', 
@@ -21,6 +22,6 @@ class UploadGagalPumkMitraBinaan extends Model
         'penerimaan_jasa_adm_bulan_berjalan', 'tgl_penerimaan_terakhir', 
         'jumlah_sdm', 'kelebihan_angsuran', 'subsektor', 
         'hasil_produk_jasa', 'created_by_id', 
-        'updated_by_id', 'created_at', 'updated_at'
+        'updated_by_id', 'created_at', 'updated_at','keterangan_gagal'
     ];
 }

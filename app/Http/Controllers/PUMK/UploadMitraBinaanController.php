@@ -17,8 +17,14 @@ use App\Imports\RowImportmb;
 
 use App\Models\User;
 use App\Models\UploadPumkMitraBinaan;
+use App\Models\UploadGagalPumkMitraBinaan;
+use App\Models\PumkMitraBinaan;
 use App\Models\Perusahaan;
 use App\Exports\MitraBinaanTemplateExport;
+use App\Exports\MitraBinaanSuksesUpload;
+use App\Exports\MitraBinaanSuksesUploadExport;
+use App\Exports\MitraBinaanGagalUpload;
+use App\Exports\MitraBinaanGagalUploadExport;
 use App\Exports\MitraBinaanTemplateExcelSheet;
 
 
@@ -71,22 +77,34 @@ class UploadMitraBinaanController extends Controller
                 return $date;
             })
             ->addColumn('download_berhasil', function ($row){
-                $id = (int)$row->id;
+                $kode = $row->kode_upload;
                 $button = '<div align="center">';
 
                 if($row->berhasil>0){
-                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Download data berhasil"><i class="bi bi-download fs-3"></i></button>';
+                    $count = PumkMitraBinaan::where('kode_upload',$kode)->count();
+                    if($count > 0){
+                        $button .= '<a href="download_upload_berhasil/'.$kode.'" target="_blank" class="btn btn-sm btn-light btn-icon btn-primary btn-download-berhasil" data-id="'.$kode.'" data-toggle="tooltip" title="Download data berhasil "><i class="bi bi-download fs-3"></i></a>';
+                    }
+                    else{
+                        $button .= '<button class="btn btn-sm btn-light btn-icon btn-secondary " data-toggle="tooltip" title="Data Telah Diupdate " disabled><i class="bi bi-download fs-3"></i></button>';
+                    }
                 }
 
                 $button .= '</div>';
                 return $button;
             })
             ->addColumn('download_gagal', function ($row){
-                $id = (int)$row->id;
+                $kode = $row->kode_upload;
                 $button = '<div align="center">';
 
                 if($row->gagal>0){
-                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-danger cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Download data gagal"><i class="bi bi-download fs-3"></i></button>';
+                    $count = UploadGagalPumkMitraBinaan::where('kode_upload',$kode)->count();
+                    if($count > 0){
+                        $button .= '<a href="download_upload_gagal/'.$kode.'" target="_blank" class="btn btn-sm btn-light btn-icon btn-danger cls-download-gagal" data-id="'.$kode.'" data-toggle="tooltip" title="Download data gagal"><i class="bi bi-download fs-3"></i></a>';
+                    }
+                    else{
+                        $button .= '<button class="btn btn-sm btn-light btn-icon btn-secondary " data-toggle="tooltip" title="Data Telah Diupdate " disabled><i class="bi bi-download fs-3"></i></button>';
+                    }
                 }
 
                 $button .= '</div>';
@@ -144,6 +162,21 @@ class UploadMitraBinaanController extends Controller
         $namaFile = "Template Data Mitra Binaan.xlsx";
         
         return Excel::download(new MitraBinaanTemplateExcelSheet($perusahaan), $namaFile);
+    }
+
+    public function download_upload_berhasil($kode)
+    {
+        $namaFile = "Data Mitra Binaan Berhasil Upload.xlsx";
+
+        return Excel::download(new MitraBinaanSuksesUpload($kode), $namaFile);
+    }
+
+    public function download_upload_gagal($kode)
+    {
+
+        $namaFile = "Data Mitra Binaan Gagal Upload.xlsx";
+
+        return Excel::download(new MitraBinaanGagalUpload($kode), $namaFile);
     }
 
     public function store(Request $request)

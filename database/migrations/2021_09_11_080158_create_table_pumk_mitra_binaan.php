@@ -45,6 +45,7 @@ class CreateTablePumkMitraBinaan extends Migration
             $table->text('hasil_produk_jasa')->nullable();
             $table->integer('created_by_id')->nullable();
             $table->integer('updated_by_id')->nullable();
+            $table->text('kode_upload')->nullable();
             $table->timestamps();
         });
     }

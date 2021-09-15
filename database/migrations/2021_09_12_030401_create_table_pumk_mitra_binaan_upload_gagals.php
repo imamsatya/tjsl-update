@@ -15,12 +15,14 @@ class CreateTablePumkMitraBinaanUploadGagals extends Migration
     {
         Schema::create('pumk_mitra_binaan_upload_gagals', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('perusahaan_id');
             $table->text('nama_mitra')->nullable();
             $table->text('no_identitas')->nullable();
             $table->integer('provinsi_id')->nullable();
             $table->integer('kota_id')->nullable();
             $table->integer('sektor_usaha_id')->nullable();
             $table->integer('cara_penyaluran_id')->nullable();
+            $table->integer('skala_usaha_id')->nullable();
             $table->integer('kolektibilitas_id')->nullable();
             $table->integer('kondisi_pinjaman_id')->nullable();
             $table->integer('jenis_pembayaran_id')->nullable();
@@ -43,7 +45,8 @@ class CreateTablePumkMitraBinaanUploadGagals extends Migration
             $table->text('hasil_produk_jasa')->nullable();
             $table->integer('created_by_id')->nullable();
             $table->integer('updated_by_id')->nullable();
-            $table->integer('perusahaan_id')->nullable();
+            $table->text('keterangan_gagal')->nullable();
+            $table->text('kode_upload')->nullable();
             $table->timestamps();
         });
     }
