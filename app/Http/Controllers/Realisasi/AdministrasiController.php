@@ -398,40 +398,19 @@ class AdministrasiController extends Controller
     {
 
         try{
-            $realisasi = KegiatanRealisasi::where('id', (int)$request->input('id'))->first();
-            $kegiatan = Kegiatan::find($realisasi->kegiatan_id);
-            $tahun       = KegiatanRealisasi::select('tahun')->where('kegiatan_id', $kegiatan->id)->groupBy('tahun')->orderBy('tahun')->get();
-            $realisasi_1 = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->where('bulan', 1)->get();
-            $realisasi_2 = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->where('bulan', 2)->get();
-            $realisasi_3 = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->where('bulan', 3)->get();
-            $realisasi_4 = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->where('bulan', 4)->get();
-            $realisasi_5 = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->where('bulan', 5)->get();
-            $realisasi_6 = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->where('bulan', 6)->get();
-            $realisasi_7 = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->where('bulan', 7)->get();
-            $realisasi_8 = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->where('bulan', 8)->get();
-            $realisasi_9 = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->where('bulan', 9)->get();
-            $realisasi_10 = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->where('bulan', 10)->get();
-            $realisasi_11 = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->where('bulan', 11)->get();
-            $realisasi_12 = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->where('bulan', 12)->get();
+            $realisasi_detail = KegiatanRealisasi::where('id', (int)$request->input('id'))->first();
+            $kegiatan  = Kegiatan::find($realisasi_detail->kegiatan_id);
+            $tahun     = KegiatanRealisasi::select('tahun')->where('kegiatan_id', $kegiatan->id)->groupBy('tahun')->orderBy('tahun')->get();
+            $realisasi = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->get();
+            $realisasi_total = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->select(DB::Raw('sum(anggaran) as total'))->first();
 
                 return view($this->__route.'.detail',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
                     'data' => $kegiatan,
                     'tahun' => $tahun,
+                    'anggaran_total' => $realisasi_total->total,
                     'realisasi' => $realisasi,
-                    'realisasi_1' => $realisasi_1,
-                    'realisasi_2' => $realisasi_2,
-                    'realisasi_3' => $realisasi_3,
-                    'realisasi_4' => $realisasi_4,
-                    'realisasi_5' => $realisasi_5,
-                    'realisasi_6' => $realisasi_6,
-                    'realisasi_7' => $realisasi_7,
-                    'realisasi_8' => $realisasi_8,
-                    'realisasi_9' => $realisasi_9,
-                    'realisasi_10' => $realisasi_10,
-                    'realisasi_11' => $realisasi_11,
-                    'realisasi_12' => $realisasi_12,
                 ]);
         }catch(Exception $e){}
 
@@ -560,7 +539,7 @@ class AdministrasiController extends Controller
 
             $realisasi = $kegiatan->get();
             foreach($realisasi as $a){
-                AdministrasiController::store_log($a->id,$a->status_id);
+                AdministrasiController::store_log($a->id,$request->status_id);
             }
 
             $kegiatan->update($param);

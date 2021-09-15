@@ -18,7 +18,7 @@ class ReferensiCaraPenyaluran implements FromView , WithTitle
 
     public function title(): string
     {
-        return 'Referensi Pelaksanaaan Program' ;
+        return 'Referensi Pelaksanaan Program' ;
     }
 }
 ?>

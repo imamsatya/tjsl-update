@@ -79,9 +79,9 @@
                         });	                   
 
                         if(data.flag == 'success') {
-                            // $('#winform').modal('hide');
-                            // datatable.ajax.reload( null, false );
-                            location.reload(); 
+                            $('#winform').modal('hide');
+                            datatable.ajax.reload( null, false );
+                            // location.reload(); 
                         }
                     },
                     error: function(jqXHR, exception){

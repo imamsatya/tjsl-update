@@ -513,7 +513,7 @@
                 },
                 success: function(data){
                     $.unblockUI();
-                    var filename = 'Template Kegiatan.xlsx';
+                    var filename = 'Template Kegiatan Bulan '+ $("#filter_bulan option:selected").text() +" Tahun "+$("#filter_tahun").val()+'.xlsx';
 
                     var blob = new Blob([data], {
                         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'

@@ -36,7 +36,7 @@ class CaraPenyaluranController extends Controller
     {
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
-            'breadcrumb' => 'Referensi - Pelaksanaaan Program'
+            'breadcrumb' => 'Referensi - Pelaksanaan Program'
         ]);
     }
 

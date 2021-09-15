@@ -71,6 +71,8 @@
 <script>
     var urluploadstore = "{{route('realisasi.upload_realisasi.store')}}";
     var urldatatable = "{{route('realisasi.upload_realisasi.datatable')}}";
+    var urlexportberhasil = "{{route('realisasi.upload_target.export_berhasil')}}";
+    var urlexportgagal = "{{route('realisasi.upload_target.export_gagal')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
@@ -78,7 +80,155 @@
 
         setFormValidate();
         setDatatable();
+
+        $('body').on('click','.cls-button-berhasil',function(){
+            exportExcelBerhasil($(this).data('id'));
+        });
+
+        $('body').on('click','.cls-button-gagal',function(){
+            exportExcelGagal($(this).data('id'));
+        });
     });
+
+    function exportExcelBerhasil(id)
+    {
+        $.ajax({
+            type: 'post',
+            data: {
+                'id' : id,
+            },
+            beforeSend: function () {
+                $.blockUI();
+            },
+            url: urlexportberhasil,
+            xhrFields: {
+                responseType: 'blob',
+            },
+            success: function(data){
+                $.unblockUI();
+
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+                
+                today = dd + '-' + mm + '-' + yyyy;
+                var filename = 'Data Kegiatan Berhasil Upload.xlsx';
+
+                var blob = new Blob([data], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
+
+                document.body.appendChild(link);
+
+                link.click();
+                document.body.removeChild(link);
+            },
+            error: function(jqXHR, exception){
+                $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+            swal.fire({
+                    title: "Error System",
+                    html: msgerror+', coba ulangi kembali !!!',
+                    icon: 'error',
+
+                    buttonsStyling: true,
+
+                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+            });      
+                
+            }
+        });
+        return false;
+    }
+
+    function exportExcelGagal(id)
+    {
+        $.ajax({
+            type: 'post',
+            data: {
+                'id' : id,
+            },
+            beforeSend: function () {
+                $.blockUI();
+            },
+            url: urlexportgagal,
+            xhrFields: {
+                responseType: 'blob',
+            },
+            success: function(data){
+                $.unblockUI();
+
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+                
+                today = dd + '-' + mm + '-' + yyyy;
+                var filename = 'Data Kegiatan Gagal Upload.xlsx';
+
+                var blob = new Blob([data], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
+
+                document.body.appendChild(link);
+
+                link.click();
+                document.body.removeChild(link);
+            },
+            error: function(jqXHR, exception){
+                $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+            swal.fire({
+                    title: "Error System",
+                    html: msgerror+', coba ulangi kembali !!!',
+                    icon: 'error',
+
+                    buttonsStyling: true,
+
+                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+            });      
+                
+            }
+        });
+        return false;
+    }
 
     function setFormValidate(){
         $('#form-edit').validate({
@@ -129,9 +279,9 @@
                         });	                   
 
                         if(data.flag == 'success') {
-                            // $('#winform').modal('hide');
-                            // datatable.ajax.reload( null, false );
-                            location.reload(); 
+                            $('#winform').modal('hide');
+                            datatable.ajax.reload( null, false );
+                            // location.reload(); 
                         }
                     },
                     error: function(jqXHR, exception){

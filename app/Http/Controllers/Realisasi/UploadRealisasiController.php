@@ -17,8 +17,13 @@ use App\Imports\KegiatanRowImport;
 
 use App\Models\User;
 use App\Models\TargetTpb;
+use App\Models\Kegiatan;
+use App\Models\KegiatanRealisasi;
 use App\Models\RealisasiUpload;
+use App\Models\RealisasiUploadGagal;
 use App\Models\Perusahaan;
+use App\Exports\RealisasiBerhasilExport;
+use App\Exports\RealisasiGagalExcelSheet;
 
 class UploadRealisasiController extends Controller
 {
@@ -82,7 +87,7 @@ class UploadRealisasiController extends Controller
                 $button = '<div align="center">';
 
                 if($row->berhasil>0){
-                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Download data berhasil"><i class="bi bi-download fs-3"></i></button>';
+                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-berhasil" data-id="'.$id.'" data-toggle="tooltip" title="Download data berhasil"><i class="bi bi-download fs-3"></i></button>';
                 }
 
                 $button .= '</div>';
@@ -93,7 +98,7 @@ class UploadRealisasiController extends Controller
                 $button = '<div align="center">';
 
                 if($row->gagal>0){
-                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-danger cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Download data gagal"><i class="bi bi-download fs-3"></i></button>';
+                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-danger cls-button-gagal" data-id="'.$id.'" data-toggle="tooltip" title="Download data gagal"><i class="bi bi-download fs-3"></i></button>';
                 }
 
                 $button .= '</div>';
@@ -260,5 +265,52 @@ class UploadRealisasiController extends Controller
         $fileUpload      = $file->move($destinationPath, $fileRaw);
         $data = (object) array('fileName' => $fileName, 'fileRaw' => $fileRaw, 'filePath' => $filePath);
         return $data;
+    }
+    
+    public function export_berhasil(Request $request)
+    {
+        $upload = RealisasiUpload::find($request->id);
+        $perusahaan = @$upload->perusahaan->nama_lengkap;
+        $bulan = @$upload->bulan;
+        $tahun = @$upload->tahun;
+
+        $kegiatan = KegiatanRealisasi::select('kegiatans.*',
+                                    'kegiatan_realisasis.*',
+                                    'satuan_ukur.nama as satuan_ukur',
+                                    'target_tpbs.program',
+                                    'pilar_pembangunans.nama as pilar_pembangunan',
+                                    'tpbs.nama as tpb',
+                                    'perusahaans.nama_lengkap as perusahaan',
+                                    'provinsis.nama as provinsi',
+                                    'kotas.nama as kota',
+                                    'bulans.nama as bulan_nama')
+                                ->leftJoin('kegiatans','kegiatans.id','kegiatan_realisasis.kegiatan_id')
+                                ->leftJoin('provinsis','provinsis.id','kegiatans.provinsi_id')
+                                ->leftJoin('kotas','kotas.id','kegiatans.kota_id')
+                                ->leftJoin('satuan_ukur','satuan_ukur.id','kegiatans.satuan_ukur_id')
+                                ->leftJoin('bulans','bulans.id','kegiatan_realisasis.bulan')
+                                ->leftJoin('target_tpbs','target_tpbs.id','kegiatans.target_tpb_id')
+                                ->leftJoin('anggaran_tpbs','anggaran_tpbs.id','target_tpbs.anggaran_tpb_id')
+                                ->leftJoin('perusahaans','perusahaans.id','anggaran_tpbs.perusahaan_id')
+                                ->leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
+                                ->leftJoin('pilar_pembangunans','pilar_pembangunans.id','relasi_pilar_tpbs.pilar_pembangunan_id')
+                                ->leftJoin('tpbs','tpbs.id','relasi_pilar_tpbs.tpb_id')
+                                ->where('kegiatan_realisasis.file_name', $upload->file_name)
+                                ->orderBy('kegiatan_realisasis.id','asc')->get();
+                                
+        $namaFile = "Data Kegiatan Berhasil Upload.xlsx";
+        return Excel::download(new RealisasiBerhasilExport($kegiatan,$perusahaan,$bulan,$tahun), $namaFile);
+    }
+
+    public function export_gagal(Request $request)
+    {
+        $upload = RealisasiUpload::find($request->id);
+        $realisasi = RealisasiUploadGagal::where('realisasi_upload_id', $upload->id)->get();
+        $perusahaan = @$upload->perusahaan->nama_lengkap;
+        $bulan = @$upload->bulan;
+        $tahun = @$upload->tahun;
+
+        $namaFile = "Data Kegiatan Gagal Upload.xlsx";
+        return Excel::download(new RealisasiGagalExcelSheet($realisasi,$perusahaan,$bulan,$tahun), $namaFile);
     }
 }

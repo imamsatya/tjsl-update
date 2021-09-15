@@ -40,7 +40,6 @@
                                 <th>Kode Tujuan TPB</th>
                                 <th>Keterangan Tujuan TPB</th>
                                 <th>Kode Indikator</th>
-                                <th>Nama Indikator</th>
                                 <th>Keterangan</th>
                                 <th style="text-align:center;">Aksi</th>
                             </tr>
@@ -95,7 +94,6 @@
                 { data: 'kode_tujuan_tpb', name: 'kode_tujuan_tpb' },
                 { data: 'keterangan_tujuan_tpb', name: 'keterangan_tujuan_tpb' },
                 { data: 'kode', name: 'kode' },
-                { data: 'nama', name: 'nama' },
                 { data: 'keterangan', name: 'keterangan' },
                 { data: 'action', name:'action'},
             ],

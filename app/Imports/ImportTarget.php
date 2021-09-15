@@ -58,12 +58,10 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                                     ->first();
             }catch(\Exception $e){
                 DB::rollback();
-
-                $gagal++;
                 $s_gagal = true;
                 $keterangan .= 'Baris '.rtrim($ar['no']).' Data TPB tidak ditemukan<br>';
             }
-
+            
             if($anggaran){
                 try{
                     $target = TargetTpb::create([
@@ -76,7 +74,7 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'core_subject_id' => rtrim($ar['id_core_subject_iso_26000']) ,
                         'tpb_id' => rtrim($ar['id_tpb']) ,
                         'kode_indikator_id' => rtrim($ar['id_kode_indikator']) ,
-                        'cara_penyaluran_id' => rtrim($ar['id_cara_penyaluran']) ,
+                        'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']) ,
                         'jangka_waktu' => rtrim($ar['jangka_waktu_penerapan_dalam_tahun']) ,
                         'anggaran_alokasi' => rtrim($ar['alokasi_anggaran_tahun_2021_dalam_rupiah']) ,
                     ]);
@@ -84,8 +82,6 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                     AdministrasiController::store_log($target->id,$target->status_id);
                 }catch(\Exception $e){
                     DB::rollback();
-
-                    $gagal++;
                     $s_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' isian tidak sesuai Referensi<br>';
                 }
@@ -101,33 +97,36 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                         $berhasil++;
                     }catch(\Exception $e){
                         DB::rollback();
-                        
-                        $gagal++;
                         $s_gagal = true;
                         $keterangan .= 'Baris '.rtrim($ar['no']).' Data Mitra BUMN tidak ditemukan<br>';
                     }
                 }
-                
-                if($s_gagal){
-                    try{
-                        $target = TargetUploadGagal::create([
-                            'target_upload_id' => $this->target_upload,
-                            'program' => rtrim($ar['program']) ,
-                            'unit_owner' => rtrim($ar['unit_owner']),
-                            'jenis_program_id' => rtrim($ar['id_kriteria_program']) ,
-                            'core_subject_id'   => rtrim($ar['id_core_subject_iso_26000']) ,
-                            'tpb_id' => rtrim($ar['id_tpb']) ,
-                            'kode_indikator_id' => rtrim($ar['id_kode_indikator']) ,
-                            'cara_penyaluran_id' => rtrim($ar['id_cara_penyaluran']) ,
-                            'jangka_waktu' => rtrim($ar['jangka_waktu_penerapan_dalam_tahun']) ,
-                            'anggaran_alokasi' => rtrim($ar['alokasi_anggaran_tahun_2021_dalam_rupiah']) ,
-                        ]);
-                        DB::commit();
-                    }catch(\Exception $e){
-                        DB::rollback();
-                    }
-                }   
+            }else{
+                $s_gagal = true;
+                $keterangan .= 'Baris '.rtrim($ar['no']).' Data TPB tidak ditemukan<br>';
             }
+                
+            if($s_gagal){
+                try{
+                    $target = TargetUploadGagal::create([
+                        'target_upload_id' => $this->target_upload,
+                        'program' => rtrim($ar['program']) ,
+                        'unit_owner' => rtrim($ar['unit_owner']),
+                        'jenis_program_id' => rtrim($ar['id_kriteria_program']) ,
+                        'core_subject_id'   => rtrim($ar['id_core_subject_iso_26000']) ,
+                        'tpb_id' => rtrim($ar['id_tpb']) ,
+                        'kode_indikator_id' => rtrim($ar['id_kode_indikator']) ,
+                        'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']) ,
+                        'mitra_bumn_id' => rtrim($ar['id_mitra_bumn']) ,
+                        'jangka_waktu' => rtrim($ar['jangka_waktu_penerapan_dalam_tahun']) ,
+                        'anggaran_alokasi' => rtrim($ar['alokasi_anggaran_tahun_2021_dalam_rupiah']) ,
+                    ]);
+                    $gagal++;
+                    DB::commit();
+                }catch(\Exception $e){dd($e->getMessage());
+                    DB::rollback();
+                }
+            }   
         }
         
         $target_upload = TargetUpload::find((int)$this->target_upload);
