@@ -356,6 +356,7 @@ class AnggaranTpbController extends Controller
         DB::beginTransaction();
         try{
             $data = AnggaranTpb::LeftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
+                                    ->where('anggaran_tpbs.perusahaan_id', (int)$request->input('perusahaan_id'))
                                     ->where('relasi_pilar_tpbs.pilar_pembangunan_id', (int)$request->input('id'));
             foreach($data as $a){
                 $log = LogAnggaranTpb::where('anggaran_tpb_id', $a->id);

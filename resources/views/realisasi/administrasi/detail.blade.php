@@ -177,7 +177,7 @@ td{
                 if(@$realisasi_11->status_id == 1) $status_11 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
                 if(@$realisasi_12->status_id == 1) $status_12 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
 
-                $total    = @$realisasi_1->anggaran+@$realisasi_2->realisasi+@$realisasi_3->realisasi+@$realisasi_4->realisasi+
+                $total    = @$realisasi_1->realisasi+@$realisasi_2->realisasi+@$realisasi_3->realisasi+@$realisasi_4->realisasi+
                             @$realisasi_5->realisasi+@$realisasi_6->realisasi+@$realisasi_7->realisasi+@$realisasi_8->realisasi+@$realisasi_9->realisasi+
                             @$realisasi_10->realisasi+@$realisasi_11->realisasi+@$realisasi_12->realisasi;
             @endphp

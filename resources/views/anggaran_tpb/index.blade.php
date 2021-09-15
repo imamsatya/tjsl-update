@@ -186,7 +186,7 @@
                                         </td>
                                         <td style="text-align:center;">
                                             @if($status->status_id != 1)
-                                            <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pilar" data-id="{{$p->pilar_id}}" data-nama="{{$p->pilar_nama}}" data-toggle="tooltip" title="Hapus data {{$p->pilar_nama}}"><i class="bi bi-trash fs-3"></i></button>
+                                            <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pilar" data-perusahaan_id="{{$b->id}}" data-id="{{$p->pilar_id}}" data-nama="{{$p->pilar_nama}}" data-toggle="tooltip" title="Hapus data {{$p->pilar_nama}}"><i class="bi bi-trash fs-3"></i></button>
                                             @endif
                                         </td>
                                     </tr>
@@ -210,7 +210,7 @@
                                         <td style="text-align:center;">
                                             @if($a->status_id != 1)
                                             <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$a->id}}" data-toggle="tooltip" title="Ubah data {{@$a->tpb->no_tpb}}"><i class="bi bi-pencil fs-3"></i></button>
-                                            <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="{{$a->id}}" data-nama="{{@$a->tpb->no_tpb}}" data-toggle="tooltip" title="Hapus data {{@$a->tpb->no_tpb}}"><i class="bi bi-trash fs-3"></i></button>
+                                            <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-perusahaan_id="{{$b->id}}" data-id="{{$a->id}}" data-nama="{{@$a->tpb->no_tpb}}" data-toggle="tooltip" title="Hapus data {{@$a->tpb->no_tpb}}"><i class="bi bi-trash fs-3"></i></button>
                                             @endif
                                         </td>
                                     </tr>
@@ -396,7 +396,8 @@
                 $.ajax({
                 url: urldelete,
                 data:{
-                    "id": $(element).data('id')
+                    "id": $(element).data('id'),
+                    "perusahaan_id": $(element).data('perusahaan_id'),
                 },
                 type:'post',
                 dataType:'json',
@@ -468,7 +469,8 @@
                 $.ajax({
                 url: urldeletepilar,
                 data:{
-                    "id": $(element).data('id')
+                    "id": $(element).data('id'),
+                    "perusahaan_id": $(element).data('perusahaan_id'),
                 },
                 type:'post',
                 dataType:'json',

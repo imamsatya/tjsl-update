@@ -33,7 +33,7 @@ class UploadTargetController extends Controller
     public function __construct()
     {
         $this->__route = 'target.upload_target';
-        $this->pagetitle = 'Upload Data Target TPB';
+        $this->pagetitle = 'Upload Data Program';
     }
 
     /**
@@ -59,7 +59,7 @@ class UploadTargetController extends Controller
 
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
-            'breadcrumb' => 'Target - Upload',
+            'breadcrumb' => 'Program - Upload',
             'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'tahun' => ($request->tahun?$request->tahun:date('Y')),

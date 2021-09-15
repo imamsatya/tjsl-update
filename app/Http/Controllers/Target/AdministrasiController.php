@@ -41,7 +41,7 @@ class AdministrasiController extends Controller
     public function __construct()
     {
         $this->__route = 'target.administrasi';
-        $this->pagetitle = 'Data Target TPB';
+        $this->pagetitle = 'Data Program';
     }
 
     /**
@@ -125,7 +125,7 @@ class AdministrasiController extends Controller
 
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
-            'breadcrumb' => 'Target - Administrasi',
+            'breadcrumb' => 'Program - Administrasi',
             'pilar' => PilarPembangunan::get(),
             'status' => Status::get(),
             'tpb' => Tpb::get(),
@@ -386,7 +386,7 @@ class AdministrasiController extends Controller
     {
         $perusahaan_id =  ($request->perusahaan_id?$request->perusahaan_id:1);
         $perusahaan = Perusahaan::where('id', $perusahaan_id)->first();
-        $namaFile = "Template Data Target TPB.xlsx";
+        $namaFile = "Template Data Program.xlsx";
         
         return Excel::download(new TargetTemplateExcelSheet($perusahaan), $namaFile);
     }
@@ -437,7 +437,7 @@ class AdministrasiController extends Controller
 
         $target = $target->get();
 
-        $namaFile = "Data Target TPB ".date('dmY').".xlsx";
+        $namaFile = "Data Program ".date('dmY').".xlsx";
         return Excel::download(new TargetTpbExport($target,$request->tahun), $namaFile);
     }
     

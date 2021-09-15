@@ -38,7 +38,7 @@ class AdministrasiController extends Controller
     public function __construct()
     {
         $this->__route = 'realisasi.administrasi';
-        $this->pagetitle = 'Target dan Realisasi';
+        $this->pagetitle = 'Data Kegiatan';
     }
 
     /**
@@ -71,7 +71,7 @@ class AdministrasiController extends Controller
 
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
-            'breadcrumb' => 'Target - Administrasi - Input Data Kegiatan',
+            'breadcrumb' => 'Kegiatan - Administrasi',
             'perusahaan_id' => $perusahaan_id,
             'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,

@@ -17,7 +17,7 @@
 <body>
 <table cellspacing="0" border="0">
 <tr>
-    <td colspan="17" style="background-color : #e3e3e3 ;height:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Rekapitulasi Data Program dan Kegiatan TPB</font></b></td>
+    <td colspan="17" style="background-color : #e3e3e3 ;height:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Rekapitulasi Data Program dan Kegiatan TJSL</font></b></td>
 </tr>
 <tr>
     <td style="background-color : #e3e3e3 ;width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">No</font></b></td>
