@@ -44,6 +44,7 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
 
     public function collection(Collection $row)
     {
+        $bulan = '';
         if($this->bulan == 1){
             $bulan = 'januari';
         }else if($this->bulan == 2){
