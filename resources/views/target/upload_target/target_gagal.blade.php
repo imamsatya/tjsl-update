@@ -20,7 +20,7 @@
     <td colspan="11" style="background-color : #e3e3e3 ;width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">PROGRAM DAN TARGET TPB BUMN</font></b></td>
 </tr>
 <tr>
-    <td colspan="11" style="background-color : #e3e3e3 ;width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">{{ @$perusahaan->nama_lengkap }}</font></b></td>
+    <td colspan="11" style="background-color : #e3e3e3 ;width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">{{ $perusahaan }}</font></b></td>
 </tr>
 <tr>
     <td colspan="11" style="background-color : #e3e3e3 ;width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Tahun {{ $tahun }}</font></b></td>
@@ -39,6 +39,22 @@
     <td style="background-color : #e3e3e3 ;width:20px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Alokasi Anggaran <br>Tahun {{ $tahun }} <br>(dalam rupiah)</font></b></td>
 </tr>
 
+@php $num = 1; $total=0; @endphp
+@foreach($target as $a)
+<tr>
+    <td>{{$num++}}</td>
+    <td>{{$a->program}}</td>
+    <td>{{$a->unit_owner}}</td>
+    <td>{{@$a->jenis_program_id}}</td>
+    <td>{{@$a->core_subject_id}}</td>
+    <td>{{@$a->tpb_id}}</td>
+    <td>{{@$a->kode_indikator_id}}</td>
+    <td>{{@$a->cara_penyaluran_id}}</td>
+    <td>{{@$a->mitra_bumn_id}}</td>
+    <td>{{@$a->jangka_waktu}}</td>
+    <td>{{$a->anggaran_alokasi}}</td>
+</tr>
+@endforeach
 </table>
 <!-- ************************************************************************** -->
 </body>

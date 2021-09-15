@@ -487,7 +487,7 @@ class AdministrasiController extends Controller
 
             $target_tpb = $target->get();
             foreach($target_tpb as $a){
-                AdministrasiController::store_log($a->id,$a->status_id);
+                AdministrasiController::store_log($a->id,$request->status_id);
             }
 
             $target->update($param);

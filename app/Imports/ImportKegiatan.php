@@ -86,7 +86,7 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
             try{
                 $kegiatan = Kegiatan::where('target_tpb_id',rtrim($ar['id_program']))
                                     ->where('kegiatan',rtrim($ar['kegiatan']))
-                                    ->where('provinsi_id',rtrim($ar['id_propinsi_kegiatan']))
+                                    ->where('provinsi_id',rtrim($ar['id_provinsi_kegiatan']))
                                     ->where('kota_id',rtrim($ar['id_kabupaten_kotamadya_kegiatan']));
                 
                 if($kegiatan->count()>0){
@@ -100,7 +100,7 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
                     $kegiatan = Kegiatan::create([
                         'target_tpb_id' => rtrim($ar['id_program']) ,
                         'kegiatan' => rtrim($ar['kegiatan']) ,
-                        'provinsi_id' => rtrim($ar['id_propinsi_kegiatan']) ,
+                        'provinsi_id' => rtrim($ar['id_provinsi_kegiatan']) ,
                         'kota_id' => rtrim($ar['id_kabupaten_kotamadya_kegiatan']) ,
                         'indikator' => rtrim($ar['indikator_capaian_kegiatan']) ,
                         'satuan_ukur_id' => rtrim($ar['id_satuan_ukur']) ,
@@ -122,6 +122,7 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'target' => rtrim($ar[$param_target]),
                         'realisasi' => rtrim($ar[$param_realisasi]),
                         'anggaran' => rtrim($ar[$param_anggaran]),
+                        'file_name' => $this->nama_file,
                     ]);
 
                     $realisasi_total = KegiatanRealisasi::select(DB::Raw('sum(kegiatan_realisasis.anggaran) as total'))
@@ -133,12 +134,15 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
                     $realisasi->update((array)$paramr);
 
                     AdministrasiController::store_log($realisasi->id,$realisasi->status_id);
+                    $berhasil++;
+                }else{
+                    DB::rollback();
+                    $s_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' data realisasi bulan tersebut sudah ada<br>';
                 }
 
             }catch(\Exception $e){dd($e->getMessage());
                 DB::rollback();
-
-                $gagal++;
                 $s_gagal = true;
                 $keterangan .= 'Baris '.rtrim($ar['no']).' isian tidak sesuai Referensi<br>';
             }
@@ -155,35 +159,38 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
                 }catch(\Exception $e){
                     DB::rollback();
                     
-                    $gagal++;
                     $s_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Data Mitra BUMN tidak ditemukan<br>';
                 }
             }
             
-            // if($s_gagal){
-            //     try{
-            //         $target = TargetUploadGagal::create([
-            //             'target_upload_id' => $this->target_upload,
-            //             'program' => rtrim($ar['program']) ,
-            //             'unit_owner' => rtrim($ar['unit_owner']),
-            //             'jenis_program_id' => rtrim($ar['id_kriteria_program']) ,
-            //             'core_subject_id'   => rtrim($ar['id_core_subject_iso_26000']) ,
-            //             'tpb_id' => rtrim($ar['id_tpb']) ,
-            //             'kode_indikator_id' => rtrim($ar['id_kode_indikator']) ,
-            //             'cara_penyaluran_id' => rtrim($ar['id_cara_penyaluran']) ,
-            //             'jangka_waktu' => rtrim($ar['jangka_waktu_penerapan_dalam_tahun']) ,
-            //             'anggaran_alokasi' => rtrim($ar['alokasi_anggaran_tahun_2021_dalam_rupiah']) ,
-            //         ]);
-            //         DB::commit();
-            //     }catch(\Exception $e){
-            //         DB::rollback();
-            //     }
-            // } 
+            if($s_gagal){
+                try{
+                    $realisasi = RealisasiUploadGagal::create([
+                        'realisasi_upload_id' => $this->realisasi_upload,
+                        'target_tpb_id' => rtrim($ar['id_program']) ,
+                        'kegiatan' => rtrim($ar['kegiatan']) ,
+                        'provinsi_id' => rtrim($ar['id_provinsi_kegiatan']) ,
+                        'kota_id' => rtrim($ar['id_kabupaten_kotamadya_kegiatan']) ,
+                        'indikator' => rtrim($ar['indikator_capaian_kegiatan']) ,
+                        'satuan_ukur_id' => rtrim($ar['id_satuan_ukur']) ,
+                        'anggaran_alokasi' => rtrim($ar[$param_alokasi]) ,
+                        'bulan' => $this->bulan,
+                        'tahun' => $this->tahun,
+                        'target' => rtrim($ar[$param_target]),
+                        'realisasi' => rtrim($ar[$param_realisasi]),
+                        'anggaran' => rtrim($ar[$param_anggaran]),
+                    ]);
+                    $gagal++;
+                    DB::commit();
+                }catch(\Exception $e){dd($e->getMessage());
+                    DB::rollback();
+                }
+            } 
         }
-        
         $realisasi_upload = RealisasiUpload::find((int)$this->realisasi_upload);
         $param['perusahaan_id'] = $perusahaan->id;
+        $param['bulan'] = $this->bulan;
         $param['tahun'] = $this->tahun;
         $param['berhasil'] = $berhasil;
         $param['gagal'] = $gagal;

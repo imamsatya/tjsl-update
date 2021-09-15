@@ -46,7 +46,7 @@ td{
                 <td>{{@$data->satuan_ukur->nama}}</td>
             </tr>
             <tr>
-                <td><b>Pelaksanaaan Program</b></td>
+                <td><b>Pelaksanaan Program</b></td>
                 <td>{{@$data->cara_penyaluran->nama}}</td>
                 <td><b>Mitra BUMN</b></td>
                 <td>

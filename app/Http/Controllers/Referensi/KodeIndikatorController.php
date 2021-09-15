@@ -56,11 +56,11 @@ class KodeIndikatorController extends Controller
                 $id = (int)$row->id;
                 $button = '<div align="center">';
 
-                $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data '.$row->nama.'"><i class="bi bi-pencil fs-3"></i></button>';
+                $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data"><i class="bi bi-pencil fs-3"></i></button>';
 
                 $button .= '&nbsp;';
 
-                $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->nama.'" data-toggle="tooltip" title="Hapus data '.$row->nama.'"><i class="bi bi-trash fs-3"></i></button>';
+                $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->kode_tujuan_tpb.'" data-toggle="tooltip" title="Hapus data"><i class="bi bi-trash fs-3"></i></button>';
 
                 $button .= '</div>';
                 return $button;
@@ -69,7 +69,7 @@ class KodeIndikatorController extends Controller
                 $tpb = @$row->tpb->no_tpb . ' - ' . @$row->tpb->nama;
                 return $tpb;
             })
-            ->rawColumns(['nama','keterangan','action','tpb'])
+            ->rawColumns(['keterangan','action','tpb'])
             ->toJson();
         }catch(Exception $e){
             return response([
@@ -112,62 +112,52 @@ class KodeIndikatorController extends Controller
             'msg' => 'Error System',
             'title' => 'Error'
         ];
+    
+        $param = $request->except('actionform','id');
 
-        $validator = $this->validateform($request);
-        if (!$validator->fails()) {
-            $param = $request->except('actionform','id');
+        switch ($request->input('actionform')) {
+            case 'insert': DB::beginTransaction();
+                            try{
+                                $kode_indikator = KodeIndikator::create((array)$param);
 
-            switch ($request->input('actionform')) {
-                case 'insert': DB::beginTransaction();
-                               try{
-                                  $kode_indikator = KodeIndikator::create((array)$param);
+                                DB::commit();
+                                $result = [
+                                'flag'  => 'success',
+                                'msg' => 'Sukses tambah data',
+                                'title' => 'Sukses'
+                                ];
+                            }catch(\Exception $e){
+                                DB::rollback();
+                                $result = [
+                                'flag'  => 'warning',
+                                'msg' => $e->getMessage(),
+                                'title' => 'Gagal'
+                                ];
+                            }
 
-                                  DB::commit();
-                                  $result = [
-                                    'flag'  => 'success',
-                                    'msg' => 'Sukses tambah data',
-                                    'title' => 'Sukses'
-                                  ];
-                               }catch(\Exception $e){
-                                  DB::rollback();
-                                  $result = [
-                                    'flag'  => 'warning',
-                                    'msg' => $e->getMessage(),
-                                    'title' => 'Gagal'
-                                  ];
-                               }
+            break;
 
-                break;
+            case 'update': DB::beginTransaction();
+                            try{
+                                $kode_indikator = KodeIndikator::find((int)$request->input('id'));
+                                $kode_indikator->update((array)$param);
 
-                case 'update': DB::beginTransaction();
-                               try{
-                                  $kode_indikator = KodeIndikator::find((int)$request->input('id'));
-                                  $kode_indikator->update((array)$param);
+                                DB::commit();
+                                $result = [
+                                'flag'  => 'success',
+                                'msg' => 'Sukses ubah data',
+                                'title' => 'Sukses'
+                                ];
+                            }catch(\Exception $e){
+                                DB::rollback();
+                                $result = [
+                                'flag'  => 'warning',
+                                'msg' => $e->getMessage(),
+                                'title' => 'Gagal'
+                                ];
+                            }
 
-                                  DB::commit();
-                                  $result = [
-                                    'flag'  => 'success',
-                                    'msg' => 'Sukses ubah data',
-                                    'title' => 'Sukses'
-                                  ];
-                               }catch(\Exception $e){
-                                  DB::rollback();
-                                  $result = [
-                                    'flag'  => 'warning',
-                                    'msg' => $e->getMessage(),
-                                    'title' => 'Gagal'
-                                  ];
-                               }
-
-                break;
-            }
-        }else{
-            $messages = $validator->errors()->all('<li>:message</li>');
-            $result = [
-                'flag'  => 'warning',
-                'msg' => '<ul>'.implode('', $messages).'</ul>',
-                'title' => 'Gagal proses data'
-            ];
+            break;
         }
 
         return response()->json($result);
