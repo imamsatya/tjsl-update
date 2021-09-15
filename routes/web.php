@@ -244,6 +244,28 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 })->name('referensi.bank_account.apisyncbankaccount');
             });
 
+            Route::prefix('versi_laporan_keuangan')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@index')->name('referensi.versi_laporan_keuangan.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@create')->name('referensi.versi_laporan_keuangan.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@edit')->name('referensi.versi_laporan_keuangan.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store')->name('referensi.versi_laporan_keuangan.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@delete')->name('referensi.versi_laporan_keuangan.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@datatable')->name('referensi.versi_laporan_keuangan.datatable');
+                Route::post('update_status', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@update_status')->name('referensi.versi_laporan_keuangan.update_status');
+                Route::post('add_laporan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@add_laporan')->name('referensi.versi_laporan_keuangan.add_laporan');
+                Route::post('edit_laporan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@edit_laporan')->name('referensi.versi_laporan_keuangan.edit_laporan');
+                Route::post('store_laporan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store_laporan')->name('referensi.versi_laporan_keuangan.store_laporan');
+            });
+
+            Route::prefix('laporan_keuangan')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\LaporanKeuanganController@index')->name('referensi.laporan_keuangan.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\LaporanKeuanganController@create')->name('referensi.laporan_keuangan.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\LaporanKeuanganController@edit')->name('referensi.laporan_keuangan.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\LaporanKeuanganController@store')->name('referensi.laporan_keuangan.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\LaporanKeuanganController@delete')->name('referensi.laporan_keuangan.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\LaporanKeuanganController@datatable')->name('referensi.laporan_keuangan.datatable');
+            });
+
         });
 
         
