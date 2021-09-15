@@ -82,7 +82,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
 
        foreach ($row as $ar) {
             //jika no ktp lebih dari 16 angka/invalid
-            if(strlen($ar['no_identitas']) < 16){
+            if(strlen($ar['no_identitas']) == 16){
                 $cek_identitas = 0;
                 $cek_kolektibilitas = 0;
                 $s_gagal = false;
