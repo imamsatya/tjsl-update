@@ -43,7 +43,7 @@
         <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Nilai Aset*</font></b></td>
         <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Nilai Omset*</font></b></td>
         <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">No Pinjaman</font></b></td>
-        <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">ID Cara Penyaluran</font></b></td>
+        <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">ID Pelaksanaan Program</font></b></td>
         <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Sumber Dana</font></b></td>
         <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Tgl Awal Pendanaan</font></b></td>
         <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Tgl Jatuh Tempo</font></b></td>
@@ -75,7 +75,7 @@
             <td>{{$val->kota_id?$val->kota_id:""}}</td>
             <td>{{$val->sektor_usaha_id?$val->sektor_usaha_id:""}}</td>
             <td>{{$val->skala_usaha_id?$val->skala_usaha_id:""}}</td>
-            <td>{{$val->no_identitas?$val->no_identitas:""}}</td>
+            <td>{{$val->no_identitas?"'".$val->no_identitas:""}}</td>
             <td>{{$val->nilai_aset?$val->nilai_aset:""}}</td>
             <td>{{$val->nilai_omset?$val->nilai_omset:""}}</td>
             <td>{{$val->no_pinjaman?$val->no_pinjaman:""}}</td>
