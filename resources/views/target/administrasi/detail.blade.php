@@ -42,14 +42,12 @@ td{
             <tr>
                 <td><b>Core Subject</b></td>
                 <td>{{@$data->core_subject->nama}}</td>
-                <td><b>Satuan Ukur</b></td>
-                <td>{{@$data->satuan_ukur->nama}}</td>
-            </tr>
-            <tr>
                 <td><b>Pelaksanaan Program</b></td>
                 <td>{{@$data->cara_penyaluran->nama}}</td>
+            </tr>
+            <tr>
                 <td><b>Mitra BUMN</b></td>
-                <td>
+                <td colspan="3">
                     @foreach($mitra_bumn as $mitra)
                         {{$mitra->perusahaan->nama_lengkap}} <br>
                     @endforeach

@@ -20,6 +20,7 @@ class ReferensiKodeIndikator implements FromView , WithTitle
                     ->LeftJoin('anggaran_tpbs','anggaran_tpbs.relasi_pilar_tpb_id','relasi_pilar_tpbs.id')
                     ->where('anggaran_tpbs.perusahaan_id', $this->perusahaan->id)
                     ->whereNotNull('kode_indikators.id')
+                    ->orderBy('kode_indikators.id')
                     ->get();
 
         return view('target.administrasi.referensi_kode_indikator', [

@@ -21,6 +21,9 @@ use App\Models\TargetMitra;
 use App\Models\TargetUpload;
 use App\Models\TargetUploadGagal;
 use App\Models\JenisProgram;
+use App\Models\CoreSubject;
+use App\Models\KodeIndikator;
+use App\Models\CaraPenyaluran;
 use App\Http\Controllers\Target\AdministrasiController;
 
 class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets 
@@ -48,24 +51,87 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
         foreach ($row as $ar) {
             $anggaran = false;
             $target = false;
-            $s_gagal = false;
+            $is_gagal = false;
+            $param_alokasi = 'alokasi_anggaran_tahun_'.$this->tahun.'_dalam_rupiah';
 
-            //cek kriterian program 
-            // try{
-            //     $jenis_program = JenisProgram::
-            // }catch(\Exception $e){
-            //     DB::rollback();
-            //     $s_gagal = true;
-            //     $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kriteria Program tidak ditemukan<br>';
-            // }
+            //cek kriteria program 
+            try{
+                $jenis_program = JenisProgram::find(rtrim($ar['id_kriteria_program']));
+                if(!$jenis_program){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kriteria Program tidak sesuai referensi<br>';
+                }
+            }catch(\Exception $e){
+                DB::rollback();
+                $is_gagal = true;
+                $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kriteria Program tidak sesuai referensi<br>';
+            }
+
+            // cek input angka numeric
+            if(!$is_gagal){
+                if(!is_numeric($ar['jangka_waktu_penerapan_dalam_tahun'])){
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Jangka Waktu harus angka<br>';
+                }
+                if(!is_numeric($ar[$param_alokasi])){
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Alokasi Anggaran harus angka<br>';
+                }
+            }
 
             //cek core subject 
-            //cek tpb
-            //cek kode indikator
-            //cek pelaksanaan program
+            if(!$is_gagal){
+                try{
+                    $core_subject = CoreSubject::find(rtrim($ar['id_core_subject_iso_26000']));
+                    if(!$core_subject){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Core Subject tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Core Subject tidak sesuai referensi<br>';
+                }
+            }
 
-            //cek anggaran
-            if(!$s_gagal){
+            //cek kode indikator
+            if(!$is_gagal){
+                try{
+                    $kode = KodeIndikator::where('id',rtrim($ar['id_kode_indikator']))
+                                        ->where('tpb_id', rtrim($ar['id_tpb']))
+                                        ->first();
+                    if(!$kode){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kode Indikator tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kode Indikator tidak sesuai referensi<br>';
+                }
+            }
+
+            //cek pelaksanaan program
+            if(!$is_gagal){
+                try{
+                    $cara = CaraPenyaluran::find(rtrim($ar['id_pelaksanaan_program']));
+                    if(!$cara){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Pelaksanaan Program tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Pelaksanaan Program tidak sesuai referensi<br>';
+                }
+            }
+
+            //cek tpb anggaran
+            if(!$is_gagal){
                 try{
                     $anggaran = AnggaranTpb::select('anggaran_tpbs.id','relasi_pilar_tpbs.tpb_id')
                                         ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
@@ -73,15 +139,20 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                                         ->where('anggaran_tpbs.perusahaan_id', $perusahaan->id)
                                         ->where('anggaran_tpbs.tahun', $this->tahun)
                                         ->first();
+                    if(!$anggaran){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data TPB tidak sesuai referensi<br>';
+                    }
                 }catch(\Exception $e){
                     DB::rollback();
-                    $s_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data TPB tidak ditemukan<br>';
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data TPB tidak sesuai referensi<br>';
                 }
             }
             
             //simpan data target tpb
-            if($anggaran && !$s_gagal){
+            if(!$is_gagal){
                 try{
                     $target = TargetTpb::create([
                         'anggaran_tpb_id' => $anggaran->id ,
@@ -95,18 +166,18 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'kode_indikator_id' => rtrim($ar['id_kode_indikator']) ,
                         'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']) ,
                         'jangka_waktu' => rtrim($ar['jangka_waktu_penerapan_dalam_tahun']) ,
-                        'anggaran_alokasi' => rtrim($ar['alokasi_anggaran_tahun_2021_dalam_rupiah']) ,
+                        'anggaran_alokasi' => rtrim($ar[$param_alokasi]) ,
                     ]);
                     
                     AdministrasiController::store_log($target->id,$target->status_id);
                 }catch(\Exception $e){
                     DB::rollback();
-                    $s_gagal = true;
+                    $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' isian tidak sesuai Referensi<br>';
                 }
 
                 //cek mitra bumn
-                if($target && !$s_gagal){
+                if($target && !$is_gagal){
                     try{
                         if($ar['id_mitra_bumn'] != ''){
                             $mitra = explode(",", str_replace('.',',',$ar['id_mitra_bumn']));
@@ -117,25 +188,22 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                                 $target->mitra_bumn()->sync($mitra);
                             }else{
                                 DB::rollback();
-                                $s_gagal = true;
-                                $keterangan .= 'Baris '.rtrim($ar['no']).' Data Mitra BUMN tidak ditemukan<br>';
+                                $is_gagal = true;
+                                $keterangan .= 'Baris '.rtrim($ar['no']).' Data Mitra BUMN tidak sesuai referensi<br>';
                             }
                         }
                         DB::commit();
                         $berhasil++;
                     }catch(\Exception $e){
                         DB::rollback();
-                        $s_gagal = true;
-                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Mitra BUMN tidak ditemukan<br>';
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Mitra BUMN tidak sesuai referensi<br>';
                     }
                 }
-            }else{
-                $s_gagal = true;
-                $keterangan .= 'Baris '.rtrim($ar['no']).' Data TPB tidak ditemukan<br>';
             }
                 
             // simpan data gagal
-            if($s_gagal){
+            if($is_gagal){
                 try{
                     $target = TargetUploadGagal::create([
                         'target_upload_id' => $this->target_upload,

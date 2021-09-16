@@ -16,6 +16,10 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 use App\Models\AnggaranTpb;
 use App\Models\TargetTpb;
+use App\Models\Provinsi;
+use App\Models\Kota;
+use App\Models\KodeIndikator;
+use App\Models\SatuanUkur;
 use App\Models\Perusahaan;
 use App\Models\Kegiatan;
 use App\Models\KegiatanRealisasi;
@@ -78,21 +82,114 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
         foreach ($row as $ar) {
             $anggaran = false;
             $target = false;
-            $s_gagal = false;
+            $is_gagal = false;
             $param_alokasi = 'alokasi_anggaran_tahun_'.$this->tahun.'_rp';
             $param_target= 'target_bulan_'.$bulan;
             $param_realisasi= 'realisasi_bulan_'.$bulan;
             $param_anggaran= 'realisasi_anggaran_bulan_'.$bulan;
 
             // cek target tpb/program
+            try{
+                $program = TargetTpb::find(rtrim($ar['id_program']));
+                if(!$program){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Program tidak sesuai referensi<br>';
+                }
+            }catch(\Exception $e){
+                DB::rollback();
+                $is_gagal = true;
+                $keterangan .= 'Baris '.rtrim($ar['no']).' Data Program tidak sesuai referensi<br>';
+            }
+            
+            // cek input angka numeric
+            if(!$is_gagal){
+                if(!is_numeric($ar[$param_alokasi])){
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Alokasi Anggaran harus angka<br>';
+                }
+                if(!is_numeric($ar[$param_anggaran])){
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Realisasi Anggaran harus angka<br>';
+                }
+                if(!is_numeric($ar[$param_target])){
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Target harus angka<br>';
+                }
+                if(!is_numeric($ar[$param_realisasi])){
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Realisasi harus angka<br>';
+                }
+            }
+
             // cek provinsi 
+            if(!$is_gagal){
+                try{
+                    $provinsi = Provinsi::find(rtrim($ar['id_provinsi_kegiatan']));
+                    if(!$provinsi){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Provinsi tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Provinsi tidak sesuai referensi<br>';
+                }
+            }
+
             // cek kota
+            if(!$is_gagal){
+                try{
+                    $kota = Kota::find(rtrim($ar['id_kabupaten_kotamadya_kegiatan']));
+                    if(!$kota){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai referensi<br>';
+                }
+            }
+
             // cek relasi provinsi kota
-            // cek indikator
+            if(!$is_gagal){
+                try{
+                    $kota = Kota::where('id',rtrim($ar['id_kabupaten_kotamadya_kegiatan']))
+                                ->where('provinsi_id',rtrim($ar['id_provinsi_kegiatan']))
+                                ->first();
+                    if(!$kota){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai Provinsi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai Provinsi<br>';
+                }
+            }
+
             // cek satuan ukur
+            if(!$is_gagal){
+                try{
+                    $ukur = SatuanUkur::find(rtrim($ar['id_satuan_ukur']));
+                    if(!$ukur){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Satuan Ukur tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Satuan Ukur tidak sesuai referensi<br>';
+                }
+            }
 
             // cek kegiatan
-            if(!$s_gagal){
+            if(!$is_gagal){
                 try{
                     $kegiatan = Kegiatan::where('target_tpb_id',rtrim($ar['id_program']))
                                         ->where('kegiatan',rtrim($ar['kegiatan']))
@@ -147,19 +244,19 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
                         $berhasil++;
                     }else{
                         DB::rollback();
-                        // $s_gagal = true;
-                        // $keterangan .= 'Baris '.rtrim($ar['no']).' data realisasi bulan tersebut sudah ada<br>';
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' data realisasi bulan tersebut sudah ada<br>';
                     }
 
                 }catch(\Exception $e){dd($e->getMessage());
                     DB::rollback();
-                    $s_gagal = true;
+                    $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' isian tidak sesuai Referensi<br>';
                 }
             }
 
             // simpan data gagal
-            if($s_gagal){
+            if($is_gagal){
                 try{
                     $realisasi = RealisasiUploadGagal::create([
                         'realisasi_upload_id' => $this->realisasi_upload,
