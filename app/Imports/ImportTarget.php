@@ -20,6 +20,7 @@ use App\Models\Perusahaan;
 use App\Models\TargetMitra;
 use App\Models\TargetUpload;
 use App\Models\TargetUploadGagal;
+use App\Models\JenisProgram;
 use App\Http\Controllers\Target\AdministrasiController;
 
 class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets 
@@ -49,20 +50,38 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
             $target = false;
             $s_gagal = false;
 
-            try{
-                $anggaran = AnggaranTpb::select('anggaran_tpbs.id','relasi_pilar_tpbs.tpb_id')
-                                    ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
-                                    ->where('relasi_pilar_tpbs.tpb_id', rtrim($ar['id_tpb']))
-                                    ->where('anggaran_tpbs.perusahaan_id', $perusahaan->id)
-                                    ->where('anggaran_tpbs.tahun', $this->tahun)
-                                    ->first();
-            }catch(\Exception $e){
-                DB::rollback();
-                $s_gagal = true;
-                $keterangan .= 'Baris '.rtrim($ar['no']).' Data TPB tidak ditemukan<br>';
+            //cek kriterian program 
+            // try{
+            //     $jenis_program = JenisProgram::
+            // }catch(\Exception $e){
+            //     DB::rollback();
+            //     $s_gagal = true;
+            //     $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kriteria Program tidak ditemukan<br>';
+            // }
+
+            //cek core subject 
+            //cek tpb
+            //cek kode indikator
+            //cek pelaksanaan program
+
+            //cek anggaran
+            if(!$s_gagal){
+                try{
+                    $anggaran = AnggaranTpb::select('anggaran_tpbs.id','relasi_pilar_tpbs.tpb_id')
+                                        ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                                        ->where('relasi_pilar_tpbs.tpb_id', rtrim($ar['id_tpb']))
+                                        ->where('anggaran_tpbs.perusahaan_id', $perusahaan->id)
+                                        ->where('anggaran_tpbs.tahun', $this->tahun)
+                                        ->first();
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $s_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data TPB tidak ditemukan<br>';
+                }
             }
             
-            if($anggaran){
+            //simpan data target tpb
+            if($anggaran && !$s_gagal){
                 try{
                     $target = TargetTpb::create([
                         'anggaran_tpb_id' => $anggaran->id ,
@@ -86,12 +105,21 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                     $keterangan .= 'Baris '.rtrim($ar['no']).' isian tidak sesuai Referensi<br>';
                 }
 
-                if($target){
+                //cek mitra bumn
+                if($target && !$s_gagal){
                     try{
                         if($ar['id_mitra_bumn'] != ''){
-                            $mitra = explode(",", $ar['id_mitra_bumn']);
+                            $mitra = explode(",", str_replace('.',',',$ar['id_mitra_bumn']));
                             $mitra = array_map('trim',$mitra);
-                            $target->mitra_bumn()->sync($mitra);
+                            
+                            $mitra_count = Perusahaan::whereIn('id',$mitra)->count();
+                            if($mitra_count == count($mitra)){
+                                $target->mitra_bumn()->sync($mitra);
+                            }else{
+                                DB::rollback();
+                                $s_gagal = true;
+                                $keterangan .= 'Baris '.rtrim($ar['no']).' Data Mitra BUMN tidak ditemukan<br>';
+                            }
                         }
                         DB::commit();
                         $berhasil++;
@@ -106,6 +134,7 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                 $keterangan .= 'Baris '.rtrim($ar['no']).' Data TPB tidak ditemukan<br>';
             }
                 
+            // simpan data gagal
             if($s_gagal){
                 try{
                     $target = TargetUploadGagal::create([

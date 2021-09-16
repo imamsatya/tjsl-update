@@ -277,7 +277,7 @@ td{
                 <td class="vTarget t10" style="border: 1px solid #cfd1d4;text-align:right;">{!! $status_10 !!}{{ number_format(@$realisasi_10->anggaran,0,',',',') }}</td>
                 <td class="vTarget t11" style="border: 1px solid #cfd1d4;text-align:right;">{!! $status_11 !!}{{ number_format(@$realisasi_11->anggaran,0,',',',') }}</td>
                 <td class="vTarget t12" style="border: 1px solid #cfd1d4;text-align:right;">{!! $status_12 !!}{{ number_format(@$realisasi_12->anggaran,0,',',',') }}</td>
-                <td class="totalTarget" style="border: 1px solid #cfd1d4;text-align:right;">{{ $total }}</td>
+                <td class="totalTarget" style="border: 1px solid #cfd1d4;text-align:right;">{{ number_format($total,0,',',',') }}</td>
             </tr>
             @endforeach
             @if($tahun->count() == 0)

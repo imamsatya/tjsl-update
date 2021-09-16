@@ -22,8 +22,8 @@ class RealisasiGagalExcelSheet implements WithMultipleSheets
     {
         $sheets = [];
         $sheets[] = new RealisasiGagalExport($this->kegiatan,$this->perusahaan,$this->bulan,$this->tahun);
-        $sheets[] = new ReferensiKegiatan();
-        $sheets[] = new ReferensiProgram();
+        $sheets[] = new ReferensiKegiatan($this->perusahaan);
+        $sheets[] = new ReferensiProgram($this->perusahaan);
         $sheets[] = new ReferensiProvinsi();
         $sheets[] = new ReferensiKota();
         $sheets[] = new ReferensiSatuanUkur();

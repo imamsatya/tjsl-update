@@ -268,9 +268,9 @@ class UploadTargetController extends Controller
     public function export_berhasil(Request $request)
     {
         $upload = TargetUpload::find($request->id);
+        $perusahaan = Perusahaan::find($upload->perusahaan_id);
+        $tahun = $upload->tahun;
         $target = TargetTpb::where('file_name', $upload->file_name)->get();
-        $perusahaan = @$upload->perusahaan->nama_lengkap;
-        $tahun = @$upload->tahun;
 
         $namaFile = "Data Target Berhasil Upload.xlsx";
         return Excel::download(new TargetBerhasilExport($target,$perusahaan,$tahun), $namaFile);
@@ -279,9 +279,9 @@ class UploadTargetController extends Controller
     public function export_gagal(Request $request)
     {
         $upload = TargetUpload::find($request->id);
+        $perusahaan = Perusahaan::find($upload->perusahaan_id);
+        $tahun = $upload->tahun;
         $target = TargetUploadGagal::where('target_upload_id', $upload->id)->get();
-        $perusahaan = @$upload->perusahaan->nama_lengkap;
-        $tahun = @$upload->tahun;
 
         $namaFile = "Data Target Gagal Upload.xlsx";
         return Excel::download(new TargetGagalExcelSheet($target,$perusahaan,$tahun), $namaFile);

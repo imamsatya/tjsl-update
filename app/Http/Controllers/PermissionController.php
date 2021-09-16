@@ -24,10 +24,10 @@ class PermissionController extends Controller
     {
          $this->__route = 'permission';
          $this->pagetitle = 'Permission';
-         $this->middleware('permission:permission-list');
-         $this->middleware('permission:permission-create', ['only' => ['create','store']]);
-         $this->middleware('permission:permission-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:permission-delete', ['only' => ['delete']]);
+        //  $this->middleware('permission:permission-list');
+        //  $this->middleware('permission:permission-create', ['only' => ['create','store']]);
+        //  $this->middleware('permission:permission-edit', ['only' => ['edit','update']]);
+        //  $this->middleware('permission:permission-delete', ['only' => ['delete']]);
     }
 
 

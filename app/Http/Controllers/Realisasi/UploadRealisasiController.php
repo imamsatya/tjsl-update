@@ -270,7 +270,7 @@ class UploadRealisasiController extends Controller
     public function export_berhasil(Request $request)
     {
         $upload = RealisasiUpload::find($request->id);
-        $perusahaan = @$upload->perusahaan->nama_lengkap;
+        $perusahaan = Perusahaan::find($upload->perusahaan_id);
         $bulan = @$upload->bulan;
         $tahun = @$upload->tahun;
 
@@ -306,7 +306,7 @@ class UploadRealisasiController extends Controller
     {
         $upload = RealisasiUpload::find($request->id);
         $realisasi = RealisasiUploadGagal::where('realisasi_upload_id', $upload->id)->get();
-        $perusahaan = @$upload->perusahaan->nama_lengkap;
+        $perusahaan = Perusahaan::find($upload->perusahaan_id);
         $bulan = @$upload->bulan;
         $tahun = @$upload->tahun;
 
