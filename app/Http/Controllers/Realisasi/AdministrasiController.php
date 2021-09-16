@@ -50,7 +50,7 @@ class AdministrasiController extends Controller
     {
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
-        $perusahaan_id = $request->perusahaan_id;
+        $perusahaan_id = ($request->perusahaan_id?$request->perusahaan_id:1);
         $target_tpb_id = $request->target_tpb_id;
         
         $admin_bumn = false;
@@ -63,7 +63,6 @@ class AdministrasiController extends Controller
             }
         }
         
-        $perusahaan_id =  ($request->perusahaan_id?$request->perusahaan_id:1);
         $tahun = ($request->tahun?$request->tahun:date('Y'));
         $pilar = PilarPembangunan::get();
         $tpb = Tpb::get();
