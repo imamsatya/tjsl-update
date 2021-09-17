@@ -16,6 +16,7 @@ use App\Models\VersiLaporanKeuangan;
 use App\Models\LaporanKeuangan;
 use App\Models\RelasiLaporanKeuangan;
 use App\Models\LaporanKeuanganParent;
+use App\Models\LaporanKeuanganChild;
 
 class VersiLaporanKeuanganController extends Controller
 {
@@ -42,6 +43,9 @@ class VersiLaporanKeuanganController extends Controller
                                 ->get();
         $parent = LaporanKeuanganParent::leftjoin('relasi_laporan_keuangan','parent_id','=','laporan_keuangan_parent.id')
                     ->get();
+
+        $child = LaporanKeuanganChild::leftjoin('relasi_laporan_keuangan','child_id','=','laporan_keuangan_child.id')
+                    ->get();
         
 
         return view($this->__route.'.index',[
@@ -49,6 +53,7 @@ class VersiLaporanKeuanganController extends Controller
             'versilaporankeuangan' => $versilaporankeuangan,
             'laporankeuangan' => $laporankeuangan,
             'parent' => $parent,
+            'child' => $child,
             'breadcrumb' => 'Referensi - Versi Laporan Keuangan'
         ]);
     }
@@ -262,14 +267,12 @@ class VersiLaporanKeuanganController extends Controller
         try{
             $versilaporankeuangan = VersiLaporanKeuangan::find((int)$request->input('id'));
             $laporankeuangan = LaporanKeuangan::get();
-            // $tpb = Tpb::get();
 
                 return view($this->__route.'.form_laporan',[
                     'pagetitle' => 'Jenis Laporan',
                     'actionform' => 'insert',
                     'data' => $versilaporankeuangan,
                     'laporankeuangan' => $laporankeuangan,
-                    // 'tpb' => $tpb,
                 ]);
         }catch(Exception $e){}
 
@@ -277,21 +280,14 @@ class VersiLaporanKeuanganController extends Controller
 
     public function add_parent(Request $request)
     {
-        // try{
-        //     $versilaporankeuangan = VersiLaporanKeuangan::find((int)$request->input('id'));
-        //     $laporankeuangan = LaporanKeuangan::get();
-            // $tpb = Tpb::get();
-
+        try{
                 return view($this->__route.'.form_parent',[
                     'pagetitle' => 'Parent Laporan',
                     'actionform' => 'insert',
-                    'versi_id' => $request->versi_id,
-                    'lapor_id' => $request->lapor_id,
-                    // 'data' => $versilaporankeuangan,
-                    // 'laporankeuangan' => $laporankeuangan,
-                    // 'tpb' => $tpb,
+                    'versi_id' => $request->versi_laporan_id,
+                    'lapor_id' => $request->laporan_keuangan_id,
                 ]);
-        // }catch(Exception $e){}
+        }catch(Exception $e){}
 
     }
 
@@ -303,18 +299,30 @@ class VersiLaporanKeuanganController extends Controller
             'msg' => 'Error System',
             'title' => 'Error'
         ];
-
-        // $validator = $this->validateform($request);
-        // if (!$validator->fails()) {
-            $param = $request->except('actionform','_token','versi_laporan_id','laporan_keuangan_id');
-           //dd($param);
+       
+        if ($request->all()) {         
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
-                                  //$params = $param->except();
-                                  //dd();
+                                  $rel['versi_laporan_id'] = $request->versi_laporan_id;
+                                  $rel['laporan_keuangan_id'] = $request->laporan_keuangan_id;
+                                  $rel['parent_id'] = null;
+                                  $relasi = RelasiLaporanKeuangan::insert([
+                                      'versi_laporan_id'=> $rel['versi_laporan_id'],
+                                      'laporan_keuangan_id'=> $rel['laporan_keuangan_id'],
+                                      'parent_id'=> $rel['parent_id'],
+                                  ]);
+
+                                  $param = $request->except('actionform','_token','versi_laporan_id','laporan_keuangan_id');
+                                //   $param['is_pengurangan'] = $param['is_pengurangan'] == "on"? true : false;
                                   $lapkeu_parent = LaporanKeuanganParent::create((array)$param);
 
+                                  $rel_id = RelasiLaporanKeuangan::select('id')->orderby('id','desc')->first();
+                                  $parent_id = LaporanKeuanganParent::select('id')->orderby('id','desc')->first();
+
+                                  $updateRel = RelasiLaporanKeuangan::where('id',$rel_id->id)->update([
+                                    'parent_id' => $parent_id->id
+                                  ]);
                                   DB::commit();
                                   $result = [
                                     'flag'  => 'success',
@@ -333,35 +341,135 @@ class VersiLaporanKeuanganController extends Controller
                 break;
 
                 case 'update': DB::beginTransaction();
-                            //    try{
+                               try{
                             //       $versilaporankeuangan = VersiLaporanKeuangan::find((int)$request->input('id'));
                             //       $versilaporankeuangan->update((array)$param);
 
-                            //       DB::commit();
-                            //       $result = [
-                            //         'flag'  => 'success',
-                            //         'msg' => 'Sukses ubah data',
-                            //         'title' => 'Sukses'
-                            //       ];
-                            //    }catch(\Exception $e){
-                            //       DB::rollback();
-                            //       $result = [
-                            //         'flag'  => 'warning',
-                            //         'msg' => $e->getMessage(),
-                            //         'title' => 'Gagal'
-                            //       ];
-                            //    }
+                                  DB::commit();
+                                  $result = [
+                                    'flag'  => 'success',
+                                    'msg' => 'Sukses ubah data',
+                                    'title' => 'Sukses'
+                                  ];
+                               }catch(\Exception $e){
+                                  DB::rollback();
+                                  $result = [
+                                    'flag'  => 'warning',
+                                    'msg' => $e->getMessage(),
+                                    'title' => 'Gagal'
+                                  ];
+                               }
 
                 break;
             }
-        // }else{
-        //     $messages = $validator->errors()->all('<li>:message</li>');
-        //     $result = [
-        //         'flag'  => 'warning',
-        //         'msg' => '<ul>'.implode('', $messages).'</ul>',
-        //         'title' => 'Gagal proses data'
-        //     ];
-        // }
+        }else{
+            $messages = $validator->errors()->all('<li>:message</li>');
+            $result = [
+                'flag'  => 'warning',
+                'msg' => '<ul>'.implode('', $messages).'</ul>',
+                'title' => 'Gagal proses data'
+            ];
+        }
+
+        return response()->json($result);
+
+    }
+
+
+    public function add_child(Request $request)
+    {
+        try{
+                return view($this->__route.'.form_child',[
+                    'pagetitle' => 'Child Laporan',
+                    'actionform' => 'insert',
+                    'versi_id' => $request->versi_laporan_id,
+                    'lapor_id' => $request->laporan_keuangan_id,
+                    'parent_id' => $request->parent_id,
+                ]);
+        }catch(Exception $e){}
+
+    }
+
+    public function store_child(Request $request)
+    {
+    
+        $result = [
+            'flag' => 'error',
+            'msg' => 'Error System',
+            'title' => 'Error'
+        ];
+       
+        if ($request->all()) {         
+            switch ($request->input('actionform')) {
+                case 'insert': DB::beginTransaction();
+                               try{
+                                  $rel['versi_laporan_id'] = $request->versi_laporan_id;
+                                  $rel['laporan_keuangan_id'] = $request->laporan_keuangan_id;
+                                  $rel['parent_id'] = $request->parent_id;;
+                                  $relasi = RelasiLaporanKeuangan::insert([
+                                      'versi_laporan_id'=> $rel['versi_laporan_id'],
+                                      'laporan_keuangan_id'=> $rel['laporan_keuangan_id'],
+                                      'parent_id'=> $rel['parent_id'],
+                                  ]);
+                                  
+                                  $param = $request->except('actionform','_token','versi_laporan_id','laporan_keuangan_id','parent_id');
+                                  
+                                  $param['is_pengurangan'] = $param['is_pengurangan'] == "on"? true : false;
+                                  $lapkeu_child = LaporanKeuanganChild::create((array)$param);
+
+                                  $rel_id = RelasiLaporanKeuangan::select('id')->orderby('id','desc')->first();
+                                  $child_id = LaporanKeuanganChild::select('id')->orderby('id','desc')->first();
+
+                                  $updateRel = RelasiLaporanKeuangan::where('id',$rel_id->id)->update([
+                                    'child_id' => $child_id->id
+                                  ]);
+                                  DB::commit();
+                                  $result = [
+                                    'flag'  => 'success',
+                                    'msg' => 'Sukses tambah data',
+                                    'title' => 'Sukses'
+                                  ];
+                               }catch(\Exception $e){
+                                  DB::rollback();
+                                  $result = [
+                                    'flag'  => 'warning',
+                                    'msg' => $e->getMessage(),
+                                    'title' => 'Gagal'
+                                  ];
+                               }
+
+                break;
+
+                case 'update': DB::beginTransaction();
+                               try{
+                            //       $versilaporankeuangan = VersiLaporanKeuangan::find((int)$request->input('id'));
+                            //       $versilaporankeuangan->update((array)$param);
+
+                                  DB::commit();
+                                  $result = [
+                                    'flag'  => 'success',
+                                    'msg' => 'Sukses ubah data',
+                                    'title' => 'Sukses'
+                                  ];
+                               }catch(\Exception $e){
+                                  DB::rollback();
+                                  $result = [
+                                    'flag'  => 'warning',
+                                    'msg' => $e->getMessage(),
+                                    'title' => 'Gagal'
+                                  ];
+                               }
+
+                break;
+            }
+        }else{
+            $messages = $validator->errors()->all('<li>:message</li>');
+            $result = [
+                'flag'  => 'warning',
+                'msg' => '<ul>'.implode('', $messages).'</ul>',
+                'title' => 'Gagal proses data'
+            ];
+        }
 
         return response()->json($result);
 

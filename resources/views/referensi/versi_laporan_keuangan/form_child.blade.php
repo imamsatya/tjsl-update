@@ -4,23 +4,24 @@
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
 	<input type="hidden" name="versi_laporan_id" id="versi_laporan_id" readonly="readonly" value="{{ (int)$versi_id }}" />
     <input type="hidden" name="laporan_keuangan_id" id="laporan_keuangan_id" readonly="readonly" value="{{ (int)$lapor_id }}" />
+    <input type="hidden" name="parent_id" id="parent_id" readonly="readonly" value="{{ (int)$parent_id }}" />
 
     <div class="form-group row mb-5">
-        <div class="col-lg-4">
+        <div class="col-lg-2">
             <label>Kode</label>
             <input type="text" class="form-control" name="kode" id="kode" required/>
         </div>
-        <div class="col-lg-8">
+        <div class="col-lg-7">
             <label>Label</label>
             <input type="text" class="form-control" name="label" id="label" required/>
         </div>
-        {{-- <div class="col-lg-3">
+        <div class="col-lg-3">
             <label>Nilai Pengurangan</label>
             <div class="form-check form-check-solid form-switch" style="padding-top: 10px;">
                 <input class="form-check-input w-45px h-30px" type="checkbox" name="is_pengurangan" id="googleswitch" >
                 <label class="form-check-label" for="googleswitch"></label>
             </div>
-        </div> --}}
+        </div>
     </div>
     <div class="text-center pt-15">
         <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" data-kt-roles-modal-action="cancel">Discard</button>
@@ -80,7 +81,7 @@
                 
                 $(form).ajaxSubmit({
                     type: 'post',
-                    url: urlstoreParent,
+                    url: urlstoreChild,
                     data: {source : typesubmit},
                     dataType : 'json',
                     beforeSend: function(){

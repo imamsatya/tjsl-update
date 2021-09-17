@@ -52,6 +52,7 @@
                                     <th style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">Tanggal Akhir</th>
                                     <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Keterangan</th>
                                     <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Status</th>
+                                    <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Nilai Pengurangan</th>
                                     <th style="text-align:center;width:120px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
                                 </tr>
                             </thead>
@@ -81,6 +82,7 @@
                                         @endphp
                                         {{ $status }}
                                     </td>
+                                    <td></td>
                                     <td style="text-align:center;">
                                         <button type="button" data-id="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-success cls-button-add-laporan" data-id="{{$p->id}}" data-toggle="tooltip" title="Tamba data Laporan"><i class="bi bi-plus fs-3"></i></button>
                                         <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$p->id}}" data-toggle="tooltip" title="Ubah data versi {{@$p->versi}}"><i class="bi bi-pencil fs-3"></i></button>
@@ -96,9 +98,11 @@
                                 @foreach ($pilar as $a)      
                                     <tr class="treegrid-pilar{{$a->id}}versi{{@$p->id}} treegrid-parent-versi{{@$p->id}} item-pilar{{$a->id}}versi{{@$p->id}}">
                                         <td></td>
-                                        <td colspan="5">{{$a->nama}}</td>
+                                        <td colspan="6">{{$a->nama}}</td>
                                         <td style="text-align:center;">
-                                            <button type="button" data-id="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-info cls-button-add-parent" data-id="{{$p->id}}" data-toggle="tooltip" title="Tambah data Parent Laporan"><i class="bi bi-plus fs-3"></i></button>
+
+                                            <button type="button" data-id="{{$p->id}}" data-versi_laporan_id="{{$p->id}}" data-laporan_keuangan_id="{{$a->id}}" class="btn btn-sm btn-light btn-icon btn-info cls-button-add-parent" data-id="{{$p->id}}" data-toggle="tooltip" title="Tambah data Parent Laporan"><i class="bi bi-plus fs-3"></i></button>
+
                                             <button type="button" data-id="{{$a->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$a->id}}" data-toggle="tooltip" title="Ubah data {{@$a->nama}}"><i class="bi bi-pencil fs-3"></i></button>
                                             <button type="button" data-id="{{$a->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-pilar" data-id="{{$a->id}}" data-nama="{{$a->nama}}" data-toggle="tooltip" title="Hapus data {{$a->nama}}"><i class="bi bi-trash fs-3"></i></button>
                                         </td>
@@ -106,12 +110,23 @@
                                 
                                     @php 
                                         $tpb = $parent->where('versi_laporan_id', $p->id)->where('laporan_keuangan_id', $a->id);
+                                   
                                     @endphp
                                     @foreach ($tpb as $c)      
                                         <tr class="treegrid-tpb{{$c->id}} treegrid-parent-pilar{{@$a->id}}versi{{@$p->id}} item-tpb{{$c->id}}">
                                             <td></td>
-                                            <td colspan="6">{{$c->kode}} - {{$c->label}}</td>
+                                            <td colspan="5">{{$c->kode}} - {{$c->label}}</td>
+                                            <td style="text-align:center;">{{$c->is_pengurangan ? "Aktif" : ""}}</td>
+                                            <td style="text-align:center;">
+
+                                                <button type="button" data-id="{{$p->id}}"  data-versi_laporan_id="{{$p->id}}" data-laporan_keuangan_id="{{$a->id}}" data-parent_id="{{$c->id}}" class="btn btn-sm btn-light btn-icon btn-warning cls-button-add-child" data-id="{{$p->id}}" data-toggle="tooltip" title="Tambah data Child Laporan"><i class="bi bi-plus fs-3"></i></button>
+
+                                                <button type="button" data-id="{{$a->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$a->id}}" data-toggle="tooltip" title="Ubah data {{@$a->nama}}"><i class="bi bi-pencil fs-3"></i></button>
+                                                <button type="button" data-id="{{$a->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-pilar" data-id="{{$a->id}}" data-nama="{{$a->nama}}" data-toggle="tooltip" title="Hapus data {{$a->nama}}"><i class="bi bi-trash fs-3"></i></button>
+                                            </td>
                                         </tr>
+
+
                                     @endforeach
                                 @endforeach
                             @endforeach
@@ -138,9 +153,11 @@
     var urleditpilar = "{{route('referensi.versi_laporan_keuangan.edit_laporan')}}";
     var urladdlaporan = "{{route('referensi.versi_laporan_keuangan.add_laporan')}}";
     var urladdparent = "{{route('referensi.versi_laporan_keuangan.add_parent')}}";
+    var urladdchild = "{{route('referensi.versi_laporan_keuangan.add_child')}}";
     var urlstore = "{{route('referensi.versi_laporan_keuangan.store')}}";
     var urlstorelaporan = "{{route('referensi.versi_laporan_keuangan.store_laporan')}}";
     var urlstoreParent = "{{route('referensi.versi_laporan_keuangan.store_parent')}}";
+    var urlstoreChild = "{{route('referensi.versi_laporan_keuangan.store_child')}}";
     var urldatatable = "{{route('referensi.versi_laporan_keuangan.datatable')}}";
     var urldelete = "{{route('referensi.versi_laporan_keuangan.delete')}}";
     var urldeletepilar = "{{route('referensi.versi_pilar.delete_pilar')}}";
@@ -181,7 +198,20 @@
         });
 
         $('body').on('click','.cls-button-add-parent',function(){
-            winform(urladdparent, {'id':$(this).data('id')}, 'Tambah Data Laporan');
+            winform(urladdparent, {
+                'id':$(this).data('id'),
+                'versi_laporan_id':$(this).data('versi_laporan_id'),
+                'laporan_keuangan_id':$(this).data('laporan_keuangan_id')
+            }, 'Tambah Data Laporan');
+        });
+
+        $('body').on('click','.cls-button-add-child',function(){
+            winform(urladdchild, {
+                'id':$(this).data('id'),
+                'versi_laporan_id':$(this).data('versi_laporan_id'),
+                'laporan_keuangan_id':$(this).data('laporan_keuangan_id'),
+                'parent_id':$(this).data('parent_id')
+            }, 'Tambah Data Laporan');
         });
 
         $('body').on('click','.cls-button-delete-pilar',function(){
