@@ -82,7 +82,7 @@
                                         {{ $status }}
                                     </td>
                                     <td style="text-align:center;">
-                                        <button type="button" data-id="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-success cls-button-add-pilar" data-id="{{$p->id}}" data-toggle="tooltip" title="Tamba data Laporan"><i class="bi bi-plus fs-3"></i></button>
+                                        <button type="button" data-id="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-success cls-button-add-laporan" data-id="{{$p->id}}" data-toggle="tooltip" title="Tamba data Laporan"><i class="bi bi-plus fs-3"></i></button>
                                         <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$p->id}}" data-toggle="tooltip" title="Ubah data versi {{@$p->versi}}"><i class="bi bi-pencil fs-3"></i></button>
                                         <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="{{$p->id}}" data-nama="Versi {{$p->versi}}" data-toggle="tooltip" title="Hapus data Versi {{$p->versi}}"><i class="bi bi-trash fs-3"></i></button>
                                     </td>
@@ -104,7 +104,15 @@
                                         </td>
                                     </tr>
                                 
-
+                                    @php 
+                                        $tpb = $parent->where('versi_laporan_id', $p->id)->where('laporan_keuangan_id', $a->id);
+                                    @endphp
+                                    @foreach ($tpb as $c)      
+                                        <tr class="treegrid-tpb{{$c->id}} treegrid-parent-pilar{{@$a->id}}versi{{@$p->id}} item-tpb{{$c->id}}">
+                                            <td></td>
+                                            <td colspan="6">{{$c->kode}} - {{$c->label}}</td>
+                                        </tr>
+                                    @endforeach
                                 @endforeach
                             @endforeach
                             </tbody>
@@ -132,6 +140,7 @@
     var urladdparent = "{{route('referensi.versi_laporan_keuangan.add_parent')}}";
     var urlstore = "{{route('referensi.versi_laporan_keuangan.store')}}";
     var urlstorelaporan = "{{route('referensi.versi_laporan_keuangan.store_laporan')}}";
+    var urlstoreParent = "{{route('referensi.versi_laporan_keuangan.store_parent')}}";
     var urldatatable = "{{route('referensi.versi_laporan_keuangan.datatable')}}";
     var urldelete = "{{route('referensi.versi_laporan_keuangan.delete')}}";
     var urldeletepilar = "{{route('referensi.versi_pilar.delete_pilar')}}";
