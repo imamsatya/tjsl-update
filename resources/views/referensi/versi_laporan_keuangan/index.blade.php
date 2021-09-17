@@ -82,7 +82,7 @@
                                         {{ $status }}
                                     </td>
                                     <td style="text-align:center;">
-                                        <button type="button" data-id="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-success cls-button-add-pilar" data-id="{{$p->id}}" data-toggle="tooltip" title="Tamba data Pilar"><i class="bi bi-plus fs-3"></i></button>
+                                        <button type="button" data-id="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-success cls-button-add-pilar" data-id="{{$p->id}}" data-toggle="tooltip" title="Tamba data Laporan"><i class="bi bi-plus fs-3"></i></button>
                                         <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$p->id}}" data-toggle="tooltip" title="Ubah data versi {{@$p->versi}}"><i class="bi bi-pencil fs-3"></i></button>
                                         <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="{{$p->id}}" data-nama="Versi {{$p->versi}}" data-toggle="tooltip" title="Hapus data Versi {{$p->versi}}"><i class="bi bi-trash fs-3"></i></button>
                                     </td>
@@ -98,7 +98,7 @@
                                         <td></td>
                                         <td colspan="5">{{$a->nama}}</td>
                                         <td style="text-align:center;">
-                                            <button type="button" data-id="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-success cls-button-add-pilar" data-id="{{$p->id}}" data-toggle="tooltip" title="Tamba data Pilar"><i class="bi bi-plus fs-3"></i></button>
+                                            <button type="button" data-id="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-info cls-button-add-parent" data-id="{{$p->id}}" data-toggle="tooltip" title="Tambah data Parent Laporan"><i class="bi bi-plus fs-3"></i></button>
                                             <button type="button" data-id="{{$a->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$a->id}}" data-toggle="tooltip" title="Ubah data {{@$a->nama}}"><i class="bi bi-pencil fs-3"></i></button>
                                             <button type="button" data-id="{{$a->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-pilar" data-id="{{$a->id}}" data-nama="{{$a->nama}}" data-toggle="tooltip" title="Hapus data {{$a->nama}}"><i class="bi bi-trash fs-3"></i></button>
                                         </td>
@@ -129,6 +129,7 @@
     var urledit = "{{route('referensi.versi_laporan_keuangan.edit')}}";
     var urleditpilar = "{{route('referensi.versi_laporan_keuangan.edit_laporan')}}";
     var urladdlaporan = "{{route('referensi.versi_laporan_keuangan.add_laporan')}}";
+    var urladdparent = "{{route('referensi.versi_laporan_keuangan.add_parent')}}";
     var urlstore = "{{route('referensi.versi_laporan_keuangan.store')}}";
     var urlstorelaporan = "{{route('referensi.versi_laporan_keuangan.store_laporan')}}";
     var urldatatable = "{{route('referensi.versi_laporan_keuangan.datatable')}}";
@@ -166,8 +167,12 @@
             onbtndelete(this);
         });
 
-        $('body').on('click','.cls-button-add-pilar',function(){
-            winform(urladdlaporan, {'id':$(this).data('id')}, 'Tambah Data Pilar');
+        $('body').on('click','.cls-button-add-laporan',function(){
+            winform(urladdlaporan, {'id':$(this).data('id')}, 'Tambah Data Laporan');
+        });
+
+        $('body').on('click','.cls-button-add-parent',function(){
+            winform(urladdparent, {'id':$(this).data('id')}, 'Tambah Data Laporan');
         });
 
         $('body').on('click','.cls-button-delete-pilar',function(){

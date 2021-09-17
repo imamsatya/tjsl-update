@@ -255,6 +255,8 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('add_laporan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@add_laporan')->name('referensi.versi_laporan_keuangan.add_laporan');
                 Route::post('edit_laporan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@edit_laporan')->name('referensi.versi_laporan_keuangan.edit_laporan');
                 Route::post('store_laporan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store_laporan')->name('referensi.versi_laporan_keuangan.store_laporan');
+                Route::post('add_parent', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@add_parent')->name('referensi.versi_laporan_keuangan.add_parent');
+                Route::post('store_parent', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store_parent')->name('referensi.versi_laporan_keuangan.store_parent');
             });
 
             Route::prefix('laporan_keuangan')->group(function(){

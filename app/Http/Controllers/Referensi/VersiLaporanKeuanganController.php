@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use App\Models\VersiLaporanKeuangan;
 use App\Models\LaporanKeuangan;
 use App\Models\RelasiLaporanKeuangan;
+use App\Models\LaporanKeuanganParent;
 
 class VersiLaporanKeuanganController extends Controller
 {
@@ -39,10 +40,15 @@ class VersiLaporanKeuanganController extends Controller
                                 ->GroupBy('relasi_laporan_keuangan.versi_laporan_id')
                                 ->orderBy('laporan_keuangans.nama')
                                 ->get();
+        $parent = LaporanKeuanganParent::leftjoin('relasi_laporan_keuangan','parent_id','=','laporan_keuangan_parent.id')
+                    ->get();
+        
+
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'versilaporankeuangan' => $versilaporankeuangan,
             'laporankeuangan' => $laporankeuangan,
+            'parent' => $parent,
             'breadcrumb' => 'Referensi - Versi Laporan Keuangan'
         ]);
     }
@@ -259,13 +265,105 @@ class VersiLaporanKeuanganController extends Controller
             // $tpb = Tpb::get();
 
                 return view($this->__route.'.form_laporan',[
-                    'pagetitle' => 'Tambah Relasi Laporan',
+                    'pagetitle' => 'Jenis Laporan',
                     'actionform' => 'insert',
                     'data' => $versilaporankeuangan,
                     'laporankeuangan' => $laporankeuangan,
                     // 'tpb' => $tpb,
                 ]);
         }catch(Exception $e){}
+
+    }
+
+    public function add_parent(Request $request)
+    {
+        // try{
+        //     $versilaporankeuangan = VersiLaporanKeuangan::find((int)$request->input('id'));
+        //     $laporankeuangan = LaporanKeuangan::get();
+            // $tpb = Tpb::get();
+
+                return view($this->__route.'.form_parent',[
+                    'pagetitle' => 'Parent Laporan',
+                    'actionform' => 'insert',
+                    'versi_id' => $request->versi_id,
+                    'lapor_id' => $request->lapor_id,
+                    // 'data' => $versilaporankeuangan,
+                    // 'laporankeuangan' => $laporankeuangan,
+                    // 'tpb' => $tpb,
+                ]);
+        // }catch(Exception $e){}
+
+    }
+
+    public function store_parent(Request $request)
+    {
+      
+        $result = [
+            'flag' => 'error',
+            'msg' => 'Error System',
+            'title' => 'Error'
+        ];
+
+        // $validator = $this->validateform($request);
+        // if (!$validator->fails()) {
+            $param = $request->except('actionform','_token','versi_laporan_id','laporan_keuangan_id');
+           //dd($param);
+            switch ($request->input('actionform')) {
+                case 'insert': DB::beginTransaction();
+                               try{
+                                  //$params = $param->except();
+                                  //dd();
+                                  $lapkeu_parent = LaporanKeuanganParent::create((array)$param);
+
+                                  DB::commit();
+                                  $result = [
+                                    'flag'  => 'success',
+                                    'msg' => 'Sukses tambah data',
+                                    'title' => 'Sukses'
+                                  ];
+                               }catch(\Exception $e){
+                                  DB::rollback();
+                                  $result = [
+                                    'flag'  => 'warning',
+                                    'msg' => $e->getMessage(),
+                                    'title' => 'Gagal'
+                                  ];
+                               }
+
+                break;
+
+                case 'update': DB::beginTransaction();
+                            //    try{
+                            //       $versilaporankeuangan = VersiLaporanKeuangan::find((int)$request->input('id'));
+                            //       $versilaporankeuangan->update((array)$param);
+
+                            //       DB::commit();
+                            //       $result = [
+                            //         'flag'  => 'success',
+                            //         'msg' => 'Sukses ubah data',
+                            //         'title' => 'Sukses'
+                            //       ];
+                            //    }catch(\Exception $e){
+                            //       DB::rollback();
+                            //       $result = [
+                            //         'flag'  => 'warning',
+                            //         'msg' => $e->getMessage(),
+                            //         'title' => 'Gagal'
+                            //       ];
+                            //    }
+
+                break;
+            }
+        // }else{
+        //     $messages = $validator->errors()->all('<li>:message</li>');
+        //     $result = [
+        //         'flag'  => 'warning',
+        //         'msg' => '<ul>'.implode('', $messages).'</ul>',
+        //         'title' => 'Gagal proses data'
+        //     ];
+        // }
+
+        return response()->json($result);
 
     }
 

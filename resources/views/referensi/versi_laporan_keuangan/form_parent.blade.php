@@ -1,24 +1,25 @@
 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
 	@csrf
-	<input type="hidden" name="id" id="id" readonly="readonly" value="{{ (int)$data->id }}" />
+	{{-- <input type="text" name="id" id="id" readonly="readonly" value="{{ (int)$data->id }}" /> --}}
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
+	<input type="hidden" name="versi_laporan_id" id="versi_laporan_id" readonly="readonly" value="{{ (int)$versi_id }}" />
+    <input type="hidden" name="laporan_keuangan_id" id="laporan_keuangan_id" readonly="readonly" value="{{ (int)$lapor_id }}" />
 
     <div class="form-group row mb-5">
-        <div class="col-lg-6">
-            <label>Versi</label>
-            <input type="text" class="form-control" name="versi" id="versi" value="{{$data->versi}}" disabled/>
+        <div class="col-lg-2">
+            <label>Kode</label>
+            <input type="text" class="form-control" name="kode" id="kode" />
         </div>
-        <div class="col-lg-6">
-            <label>Laporan Keuangan</label>
-            <select class="form-select form-select-solid form-select2" name="laporan_keuangan_id" data-kt-select2="true" data-placeholder="Pilih Laporan" data-dropdown-parent="#winform" data-allow-clear="true" required>
-                <option></option>
-                @foreach($laporankeuangan as $p)  
-                    @php
-                        $select = ($actionform == 'update' && ($p->id == $laporan_keuangan_id) ? 'selected="selected"' : '');
-                    @endphp
-                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
-                @endforeach
-            </select>
+        <div class="col-lg-7">
+            <label>Label</label>
+            <input type="text" class="form-control" name="label" id="label" />
+        </div>
+        <div class="col-lg-3">
+            <label>Nilai Pengurangan</label>
+            <div class="form-check form-check-solid form-switch" style="padding-top: 10px;">
+                <input class="form-check-input w-45px h-30px" type="checkbox" id="googleswitch" checked="checked">
+                <label class="form-check-label" for="googleswitch"></label>
+            </div>
         </div>
     </div>
     <div class="text-center pt-15">
@@ -50,13 +51,13 @@
     function setFormValidate(){
         $('#form-edit').validate({
             rules: {
-                versi:{
-                        required: true
+                kode:{
+                    required: true
                 }               		               		                              		               		               
             },
             messages: {
-                versi: {
-                    required: "Versi wajib diinput"
+                kode: {
+                    required: "kode wajib diinput"
                 }                                      		                   		                   
             },	        
             highlight: function(element) {
@@ -79,7 +80,7 @@
                 
                 $(form).ajaxSubmit({
                     type: 'post',
-                    url: urlstorelaporan,
+                    url: urlstoreParent,
                     data: {source : typesubmit},
                     dataType : 'json',
                     beforeSend: function(){

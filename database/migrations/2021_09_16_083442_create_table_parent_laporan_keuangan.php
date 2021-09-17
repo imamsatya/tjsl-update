@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRelasiLaporanKeuanganTable extends Migration
+class CreateTableParentLaporanKeuangan extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateRelasiLaporanKeuanganTable extends Migration
      */
     public function up()
     {
-        Schema::create('relasi_laporan_keuangan', function (Blueprint $table) {
+        Schema::create('laporan_keuangan_parent', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('versi_laporan_id')->nullable();
-            $table->integer('laporan_keuangan_id')->nullable();
-            $table->integer('parent_id')->nullable();
-            $table->integer('child_id')->nullable();
+            $table->text('kode')->nullable();
+            $table->text('label')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ class CreateRelasiLaporanKeuanganTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('relasi_laporan_keuangan');
+        Schema::dropIfExists('laporan_keuangan_parent');
     }
 }
