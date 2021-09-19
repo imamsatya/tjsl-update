@@ -41,13 +41,21 @@ class VersiLaporanKeuanganController extends Controller
                                 ->GroupBy('relasi_laporan_keuangan.versi_laporan_id')
                                 ->orderBy('laporan_keuangans.nama')
                                 ->get();
-        $parent = LaporanKeuanganParent::leftjoin('relasi_laporan_keuangan','parent_id','=','laporan_keuangan_parent.id')
-                    ->get();
 
-        $child = LaporanKeuanganChild::leftjoin('relasi_laporan_keuangan','child_id','=','laporan_keuangan_child.id')
-                    ->get();
+        $parent = RelasiLaporanKeuangan::select('laporan_keuangans.nama','relasi_laporan_keuangan.versi_laporan_id','laporan_keuangans.id AS laporan_id','relasi_laporan_keuangan.parent_id','laporan_keuangan_parent.kode','laporan_keuangan_parent.label')
+                                ->leftJoin('laporan_keuangans', 'laporan_keuangans.id', 'relasi_laporan_keuangan.laporan_keuangan_id')
+                                ->leftJoin('laporan_keuangan_parent', 'laporan_keuangan_parent.id', 'relasi_laporan_keuangan.parent_id')
+                                ->where('relasi_laporan_keuangan.parent_id','<>',null)
+                                ->distinct('relasi_laporan_keuangan.parent_id')->get();
+
+        $child = RelasiLaporanKeuangan::select('laporan_keuangans.nama','relasi_laporan_keuangan.versi_laporan_id','laporan_keuangans.id AS laporan_id','relasi_laporan_keuangan.parent_id','relasi_laporan_keuangan.child_id','laporan_keuangan_child.kode','laporan_keuangan_child.label','laporan_keuangan_child.is_pengurangan')
+                                ->leftJoin('laporan_keuangans', 'laporan_keuangans.id', 'relasi_laporan_keuangan.laporan_keuangan_id')
+                                ->leftJoin('laporan_keuangan_parent', 'laporan_keuangan_parent.id', 'relasi_laporan_keuangan.parent_id')
+                                ->leftJoin('laporan_keuangan_child', 'laporan_keuangan_child.id', 'relasi_laporan_keuangan.child_id')
+                                ->where('relasi_laporan_keuangan.child_id','<>',null)
+                                ->distinct('relasi_laporan_keuangan.child_id')->get();
+
         
-
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'versilaporankeuangan' => $versilaporankeuangan,
@@ -398,14 +406,15 @@ class VersiLaporanKeuanganController extends Controller
             'msg' => 'Error System',
             'title' => 'Error'
         ];
-       
+
         if ($request->all()) {         
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
                                   $rel['versi_laporan_id'] = $request->versi_laporan_id;
                                   $rel['laporan_keuangan_id'] = $request->laporan_keuangan_id;
-                                  $rel['parent_id'] = $request->parent_id;;
+                                  $rel['parent_id'] = $request->parent_id;
+                                  $rel['child_id'] = null;
                                   $relasi = RelasiLaporanKeuangan::insert([
                                       'versi_laporan_id'=> $rel['versi_laporan_id'],
                                       'laporan_keuangan_id'=> $rel['laporan_keuangan_id'],
