@@ -54,7 +54,7 @@ class VersiLaporanKeuanganController extends Controller
                                 ->leftJoin('laporan_keuangan_child', 'laporan_keuangan_child.id', 'relasi_laporan_keuangan.child_id')
                                 ->where('relasi_laporan_keuangan.child_id','<>',null)
                                 ->distinct('relasi_laporan_keuangan.child_id')->get();
-
+                              
         
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
@@ -415,6 +415,7 @@ class VersiLaporanKeuanganController extends Controller
                                   $rel['laporan_keuangan_id'] = $request->laporan_keuangan_id;
                                   $rel['parent_id'] = $request->parent_id;
                                   $rel['child_id'] = null;
+                                  
                                   $relasi = RelasiLaporanKeuangan::insert([
                                       'versi_laporan_id'=> $rel['versi_laporan_id'],
                                       'laporan_keuangan_id'=> $rel['laporan_keuangan_id'],
@@ -422,8 +423,9 @@ class VersiLaporanKeuanganController extends Controller
                                   ]);
                                   
                                   $param = $request->except('actionform','_token','versi_laporan_id','laporan_keuangan_id','parent_id');
-                                  
-                                  $param['is_pengurangan'] = $param['is_pengurangan'] == "on"? true : false;
+                                 
+                                  $param['is_pengurangan'] = $request->is_pengurangan? true : false;
+
                                   $lapkeu_child = LaporanKeuanganChild::create((array)$param);
 
                                   $rel_id = RelasiLaporanKeuangan::select('id')->orderby('id','desc')->first();
@@ -482,6 +484,65 @@ class VersiLaporanKeuanganController extends Controller
 
         return response()->json($result);
 
+    }
+
+    public function delete_child(Request $request)
+    {
+        
+        DB::beginTransaction();
+        try{
+            $data = LaporanKeuanganChild::find($request->id);
+            $data->delete();
+
+            $relasi = RelasiLaporanKeuangan::where('child_id',$request->id)->first();
+            $relasi->delete();
+
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses hapus data',
+                'title' => 'Sukses'
+            ];
+        }catch(\Exception $e){
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal hapus data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }    
+
+    public function delete_parent(Request $request)
+    {
+        
+        DB::beginTransaction();
+        try{
+            $data = LaporanKeuanganParent::find($request->id);           
+           $data->delete();
+
+            $relasi = RelasiLaporanKeuangan::where('parent_id',$request->id)->get();
+
+            foreach($relasi as $v){
+                RelasiLaporanKeuangan::where('parent_id',$v->parent_id)->delete();
+            }
+
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses hapus data',
+                'title' => 'Sukses'
+            ];
+        }catch(\Exception $e){
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal hapus data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
     }
 
     public function edit_laporan(Request $request)

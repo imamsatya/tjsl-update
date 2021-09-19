@@ -43,10 +43,10 @@
                     <!--begin: Datatable -->
                     <div class="table-responsive">
                         
-                        <table class="table table-striped table-bordered table-hover tree  table-checkable">
+                        <table class="table  table-bordered  tree  table-checkable">
                             <thead>
                                 <tr>
-                                    <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;"></th>
+                                    <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No</th>
                                     <th style="font-weight:bold;border-bottom: 1px solid #c8c7c7;">Versi Laporan</th>
                                     <th style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">Tanggal Awal</th>
                                     <th style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">Tanggal Akhir</th>
@@ -60,21 +60,26 @@
                             <tbody>
                                 @php $no=1; @endphp
                                 @foreach ($versilaporankeuangan as $p)   
-                                  <tr class="treegrid-{{$p->id}} versi" style="background-color: #D5F5E3 ;border-bottom:ridge;">
-                                        <td style="text-align:center;"></td>
-                                        <td>Versi {{$p->versi}}</td>
+                                  <tr class="treegrid-{{$p->id}} versi" style="background-color: rgb(231, 231, 231) ;border-bottom:ridge;">
+                                        <td style="text-align:center;">{{$no++}}</td>
+                                        <td><strong> Versi {{$p->versi}} </strong></td>
                                         <td>
+                                        <strong>
                                             @if($p->tanggal_awal)
                                             {{date("d-m-Y",strtotime($p->tanggal_awal))}}
                                             @endif
+                                        </strong>
                                         </td>
                                         <td>
+                                        <strong>
                                             @if($p->tanggal_akhir)
                                             {{date("d-m-Y",strtotime($p->tanggal_akhir))}}
                                             @endif
+                                        </strong>
                                         </td>
-                                        <td>{{$p->keterangan}}</td>
+                                        <td><strong>{{$p->keterangan}}</strong></td>
                                         <td style="text-align:center;">
+                                        <strong>
                                             @php
                                                 $status = '';
                                                 if($p->tanggal_akhir == '' || $p->tanggal_akhir >=  date('Y-m-d')){
@@ -82,6 +87,7 @@
                                                 }
                                             @endphp
                                             {{ $status }}
+                                        </strong>
                                         </td>
                                         <td></td>
                                         <td style="text-align:center;">
@@ -94,9 +100,13 @@
                                        $lapor = $laporankeuangan->where('versi_laporan_id', $p->id);
                                   @endphp
                                   @foreach ($lapor as $l)  
-                                  <tr class="treegrid-{{$l->id}} treegrid-parent-{{$p->id}}" style="border-bottom:ridge;">
+                                  <tr class="treegrid-{{$l->id}} treegrid-parent-{{$p->id}}" style="border-bottom:ridge;background-color:lightgrey;">
                                     <td></td>
-                                    <td colspan="6">{{$l->nama}}</td>
+                                    <td colspan="6">
+                                        <a class="badge badge-light-danger fw-bolder me-auto px-4 py-3">
+                                        {{$l->nama}}
+                                        </a>
+                                    </td>
                                     <td style="text-align:center;">
 
                                         <button type="button" data-id="{{$p->id}}" data-versi_laporan_id="{{$p->id}}" data-laporan_keuangan_id="{{$l->id}}" class="btn btn-sm btn-light btn-icon btn-info cls-button-add-parent" data-id="{{$p->id}}" data-toggle="tooltip" title="Tambah data Parent Laporan"><i class="bi bi-plus fs-3"></i></button>
@@ -111,35 +121,51 @@
                                     
                                     @endphp
                                     @foreach($par as $c)
-                                        <tr class="treegrid-{{$c->parent_id}} treegrid-parent-{{$l->id}}" style="border-bottom:ridge;">
+                                        <tr class="treegrid-{{$c->parent_id}} treegrid-parent-{{$l->id}}" style="border-bottom:ridge;background-color:lightgrey;">
                                             <td></td>
-                                            <td colspan="5">{{$c->kode}} - {{$c->label}}</td>
-                                            <td style="text-align:center;">{{$c->is_pengurangan ? "Aktif" : ""}}</td>
+                                            <td colspan="5">
+                                                <a class="badge badge-light-primary fw-bolder me-auto px-4 py-3">
+                                                {{$c->kode}} - {{$c->label}}
+                                                </a>
+                                            </td>
+                                            <td style="text-align:center;"></td>
                                             <td style="text-align:center;">
 
                                                 <button type="button" data-id="{{$p->id}}"  data-versi_laporan_id="{{$p->id}}" data-laporan_keuangan_id="{{$l->id}}" data-parent_id="{{$c->parent_id}}" class="btn btn-sm btn-light btn-icon btn-warning cls-button-add-child" data-id="{{$p->id}}" data-toggle="tooltip" title="Tambah data Child Laporan"><i class="bi bi-plus fs-3"></i></button>
 
                                                 <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button>
-                                                <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-pilar" data-id="{{$l->id}}" data-nama="{{$l->nama}}" data-toggle="tooltip" title="Hapus data {{$l->nama}}"><i class="bi bi-trash fs-3"></i></button>
+
+                                                <button type="button" data-id="{{$c->parent_id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-child" data-toggle="tooltip" title="Hapus data"><i class="bi bi-trash fs-3"></i></button>
                                             </td>
                                         </tr>
 
                                         @php 
-                                        $child = $child->where('versi_laporan_id',$p->id)->where('laporan_id',$l->id)->where('parent_id',$c->parent_id);   
-                                   
+                                        $child = $child->where('versi_laporan_id',$p->id)->where('laporan_id',$l->id);   
+
                                         @endphp
                                         @foreach($child as $d)                                        
-                                        <tr class="treegrid-{{$d->id}} treegrid-parent-{{$c->parent_id}}" style="border-bottom:ridge;">
+                                        <tr class="treegrid-{{$d->child_id}} treegrid-parent-{{$d->parent_id}}" style="border-bottom:ridge;background-color:lightgrey;">
+                                            @if($c->parent_id == $d->parent_id)
                                             <td></td>
-                                            <td colspan="5">{{$d->kode}} - {{$d->label}}</td>
-                                            <td style="text-align:center;">{{$d->is_pengurangan ? "Aktif" : ""}}</td>
+                                            <td colspan="5"> 
+                                                <a class="badge badge-light-info fw-bolder me-auto px-4 py-3">
+                                                    {{$d->kode}} - {{$d->label}}
+                                                </a>
+                                            </td>
+                                            <td style="text-align:center;">
+                                                @if($d->is_pengurangan)
+                                                <a class="badge badge-light-info fw-bolder me-auto px-4 py-3">
+                                                {{$d->is_pengurangan ? "Ya" : ""}}
+                                                </a>
+                                                @endif
+                                            </td>
                                             <td style="text-align:center;">
 
-                                                <button type="button" data-id="{{$p->id}}"  data-versi_laporan_id="{{$p->id}}" data-laporan_keuangan_id="{{$l->id}}" data-parent_id="{{$c->parent_id}}" class="btn btn-sm btn-light btn-icon btn-secondary cls-button-add-child" data-id="{{$p->id}}" data-toggle="tooltip" title="Tambah data Child Laporan"><i class="bi bi-plus fs-3"></i></button>
+                                                <button type="button" data-id="{{$d->child_id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button>
 
-                                                <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button>
-                                                <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-pilar" data-id="{{$l->id}}" data-nama="{{$l->nama}}" data-toggle="tooltip" title="Hapus data {{$l->nama}}"><i class="bi bi-trash fs-3"></i></button>
+                                                <button type="button" data-id="{{$d->child_id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-child" data-toggle="tooltip" title="Hapus data "><i class="bi bi-trash fs-3"></i></button>
                                             </td>
+                                            @endif
                                         </tr>
                                         @endforeach
                                     @endforeach
@@ -176,7 +202,8 @@
     var urlstoreChild = "{{route('referensi.versi_laporan_keuangan.store_child')}}";
     var urldatatable = "{{route('referensi.versi_laporan_keuangan.datatable')}}";
     var urldelete = "{{route('referensi.versi_laporan_keuangan.delete')}}";
-    var urldeletepilar = "{{route('referensi.versi_pilar.delete_pilar')}}";
+    var urldeleteChild = "{{route('referensi.versi_laporan_keuangan.delete_child')}}";
+    var urldeleteParent = "{{route('referensi.versi_laporan_keuangan.delete_parent')}}";
     var urlupdatestatus = "{{route('referensi.versi_laporan_keuangan.update_status')}}";
 
     $(document).ready(function(){
@@ -232,8 +259,12 @@
             }, 'Tambah Data Laporan');
         });
 
-        $('body').on('click','.cls-button-delete-pilar',function(){
-            onbtndeletepilar(this);
+        $('body').on('click','.cls-button-delete-child',function(){
+            onbtndeletechild(this);
+        });
+
+        $('body').on('click','.cls-button-delete-parent',function(){
+            onbtndeleteparent(this);
         });
         
         $('body').on('change', '#edit_active', function() {
@@ -359,10 +390,10 @@
         });	
     }
     
-    function onbtndeletepilar(element){
+    function onbtndeletechild(element){
         swal.fire({
             title: "Pemberitahuan",
-            text: "Yakin hapus data "+$(element).data('nama')+" ?",
+            text: "Yakin hapus data ?",
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, hapus data",
@@ -370,10 +401,81 @@
         }).then(function(result) {
             if (result.value) {
                 $.ajax({
-                url: urldeletepilar,
+                url: urldeleteChild,
                 data:{
-                    "pilar_pembangunan_id": $(element).data('id'),
-                    "versi_pilar_id": $(element).data('versi'),
+                    "id": $(element).data('id'),
+                },
+                type:'post',
+                dataType:'json',
+                beforeSend: function(){
+                    $.blockUI();
+                },
+                success: function(data){
+                    $.unblockUI();
+
+                    swal.fire({
+                            title: data.title,
+                            html: data.msg,
+                            icon: data.flag,
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });
+
+                    if(data.flag == 'success') {
+                        // datatable.ajax.reload( null, false );
+                        location.reload(); 
+                    }
+                    
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });  
+                    }
+                });
+            }
+        });	
+    }
+
+    function onbtndeleteparent(element){
+        swal.fire({
+            title: "Pemberitahuan",
+            text: "Yakin hapus data ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, hapus data",
+            cancelButtonText: "Tidak"
+        }).then(function(result) {
+            if (result.value) {
+                $.ajax({
+                url: urldeleteParent,
+                data:{
+                    "id": $(element).data('id'),
                 },
                 type:'post',
                 dataType:'json',

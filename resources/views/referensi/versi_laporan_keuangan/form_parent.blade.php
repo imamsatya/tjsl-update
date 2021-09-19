@@ -1,9 +1,9 @@
 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
 	@csrf
 	{{-- <input type="text" name="id" id="id" readonly="readonly" value="{{ (int)$data->id }}" /> --}}
-	<input type="text" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
-	<input type="text" name="versi_laporan_id" id="versi_laporan_id" readonly="readonly" value="{{ (int)$versi_id }}" />
-    <input type="text" name="laporan_keuangan_id" id="laporan_keuangan_id" readonly="readonly" value="{{ (int)$lapor_id }}" />
+	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
+	<input type="hidden" name="versi_laporan_id" id="versi_laporan_id" readonly="readonly" value="{{ (int)$versi_id }}" />
+    <input type="hidden" name="laporan_keuangan_id" id="laporan_keuangan_id" readonly="readonly" value="{{ (int)$lapor_id }}" />
 
     <div class="form-group row mb-5">
         <div class="col-lg-4">

@@ -257,8 +257,10 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('store_laporan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store_laporan')->name('referensi.versi_laporan_keuangan.store_laporan');
                 Route::post('add_parent', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@add_parent')->name('referensi.versi_laporan_keuangan.add_parent');
                 Route::post('store_parent', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store_parent')->name('referensi.versi_laporan_keuangan.store_parent');
+                Route::post('delete_parent', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@delete_parent')->name('referensi.versi_laporan_keuangan.delete_parent');
                 Route::post('add_child', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@add_child')->name('referensi.versi_laporan_keuangan.add_child');
                 Route::post('store_child', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store_child')->name('referensi.versi_laporan_keuangan.store_child');
+                Route::post('delete_child', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@delete_child')->name('referensi.versi_laporan_keuangan.delete_child');
             });
 
             Route::prefix('laporan_keuangan')->group(function(){
