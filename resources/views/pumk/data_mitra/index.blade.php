@@ -34,7 +34,7 @@
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
                         <button type="button" class="btn btn-active btn-info btn-sm btn-icon btn-search cls-search"  data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button> &nbsp
-                        <button style="display: none;" type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-excel fs-3"></i></button>
+                        <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-excel fs-3"></i></button>
                     </div>
                     <!--end::Search-->
                     <!--end::Group actions-->
@@ -195,7 +195,7 @@
     var urledit = "{{route('pumk.data_mitra.edit')}}";
     var urlshow = "{{route('pumk.data_mitra.show')}}";
     var urldelete = "{{route('pumk.data_mitra.delete')}}";
-    var urlexport = "{{route('pumk.anggaran.export')}}";
+    var urlexportmitra = "{{route('pumk.data_mitra.export')}}";
     var urldatatable = "{{route('pumk.data_mitra.datatable')}}";
 
     $(document).ready(function(){
@@ -267,6 +267,7 @@
         $('body').on('click','.btn-search',function(){
             $('#form-cari').toggle(600);
         });
+        
         
         // if("{{ $admin_bumn }}"){
         //     $('.cls-export').hide();
@@ -521,15 +522,22 @@
         $.ajax({
             type: 'post',
             data: {
-                'perusahaan_id' : $("select[name='perusahaan_id']").val(),
-                'tahun' : $("select[name='tahun']").val(),
-                'status' : $("select[name='status_id']").val(),
-                'periode_id' : $("select[name='periode_id']").val()
+                perusahaan_id :  $("#perusahaan_id").val(),
+                provinsi_id :  $("#provinsi_id").val(),
+                kota_id :  $("#kota_id").val(),
+                sektor_usaha_id :  $("#sektor_usaha_id").val(),
+                cara_penyaluran_id :  $("#cp_id").val(),
+                skala_usaha_id :  $("#skala_usaha_id").val(),
+                kolektibilitas_id :  $("#kolekbilitas_id").val(),
+                kondisi_pinjaman_id :  $("#kondisi_id").val(),
+                jenis_pembayaran_id :  $("#jp_id").val(),
+                bank_account_id :  $("#bank_account_id").val(),
+                identitas : $('#identitas').val()
             },
             beforeSend: function () {
                 $.blockUI();
             },
-            url: urlexport,
+            url: urlexportmitra,
             xhrFields: {
                 responseType: 'blob',
             },
@@ -542,7 +550,7 @@
                 var yyyy = today.getFullYear();
                 
                 today = dd + '-' + mm + '-' + yyyy;
-                var filename = 'Data Anggaran PUMK '+today+'.xlsx';
+                var filename = 'Data Mitra Binaan '+today+'.xlsx';
 
                 var blob = new Blob([data], {
                     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'

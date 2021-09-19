@@ -195,7 +195,7 @@
     </div>
 </form>
 
-<script src="{{asset('js/easy-number-separator.js')}}"></script>
+{{-- <script src="{{asset('js/easy-number-separator.js')}}"></script> --}}
 <script type="text/javascript">
     var title = "{{$actionform == 'update'? 'Update' : 'Tambah'}}" + " {{ $pagetitle }}";
 
@@ -221,14 +221,14 @@
 
         // $('.input-saldo-awal').prop( "readonly", true );
         // $('.input-saldo-awal').css("background-color", "#D2E2EB");
-        // $('.incomes,.outcomes').keyup(function(event) {
-        //     if(event.which >= 37 && event.which <= 40) return;
-        //         $(this).val(function(index, value) {
-        //         return value
-        //             .replace(/\D/g, "")
-        //             .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        //     });
-        // });    
+        $('.incomes,.outcomes').keyup(function(event) {
+            if(event.which >= 37 && event.which <= 40) return;
+                $(this).val(function(index, value) {
+                return value
+                    .replace(/[^-\d]/g, '')
+                    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+            });
+        });    
 
     });
     
@@ -238,7 +238,7 @@
        var Out = $('.sum-outcomes').val();
         $('.incomes').each(function() {
             if (this.value.length != 0) {
-                Ins = this.value.replace(/\D/g, "");
+                Ins = this.value.replace(/-\D/g, "").replace(/,/g, "");
                 sum += parseInt(Ins);
             }
             else if (this.value.length != 0){
@@ -246,7 +246,7 @@
             }
 
         });
-        var total = sum - (Out.replace(/\D/g, ""));
+        var total = sum - (Out.replace(/-\D/g, "").replace(/,/g, ""));
         var sums = parseFloat(sum).toLocaleString('en-US', {
                     style: 'decimal',
                 });
@@ -262,7 +262,7 @@
         var In = $('.sum-incomes').val();
         $('.outcomes').each(function() {
             if (this.value.length != 0) {
-                Outs = this.value.replace(/\D/g, "");
+                Outs = this.value.replace(/-\D/g, "").replace(/,/g, "");
                 sum += parseInt(Outs);
             }
             else if (this.value.length != 0){
@@ -270,7 +270,7 @@
             }
         });
 
-        var totalOut = (In.replace(/\D/g, "")) - sum;
+        var totalOut = (In.replace(/-\D/g, "").replace(/,/g, "")) - sum;
         var sumsOut = parseFloat(sum).toLocaleString('en-US', {
                   style: 'decimal',
                 });

@@ -56,7 +56,7 @@
                             <th rowspan="2" style="text-align:center;vertical-align:middle">Nama File</th>
                             <th colspan="2" style="text-align:center;vertical-align:middle">Hasil Upload</th>
                             <th colspan="2" style="text-align:center;vertical-align:middle">File </th>
-                            {{-- <th rowspan="2" style="text-align:center;vertical-align:middle">Keterangan</th> --}}
+                            <th rowspan="2" style="text-align:center;vertical-align:middle">Keterangan</th>
                         </tr>
                         <tr>
                             <th style="text-align:center;vertical-align:middle">Berhasil</th>
@@ -114,7 +114,7 @@
                 { data: 'gagal', name: 'gagal' },
                 { data: 'download_berhasil', name: 'download_berhasil' },
                 { data: 'download_gagal', name: 'download_gagal' },
-                // { data: 'keterangan', name: 'keterangan' },
+                { data: 'keterangan', name: 'keterangan' },
             ],
             drawCallback: function( settings ) {
                 var info = datatable.page.info();

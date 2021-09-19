@@ -45,30 +45,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
     }
     public function rules(): array
     {
-        return [
-            'nama_mitra_binaan' => ['required'],
-            'no_identitas' => ['required'],
-            'id_provinsi' => ['required'],
-            'id_kota' => ['required'],
-            'id_sektor_usaha' => ['required'],
-            'id_skala_usaha' => ['required'],
-            'id_pelaksanaan_program' => ['required'],
-            'id_kolektibilitas_pendanaan' => ['required'],
-            'id_kondisi_pinjaman' => ['required'],
-            'id_jenis_pembayaran' => ['required'],
-            'id_bank_account' => ['required'],
-            'no_pinjaman' => ['required'],
-            'tgl_awal_pendanaan' => ['required'],
-            'sumber_dana' => ['required'],
-            'tgl_jatuh_tempo' => ['required'],
-            'saldo_pokok_pendanaan' => ['required'],
-            'saldo_jasa_admin_pendanaan' => ['required'],
-            'penerimaan_pokok_bulan_berjalan' => ['required'],
-            'penerimaan_jasa_admin_bulan_berjalan' => ['required'],
-            'tgl_penerimaan_terakhir' => ['required'],
-            'penerimaan_jasa_admin_bulan_berjalan' => ['required'],
-            'penerimaan_jasa_admin_bulan_berjalan' => ['required']
-        ];
+        return [];
     }
     public function collection(Collection $row)
     {
@@ -76,144 +53,530 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
         $berhasil = 0;
         $update = 0;
         $gagal = 0;
+        $is_gagal = false;
         $keterangan = '';
         $keterangan_gagal = '';
         $kode = uniqid();
 
        foreach ($row as $ar) {
-            //jika no ktp lebih dari 16 angka/invalid
-            if(strlen($ar['no_identitas']) == 16){
-                $cek_identitas = 0;
-                $cek_kolektibilitas = 0;
-                $s_gagal = false;
+            // cek nama mitra
+            try{
+                $nama = $ar['nama_mitra_binaan'] == null? true : false;
 
-                //cek apakah no identitas belum ada dan kolek belum lunas? jika ya create
-                $cek_identitas = PumkMitraBinaan::where('no_identitas',$ar['no_identitas'] )
-                                 ->count();
-                $cek_kolektibilitas = PumkMitraBinaan::where('kolektibilitas_id',(int)$ar['id_kolektibilitas_pendanaan'] )
-                                 ->count();
-
-                //buat data baru jika identitas & kolek belum ada
-                if(($cek_identitas && $cek_kolektibilitas) == 0){
-                    $mitra = PumkMitraBinaan::create([
-                        'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
-                        'no_identitas' => rtrim($ar['no_identitas']),
-                        'provinsi_id' => rtrim($ar['id_provinsi']),
-                        'kota_id' => rtrim($ar['id_kota']),
-                        'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
-                        'skala_usaha_id' => rtrim($ar['id_skala_usaha']),
-                        'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']),
-                        'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
-                        'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
-                        'jenis_pembayaran_id' => rtrim($ar['id_jenis_pembayaran']),
-                        'bank_account_id' => rtrim($ar['id_bank_account']),
-                        'nilai_aset' => rtrim($ar['nilai_aset']),
-                        'nilai_omset' => rtrim($ar['nilai_omset']),
-                        'no_pinjaman' => rtrim($ar['no_pinjaman']),
-                        'sumber_dana' => rtrim($ar['sumber_dana']),
-                        'tgl_awal' => Date::excelToDateTimeObject($ar['tgl_awal_pendanaan'])->format('d-m-Y'),
-                        'tgl_jatuh_tempo' => Date::excelToDateTimeObject($ar['tgl_jatuh_tempo'])->format('d-m-Y'),
-                        'nominal_pendanaan' => rtrim($ar['nominal_pendanaan']),
-                        'saldo_pokok_pendanaan' => rtrim($ar['saldo_pokok_pendanaan']),
-                        'saldo_jasa_adm_pendanaan' => rtrim($ar['saldo_jasa_admin_pendanaan']),
-                        'penerimaan_pokok_bulan_berjalan' => rtrim($ar['penerimaan_pokok_bulan_berjalan']),
-                        'penerimaan_jasa_adm_bulan_berjalan' => rtrim($ar['penerimaan_jasa_admin_bulan_berjalan']),
-                        'tgl_penerimaan_terakhir' => Date::excelToDateTimeObject($ar['tgl_penerimaan_terakhir'])->format('d-m-Y'),
-                        'jumlah_sdm' => $ar['sdm_di_mb'] ? rtrim($ar['sdm_di_mb']):0,
-                        'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
-                        'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
-                        'hasil_produk_jasa' => $ar['produkjasa_yang_dihasilkan'] ? rtrim($ar['produkjasa_yang_dihasilkan']):0,
-                        'created_by_id' => \Auth::user()->id,
-                        'perusahaan_id' => $perusahaan->id,
-                        'kode_upload' => $kode
-                    ]);
-                    $berhasil++;
-                }else{
-                    $mitra = PumkMitraBinaan::where('no_identitas',$ar['no_identitas'])
-                        ->where('kolektibilitas_id',(int)$ar['id_kolektibilitas_pendanaan'])
-                        ->update([
-                        'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
-                        //'no_identitas' => rtrim($ar['no_identitas']),
-                        'provinsi_id' => rtrim($ar['id_provinsi']),
-                        'kota_id' => rtrim($ar['id_kota']),
-                        'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
-                        'skala_usaha_id' => rtrim($ar['id_skala_usaha']),
-                        'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']),
-                        'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
-                        'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
-                        'jenis_pembayaran_id' => rtrim($ar['id_jenis_pembayaran']),
-                        'bank_account_id' => rtrim($ar['id_bank_account']),
-                        'nilai_aset' => rtrim($ar['nilai_aset']),
-                        'nilai_omset' => rtrim($ar['nilai_omset']),
-                        'no_pinjaman' => rtrim($ar['no_pinjaman']),
-                        'sumber_dana' => rtrim($ar['sumber_dana']),
-                        'tgl_awal' => Date::excelToDateTimeObject($ar['tgl_awal_pendanaan'])->format('d-m-Y'),
-                        'tgl_jatuh_tempo' => Date::excelToDateTimeObject($ar['tgl_jatuh_tempo'])->format('d-m-Y'),
-                        'nominal_pendanaan' => rtrim($ar['nominal_pendanaan']),
-                        'saldo_pokok_pendanaan' => rtrim($ar['saldo_pokok_pendanaan']),
-                        'saldo_jasa_adm_pendanaan' => rtrim($ar['saldo_jasa_admin_pendanaan']),
-                        'penerimaan_pokok_bulan_berjalan' => rtrim($ar['penerimaan_pokok_bulan_berjalan']),
-                        'penerimaan_jasa_adm_bulan_berjalan' => rtrim($ar['penerimaan_jasa_admin_bulan_berjalan']),
-                        'tgl_penerimaan_terakhir' => Date::excelToDateTimeObject($ar['tgl_penerimaan_terakhir'])->format('d-m-Y'),
-                        'jumlah_sdm' => $ar['sdm_di_mb'] ? rtrim($ar['sdm_di_mb']):0,
-                        'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
-                        'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
-                        'hasil_produk_jasa' => $ar['produkjasa_yang_dihasilkan'] ? rtrim($ar['produkjasa_yang_dihasilkan']):0,
-                        'created_by_id' => \Auth::user()->id,
-                        'perusahaan_id' => $perusahaan->id,
-                        'kode_upload' => $kode
-                    ]);
-                    $berhasil++;
+                if($nama){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Nama Mitra Kosong<br>';
                 }
-
-            }else{ 
-                // record data invalid identitas ke gagal upload
-                $keterangan_gagal = 'no.identitas tidak valid/lebih dari 16 angka';
-                $mitra = UploadGagalPumkMitraBinaan::create([
-                    'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
-                    'no_identitas' => rtrim($ar['no_identitas']),
-                    'provinsi_id' => rtrim($ar['id_provinsi']),
-                    'kota_id' => rtrim($ar['id_kota']),
-                    'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
-                    'skala_usaha_id' => rtrim($ar['id_skala_usaha']),
-                    'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']),
-                    'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
-                    'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
-                    'jenis_pembayaran_id' => rtrim($ar['id_jenis_pembayaran']),
-                    'bank_account_id' => rtrim($ar['id_bank_account']),
-                    'nilai_aset' => rtrim($ar['nilai_aset']),
-                    'nilai_omset' => rtrim($ar['nilai_omset']),
-                    'no_pinjaman' => rtrim($ar['no_pinjaman']),
-                    'sumber_dana' => rtrim($ar['sumber_dana']),
-                    'tgl_awal' => Date::excelToDateTimeObject($ar['tgl_awal_pendanaan'])->format('d-m-Y'),
-                    'tgl_jatuh_tempo' => Date::excelToDateTimeObject($ar['tgl_jatuh_tempo'])->format('d-m-Y'),
-                    'nominal_pendanaan' => rtrim($ar['nominal_pendanaan']),
-                    'saldo_pokok_pendanaan' => rtrim($ar['saldo_pokok_pendanaan']),
-                    'saldo_jasa_adm_pendanaan' => rtrim($ar['saldo_jasa_admin_pendanaan']),
-                    'penerimaan_pokok_bulan_berjalan' => rtrim($ar['penerimaan_pokok_bulan_berjalan']),
-                    'penerimaan_jasa_adm_bulan_berjalan' => rtrim($ar['penerimaan_jasa_admin_bulan_berjalan']),
-                    'tgl_penerimaan_terakhir' => Date::excelToDateTimeObject($ar['tgl_penerimaan_terakhir'])->format('d-m-Y'),
-                    'jumlah_sdm' => $ar['sdm_di_mb'] ? rtrim($ar['sdm_di_mb']):0,
-                    'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
-                    'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
-                    'hasil_produk_jasa' => $ar['produkjasa_yang_dihasilkan'] ? rtrim($ar['produkjasa_yang_dihasilkan']):0,
-                    'created_by_id' => \Auth::user()->id,
-                    'perusahaan_id' => $perusahaan->id,
-                    'kode_upload' => $kode,
-                    'keterangan_gagal' => $keterangan_gagal
-                ]);
-
-                $gagal++;               
+            }catch(\Exception $e){
+                DB::rollback();
+                $is_gagal = true;
+                $keterangan .= 'Baris '.rtrim($ar['no']).' Nama Mitra Kosong<br>';
             }
-            $mb_upload = UploadPumkMitraBinaan::find((int)$this->mb_upload);
-            $param['perusahaan_id'] = $perusahaan->id;
-            $param['tahun'] = $this->tahun;
-            $param['berhasil'] = $berhasil;
-            $param['kode_upload'] = $kode;
-            $param['gagal'] = $gagal;
-            $param['keterangan'] = $keterangan;
-            $mb_upload->update($param);  
+            // cek no id
+            try{
+                $no_id = strlen($ar['no_identitas']) == 16? true : false;
+                if(!$no_id){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Nomor Identitas Harus 16 Digit. <br>';
+                }
+            }catch(\Exception $e){
+                DB::rollback();
+                $is_gagal = true;
+                $keterangan .= 'Baris '.rtrim($ar['no']).' Nomor Identitas Harus 16 Digit.<br>';
+            }
+            // cek no pinjaman
+            if(!$is_gagal){
+                try{
+                    $nopim = $ar['no_pinjaman'] !== null? true : false;
+                    if(!$nopim){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Nomor Pinjaman Kosong.<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Nomor Pinjaman Kosong.<br>';
+                }
+            } 
+            // cek tgl awal
+            if(!$is_gagal){
+                try{
+                    $tglawal = $ar['tgl_awal_pendanaan'] !== null? true : false;
+                    if(!$tglawal){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Tanggal Awal Pendanaan Kosong.<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Tanggal Awal Pendanaan Kosong.<br>';
+                }
+            } 
+            // cek Sumber dana
+            if(!$is_gagal){
+                try{
+                    $p = $ar['sumber_dana'] !== null? true : false;
+                    if(!$p){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Sumber Dana Kosong.<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Sumber Dana Kosong.<br>';
+                }
+            } 
+            // cek tgl tempo
+            if(!$is_gagal){
+                try{
+                    $p = $ar['tgl_jatuh_tempo'] !== null? true : false;
+                    if(!$p){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Tanggal Jatuh Tempo Kosong.<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).'Tanggal Jatuh Tempo Kosong.<br>';
+                }
+            } 
+            // cek saldo pokok
+            if(!$is_gagal){
+                try{
+                    $p = $ar['saldo_pokok_pendanaan'] !== null? true : false;
+                    if(!$p){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).'Saldo Pokok Pendanaan Kosong.<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).'Saldo Pokok Pendanaan Kosong.<br>';
+                }
+            } 
+            // cek saldo jasa Admin pendanaan
+            if(!$is_gagal){
+                try{
+                    $p = $ar['saldo_jasa_admin_pendanaan'] !== null? true : false;
+                    if(!$p){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).'Saldo Jasa Admin Pendanaan Kosong.<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).'Saldo Jasa Admin Pendanaan Kosong.<br>';
+                }
+            } 
+            // cek penerimaan_pokok_bulan_berjalan
+            if(!$is_gagal){
+                try{
+                    $p = $ar['penerimaan_pokok_bulan_berjalan'] !== null? true : false;
+                    if(!$p){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).'Penerimaan Pokok Bulan Berjalan Kosong.<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).'Penerimaan Pokok Bulan Berjalan Kosong.<br>';
+                }
+            } 
+            // cek penerimaan_Jasa Admin_bulan_berjalan
+            if(!$is_gagal){
+                try{
+                    $p = $ar['penerimaan_jasa_admin_bulan_berjalan'] !== null? true : false;
+                    if(!$p){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).'Penerimaan Jasa Admin Bulan Berjalan Kosong.<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).'Penerimaan Jasa Admin Bulan Berjalan Kosong.<br>';
+                }
+            } 
+            // cek tgl_penerimaan_terakhir
+            if(!$is_gagal){
+                try{
+                    $p = $ar['tgl_penerimaan_terakhir'] !== null? true : false;
+                    if(!$p){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).'Tanggal Penerimaan Terakhir Kosong.<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).'Tanggal Penerimaan Terakhir Kosong.<br>';
+                }
+            } 
+
+            // cek provinsi 
+            if(!$is_gagal){
+                try{
+                    $provinsi = Provinsi::find(rtrim($ar['id_provinsi']));
+                    if(!$provinsi){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Provinsi tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Provinsi tidak sesuai referensi<br>';
+                }
+            }         
+            // cek kota
+            if(!$is_gagal){
+                try{
+                    $kota = Kota::find(rtrim($ar['id_kota']));
+                    if(!$kota){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai referensi<br>';
+                }
+            }
+            // cek relasi provinsi kota
+            if(!$is_gagal){
+                try{
+                    $kota = Kota::where('id',rtrim($ar['id_kota']))
+                                ->where('provinsi_id',rtrim($ar['id_provinsi']))
+                                ->first();
+                    if(!$kota){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai Provinsi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai Provinsi<br>';
+                }
+            }
+            // cek sektor
+            if(!$is_gagal){
+                try{
+                    $sektor = SektorUsaha::find(rtrim($ar['id_sektor_usaha']));
+                    if(!$sektor){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Sektor Usaha tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Sektor Usaha tidak sesuai referensi<br>';
+                }
+            }
+            // cek Skala
+            if(!$is_gagal){
+                try{
+                    $skala = SkalaUsaha::find(rtrim($ar['id_skala_usaha']));
+                    if(!$skala){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Skala Usaha tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Skala Usaha tidak sesuai referensi<br>';
+                }
+            }
+            // cek Cara Penyaluran / Pelaksanaan Program
+            if(!$is_gagal){
+                try{
+                    $pp = CaraPenyaluran::find(rtrim($ar['id_pelaksanaan_program']));
+                    if(!$pp){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Pelaksanaan Program tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Pelaksanaan Program tidak sesuai referensi<br>';
+                }
+            }            
+            // cek Kolektibilitas
+            if(!$is_gagal){
+                try{
+                    $kolek = KolekbilitasPendanaan::find(rtrim($ar['id_kolektibilitas_pendanaan']));
+                    if(!$kolek){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kolektibilitas tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kolektibilitas tidak sesuai referensi<br>';
+                }
+            }    
+            // cek KondisiPinjaman
+            if(!$is_gagal){
+                try{
+                    $kondisi = KondisiPinjaman::find(rtrim($ar['id_kondisi_pinjaman']));
+                    if(!$kondisi){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kondisi Pinjaman tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kondisi Pinjaman tidak sesuai referensi<br>';
+                }
+            } 
+            // cek Jenis Pembayaran
+            if(!$is_gagal){
+                try{
+                    $jenis = JenisPembayaran::find(rtrim($ar['id_jenis_pembayaran']));
+                    if(!$jenis){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Jenis Pembayaran tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Jenis Pembayaran tidak sesuai referensi<br>';
+                }
+            } 
+            // cek Jenis Pembayaran
+            if(!$is_gagal){
+                try{
+                    $bank = BankAccount::find(rtrim($ar['id_bank_account']));
+                    if(!$bank){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Bank Account tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Bank Account tidak sesuai referensi<br>';
+                }
+            }
+            
+            if(!$is_gagal){
+                try{
+                    $bank = BankAccount::find(rtrim($ar['id_bank_account']));
+                    if(!$bank){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Bank Account tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Bank Account tidak sesuai referensi<br>';
+                }
+            }
+
+            //proses
+            // cek kegiatan
+            if(!$is_gagal){
+                try{
+                    $cek_identitas = 0;
+                    $cek_kolektibilitas = 0;
+                    $s_gagal = false;
+    
+                    //cek apakah no identitas belum ada dan kolek belum lunas? jika ya create
+                    $cek_identitas = PumkMitraBinaan::where('no_identitas',$ar['no_identitas'] )
+                                     ->count();
+                    $cek_kolektibilitas = PumkMitraBinaan::where('kolektibilitas_id',(int)$ar['id_kolektibilitas_pendanaan'] )
+                                     ->count();
+
+                    //buat data baru jika identitas & kolek belum ada
+                    if(($cek_identitas && $cek_kolektibilitas) == 0 ){
+                        $mitra = PumkMitraBinaan::create([
+                            'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
+                            'no_identitas' => rtrim($ar['no_identitas']),
+                            'provinsi_id' => rtrim($ar['id_provinsi']),
+                            'kota_id' => rtrim($ar['id_kota']),
+                            'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
+                            'skala_usaha_id' => rtrim($ar['id_skala_usaha']),
+                            'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']),
+                            'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
+                            'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
+                            'jenis_pembayaran_id' => rtrim($ar['id_jenis_pembayaran']),
+                            'bank_account_id' => rtrim($ar['id_bank_account']),
+                            'nilai_aset' => rtrim($ar['nilai_aset']),
+                            'nilai_omset' => rtrim($ar['nilai_omset']),
+                            'no_pinjaman' => rtrim($ar['no_pinjaman']),
+                            'sumber_dana' => rtrim($ar['sumber_dana']),
+                            'tgl_awal' => Date::excelToDateTimeObject($ar['tgl_awal_pendanaan'])->format('d-m-Y'),
+                            'tgl_jatuh_tempo' => Date::excelToDateTimeObject($ar['tgl_jatuh_tempo'])->format('d-m-Y'),
+                            'nominal_pendanaan' => rtrim($ar['nominal_pendanaan']),
+                            'saldo_pokok_pendanaan' => rtrim($ar['saldo_pokok_pendanaan']),
+                            'saldo_jasa_adm_pendanaan' => rtrim($ar['saldo_jasa_admin_pendanaan']),
+                            'penerimaan_pokok_bulan_berjalan' => rtrim($ar['penerimaan_pokok_bulan_berjalan']),
+                            'penerimaan_jasa_adm_bulan_berjalan' => rtrim($ar['penerimaan_jasa_admin_bulan_berjalan']),
+                            'tgl_penerimaan_terakhir' => Date::excelToDateTimeObject($ar['tgl_penerimaan_terakhir'])->format('d-m-Y'),
+                            'jumlah_sdm' => $ar['sdm_di_mb'] ? rtrim($ar['sdm_di_mb']):0,
+                            'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
+                            'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
+                            'hasil_produk_jasa' => $ar['produkjasa_yang_dihasilkan'] ? rtrim($ar['produkjasa_yang_dihasilkan']):0,
+                            'created_by_id' => \Auth::user()->id,
+                            'perusahaan_id' => $perusahaan->id,
+                            'kode_upload' => $kode,
+                            'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):2
+                        ]);
+                        $berhasil++;
+                    }else{
+                        if($ar['id_tambahan_pendanaan'] == 1){
+                            $mitra = PumkMitraBinaan::create([
+                                'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
+                                'no_identitas' => rtrim($ar['no_identitas']),
+                                'provinsi_id' => rtrim($ar['id_provinsi']),
+                                'kota_id' => rtrim($ar['id_kota']),
+                                'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
+                                'skala_usaha_id' => rtrim($ar['id_skala_usaha']),
+                                'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']),
+                                'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
+                                'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
+                                'jenis_pembayaran_id' => rtrim($ar['id_jenis_pembayaran']),
+                                'bank_account_id' => rtrim($ar['id_bank_account']),
+                                'nilai_aset' => rtrim($ar['nilai_aset']),
+                                'nilai_omset' => rtrim($ar['nilai_omset']),
+                                'no_pinjaman' => rtrim($ar['no_pinjaman']),
+                                'sumber_dana' => rtrim($ar['sumber_dana']),
+                                'tgl_awal' => Date::excelToDateTimeObject($ar['tgl_awal_pendanaan'])->format('d-m-Y'),
+                                'tgl_jatuh_tempo' => Date::excelToDateTimeObject($ar['tgl_jatuh_tempo'])->format('d-m-Y'),
+                                'nominal_pendanaan' => rtrim($ar['nominal_pendanaan']),
+                                'saldo_pokok_pendanaan' => rtrim($ar['saldo_pokok_pendanaan']),
+                                'saldo_jasa_adm_pendanaan' => rtrim($ar['saldo_jasa_admin_pendanaan']),
+                                'penerimaan_pokok_bulan_berjalan' => rtrim($ar['penerimaan_pokok_bulan_berjalan']),
+                                'penerimaan_jasa_adm_bulan_berjalan' => rtrim($ar['penerimaan_jasa_admin_bulan_berjalan']),
+                                'tgl_penerimaan_terakhir' => Date::excelToDateTimeObject($ar['tgl_penerimaan_terakhir'])->format('d-m-Y'),
+                                'jumlah_sdm' => $ar['sdm_di_mb'] ? rtrim($ar['sdm_di_mb']):0,
+                                'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
+                                'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
+                                'hasil_produk_jasa' => $ar['produkjasa_yang_dihasilkan'] ? rtrim($ar['produkjasa_yang_dihasilkan']):0,
+                                'created_by_id' => \Auth::user()->id,
+                                'perusahaan_id' => $perusahaan->id,
+                                'kode_upload' => $kode,
+                                'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):2
+                            ]);
+                            $berhasil++;
+                        }else{
+                            $mitra = PumkMitraBinaan::where('no_identitas',$ar['no_identitas'])
+                            ->where('kolektibilitas_id',(int)$ar['id_kolektibilitas_pendanaan'])
+                            ->update([
+                            'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
+                            //'no_identitas' => rtrim($ar['no_identitas']),
+                            'provinsi_id' => rtrim($ar['id_provinsi']),
+                            'kota_id' => rtrim($ar['id_kota']),
+                            'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
+                            'skala_usaha_id' => rtrim($ar['id_skala_usaha']),
+                            'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']),
+                            'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
+                            'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
+                            'jenis_pembayaran_id' => rtrim($ar['id_jenis_pembayaran']),
+                            'bank_account_id' => rtrim($ar['id_bank_account']),
+                            'nilai_aset' => rtrim($ar['nilai_aset']),
+                            'nilai_omset' => rtrim($ar['nilai_omset']),
+                            'no_pinjaman' => rtrim($ar['no_pinjaman']),
+                            'sumber_dana' => rtrim($ar['sumber_dana']),
+                            'tgl_awal' => Date::excelToDateTimeObject($ar['tgl_awal_pendanaan'])->format('d-m-Y'),
+                            'tgl_jatuh_tempo' => Date::excelToDateTimeObject($ar['tgl_jatuh_tempo'])->format('d-m-Y'),
+                            'nominal_pendanaan' => rtrim($ar['nominal_pendanaan']),
+                            'saldo_pokok_pendanaan' => rtrim($ar['saldo_pokok_pendanaan']),
+                            'saldo_jasa_adm_pendanaan' => rtrim($ar['saldo_jasa_admin_pendanaan']),
+                            'penerimaan_pokok_bulan_berjalan' => rtrim($ar['penerimaan_pokok_bulan_berjalan']),
+                            'penerimaan_jasa_adm_bulan_berjalan' => rtrim($ar['penerimaan_jasa_admin_bulan_berjalan']),
+                            'tgl_penerimaan_terakhir' => Date::excelToDateTimeObject($ar['tgl_penerimaan_terakhir'])->format('d-m-Y'),
+                            'jumlah_sdm' => $ar['sdm_di_mb'] ? rtrim($ar['sdm_di_mb']):0,
+                            'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
+                            'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
+                            'hasil_produk_jasa' => $ar['produkjasa_yang_dihasilkan'] ? rtrim($ar['produkjasa_yang_dihasilkan']):0,
+                            'created_by_id' => \Auth::user()->id,
+                            'perusahaan_id' => $perusahaan->id,
+                            'kode_upload' => $kode,
+                            'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):2
+                            ]);
+                            $berhasil++;
+                        }
+
+                    }
+                }catch(\Exception $e){dd($e->getMessage());
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' isian tidak sesuai Referensi<br>';
+                }
+            }
+
+            // simpan data gagal
+            if($is_gagal){
+                try{
+                        // record data invalid identitas ke gagal upload
+                        //$keterangan_gagal = 'no.identitas tidak valid/lebih dari 16 angka';
+                        $mitra = UploadGagalPumkMitraBinaan::create([
+                            'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
+                            'no_identitas' => rtrim($ar['no_identitas']),
+                            'provinsi_id' => rtrim($ar['id_provinsi']),
+                            'kota_id' => rtrim($ar['id_kota']),
+                            'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
+                            'skala_usaha_id' => rtrim($ar['id_skala_usaha']),
+                            'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']),
+                            'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
+                            'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
+                            'jenis_pembayaran_id' => rtrim($ar['id_jenis_pembayaran']),
+                            'bank_account_id' => rtrim($ar['id_bank_account']),
+                            'nilai_aset' => rtrim($ar['nilai_aset']),
+                            'nilai_omset' => rtrim($ar['nilai_omset']),
+                            'no_pinjaman' => rtrim($ar['no_pinjaman']),
+                            'sumber_dana' => rtrim($ar['sumber_dana']),
+                            'tgl_awal' => Date::excelToDateTimeObject($ar['tgl_awal_pendanaan'])->format('d-m-Y'),
+                            'tgl_jatuh_tempo' => Date::excelToDateTimeObject($ar['tgl_jatuh_tempo'])->format('d-m-Y'),
+                            'nominal_pendanaan' => rtrim($ar['nominal_pendanaan']),
+                            'saldo_pokok_pendanaan' => rtrim($ar['saldo_pokok_pendanaan']),
+                            'saldo_jasa_adm_pendanaan' => rtrim($ar['saldo_jasa_admin_pendanaan']),
+                            'penerimaan_pokok_bulan_berjalan' => rtrim($ar['penerimaan_pokok_bulan_berjalan']),
+                            'penerimaan_jasa_adm_bulan_berjalan' => rtrim($ar['penerimaan_jasa_admin_bulan_berjalan']),
+                            'tgl_penerimaan_terakhir' => Date::excelToDateTimeObject($ar['tgl_penerimaan_terakhir'])->format('d-m-Y'),
+                            'jumlah_sdm' => $ar['sdm_di_mb'] ? rtrim($ar['sdm_di_mb']):0,
+                            'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
+                            'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
+                            'hasil_produk_jasa' => $ar['produkjasa_yang_dihasilkan'] ? rtrim($ar['produkjasa_yang_dihasilkan']):0,
+                            'created_by_id' => \Auth::user()->id,
+                            'perusahaan_id' => $perusahaan->id,
+                            'kode_upload' => $kode,
+                            'keterangan_gagal' => $keterangan,
+                            'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):2
+                        ]);
+                    $gagal++;
+                }catch(\Exception $e){dd($e->getMessage());
+                    DB::rollback();
+                }
+            } 
         }
+        $mb_upload = UploadPumkMitraBinaan::find((int)$this->mb_upload);
+        $param['perusahaan_id'] = $perusahaan->id;
+        $param['tahun'] = $this->tahun;
+        $param['berhasil'] = $berhasil;
+        $param['kode_upload'] = $kode;
+        $param['gagal'] = $gagal;
+        $param['keterangan'] = $keterangan;
+        $mb_upload->update($param); 
+        DB::commit();            
 
     }
 
