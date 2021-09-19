@@ -13,7 +13,6 @@ use Datatables;
 use PDF;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Models\AnggaranTpb;
 use App\Models\Perusahaan;
 use App\Models\User;
 use App\Models\PeriodeLaporan;
@@ -57,30 +56,6 @@ class AnggaranController extends Controller
             }
         }
 
-        // $anggaran_pumk = PumkAnggaran::select('pumk_anggarans.*','perusahaans.nama_singkat AS bumn_singkat','periode_laporans.nama AS periode','statuses.nama AS status')
-        //                 ->leftJoin('perusahaans','perusahaans.id','pumk_anggarans.bumn_id')
-        //                 ->leftJoin('periode_laporans', 'periode_laporans.id', 'pumk_anggarans.periode_id')
-        //                 ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id');
-                                        
-        // if($perusahaan_id){
-        //     $anggaran_pumk  = $anggaran_pumk->where('bumn_id', (int)$perusahaan_id);
-        // }
-
-        // if($request->periode_id){
-        //     $anggaran_pumk  = $anggaran_pumk->where('periode_id', (int)$request->periode_id);
-        // }
-
-        // if($request->status_id){
-        //     $anggaran_pumk  = $anggaran_pumk->where('status_id', (int)$request->status_id);
-        // }
-
-        // if($request->tahun){
-        //     $anggaran_pumk  = $anggaran_pumk->where('tahun', $request->tahun);
-        // }        
-        
-        // $anggaran_pumk = $anggaran_pumk->orderBy('tahun','desc')->get();
-
-
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
@@ -92,7 +67,6 @@ class AnggaranController extends Controller
             'filter_periode_id' => $request->periode_id,
             'filter_status_id' => $request->status_id,
             'filter_tahun' => $request->tahun,
-            // 'anggaran_pumk' => $anggaran_pumk,
             'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
             'status' => Status::get()
         ]);
@@ -773,5 +747,90 @@ class AnggaranController extends Controller
         ]);
 
         return $pdf_doc->download('Data_PUMK_'.date('d_m_Y').'.pdf');
-    }   
+    }
+    
+    public static function sync()
+    {  
+
+        $bumn = Perusahaan::select('id','nama_lengkap')->where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get();
+        $pumk = PumkAnggaran::select('pumk_anggarans.*','periode_laporans.nama AS periode')
+                ->leftjoin('periode_laporans','periode_laporans.id','pumk_anggarans.periode_id')
+                ->where('periode_laporans.nama','RKA')
+                ->get();
+
+        if($pumk->isEmpty()){
+            foreach($bumn as $k=>$b){
+                        try{
+                                $data = PumkAnggaran::create([
+                                    'tahun' => date('Y'),
+                                    'bumn_id' => $b->id,
+                                    'periode_id' => DB::table('periode_laporans')->where('nama','RKA')->pluck('id')->first(),
+                                    'status_id' => DB::table('statuses')->where('nama','Unfilled')->pluck('id')->first()
+                                ]);
+    
+                             if($data){
+                                 DB::commit();
+                                 $result = [
+                                 'flag'  => 'success',
+                                 'msg' => 'Sukses tambah data',
+                                 'title' => 'Sukses'
+                                 ];
+                             }
+                         }catch(\Exception $e){
+                             DB::rollback();
+                             $result = [
+                             'flag'  => 'warning',
+                             'msg' => $e->getMessage(),
+                             'title' => 'Gagal'
+                             ];
+                        }
+            }                              
+        }else{
+
+            $compare = ($bumn->count()) == ($pumk->count())? true : false;
+
+            if(!$compare){
+                foreach($bumn as $k=>$b){
+                    foreach($pumk as $key=>$p){
+                        if($b->id !== $p->bumn_id){
+                            try{
+                                    $data = PumkAnggaran::create([
+                                        'tahun' => date('Y'),
+                                        'bumn_id' => $b->id,
+                                        'periode_id' => DB::table('periode_laporans')->where('nama','RKA')->pluck('id')->first(),
+                                        'status_id' => DB::table('statuses')->where('nama','Unfilled')->pluck('id')->first()
+                                    ]);
+
+                                if($data){
+                                     DB::commit();
+                                     $result = [
+                                     'flag'  => 'success',
+                                     'msg' => 'Sukses tambah data',
+                                     'title' => 'Sukses'
+                                     ];
+                                 }
+                             }catch(\Exception $e){
+                                 DB::rollback();
+                                 $result = [
+                                 'flag'  => 'warning',
+                                 'msg' => $e->getMessage(),
+                                 'title' => 'Gagal'
+                                 ];
+                            }
+                        }
+
+                    }
+                }
+            }
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Data Sudah Lengkap.',
+                'title' => 'Tidak menyinkronkan!'
+            ];
+
+        }                              
+       
+      return response()->json($result);
+
+    }
 }
