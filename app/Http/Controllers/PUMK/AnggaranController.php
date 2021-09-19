@@ -423,17 +423,17 @@ class AnggaranController extends Controller
                                 $validasi = true;
                                 $param = $request->all();
                                 $param = $request->except(['actionform','id','_token']);
-                                $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^0-9]/','',$request->saldo_awal);
-                                $param['income_mitra_binaan'] = $request->income_mitra_binaan == null? 0 : preg_replace('/[^0-9]/','',$request->income_mitra_binaan);
-                                $param['income_bumn_pembina_lain'] = $request->income_bumn_pembina_lain == null? 0 : preg_replace('/[^0-9]/','',$request->income_bumn_pembina_lain);
-                                $param['income_jasa_adm_pumk'] = $request->income_jasa_adm_pumk == null? 0 : preg_replace('/[^0-9]/','',$request->income_jasa_adm_pumk);
-                                $param['income_adm_bank'] = $request->income_adm_bank == null? 0 : preg_replace('/[^0-9]/','',$request->income_adm_bank);
-                                $param['income_total'] = $request->income_total == null? 0 : preg_replace('/[^0-9]/','',$request->income_total);
-                                $param['outcome_mandiri'] = $request->outcome_mandiri == null? 0 : preg_replace('/[^0-9]/','',$request->outcome_mandiri);
-                                $param['outcome_kolaborasi_bumn'] = $request->outcome_kolaborasi_bumn == null? 0 : preg_replace('/[^0-9]/','',$request->outcome_kolaborasi_bumn);
-                                $param['outcome_bumn_khusus'] = $request->outcome_bumn_khusus == null? 0 :preg_replace('/[^0-9]/','',$request->outcome_bumn_khusus);
-                                $param['outcome_total'] = $request->outcome_total == null? 0 :preg_replace('/[^0-9]/','',$request->outcome_total);
-                                $param['saldo_akhir'] = $request->saldo_akhir == null? 0 :preg_replace('/[^0-9]/','',$request->saldo_akhir);
+                                $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^-0-9]/','',$request->saldo_awal);
+                                $param['income_mitra_binaan'] = $request->income_mitra_binaan == null? 0 : preg_replace('/[^-0-9]/','',$request->income_mitra_binaan);
+                                $param['income_bumn_pembina_lain'] = $request->income_bumn_pembina_lain == null? 0 : preg_replace('/[^-0-9]/','',$request->income_bumn_pembina_lain);
+                                $param['income_jasa_adm_pumk'] = $request->income_jasa_adm_pumk == null? 0 : preg_replace('/[^-0-9]/','',$request->income_jasa_adm_pumk);
+                                $param['income_adm_bank'] = $request->income_adm_bank == null? 0 : preg_replace('/[^-0-9]/','',$request->income_adm_bank);
+                                $param['income_total'] = $request->income_total == null? 0 : preg_replace('/[^-0-9]/','',$request->income_total);
+                                $param['outcome_mandiri'] = $request->outcome_mandiri == null? 0 : preg_replace('/[^-0-9]/','',$request->outcome_mandiri);
+                                $param['outcome_kolaborasi_bumn'] = $request->outcome_kolaborasi_bumn == null? 0 : preg_replace('/[^-0-9]/','',$request->outcome_kolaborasi_bumn);
+                                $param['outcome_bumn_khusus'] = $request->outcome_bumn_khusus == null? 0 :preg_replace('/[^-0-9]/','',$request->outcome_bumn_khusus);
+                                $param['outcome_total'] = $request->outcome_total == null? 0 :preg_replace('/[^-0-9]/','',$request->outcome_total);
+                                $param['saldo_akhir'] = $request->saldo_akhir == null? 0 :preg_replace('/[^-0-9]/','',$request->saldo_akhir);
                                 $param['created_by'] = \Auth::user()->id;
                                 $param['created_at'] = now();
                                 if($param['saldo_awal'] == 0 || $param['saldo_awal'] == null || $param['saldo_awal'] == ""){
@@ -475,7 +475,7 @@ class AnggaranController extends Controller
                                 $param = $request->all();
 
                                 $param = $request->except(['actionform','_token','bumn_id']);
-                                $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^0-9]/','',$request->saldo_awal);
+                                $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^-0-9]/','',$request->saldo_awal);
                                 if((int)$param['saldo_awal'] !== 0){
                                     $status_ids = (int)$param['status_id'];
                                     $status = Status::find((int)$status_ids);
@@ -495,16 +495,16 @@ class AnggaranController extends Controller
                                     $param['status_id'] = $data_status;
                                 }
                                 
-                                $param['income_mitra_binaan'] = $request->income_mitra_binaan == null? 0 : preg_replace('/[^0-9]/','',$request->income_mitra_binaan);
-                                $param['income_bumn_pembina_lain'] = $request->income_bumn_pembina_lain == null? 0 : preg_replace('/[^0-9]/','',$request->income_bumn_pembina_lain);
-                                $param['income_jasa_adm_pumk'] = $request->income_jasa_adm_pumk == null? 0 : preg_replace('/[^0-9]/','',$request->income_jasa_adm_pumk);
-                                $param['income_adm_bank'] = $request->income_adm_bank == null? 0 : preg_replace('/[^0-9]/','',$request->income_adm_bank);
-                                $param['income_total'] = $request->income_total == null? 0 : preg_replace('/[^0-9]/','',$request->income_total);
-                                $param['outcome_mandiri'] = $request->outcome_mandiri == null? 0 : preg_replace('/[^0-9]/','',$request->outcome_mandiri);
-                                $param['outcome_kolaborasi_bumn'] = $request->outcome_kolaborasi_bumn == null? 0 : preg_replace('/[^0-9]/','',$request->outcome_kolaborasi_bumn);
-                                $param['outcome_bumn_khusus'] = $request->outcome_bumn_khusus == null? 0 :preg_replace('/[^0-9]/','',$request->outcome_bumn_khusus);
-                                $param['outcome_total'] = $request->outcome_total == null? 0 :preg_replace('/[^0-9]/','',$request->outcome_total);
-                                $param['saldo_akhir'] = $request->saldo_akhir == null? 0 :preg_replace('/[^0-9]/','',$request->saldo_akhir);
+                                $param['income_mitra_binaan'] = $request->income_mitra_binaan == null? 0 : preg_replace('/[^-0-9]/','',$request->income_mitra_binaan);
+                                $param['income_bumn_pembina_lain'] = $request->income_bumn_pembina_lain == null? 0 : preg_replace('/[^-0-9]/','',$request->income_bumn_pembina_lain);
+                                $param['income_jasa_adm_pumk'] = $request->income_jasa_adm_pumk == null? 0 : preg_replace('/[^-0-9]/','',$request->income_jasa_adm_pumk);
+                                $param['income_adm_bank'] = $request->income_adm_bank == null? 0 : preg_replace('/[^-0-9]/','',$request->income_adm_bank);
+                                $param['income_total'] = $request->income_total == null? 0 : preg_replace('/[^-0-9]/','',$request->income_total);
+                                $param['outcome_mandiri'] = $request->outcome_mandiri == null? 0 : preg_replace('/[^-0-9]/','',$request->outcome_mandiri);
+                                $param['outcome_kolaborasi_bumn'] = $request->outcome_kolaborasi_bumn == null? 0 : preg_replace('/[^-0-9]/','',$request->outcome_kolaborasi_bumn);
+                                $param['outcome_bumn_khusus'] = $request->outcome_bumn_khusus == null? 0 :preg_replace('/[^-0-9]/','',$request->outcome_bumn_khusus);
+                                $param['outcome_total'] = $request->outcome_total == null? 0 :preg_replace('/[^-0-9]/','',$request->outcome_total);
+                                $param['saldo_akhir'] = $request->saldo_akhir == null? 0 :preg_replace('/[^-0-9]/','',$request->saldo_akhir);
                                 $param['updated_by'] = \Auth::user()->id; 
                                 $param['updated_at'] = now(); 
                                 $data = PumkAnggaran::find($param['id']);
