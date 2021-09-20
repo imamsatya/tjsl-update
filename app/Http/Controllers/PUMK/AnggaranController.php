@@ -732,6 +732,7 @@ class AnggaranController extends Controller
             }
 
         $pdf_doc = PDF::loadView($this->__route.'.export_pdf',[
+        // return view($this->__route.'.export_pdf',[ //test by html
             'data' => $data,
             'data_rka' => $data_rka,
             'p_saldo_awal' => $p_saldo_awal,
