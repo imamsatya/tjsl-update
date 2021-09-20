@@ -1,7 +1,7 @@
 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
 	@csrf
 	{{-- <input type="hidden" name="id" id="id" readonly="readonly" value="{{ (int)$data->id }}" /> --}}
-    <input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
+    <input type="hidden" name="versi_id" id="versi_id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : $data->id}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
 
     <div class="form-group row mb-5">
