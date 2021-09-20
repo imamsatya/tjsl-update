@@ -23,9 +23,9 @@ class MitraBinaanTemplateExport implements FromView , WithTitle
     public function view(): View
     { 
       $data = [];
-      if(!empty($this->perusahaan)){
-         $data = PumkMitraBinaan::where('perusahaan_id',$this->perusahaan->id)->get();
-      } 
+    //   if(!empty($this->perusahaan)){
+    //      $data = PumkMitraBinaan::where('perusahaan_id',$this->perusahaan->id)->get();
+    //   } 
       $perusahaan = empty($this->perusahaan)? 'PT/PERUM ... ' : $this->perusahaan->nama_lengkap; 
       
       return view('pumk.upload_data_mitra.template', [

@@ -117,7 +117,7 @@
                     <div class="table-responsive"  >
                         <table class="table table-striped table-bordered table-hover table-checkable" id="datatable">
                             <thead>
-                                <tr style="background-color:#c4e4e4; ">
+                                <tr style="border-top: ridge;">
                                     <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No</th>
                                     <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Tahun</th>
                                     <th style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">BUMN</th>

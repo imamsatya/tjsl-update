@@ -37,12 +37,6 @@
             <textarea class="form-control" name="keterangan" id="keterangan" required/>{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $data->keterangan != ''? $data->keterangan : old('keterangan'))}}</textarea>
         </div>
     </div>
-    <div class="form-group row mb-5">
-        <div class="col-lg-6">
-            <label>Nama Indikator</label>
-            <input type="text" class="form-control" name="nama" id="nama" value="{{!empty(old('nama'))? old('nama') : ($actionform == 'update' && $data->nama != ''? $data->nama : old('nama'))}}"/>
-        </div>
-    </div>
     <div class="text-center pt-15">
         <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" data-kt-roles-modal-action="cancel">Discard</button>
         <button id="submit" type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">

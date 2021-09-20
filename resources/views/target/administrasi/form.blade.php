@@ -53,8 +53,8 @@
             </select>
         </div>
         <div class="col-lg-6">
-            <label>Pelaksanaaan Program</label>
-            <select class="form-select form-select-solid form-select2" name="cara_penyaluran_id" data-kt-select2="true" data-placeholder="Pilih Pelaksanaaan Program" data-dropdown-parent="#winform" required>
+            <label>Pelaksanaan Program</label>
+            <select class="form-select form-select-solid form-select2" name="cara_penyaluran_id" data-kt-select2="true" data-placeholder="Pilih Pelaksanaan Program" data-dropdown-parent="#winform" required>
                 <option></option>
                 @foreach($cara_penyaluran as $p)  
                     @php

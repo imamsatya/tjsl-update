@@ -222,6 +222,14 @@
                                     @endforeach
                                 @endforeach
                             @endforeach
+                            @if($total==0)
+                                <td></td>
+                                <td style="text-align:left;">-</td>
+                                <td style="text-align:center;">-</td>
+                                <td style="text-align:center;">-</td>
+                                <td style="text-align:center;"><span class="btn cls-log badge badge-light-warning fw-bolder me-auto px-4 py-3">Unfilled</span></td>
+                                <td></td>
+                            @endif
                             </tbody>
                             <tfoot>
                                 <tr>
@@ -351,7 +359,7 @@
     function onbtnvalidasi(){
         swal.fire({
             title: "Pemberitahuan",
-            text: "Validasi Data Target TPB "+$("#perusahaan_id option:selected").text() +" tahun "+$("#tahun").val()+" ?",
+            text: "Validasi Data Program "+$("#perusahaan_id option:selected").text() +" tahun "+$("#tahun").val()+" ?",
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, Validasi",
@@ -523,7 +531,7 @@
                 var yyyy = today.getFullYear();
                 
                 today = dd + '-' + mm + '-' + yyyy;
-                var filename = 'Data Target TPB '+today+'.xlsx';
+                var filename = 'Rekap Data Program '+today+'.xlsx';
 
                 var blob = new Blob([data], {
                     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -589,7 +597,7 @@
             },
             success: function(data){
                 $.unblockUI();
-                var filename = 'Template Data Target TPB.xlsx';
+                var filename = 'Template Data Program.xlsx';
 
                 var blob = new Blob([data], {
                     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'

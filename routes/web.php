@@ -276,7 +276,6 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             });
 
         });
-
         
         Route::prefix('target')->group(function () {
             Route::prefix('administrasi')->group(function(){
@@ -311,6 +310,8 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('store', 'App\Http\Controllers\Target\UploadTargetController@store')->name('target.upload_target.store');
                 Route::post('delete', 'App\Http\Controllers\Target\UploadTargetController@delete')->name('target.upload_target.delete');
                 Route::get('datatable', 'App\Http\Controllers\Target\UploadTargetController@datatable')->name('target.upload_target.datatable');
+                Route::post('export_berhasil', 'App\Http\Controllers\Target\UploadTargetController@export_berhasil')->name('target.upload_target.export_berhasil');
+                Route::post('export_gagal', 'App\Http\Controllers\Target\UploadTargetController@export_gagal')->name('target.upload_target.export_gagal');
             });
         });
         
@@ -338,6 +339,8 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('store', 'App\Http\Controllers\Realisasi\UploadRealisasiController@store')->name('realisasi.upload_realisasi.store');
                 Route::post('delete', 'App\Http\Controllers\Realisasi\UploadRealisasiController@delete')->name('realisasi.upload_realisasi.delete');
                 Route::get('datatable', 'App\Http\Controllers\Realisasi\UploadRealisasiController@datatable')->name('realisasi.upload_realisasi.datatable');
+                Route::post('export_berhasil', 'App\Http\Controllers\Realisasi\UploadRealisasiController@export_berhasil')->name('realisasi.upload_target.export_berhasil');
+                Route::post('export_gagal', 'App\Http\Controllers\Realisasi\UploadRealisasiController@export_gagal')->name('realisasi.upload_target.export_gagal');
             });
         });
         
@@ -419,6 +422,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('show', 'App\Http\Controllers\PUMK\AnggaranController@show')->name('pumk.anggaran.show');
                 Route::post('export', 'App\Http\Controllers\PUMK\AnggaranController@export')->name('pumk.anggaran.export');
                 Route::post('log', 'App\Http\Controllers\PUMK\AnggaranController@log_status')->name('pumk.anggaran.log');
+                Route::get('bumn-sync', 'App\Http\Controllers\PUMK\AnggaranController@sync')->name('pumk.anggaran.sync');
                 Route::get('create-pdf/{id?}', 'App\Http\Controllers\PUMK\AnggaranController@exportPDF')->name('pumk.anggaran.create-pdf');
             });
 
@@ -429,6 +433,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('delete', 'App\Http\Controllers\PUMK\MitraBinaanController@delete')->name('pumk.data_mitra.delete');
                 Route::post('edit', 'App\Http\Controllers\PUMK\MitraBinaanController@edit')->name('pumk.data_mitra.edit');
                 Route::post('store', 'App\Http\Controllers\PUMK\MitraBinaanController@store')->name('pumk.data_mitra.store');
+                Route::post('export', 'App\Http\Controllers\PUMK\MitraBinaanController@export')->name('pumk.data_mitra.export');
             });
 
             Route::prefix('upload_data_mitra')->group(function(){

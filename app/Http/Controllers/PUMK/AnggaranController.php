@@ -13,7 +13,6 @@ use Datatables;
 use PDF;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Models\AnggaranTpb;
 use App\Models\Perusahaan;
 use App\Models\User;
 use App\Models\PeriodeLaporan;
@@ -57,30 +56,6 @@ class AnggaranController extends Controller
             }
         }
 
-        // $anggaran_pumk = PumkAnggaran::select('pumk_anggarans.*','perusahaans.nama_singkat AS bumn_singkat','periode_laporans.nama AS periode','statuses.nama AS status')
-        //                 ->leftJoin('perusahaans','perusahaans.id','pumk_anggarans.bumn_id')
-        //                 ->leftJoin('periode_laporans', 'periode_laporans.id', 'pumk_anggarans.periode_id')
-        //                 ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id');
-                                        
-        // if($perusahaan_id){
-        //     $anggaran_pumk  = $anggaran_pumk->where('bumn_id', (int)$perusahaan_id);
-        // }
-
-        // if($request->periode_id){
-        //     $anggaran_pumk  = $anggaran_pumk->where('periode_id', (int)$request->periode_id);
-        // }
-
-        // if($request->status_id){
-        //     $anggaran_pumk  = $anggaran_pumk->where('status_id', (int)$request->status_id);
-        // }
-
-        // if($request->tahun){
-        //     $anggaran_pumk  = $anggaran_pumk->where('tahun', $request->tahun);
-        // }        
-        
-        // $anggaran_pumk = $anggaran_pumk->orderBy('tahun','desc')->get();
-
-
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
@@ -92,7 +67,6 @@ class AnggaranController extends Controller
             'filter_periode_id' => $request->periode_id,
             'filter_status_id' => $request->status_id,
             'filter_tahun' => $request->tahun,
-            // 'anggaran_pumk' => $anggaran_pumk,
             'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
             'status' => Status::get()
         ]);
@@ -148,7 +122,7 @@ class AnggaranController extends Controller
             }        
 
             $data = $anggaran_pumk->orderBy('perusahaans.nama_singkat','asc')->orderBy('periode_laporans.nama','asc');
-
+            
             return datatables()->of($data->get())
             ->editColumn('outcome_total', function ($row){
                 $nominal = 0;
@@ -185,18 +159,36 @@ class AnggaranController extends Controller
             ->addColumn('action', function ($p){
                 $id = (int)$p->id;
                 if($p->status !== 'Finish'){
-                    $btn = '<div style="width:120px;text-align:center;"><span>
-                    <button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Edit data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-pencil fs-3"></i></button>
-                    <button type="button" class="btn btn-sm btn-warning btn-icon cls-button-update-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="update status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-check fs-3"></i></button>
-                    <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pumkanggaran" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Hapus data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-trash fs-3"></i></button>
-                    <button style="display: none;" type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Lihat detail data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-info fs-3"></i></button>
-                    </span><div>
-                    ';
+
+                    if($p->periode !== 'RKA'){
+                        $btn = '<div style="width:120px;text-align:center;"><span>
+                        <button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Edit data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-pencil fs-3"></i></button>
+                        <button type="button" class="btn btn-sm btn-warning btn-icon cls-button-update-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="update status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-check fs-3"></i></button>
+                        <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pumkanggaran" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Hapus data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-trash fs-3"></i></button>
+                        <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Lihat detail data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-info fs-3"></i></button>
+                        </span><div>
+                        ';
+                    }else{
+                        $btn = '<div style="width:120px;text-align:center;"><span>
+                        <button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Edit data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-pencil fs-3"></i></button>
+                        <button type="button" class="btn btn-sm btn-warning btn-icon cls-button-update-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="update status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-check fs-3"></i></button>
+                        <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pumkanggaran" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Hapus data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-trash fs-3"></i></button>
+                        </span><div>
+                        ';
+                    }
                    
                 }else{
-                    $btn = '
-                    <button type="button" class="btn btn-sm btn-secondary btn-icon cls-button-aktivasi-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'"" data-toggle="tooltip" title="Aktivasi kembali status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-layer-backward fs-3"></i></button>
-                    ';
+
+                    if($p->periode !== 'RKA'){
+                        $btn = '
+                        <button type="button" class="btn btn-sm btn-secondary btn-icon cls-button-aktivasi-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'"" data-toggle="tooltip" title="Aktivasi kembali status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-layer-backward fs-3"></i></button>
+                        <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Lihat detail data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-info fs-3"></i></button>
+                        ';
+                    }else{
+                        $btn = '
+                        <button type="button" class="btn btn-sm btn-secondary btn-icon cls-button-aktivasi-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'"" data-toggle="tooltip" title="Aktivasi kembali status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-layer-backward fs-3"></i></button>
+                        ';                    
+                    }
                 }
                 return $btn;
 
@@ -405,17 +397,17 @@ class AnggaranController extends Controller
                                 $validasi = true;
                                 $param = $request->all();
                                 $param = $request->except(['actionform','id','_token']);
-                                $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^0-9]/','',$request->saldo_awal);
-                                $param['income_mitra_binaan'] = $request->income_mitra_binaan == null? 0 : preg_replace('/[^0-9]/','',$request->income_mitra_binaan);
-                                $param['income_bumn_pembina_lain'] = $request->income_bumn_pembina_lain == null? 0 : preg_replace('/[^0-9]/','',$request->income_bumn_pembina_lain);
-                                $param['income_jasa_adm_pumk'] = $request->income_jasa_adm_pumk == null? 0 : preg_replace('/[^0-9]/','',$request->income_jasa_adm_pumk);
-                                $param['income_adm_bank'] = $request->income_adm_bank == null? 0 : preg_replace('/[^0-9]/','',$request->income_adm_bank);
-                                $param['income_total'] = $request->income_total == null? 0 : preg_replace('/[^0-9]/','',$request->income_total);
-                                $param['outcome_mandiri'] = $request->outcome_mandiri == null? 0 : preg_replace('/[^0-9]/','',$request->outcome_mandiri);
-                                $param['outcome_kolaborasi_bumn'] = $request->outcome_kolaborasi_bumn == null? 0 : preg_replace('/[^0-9]/','',$request->outcome_kolaborasi_bumn);
-                                $param['outcome_bumn_khusus'] = $request->outcome_bumn_khusus == null? 0 :preg_replace('/[^0-9]/','',$request->outcome_bumn_khusus);
-                                $param['outcome_total'] = $request->outcome_total == null? 0 :preg_replace('/[^0-9]/','',$request->outcome_total);
-                                $param['saldo_akhir'] = $request->saldo_akhir == null? 0 :preg_replace('/[^0-9]/','',$request->saldo_akhir);
+                                $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^-0-9]/','',$request->saldo_awal);
+                                $param['income_mitra_binaan'] = $request->income_mitra_binaan == null? 0 : preg_replace('/[^-0-9]/','',$request->income_mitra_binaan);
+                                $param['income_bumn_pembina_lain'] = $request->income_bumn_pembina_lain == null? 0 : preg_replace('/[^-0-9]/','',$request->income_bumn_pembina_lain);
+                                $param['income_jasa_adm_pumk'] = $request->income_jasa_adm_pumk == null? 0 : preg_replace('/[^-0-9]/','',$request->income_jasa_adm_pumk);
+                                $param['income_adm_bank'] = $request->income_adm_bank == null? 0 : preg_replace('/[^-0-9]/','',$request->income_adm_bank);
+                                $param['income_total'] = $request->income_total == null? 0 : preg_replace('/[^-0-9]/','',$request->income_total);
+                                $param['outcome_mandiri'] = $request->outcome_mandiri == null? 0 : preg_replace('/[^-0-9]/','',$request->outcome_mandiri);
+                                $param['outcome_kolaborasi_bumn'] = $request->outcome_kolaborasi_bumn == null? 0 : preg_replace('/[^-0-9]/','',$request->outcome_kolaborasi_bumn);
+                                $param['outcome_bumn_khusus'] = $request->outcome_bumn_khusus == null? 0 :preg_replace('/[^-0-9]/','',$request->outcome_bumn_khusus);
+                                $param['outcome_total'] = $request->outcome_total == null? 0 :preg_replace('/[^-0-9]/','',$request->outcome_total);
+                                $param['saldo_akhir'] = $request->saldo_akhir == null? 0 :preg_replace('/[^-0-9]/','',$request->saldo_akhir);
                                 $param['created_by'] = \Auth::user()->id;
                                 $param['created_at'] = now();
                                 if($param['saldo_awal'] == 0 || $param['saldo_awal'] == null || $param['saldo_awal'] == ""){
@@ -457,7 +449,7 @@ class AnggaranController extends Controller
                                 $param = $request->all();
 
                                 $param = $request->except(['actionform','_token','bumn_id']);
-                                $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^0-9]/','',$request->saldo_awal);
+                                $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^-0-9]/','',$request->saldo_awal);
                                 if((int)$param['saldo_awal'] !== 0){
                                     $status_ids = (int)$param['status_id'];
                                     $status = Status::find((int)$status_ids);
@@ -477,16 +469,16 @@ class AnggaranController extends Controller
                                     $param['status_id'] = $data_status;
                                 }
                                 
-                                $param['income_mitra_binaan'] = $request->income_mitra_binaan == null? 0 : preg_replace('/[^0-9]/','',$request->income_mitra_binaan);
-                                $param['income_bumn_pembina_lain'] = $request->income_bumn_pembina_lain == null? 0 : preg_replace('/[^0-9]/','',$request->income_bumn_pembina_lain);
-                                $param['income_jasa_adm_pumk'] = $request->income_jasa_adm_pumk == null? 0 : preg_replace('/[^0-9]/','',$request->income_jasa_adm_pumk);
-                                $param['income_adm_bank'] = $request->income_adm_bank == null? 0 : preg_replace('/[^0-9]/','',$request->income_adm_bank);
-                                $param['income_total'] = $request->income_total == null? 0 : preg_replace('/[^0-9]/','',$request->income_total);
-                                $param['outcome_mandiri'] = $request->outcome_mandiri == null? 0 : preg_replace('/[^0-9]/','',$request->outcome_mandiri);
-                                $param['outcome_kolaborasi_bumn'] = $request->outcome_kolaborasi_bumn == null? 0 : preg_replace('/[^0-9]/','',$request->outcome_kolaborasi_bumn);
-                                $param['outcome_bumn_khusus'] = $request->outcome_bumn_khusus == null? 0 :preg_replace('/[^0-9]/','',$request->outcome_bumn_khusus);
-                                $param['outcome_total'] = $request->outcome_total == null? 0 :preg_replace('/[^0-9]/','',$request->outcome_total);
-                                $param['saldo_akhir'] = $request->saldo_akhir == null? 0 :preg_replace('/[^0-9]/','',$request->saldo_akhir);
+                                $param['income_mitra_binaan'] = $request->income_mitra_binaan == null? 0 : preg_replace('/[^-0-9]/','',$request->income_mitra_binaan);
+                                $param['income_bumn_pembina_lain'] = $request->income_bumn_pembina_lain == null? 0 : preg_replace('/[^-0-9]/','',$request->income_bumn_pembina_lain);
+                                $param['income_jasa_adm_pumk'] = $request->income_jasa_adm_pumk == null? 0 : preg_replace('/[^-0-9]/','',$request->income_jasa_adm_pumk);
+                                $param['income_adm_bank'] = $request->income_adm_bank == null? 0 : preg_replace('/[^-0-9]/','',$request->income_adm_bank);
+                                $param['income_total'] = $request->income_total == null? 0 : preg_replace('/[^-0-9]/','',$request->income_total);
+                                $param['outcome_mandiri'] = $request->outcome_mandiri == null? 0 : preg_replace('/[^-0-9]/','',$request->outcome_mandiri);
+                                $param['outcome_kolaborasi_bumn'] = $request->outcome_kolaborasi_bumn == null? 0 : preg_replace('/[^-0-9]/','',$request->outcome_kolaborasi_bumn);
+                                $param['outcome_bumn_khusus'] = $request->outcome_bumn_khusus == null? 0 :preg_replace('/[^-0-9]/','',$request->outcome_bumn_khusus);
+                                $param['outcome_total'] = $request->outcome_total == null? 0 :preg_replace('/[^-0-9]/','',$request->outcome_total);
+                                $param['saldo_akhir'] = $request->saldo_akhir == null? 0 :preg_replace('/[^-0-9]/','',$request->saldo_akhir);
                                 $param['updated_by'] = \Auth::user()->id; 
                                 $param['updated_at'] = now(); 
                                 $data = PumkAnggaran::find($param['id']);
@@ -740,6 +732,7 @@ class AnggaranController extends Controller
             }
 
         $pdf_doc = PDF::loadView($this->__route.'.export_pdf',[
+        // return view($this->__route.'.export_pdf',[ //test by html
             'data' => $data,
             'data_rka' => $data_rka,
             'p_saldo_awal' => $p_saldo_awal,
@@ -755,5 +748,90 @@ class AnggaranController extends Controller
         ]);
 
         return $pdf_doc->download('Data_PUMK_'.date('d_m_Y').'.pdf');
-    }   
+    }
+    
+    public static function sync()
+    {  
+
+        $bumn = Perusahaan::select('id','nama_lengkap')->where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get();
+        $pumk = PumkAnggaran::select('pumk_anggarans.*','periode_laporans.nama AS periode')
+                ->leftjoin('periode_laporans','periode_laporans.id','pumk_anggarans.periode_id')
+                ->where('periode_laporans.nama','RKA')
+                ->get();
+
+        if($pumk->isEmpty()){
+            foreach($bumn as $k=>$b){
+                        try{
+                                $data = PumkAnggaran::create([
+                                    'tahun' => date('Y'),
+                                    'bumn_id' => $b->id,
+                                    'periode_id' => DB::table('periode_laporans')->where('nama','RKA')->pluck('id')->first(),
+                                    'status_id' => DB::table('statuses')->where('nama','Unfilled')->pluck('id')->first()
+                                ]);
+    
+                             if($data){
+                                 DB::commit();
+                                 $result = [
+                                 'flag'  => 'success',
+                                 'msg' => 'Sukses tambah data',
+                                 'title' => 'Sukses'
+                                 ];
+                             }
+                         }catch(\Exception $e){
+                             DB::rollback();
+                             $result = [
+                             'flag'  => 'warning',
+                             'msg' => $e->getMessage(),
+                             'title' => 'Gagal'
+                             ];
+                        }
+            }                              
+        }else{
+
+            $compare = ($bumn->count()) == ($pumk->count())? true : false;
+
+            if(!$compare){
+                foreach($bumn as $k=>$b){
+                    foreach($pumk as $key=>$p){
+                        if($b->id !== $p->bumn_id){
+                            try{
+                                    $data = PumkAnggaran::create([
+                                        'tahun' => date('Y'),
+                                        'bumn_id' => $b->id,
+                                        'periode_id' => DB::table('periode_laporans')->where('nama','RKA')->pluck('id')->first(),
+                                        'status_id' => DB::table('statuses')->where('nama','Unfilled')->pluck('id')->first()
+                                    ]);
+
+                                if($data){
+                                     DB::commit();
+                                     $result = [
+                                     'flag'  => 'success',
+                                     'msg' => 'Sukses tambah data',
+                                     'title' => 'Sukses'
+                                     ];
+                                 }
+                             }catch(\Exception $e){
+                                 DB::rollback();
+                                 $result = [
+                                 'flag'  => 'warning',
+                                 'msg' => $e->getMessage(),
+                                 'title' => 'Gagal'
+                                 ];
+                            }
+                        }
+
+                    }
+                }
+            }
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Data Sudah Lengkap.',
+                'title' => 'Tidak menyinkronkan!'
+            ];
+
+        }                              
+       
+      return response()->json($result);
+
+    }
 }

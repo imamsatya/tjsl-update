@@ -3,13 +3,13 @@ namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
-use App\Exports\KegiatanTemplateExport;
 
-class KegiatanTemplateExcelSheet implements WithMultipleSheets
+class RealisasiGagalExcelSheet implements WithMultipleSheets
 {
     use Exportable;
     
-     public function __construct($perusahaan,$bulan,$tahun){
+     public function __construct($kegiatan,$perusahaan,$bulan,$tahun){
+        $this->kegiatan = $kegiatan ;
         $this->perusahaan = $perusahaan ;
         $this->bulan = $bulan ;
         $this->tahun = $tahun ;
@@ -21,7 +21,7 @@ class KegiatanTemplateExcelSheet implements WithMultipleSheets
     public function sheets(): array
     {
         $sheets = [];
-        $sheets[] = new KegiatanTemplateExport($this->perusahaan,$this->bulan,$this->tahun);
+        $sheets[] = new RealisasiGagalExport($this->kegiatan,$this->perusahaan,$this->bulan,$this->tahun);
         $sheets[] = new ReferensiKegiatan($this->perusahaan);
         $sheets[] = new ReferensiProgram($this->perusahaan);
         $sheets[] = new ReferensiProvinsi();

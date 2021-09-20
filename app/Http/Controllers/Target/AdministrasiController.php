@@ -41,7 +41,7 @@ class AdministrasiController extends Controller
     public function __construct()
     {
         $this->__route = 'target.administrasi';
-        $this->pagetitle = 'Data Target TPB';
+        $this->pagetitle = 'Data Program';
     }
 
     /**
@@ -106,17 +106,21 @@ class AdministrasiController extends Controller
                                         'anggaran_tpbs.perusahaan_id',
                                         'pilar_pembangunans.nama', 
                                         'pilar_pembangunans.id')
+                            ->where('anggaran_tpbs.status_id',1)
                             ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
                             ->get();
         $anggaran_bumn = $anggaran_bumn->select('anggaran_tpbs.perusahaan_id', 
                                                 'perusahaans.nama_lengkap',
                                                 'perusahaans.id',
                                                 DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'))
+                            ->where('anggaran_tpbs.status_id',1)
                             ->groupBy('anggaran_tpbs.perusahaan_id')
                             ->groupBy('perusahaans.nama_lengkap')
                             ->groupBy('perusahaans.id')
                             ->get();
-        $anggaran = $anggaran->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')->orderBy('no_tpb')->get();
+        $anggaran = $anggaran->where('anggaran_tpbs.status_id',1)
+                            ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
+                            ->orderBy('no_tpb')->get();
 
         $target = TargetTpb::get();
         if($request->status_id){
@@ -125,7 +129,7 @@ class AdministrasiController extends Controller
 
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
-            'breadcrumb' => 'Target - Administrasi',
+            'breadcrumb' => 'Program - Administrasi',
             'pilar' => PilarPembangunan::get(),
             'status' => Status::get(),
             'tpb' => Tpb::get(),
@@ -386,7 +390,7 @@ class AdministrasiController extends Controller
     {
         $perusahaan_id =  ($request->perusahaan_id?$request->perusahaan_id:1);
         $perusahaan = Perusahaan::where('id', $perusahaan_id)->first();
-        $namaFile = "Template Data Target TPB.xlsx";
+        $namaFile = "Template Data Program.xlsx";
         
         return Excel::download(new TargetTemplateExcelSheet($perusahaan), $namaFile);
     }
@@ -437,7 +441,7 @@ class AdministrasiController extends Controller
 
         $target = $target->get();
 
-        $namaFile = "Data Target TPB ".date('dmY').".xlsx";
+        $namaFile = "Data Program ".date('dmY').".xlsx";
         return Excel::download(new TargetTpbExport($target,$request->tahun), $namaFile);
     }
     
@@ -487,7 +491,7 @@ class AdministrasiController extends Controller
 
             $target_tpb = $target->get();
             foreach($target_tpb as $a){
-                AdministrasiController::store_log($a->id,$a->status_id);
+                AdministrasiController::store_log($a->id,$request->status_id);
             }
 
             $target->update($param);

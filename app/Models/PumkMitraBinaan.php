@@ -22,6 +22,6 @@ class PumkMitraBinaan extends Model
         'penerimaan_jasa_adm_bulan_berjalan', 'tgl_penerimaan_terakhir', 
         'jumlah_sdm', 'kelebihan_angsuran', 'subsektor', 
         'hasil_produk_jasa', 'created_by_id', 
-        'updated_by_id', 'created_at', 'updated_at'
+        'updated_by_id', 'created_at', 'updated_at', 'id_tambahan_pendanaan'
     ];
 }

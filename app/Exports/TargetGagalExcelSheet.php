@@ -4,12 +4,14 @@ namespace App\Exports;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class TargetTemplateExcelSheet implements WithMultipleSheets
+class TargetGagalExcelSheet implements WithMultipleSheets
 {
     use Exportable;
     
-     public function __construct($perusahaan){
+     public function __construct($target,$perusahaan,$tahun){
+        $this->target = $target ;
         $this->perusahaan = $perusahaan ;
+        $this->tahun = $tahun ;
      }
 
     /**
@@ -18,7 +20,7 @@ class TargetTemplateExcelSheet implements WithMultipleSheets
     public function sheets(): array
     {
         $sheets = [];
-        $sheets[] = new TargetTemplateExport($this->perusahaan);
+        $sheets[] = new TargetGagalExport($this->target,$this->perusahaan,$this->tahun);
         $sheets[] = new ReferensiJenisProgram();
         $sheets[] = new ReferensiCoreSubject();
         $sheets[] = new ReferensiTpb($this->perusahaan);

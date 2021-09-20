@@ -16,6 +16,10 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 use App\Models\AnggaranTpb;
 use App\Models\TargetTpb;
+use App\Models\Provinsi;
+use App\Models\Kota;
+use App\Models\KodeIndikator;
+use App\Models\SatuanUkur;
 use App\Models\Perusahaan;
 use App\Models\Kegiatan;
 use App\Models\KegiatanRealisasi;
@@ -44,6 +48,7 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
 
     public function collection(Collection $row)
     {
+        $bulan = '';
         if($this->bulan == 1){
             $bulan = 'januari';
         }else if($this->bulan == 2){
@@ -77,118 +82,213 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
         foreach ($row as $ar) {
             $anggaran = false;
             $target = false;
-            $s_gagal = false;
+            $is_gagal = false;
             $param_alokasi = 'alokasi_anggaran_tahun_'.$this->tahun.'_rp';
             $param_target= 'target_bulan_'.$bulan;
             $param_realisasi= 'realisasi_bulan_'.$bulan;
             $param_anggaran= 'realisasi_anggaran_bulan_'.$bulan;
 
+            // cek target tpb/program
             try{
-                $kegiatan = Kegiatan::where('target_tpb_id',rtrim($ar['id_program']))
-                                    ->where('kegiatan',rtrim($ar['kegiatan']))
-                                    ->where('provinsi_id',rtrim($ar['id_propinsi_kegiatan']))
-                                    ->where('kota_id',rtrim($ar['id_kabupaten_kotamadya_kegiatan']));
-                
-                if($kegiatan->count()>0){
-                    $kegiatan = $kegiatan->first();
-                    $kegiatan->update([
-                        'indikator' => rtrim($ar['indikator_capaian_kegiatan']) ,
-                        'satuan_ukur_id' => rtrim($ar['id_satuan_ukur']) ,
-                        'anggaran_alokasi' => rtrim($ar[$param_alokasi]) ,
-                    ]);
-                }else{
-                    $kegiatan = Kegiatan::create([
+                $program = TargetTpb::find(rtrim($ar['id_program']));
+                if(!$program){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Program tidak sesuai referensi<br>';
+                }
+            }catch(\Exception $e){
+                DB::rollback();
+                $is_gagal = true;
+                $keterangan .= 'Baris '.rtrim($ar['no']).' Data Program tidak sesuai referensi<br>';
+            }
+            
+            // cek input angka numeric
+            if(!$is_gagal){
+                if(!is_numeric($ar[$param_alokasi])){
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Alokasi Anggaran harus angka<br>';
+                }
+                if(!is_numeric($ar[$param_anggaran])){
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Realisasi Anggaran harus angka<br>';
+                }
+                if(!is_numeric($ar[$param_target])){
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Target harus angka<br>';
+                }
+                if(!is_numeric($ar[$param_realisasi])){
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Realisasi harus angka<br>';
+                }
+            }
+
+            // cek provinsi 
+            if(!$is_gagal){
+                try{
+                    $provinsi = Provinsi::find(rtrim($ar['id_provinsi_kegiatan']));
+                    if(!$provinsi){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Provinsi tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Provinsi tidak sesuai referensi<br>';
+                }
+            }
+
+            // cek kota
+            if(!$is_gagal){
+                try{
+                    $kota = Kota::find(rtrim($ar['id_kabupaten_kotamadya_kegiatan']));
+                    if(!$kota){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai referensi<br>';
+                }
+            }
+
+            // cek relasi provinsi kota
+            if(!$is_gagal){
+                try{
+                    $kota = Kota::where('id',rtrim($ar['id_kabupaten_kotamadya_kegiatan']))
+                                ->where('provinsi_id',rtrim($ar['id_provinsi_kegiatan']))
+                                ->first();
+                    if(!$kota){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai Provinsi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai Provinsi<br>';
+                }
+            }
+
+            // cek satuan ukur
+            if(!$is_gagal){
+                try{
+                    $ukur = SatuanUkur::find(rtrim($ar['id_satuan_ukur']));
+                    if(!$ukur){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Satuan Ukur tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Satuan Ukur tidak sesuai referensi<br>';
+                }
+            }
+
+            // cek kegiatan
+            if(!$is_gagal){
+                try{
+                    $kegiatan = Kegiatan::where('target_tpb_id',rtrim($ar['id_program']))
+                                        ->where('kegiatan',rtrim($ar['kegiatan']))
+                                        ->where('provinsi_id',rtrim($ar['id_provinsi_kegiatan']))
+                                        ->where('kota_id',rtrim($ar['id_kabupaten_kotamadya_kegiatan']));
+                    
+                    if($kegiatan->count()>0){
+                        $kegiatan = $kegiatan->first();
+                        $kegiatan->update([
+                            'indikator' => rtrim($ar['indikator_capaian_kegiatan']) ,
+                            'satuan_ukur_id' => rtrim($ar['id_satuan_ukur']) ,
+                            'anggaran_alokasi' => rtrim($ar[$param_alokasi]) ,
+                        ]);
+                    }else{
+                        $kegiatan = Kegiatan::create([
+                            'target_tpb_id' => rtrim($ar['id_program']) ,
+                            'kegiatan' => rtrim($ar['kegiatan']) ,
+                            'provinsi_id' => rtrim($ar['id_provinsi_kegiatan']) ,
+                            'kota_id' => rtrim($ar['id_kabupaten_kotamadya_kegiatan']) ,
+                            'indikator' => rtrim($ar['indikator_capaian_kegiatan']) ,
+                            'satuan_ukur_id' => rtrim($ar['id_satuan_ukur']) ,
+                            'anggaran_alokasi' => rtrim($ar[$param_alokasi]) ,
+                        ]);
+                    }
+
+                    $realisasi = KegiatanRealisasi::where('kegiatan_id',$kegiatan->id)
+                                            ->where('bulan', $this->bulan)
+                                            ->where('tahun', $this->tahun)
+                                            ->get();
+
+                    if($realisasi->count()==0){
+                        $realisasi = KegiatanRealisasi::create([
+                            'kegiatan_id' => $kegiatan->id,
+                            'bulan' => $this->bulan,
+                            'tahun' => $this->tahun,
+                            'status_id' => 2,
+                            'target' => rtrim($ar[$param_target]),
+                            'realisasi' => rtrim($ar[$param_realisasi]),
+                            'anggaran' => rtrim($ar[$param_anggaran]),
+                            'file_name' => $this->nama_file,
+                        ]);
+
+                        $realisasi_total = KegiatanRealisasi::select(DB::Raw('sum(kegiatan_realisasis.anggaran) as total'))
+                                                            ->where('kegiatan_id',$kegiatan->id)
+                                                            ->where('bulan','<',$this->bulan)
+                                                            ->where('tahun',$this->tahun)
+                                                            ->first();
+                        $paramr['anggaran_total'] = (int)$realisasi_total->total + $realisasi->anggaran;
+                        $realisasi->update((array)$paramr);
+
+                        AdministrasiController::store_log($realisasi->id,$realisasi->status_id);
+                        $berhasil++;
+                    }else{
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' data realisasi bulan tersebut sudah ada<br>';
+                    }
+
+                }catch(\Exception $e){dd($e->getMessage());
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' isian tidak sesuai Referensi<br>';
+                }
+            }
+
+            // simpan data gagal
+            if($is_gagal){
+                try{
+                    $realisasi = RealisasiUploadGagal::create([
+                        'realisasi_upload_id' => $this->realisasi_upload,
                         'target_tpb_id' => rtrim($ar['id_program']) ,
                         'kegiatan' => rtrim($ar['kegiatan']) ,
-                        'provinsi_id' => rtrim($ar['id_propinsi_kegiatan']) ,
+                        'provinsi_id' => rtrim($ar['id_provinsi_kegiatan']) ,
                         'kota_id' => rtrim($ar['id_kabupaten_kotamadya_kegiatan']) ,
                         'indikator' => rtrim($ar['indikator_capaian_kegiatan']) ,
                         'satuan_ukur_id' => rtrim($ar['id_satuan_ukur']) ,
                         'anggaran_alokasi' => rtrim($ar[$param_alokasi]) ,
-                    ]);
-                }
-
-                $realisasi = KegiatanRealisasi::where('kegiatan_id',$kegiatan->id)
-                                        ->where('bulan', $this->bulan)
-                                        ->where('tahun', $this->tahun)
-                                        ->get();
-
-                if($realisasi->count()==0){
-                    $realisasi = KegiatanRealisasi::create([
-                        'kegiatan_id' => $kegiatan->id,
                         'bulan' => $this->bulan,
                         'tahun' => $this->tahun,
-                        'status_id' => 2,
                         'target' => rtrim($ar[$param_target]),
                         'realisasi' => rtrim($ar[$param_realisasi]),
                         'anggaran' => rtrim($ar[$param_anggaran]),
                     ]);
-
-                    $realisasi_total = KegiatanRealisasi::select(DB::Raw('sum(kegiatan_realisasis.anggaran) as total'))
-                                                        ->where('kegiatan_id',$kegiatan->id)
-                                                        ->where('bulan','<',$this->bulan)
-                                                        ->where('tahun',$this->tahun)
-                                                        ->first();
-                    $paramr['anggaran_total'] = (int)$realisasi_total->total + $realisasi->anggaran;
-                    $realisasi->update((array)$paramr);
-
-                    AdministrasiController::store_log($realisasi->id,$realisasi->status_id);
-                }
-
-            }catch(\Exception $e){dd($e->getMessage());
-                DB::rollback();
-
-                $gagal++;
-                $s_gagal = true;
-                $keterangan .= 'Baris '.rtrim($ar['no']).' isian tidak sesuai Referensi<br>';
-            }
-
-            if($target){
-                try{
-                    if($ar['id_mitra_bumn'] != ''){
-                        $mitra = explode(",", $ar['id_mitra_bumn']);
-                        $mitra = array_map('trim',$mitra);
-                        $target->mitra_bumn()->sync($mitra);
-                    }
-                    DB::commit();
-                    $berhasil++;
-                }catch(\Exception $e){
-                    DB::rollback();
-                    
                     $gagal++;
-                    $s_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Mitra BUMN tidak ditemukan<br>';
+                }catch(\Exception $e){dd($e->getMessage());
+                    DB::rollback();
                 }
-            }
-            
-            // if($s_gagal){
-            //     try{
-            //         $target = TargetUploadGagal::create([
-            //             'target_upload_id' => $this->target_upload,
-            //             'program' => rtrim($ar['program']) ,
-            //             'unit_owner' => rtrim($ar['unit_owner']),
-            //             'jenis_program_id' => rtrim($ar['id_kriteria_program']) ,
-            //             'core_subject_id'   => rtrim($ar['id_core_subject_iso_26000']) ,
-            //             'tpb_id' => rtrim($ar['id_tpb']) ,
-            //             'kode_indikator_id' => rtrim($ar['id_kode_indikator']) ,
-            //             'cara_penyaluran_id' => rtrim($ar['id_cara_penyaluran']) ,
-            //             'jangka_waktu' => rtrim($ar['jangka_waktu_penerapan_dalam_tahun']) ,
-            //             'anggaran_alokasi' => rtrim($ar['alokasi_anggaran_tahun_2021_dalam_rupiah']) ,
-            //         ]);
-            //         DB::commit();
-            //     }catch(\Exception $e){
-            //         DB::rollback();
-            //     }
-            // } 
+            } 
         }
-        
+        //update data realisasi upload
         $realisasi_upload = RealisasiUpload::find((int)$this->realisasi_upload);
         $param['perusahaan_id'] = $perusahaan->id;
+        $param['bulan'] = $this->bulan;
         $param['tahun'] = $this->tahun;
         $param['berhasil'] = $berhasil;
         $param['gagal'] = $gagal;
         $param['keterangan'] = $keterangan;
         $realisasi_upload->update($param);
+        DB::commit();
     }
 
     public function headingRow(): int

@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
         SilabaBumnSync::class,
         ProvinsiKotaSync::class,
         BankAccountSync::class,
+        ValidasiKegiatan::class,
     ];
 
     /**
@@ -27,7 +28,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        //service validasi data kegiatan dilakukan setiap tanggal 15 jam 2:00
+        $schedule->command('validasi:kegiatan')->monthlyOn(15, '02:00');
     }
 
     /**

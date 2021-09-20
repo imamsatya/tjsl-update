@@ -59,73 +59,74 @@
                             </tr>
                             <tr>
                                 <td class="text-left">Saldo Awal</td>
-                                <td class="text-right">{{$data_rka->saldo_awal == null? 0 : number_format($data_rka->saldo_awal,0,'.','.')}}</td>
-                                <td class="text-right">{{$data->saldo_awal == null? 0 : number_format($data->saldo_awal,0,'.','.')}}</td>
-                                <td class="text-right">{{number_format($p_saldo_awal, 2, ',', ' ')}}</td>
+                                <td class="text-right">{{ $data_rka->saldo_awal == null? 0 : (substr($data_rka->saldo_awal,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data_rka->saldo_awal,0,'.','.')).')' : number_format($data_rka->saldo_awal,0,'.','.')) }}</td>
+                                <td class="text-right">{{ $data->saldo_awal == null? 0 : (substr($data->saldo_awal,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data->saldo_awal,0,'.','.')).')' : number_format($data->saldo_awal,0,'.','.')) }}</td>
+                                <td class="text-right">{{$p_saldo_awal == null? 0 : (substr($p_saldo_awal,0,1) == "-"? '('.preg_replace('/-/',"",number_format($p_saldo_awal, 2, ',', ' ')).')' : number_format($p_saldo_awal, 2, ',', ' '))}}</td>
                             </tr>
                             <tr>
                                 <td class="text-left">Pengembalian Dana Dari Mitra Binaan</td>
-                                <td class="text-right">{{$data_rka->income_mitra_binaan == null? 0 : number_format($data_rka->income_mitra_binaan,0,'.','.')}}</td>
-                                <td class="text-right">{{$data->income_mitra_binaan == null? 0 : number_format($data->income_mitra_binaan,0,'.','.')}}</td>
-                                <td class="text-right">{{number_format($p_income_mitra_binaan, 2, ',', ' ')}}</td>
+                                <td class="text-right">{{ $data_rka->income_mitra_binaan == null? 0 : (substr($data_rka->income_mitra_binaan,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data_rka->income_mitra_binaan,0,'.','.')).')' : number_format($data_rka->income_mitra_binaan,0,'.','.')) }}</td>
+                                <td class="text-right">{{ $data->income_mitra_binaan == null? 0 : (substr($data->income_mitra_binaan,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data->income_mitra_binaan,0,'.','.')).')' : number_format($data->income_mitra_binaan,0,'.','.')) }}</td>
+                                <td class="text-right">{{$p_income_mitra_binaan == null? 0 : (substr($p_income_mitra_binaan,0,1) == "-"? '('.preg_replace('/-/',"",number_format($p_income_mitra_binaan, 2, ',', ' ')).')' : number_format($p_income_mitra_binaan, 2, ',', ' '))}}</td>
                             </tr>
                             <tr>
                                 <td class="text-left">Pengembalian Dana Dari BUMN Pembina Lain</td>
-                                <td class="text-right">{{$data_rka->income_bumn_pembina_lain == null? 0 : number_format($data_rka->income_bumn_pembina_lain,0,'.','.')}}</td>
-                                <td class="text-right">{{$data->income_bumn_pembina_lain == null? 0 : number_format($data->income_bumn_pembina_lain,0,'.','.')}}</td>
-                                <td class="text-right">{{number_format($p_income_bumn_pembina_lain, 2, ',', ' ')}}</td>
+                                <td class="text-right">{{ $data_rka->income_bumn_pembina_lain == null? 0 : (substr($data_rka->income_bumn_pembina_lain,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data_rka->income_bumn_pembina_lain,0,'.','.')).')' : number_format($data_rka->income_bumn_pembina_lain,0,'.','.')) }}</td>
+                                <td class="text-right">{{$data->income_bumn_pembina_lain == null? 0 : (substr($data->income_bumn_pembina_lain,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data->income_bumn_pembina_lain,0,'.','.')).')' : number_format($data->income_bumn_pembina_lain,0,'.','.'))}}</td>
+                                <td class="text-right">{{$p_income_bumn_pembina_lain == null? 0 : (substr($p_income_bumn_pembina_lain,0,1) == "-"? '('.preg_replace('/-/',"",number_format($p_income_bumn_pembina_lain, 2, ',', ' ')).')' : number_format($p_income_bumn_pembina_lain, 2, ',', ' '))}}</td>
                             </tr>
                             <tr>
                                 <td class="text-left">Pendapatan Jasa Admin PUMK</td>
-                                <td class="text-right">{{$data_rka->income_jasa_adm_pumk == null? 0 : number_format($data_rka->income_jasa_adm_pumk,0,'.','.')}}</td>
-                                <td class="text-right">{{$data->income_jasa_adm_pumk == null? 0 : number_format($data->income_jasa_adm_pumk,0,'.','.')}}</td>
-                                <td class="text-right">{{number_format($p_income_jasa_adm_pumk, 2, ',', ' ')}}</td>
+                                <td class="text-right">{{$data_rka->income_jasa_adm_pumk == null? 0 : (substr($data_rka->income_jasa_adm_pumk,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data_rka->income_jasa_adm_pumk,0,'.','.')).')' : number_format($data_rka->income_jasa_adm_pumk,0,'.','.'))}}</td>
+                                <td class="text-right">{{$data->income_jasa_adm_pumk == null? 0 : (substr($data->income_jasa_adm_pumk,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data->income_jasa_adm_pumk,0,'.','.')).')' : number_format($data->income_jasa_adm_pumk,0,'.','.'))}}</td>
+                                <td class="text-right">{{$p_income_jasa_adm_pumk == null? 0 : (substr($p_income_jasa_adm_pumk,0,1) == "-"? '('.preg_replace('/-/',"",number_format($p_income_jasa_adm_pumk, 2, ',', ' ')).')' : number_format($p_income_jasa_adm_pumk, 2, ',', ' '))}}</td>
                             </tr>
                             <tr>
                                 <td class="text-left">Pendapatan Jasa Bank (Net)</td>
-                                <td class="text-right">{{$data_rka->income_adm_bank == null? 0 : number_format($data_rka->income_adm_bank,0,'.','.')}}</td>
-                                <td class="text-right">{{$data->income_adm_bank == null? 0 : number_format($data->income_adm_bank,0,'.','.')}}</td>
-                                <td class="text-right">{{number_format($p_income_adm_bank, 2, ',', ' ')}}</td>
+                                <td class="text-right">{{$data_rka->income_adm_bank == null? 0 : (substr($data_rka->income_adm_bank,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data_rka->income_adm_bank,0,'.','.')).')' : number_format($data_rka->income_adm_bank,0,'.','.'))}}</td>
+                                <td class="text-right">{{$data->income_adm_bank == null? 0 : (substr($data->income_adm_bank,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data->income_adm_bank,0,'.','.')).')' : number_format($data->income_adm_bank,0,'.','.'))}}</td>
+                                <td class="text-right">{{$p_income_adm_bank == null? 0 : (substr($p_income_adm_bank,0,1) == "-"? '('.preg_replace('/-/',"",number_format($p_income_adm_bank, 2, ',', ' ')).')' : number_format($p_income_adm_bank, 2, ',', ' '))}}</td>
                             </tr>
                             <tr style="border-top:ridge;">
                                 <td class="text-left"><strong>Total Dana Tersedia</strong></td>
-                                <td class="text-right"><strong>{{$data_rka->income_total == null? 0 : number_format($data_rka->income_total,0,'.','.')}}</strong></td>
-                                <td class="text-right"><strong>{{$data->income_total == null? 0 : number_format($data->income_total,0,'.','.')}}</strong></td>
-                                <td class="text-right"><strong>{{number_format($p_income_total, 2, ',', ' ')}}</strong></td>
+                                <td class="text-right"><strong>{{$data_rka->income_total == null? 0 : (substr($data_rka->income_total,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data_rka->income_total,0,'.','.')).')' : number_format($data_rka->income_total,0,'.','.'))}}</strong></td>
+                                <td class="text-right"><strong>{{$data->income_total == null? 0 : (substr($data->income_total,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data->income_total,0,'.','.')).')' : number_format($data->income_total,0,'.','.'))}}</strong></td>
+                                <td class="text-right"><strong>{{$p_income_total == null? 0 : (substr($p_income_total,0,1) == "-"? '('.preg_replace('/-/',"",number_format($p_income_total, 2, ',', ' ')).')' : number_format($p_income_total, 2, ',', ' '))}}</strong></td>
                             </tr>
                             <tr>
                                 <td colspan="4" style="padding: 12px;background-color:#F8C471 ;"><b> II.  Dana Disalurkan </b></td>
                             </tr>               
                             <tr>
                                 <td class="text-left">Penyaluran Mandiri</td>
-                                <td class="text-right">{{$data_rka->outcome_mandiri == null? 0 : number_format($data_rka->outcome_mandiri,0,'.','.')}}</td>
-                                <td class="text-right">{{$data->outcome_mandiri == null? 0 : number_format($data->outcome_mandiri,0,'.','.')}}</td>
-                                <td class="text-right">{{number_format($p_outcome_mandiri, 2, ',', ' ')}}</td>
+                                <td class="text-right">{{$data_rka->outcome_mandiri == null? 0 : (substr($data_rka->outcome_mandiri,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data_rka->outcome_mandiri,0,'.','.')).')' : number_format($data_rka->outcome_mandiri,0,'.','.'))}}</td>
+                                <td class="text-right">{{$data->outcome_mandiri == null? 0 : (substr($data->outcome_mandiri,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data->outcome_mandiri,0,'.','.')).')' : number_format($data->outcome_mandiri,0,'.','.'))}}</td>
+                                <td class="text-right">{{$p_outcome_mandiri == null? 0 : (substr($p_outcome_mandiri,0,1) == "-"? '('.preg_replace('/-/',"",number_format($p_outcome_mandiri, 2, ',', ' ')).')' : number_format($p_outcome_mandiri, 2, ',', ' '))}}</td>
                             </tr>
                             <tr>
                                 <td class="text-left">Penyaluran Kolaborasi/BUMN</td>
-                                <td class="text-right">{{$data_rka->outcome_kolaborasi_bumn == null? 0 : number_format($data_rka->outcome_kolaborasi_bumn,0,'.','.')}}</td>
-                                <td class="text-right">{{$data->outcome_kolaborasi_bumn == null? 0 : number_format($data->outcome_kolaborasi_bumn,0,'.','.')}}</td>
-                                <td class="text-right">{{number_format($p_outcome_kolaborasi_bumn, 2, ',', ' ')}}</td>
+                                <td class="text-right">{{$data_rka->outcome_kolaborasi_bumn == null? 0 : (substr($data_rka->outcome_kolaborasi_bumn,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data_rka->outcome_kolaborasi_bumn,0,'.','.')).')' : number_format($data_rka->outcome_kolaborasi_bumn,0,'.','.'))}}</td>
+                                <td class="text-right">{{$data->outcome_kolaborasi_bumn == null? 0 : (substr($data->outcome_kolaborasi_bumn,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data->outcome_kolaborasi_bumn,0,'.','.')).')' : number_format($data->outcome_kolaborasi_bumn,0,'.','.'))}}</td>
+                                <td class="text-right">{{$p_outcome_kolaborasi_bumn == null? 0 : (substr($p_outcome_kolaborasi_bumn,0,1) == "-"? '('.preg_replace('/-/',"",number_format($p_outcome_kolaborasi_bumn, 2, ',', ' ')).')' : number_format($p_outcome_kolaborasi_bumn, 2, ',', ' '))}}</td>
                             </tr>
                             <tr>
                                 <td class="text-left">Penyaluran BUMN Khusus</td>
-                                <td class="text-right">{{$data_rka->outcome_bumn_khusus == null? 0 : number_format($data_rka->outcome_bumn_khusus,0,'.','.')}}</td>
-                                <td class="text-right">{{$data->outcome_bumn_khusus == null? 0 : number_format($data->outcome_bumn_khusus,0,'.','.')}}</td>
-                                <td class="text-right">{{number_format($p_outcome_bumn_khusus, 2, ',', ' ')}}</td>
+                                <td class="text-right">{{$data_rka->outcome_bumn_khusus == null? 0 : (substr($data_rka->outcome_bumn_khusus,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data_rka->outcome_bumn_khusus,0,'.','.')).')' : number_format($data_rka->outcome_bumn_khusus,0,'.','.'))}}</td>
+                                <td class="text-right">{{$data->outcome_bumn_khusus == null? 0 : (substr($data->outcome_bumn_khusus,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data->outcome_bumn_khusus,0,'.','.')).')' : number_format($data->outcome_bumn_khusus,0,'.','.'))}}</td>
+                                <td class="text-right">{{$p_outcome_bumn_khusus == null? 0 : (substr($p_outcome_bumn_khusus,0,1) == "-"? '('.preg_replace('/-/',"",number_format($p_outcome_bumn_khusus, 2, ',', ' ')).')' : number_format($p_outcome_bumn_khusus, 2, ',', ' '))}}</td>
                             </tr>
                             <tr style="border-top:ridge;">
                                 <td class="text-left"><strong>Total Dana Disalurkan</strong></td>
-                                <td class="text-right"><strong>{{$data_rka->outcome_total == null? 0 : number_format($data_rka->outcome_total,0,'.','.')}}</strong></td>
-                                <td class="text-right"><strong>{{$data->outcome_total == null? 0 : number_format($data->outcome_total,0,'.','.')}}</strong></td>
-                                <td class="text-right"><strong>{{number_format($p_outcome_total, 2, ',', ' ')}}</strong></td>
+                                <td class="text-right"><strong>{{$data_rka->outcome_total == null? 0 : (substr($data_rka->outcome_total,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data_rka->outcome_total,0,'.','.')).')' : number_format($data_rka->outcome_total,0,'.','.'))}}</strong></td>
+                                <td class="text-right"><strong>{{$data->outcome_total == null? 0 : (substr($data->outcome_total,0,1) == "-"? '('.preg_replace('/-/',"",number_format($data->outcome_total,0,'.','.')).')' : number_format($data->outcome_total,0,'.','.'))}}</strong></td>
+                                <td class="text-right"><strong>{{$p_outcome_total == null? 0 : (substr($p_outcome_total,0,1) == "-"? '('.preg_replace('/-/',"",number_format($p_outcome_total, 2, ',', ' ')).')' : number_format($p_outcome_total, 2, ',', ' '))}}</strong></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <br>
                 <div>
-                    <small><i>Tanggal cetak : {{date('d-m-Y')}}</i></small>
+                    <small><i>Tanggal cetak : {{date('d-m-Y')}}</i></small><br>
+                    <small><i>Sumber : {{url('/')}}</i></small>
                 </div>
         </body>
 </html>

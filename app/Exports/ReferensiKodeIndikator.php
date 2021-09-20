@@ -9,10 +9,22 @@ use Illuminate\Contracts\View\View;
 
 class ReferensiKodeIndikator implements FromView , WithTitle
 {
-     public function view(): View
+    public function __construct($perusahaan){
+        $this->perusahaan = $perusahaan ;
+    }
+    
+    public function view(): View
     {
+        $kode = KodeIndikator::Select('kode_indikators.*')
+                    ->LeftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.tpb_id','kode_indikators.tpb_id')
+                    ->LeftJoin('anggaran_tpbs','anggaran_tpbs.relasi_pilar_tpb_id','relasi_pilar_tpbs.id')
+                    ->where('anggaran_tpbs.perusahaan_id', $this->perusahaan->id)
+                    ->whereNotNull('kode_indikators.id')
+                    ->orderBy('kode_indikators.id')
+                    ->get();
+
         return view('target.administrasi.referensi_kode_indikator', [
-            'kode_indikator' => KodeIndikator::all()
+            'kode_indikator' => $kode
         ]);
     }
 

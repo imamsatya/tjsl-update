@@ -30,6 +30,7 @@ class MitraBinaanTemplateExcelSheet implements WithMultipleSheets
         $sheets[] = new ReferensiKondisiPinjaman();
         $sheets[] = new ReferensiJenisPembayaran();
         $sheets[] = new ReferensiBankAccount();
+        $sheets[] = new ReferensiTambahanPendanaan();
         return $sheets;
     }
 }

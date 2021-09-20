@@ -18,7 +18,10 @@ use App\Imports\RowImport;
 use App\Models\User;
 use App\Models\TargetTpb;
 use App\Models\TargetUpload;
+use App\Models\TargetUploadGagal;
 use App\Models\Perusahaan;
+use App\Exports\TargetBerhasilExport;
+use App\Exports\TargetGagalExcelSheet;
 
 class UploadTargetController extends Controller
 {
@@ -30,7 +33,7 @@ class UploadTargetController extends Controller
     public function __construct()
     {
         $this->__route = 'target.upload_target';
-        $this->pagetitle = 'Upload Data Target TPB';
+        $this->pagetitle = 'Upload Data Program';
     }
 
     /**
@@ -56,7 +59,7 @@ class UploadTargetController extends Controller
 
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
-            'breadcrumb' => 'Target - Upload',
+            'breadcrumb' => 'Program - Upload',
             'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'tahun' => ($request->tahun?$request->tahun:date('Y')),
@@ -82,7 +85,7 @@ class UploadTargetController extends Controller
                 $button = '<div align="center">';
 
                 if($row->berhasil>0){
-                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Download data berhasil"><i class="bi bi-download fs-3"></i></button>';
+                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-berhasil" data-id="'.$id.'" data-toggle="tooltip" title="Download data berhasil"><i class="bi bi-download fs-3"></i></button>';
                 }
 
                 $button .= '</div>';
@@ -93,7 +96,7 @@ class UploadTargetController extends Controller
                 $button = '<div align="center">';
 
                 if($row->gagal>0){
-                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-danger cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Download data gagal"><i class="bi bi-download fs-3"></i></button>';
+                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-danger cls-button-gagal" data-id="'.$id.'" data-toggle="tooltip" title="Download data gagal"><i class="bi bi-download fs-3"></i></button>';
                 }
 
                 $button .= '</div>';
@@ -260,5 +263,27 @@ class UploadTargetController extends Controller
         $fileUpload      = $file->move($destinationPath, $fileRaw);
         $data = (object) array('fileName' => $fileName, 'fileRaw' => $fileRaw, 'filePath' => $filePath);
         return $data;
+    }
+    
+    public function export_berhasil(Request $request)
+    {
+        $upload = TargetUpload::find($request->id);
+        $perusahaan = Perusahaan::find($upload->perusahaan_id);
+        $tahun = $upload->tahun;
+        $target = TargetTpb::where('file_name', $upload->file_name)->get();
+
+        $namaFile = "Data Target Berhasil Upload.xlsx";
+        return Excel::download(new TargetBerhasilExport($target,$perusahaan,$tahun), $namaFile);
+    }
+
+    public function export_gagal(Request $request)
+    {
+        $upload = TargetUpload::find($request->id);
+        $perusahaan = Perusahaan::find($upload->perusahaan_id);
+        $tahun = $upload->tahun;
+        $target = TargetUploadGagal::where('target_upload_id', $upload->id)->get();
+
+        $namaFile = "Data Target Gagal Upload.xlsx";
+        return Excel::download(new TargetGagalExcelSheet($target,$perusahaan,$tahun), $namaFile);
     }
 }
