@@ -52,10 +52,10 @@
     <td>{{$a->unit_owner}}</td>
     <td>{{@$a->jenis_program->nama}}</td>
     <td>{{@$a->core_subject->nama}}</td>
-    <td>{{@$a->indikator->kode_tujuan_tpb}}</td>
-    <td>{{@$a->indikator->keterangan_tujuan_tpb}}</td>
-    <td>{{@$a->indikator->kode}}</td>
-    <td>{{@$a->indikator->keterangan}}</td>
+    <td>{{@$a->kode_tujuan_tpb->kode}}</td>
+    <td>{{@$a->kode_tujuan_tpb->keterangan}}</td>
+    <td>{{@$a->kode_indikator->kode}}</td>
+    <td>{{@$a->kode_indikator->keterangan}}</td>
     <td>{{@$a->cara_penyaluran->nama}}</td>
     <td>
         @foreach(@$a->mitra_bumn as $p)

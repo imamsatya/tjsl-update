@@ -22,32 +22,34 @@ td{
                 <td>{{@$data->anggaran_tpb->relasi->tpb->no_tpb}} -  {{@$data->anggaran_tpb->relasi->tpb->nama}}</td>
             </tr>
             <tr>
-                <td><b>Kode Indikator</b></td>
-                <td>{{@$data->kode_indikator->kode}}</td>
-                <td><b>Kode Tujuan TPB</b></td>
-                <td>{{@$data->kode_indikator->kode_tujuan_tpb}}</td>
-            </tr>
-            <tr>
-                <td><b>Keterangan Indikator</b></td>
-                <td>{{@$data->kode_indikator->keterangan}}</td>
-                <td><b>Keterangan Tujuan TPB</b></td>
-                <td>{{@$data->kode_indikator->keterangan_tujuan_tpb}}</td>
-            </tr>
-            <tr>
                 <td><b>Program</b></td>
                 <td>{{@$data->program}}</td>
                 <td><b>Unit Owner</b></td>
                 <td>{{@$data->unit_owner}}</td>
             </tr>
             <tr>
+                <td><b>Kriteria Program</b></td>
+                <td>{{@$data->jenis_program->nama}}</td>
                 <td><b>Core Subject</b></td>
                 <td>{{@$data->core_subject->nama}}</td>
-                <td><b>Pelaksanaan Program</b></td>
-                <td>{{@$data->cara_penyaluran->nama}}</td>
             </tr>
             <tr>
+                <td><b>Kode Tujuan TPB</b></td>
+                <td>{{@$data->kode_tujuan_tpb->kode}}</td>
+                <td><b>Kode Indikator</b></td>
+                <td>{{@$data->kode_indikator->kode}}</td>
+            </tr>
+            <tr>
+                <td><b>Keterangan Tujuan TPB</b></td>
+                <td>{{@$data->kode_tujuan_tpb->keterangan}}</td>
+                <td><b>Keterangan Indikator</b></td>
+                <td>{{@$data->kode_indikator->keterangan}}</td>
+            </tr>
+            <tr>
+                <td><b>Pelaksanaan Program</b></td>
+                <td>{{@$data->cara_penyaluran->nama}}</td>
                 <td><b>Mitra BUMN</b></td>
-                <td colspan="3">
+                <td>
                     @foreach($mitra_bumn as $mitra)
                         {{$mitra->perusahaan->nama_lengkap}} <br>
                     @endforeach

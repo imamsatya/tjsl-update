@@ -17,4 +17,14 @@ class RelasiPilarTpb extends Model
     {
         return $this->belongsTo('App\Models\PilarPembangunan', 'pilar_pembangunan_id');
     }
+
+    public function indikator()
+    {
+        return $this->belongsToMany('App\Models\KodeIndikator','App\Models\RelasiTpbKodeIndikator','relasi_pilar_tpb_id','kode_indikator_id');
+    }
+
+    public function tujuan_tpb()
+    {
+        return $this->belongsToMany('App\Models\KodeTujuanTpb','App\Models\RelasiTpbKodeTujuanTpb','relasi_pilar_tpb_id','kode_tujuan_tpb_id');
+    }
 }

@@ -39,13 +39,35 @@
         font-size: 16pt;
     }
 
-    .bulet {
-        display: block;
-        height: 140px;
-        width: 350px;
-        border-radius: 50%;
+    .chart2 {
+        position: relative;
+        display: inline-block;
+        width: 150px;
+        height: 150px;
+        margin-top: 20px;
+        margin-bottom: 10px;
         text-align: center;
-        border: 1px solid white;
+        font-size: 16pt;
+    }
+
+    .chart2 canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .percent2 {
+        display: inline-block;
+        line-height: 150px;
+        z-index: 2;
+        margin-left:60px;
+        padding-top:20px;
+    }
+
+    .percent2:after {
+        content: '%';
+        margin-left: 0.1em;
+        font-size: 16pt;
     }
 </style>
 
@@ -75,7 +97,22 @@
                 <div class="card-px py-10">
                     <!--begin: Datatable -->
                     <div class="form-group row  mb-5">
-                        <div class="col-lg-6">
+                        <div class="col-lg-5">
+                            <label>TPB</label>
+                            @php
+                                $disabled = (($admin_bumn) ? 'disabled="true"' : '');
+                            @endphp
+                            <select class="form-select form-select-solid form-select2" id="tpb_id" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB" {{ $disabled }}>
+                                <option></option>
+                                @foreach($tpb as $p)  
+                                    @php
+                                        $select = (($p->id == $tpb_id) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->no_tpb }} - {{ $p->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-5">
                             <label>BUMN</label>
                             @php
                                 $disabled = (($admin_bumn) ? 'disabled="true"' : '');
@@ -90,7 +127,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-2">
                             <label>Tahun</label>
                             <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true" >
                                 @php for($i = date("Y"); $i>=2020; $i--){ @endphp
@@ -108,28 +145,43 @@
                             <span id="chart_pilar1" class="chart" data-percent="0">
                                 <span class="percent"></span>
                             </span><br>
-                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar Pembangunan <br>Sosial</span>
+                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar Pembangunan <br>Sosial</span><br>
+                            <span id="chart_detail1" style="font-size:12px;"></span>
                         </div>
                         
                         <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 center" style="text-align: center;">
                             <span id="chart_pilar2" class="chart" data-percent="0">
                                 <span class="percent"></span>
                             </span><br>
-                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar Pembangunan<br> Ekonomi</span>
+                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar Pembangunan<br> Ekonomi</span><br>
+                            <span id="chart_detail2" style="font-size:12px;"></span>
                         </div>
                         
                         <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 center" style="text-align: center;">
                             <span id="chart_pilar3" class="chart" data-percent="0">
                                 <span class="percent"></span>
                             </span><br>
-                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar Pembangunan<br> Lingkungan</span>
+                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar Pembangunan<br> Lingkungan</span><br>
+                            <span id="chart_detail3" style="font-size:12px;"></span>
                         </div>
                         
                         <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 center" style="text-align: center;">
                             <span id="chart_pilar4" class="chart" data-percent="0">
                                 <span class="percent"></span>
                             </span><br>
-                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar Pembangunan <br>Hukum dan Tata Kelola</span>
+                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar Pembangunan <br>Hukum dan Tata Kelola<br></span>
+                            <span id="chart_detail4" style="font-size:12px;"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row mb-5">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 center" style="text-align: center;">
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 center" style="text-align: center;">
+                            <span id="chart_tpb" class="chart2" data-percent="0" style="margin-left: -50px; margin-bottom:60px;">
+                                <span class="percent2"></span>
+                            </span><br>
+                            <span id="chart_title" class="caption-subject font-grey-gallery" style="font-weight:bold;">All TPB</span><br>
+                            <span id="chart_detail" style="font-size:12px;"></span>
                         </div>
                     </div>
                 </div>
@@ -144,6 +196,7 @@
 @section('addafterjs')
 <script>
     var urlchartrealisasi = "{{route('home.chartrealisasi')}}";
+    var urlcharttpb = "{{route('home.charttpb')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
@@ -155,8 +208,12 @@
         $('#tahun').on('change', function(event){
             updatechartrealisasi();
         });
+        $('#tpb_id').on('change', function(event){
+            updatecharttpb();
+        });
 
         initchartrealisasi();
+        initcharttpb();
     });
     
     function updatechartrealisasi(){
@@ -195,6 +252,15 @@
             type: "POST",
             dataType: "json", 
             success: function(data){
+                var detail1 = "<i>Target :</i> Rp. "+data.target1+"<br><i>Realisasi :</i> Rp. "+data.realisasi1+"<br><i>Sisa :</i> Rp. "+data.sisa1;
+                var detail2 = "<i>Target :</i> Rp. "+data.target2+"<br><i>Realisasi :</i> Rp. "+data.realisasi2+"<br><i>Sisa :</i> Rp. "+data.sisa2;
+                var detail3 = "<i>Target :</i> Rp. "+data.target3+"<br><i>Realisasi :</i> Rp. "+data.realisasi3+"<br><i>Sisa :</i> Rp. "+data.sisa3;
+                var detail4 = "<i>Target :</i> Rp. "+data.target4+"<br><i>Realisasi :</i> Rp. "+data.realisasi4+"<br><i>Sisa :</i> Rp. "+data.sisa4;
+                $('#chart_detail1').html(detail1);
+                $('#chart_detail2').html(detail2);
+                $('#chart_detail3').html(detail3);
+                $('#chart_detail4').html(detail4);
+
                 $('#chart_pilar1').attr('data-percent', data.pilar1);
                 $('#chart_pilar2').attr('data-percent', data.pilar2);
                 $('#chart_pilar3').attr('data-percent', data.pilar3);
@@ -259,6 +325,97 @@
                         $(this.el).find('.percent').text(Math.round(percent));
                     }
                 });
+            }                       
+        });
+    }
+    
+    function updatechartrealisasi(){
+        $.ajax({
+            url: urlchartrealisasi,
+            data: {
+                'perusahaan_id' : $("#perusahaan_id").val(),
+                'tahun' : $("#tahun").val()
+            },
+            type: "POST",
+            dataType: "json", 
+            success: function(data){
+                $('#chart_pilar1').data('easyPieChart').update(
+                    Math.round(data.pilar1)
+                )
+                $('#chart_pilar2').data('easyPieChart').update(
+                    Math.round(data.pilar2)
+                )
+                $('#chart_pilar3').data('easyPieChart').update(
+                    Math.round(data.pilar3)
+                )
+                $('#chart_pilar4').data('easyPieChart').update(
+                    Math.round(data.pilar4)
+                )
+
+                var detail1 = "<i>Target :</i> Rp. "+data.target1+"<br><i>Realisasi :</i> Rp. "+data.realisasi1+"<br><i>Sisa :</i> Rp. "+data.sisa1;
+                var detail2 = "<i>Target :</i> Rp. "+data.target2+"<br><i>Realisasi :</i> Rp. "+data.realisasi2+"<br><i>Sisa :</i> Rp. "+data.sisa2;
+                var detail3 = "<i>Target :</i> Rp. "+data.target3+"<br><i>Realisasi :</i> Rp. "+data.realisasi3+"<br><i>Sisa :</i> Rp. "+data.sisa3;
+                var detail4 = "<i>Target :</i> Rp. "+data.target4+"<br><i>Realisasi :</i> Rp. "+data.realisasi4+"<br><i>Sisa :</i> Rp. "+data.sisa4;
+                $('#chart_detail1').html(detail1);
+                $('#chart_detail2').html(detail2);
+                $('#chart_detail3').html(detail3);
+                $('#chart_detail4').html(detail4);
+
+            }                       
+        });
+    }
+
+    function initcharttpb(){
+        $.ajax({
+            url: urlcharttpb,
+            data: {
+                'tpb_id' : $("#tpb_id").val(),
+                'perusahaan_id' : $("#perusahaan_id").val(),
+                'tahun' : $("#tahun").val()
+            },
+            type: "POST",
+            dataType: "json", 
+            success: function(data){
+                var detail = "<i>Target :</i> Rp. "+data.target+"<br><i>Realisasi :</i> Rp. "+data.realisasi+"<br><i>Sisa :</i> Rp. "+data.sisa;
+                $('#chart_detail').html(detail);
+                $('#chart_tpb').attr('data-percent', data.tpb);
+                
+                $('#chart_tpb').easyPieChart({
+                    size: 200,
+                    easing: 'easeOutBounce',
+                    delay: 5000,
+                    barColor: '#b42ded',
+                    trackColor: '#f2d9fc',
+                    scaleColor: false,
+                    lineWidth: 60,
+                    trackWidth: 50,
+                    lineCap: 'butt',
+                    onStep: function(from, to, percent) {
+                        $(this.el).find('.percent2').text(Math.round(percent));
+                    }
+                });
+            }                       
+        });
+    }
+    
+    function updatecharttpb(){
+        $.ajax({
+            url: urlcharttpb,
+            data: {
+                'tpb_id' : $("#tpb_id").val(),
+                'perusahaan_id' : $("#perusahaan_id").val(),
+                'tahun' : $("#tahun").val()
+            },
+            type: "POST",
+            dataType: "json", 
+            success: function(data){
+                var detail = "<i>Target :</i> Rp. "+data.target+"<br><i>Realisasi :</i> Rp. "+data.realisasi+"<br><i>Sisa :</i> Rp. "+data.sisa;
+                $('#chart_detail').html(detail);
+                $('#chart_tpb').data('easyPieChart').update(
+                    Math.round(data.tpb)
+                )
+                var tpb = $("#tpb_id option:selected").text();
+                $('#chart_title').html(tpb);
             }                       
         });
     }

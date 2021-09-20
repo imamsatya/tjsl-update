@@ -23,6 +23,7 @@ use App\Models\TargetUploadGagal;
 use App\Models\JenisProgram;
 use App\Models\CoreSubject;
 use App\Models\KodeIndikator;
+use App\Models\KodeTujuanTpb;
 use App\Models\CaraPenyaluran;
 use App\Http\Controllers\Target\AdministrasiController;
 
@@ -97,10 +98,13 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
             }
 
             //cek kode indikator
-            if(!$is_gagal){
+            if(!$is_gagal && rtrim($ar['id_kode_indikator'])!=''){
                 try{
-                    $kode = KodeIndikator::where('id',rtrim($ar['id_kode_indikator']))
-                                        ->where('tpb_id', rtrim($ar['id_tpb']))
+                    $kode = KodeIndikator::leftJoin('relasi_tpb_kode_indikators','relasi_tpb_kode_indikators.kode_indikator_id','kode_indikators.id')
+                                        ->leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','relasi_tpb_kode_indikators.relasi_pilar_tpb_id')
+                                        ->leftJoin('tpbs','tpbs.id','relasi_pilar_tpbs.tpb_id')
+                                        ->where('kode_indikators.id',rtrim($ar['id_kode_indikator']))
+                                        ->where('tpbs.id', rtrim($ar['id_tpb']))
                                         ->first();
                     if(!$kode){
                         DB::rollback();
@@ -111,6 +115,27 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                     DB::rollback();
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kode Indikator tidak sesuai referensi<br>';
+                }
+            }
+
+            //cek kode tujuan TPB
+            if(!$is_gagal){
+                try{
+                    $kode = KodeTujuanTpb::leftJoin('relasi_tpb_kode_tujuan_tpbs','relasi_tpb_kode_tujuan_tpbs.kode_tujuan_tpb_id','kode_tujuan_tpbs.id')
+                                        ->leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','relasi_tpb_kode_tujuan_tpbs.relasi_pilar_tpb_id')
+                                        ->leftJoin('tpbs','tpbs.id','relasi_pilar_tpbs.tpb_id')
+                                        ->where('kode_tujuan_tpbs.id',rtrim($ar['id_kode_tujuan_tpb']))
+                                        ->where('tpbs.id', rtrim($ar['id_tpb']))
+                                        ->first();
+                    if(!$kode){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kode Tujuan TPB tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kode Tujuan TPB tidak sesuai referensi<br>';
                 }
             }
 
@@ -163,7 +188,8 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'jenis_program_id' => rtrim($ar['id_kriteria_program']) ,
                         'core_subject_id' => rtrim($ar['id_core_subject_iso_26000']) ,
                         'tpb_id' => rtrim($ar['id_tpb']) ,
-                        'kode_indikator_id' => rtrim($ar['id_kode_indikator']) ,
+                        'kode_indikator_id' => (rtrim($ar['id_kode_indikator'])?rtrim($ar['id_kode_indikator']):null),
+                        'kode_tujuan_tpb_id' => rtrim($ar['id_kode_tujuan_tpb']) ,
                         'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']) ,
                         'jangka_waktu' => rtrim($ar['jangka_waktu_penerapan_dalam_tahun']) ,
                         'anggaran_alokasi' => rtrim($ar[$param_alokasi]) ,
@@ -213,6 +239,7 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'core_subject_id'   => rtrim($ar['id_core_subject_iso_26000']) ,
                         'tpb_id' => rtrim($ar['id_tpb']) ,
                         'kode_indikator_id' => rtrim($ar['id_kode_indikator']) ,
+                        'kode_tujuan_tpb_id' => rtrim($ar['id_kode_tujuan_tpb']) ,
                         'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']) ,
                         'mitra_bumn_id' => rtrim($ar['id_mitra_bumn']) ,
                         'jangka_waktu' => rtrim($ar['jangka_waktu_penerapan_dalam_tahun']) ,

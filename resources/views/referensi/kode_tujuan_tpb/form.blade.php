@@ -5,7 +5,7 @@
 
     <div class="form-group row mb-5">
         <div class="col-lg-12">
-            <label>Kode Indikator</label>
+            <label>Kode Tujuan TPB</label>
             <input type="text" class="form-control" name="kode" id="kode" value="{{!empty(old('kode'))? old('kode') : ($actionform == 'update' && $data->kode != ''? $data->kode : old('kode'))}}" required/>
         </div>
     </div>
