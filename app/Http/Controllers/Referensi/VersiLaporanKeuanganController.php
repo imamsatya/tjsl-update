@@ -296,6 +296,7 @@ class VersiLaporanKeuanganController extends Controller
 
     public function add_laporan(Request $request)
     {
+    
         try{
             $versilaporankeuangan = VersiLaporanKeuangan::find((int)$request->input('id'));
             $laporankeuangan = LaporanKeuangan::get();
@@ -331,7 +332,7 @@ class VersiLaporanKeuanganController extends Controller
             'msg' => 'Error System',
             'title' => 'Error'
         ];
-       
+       //dd($request->all());
         if ($request->all()) {  
             $param['kode'] = $request->input('kode');
             $param['label'] = $request->input('label');       
@@ -643,7 +644,7 @@ class VersiLaporanKeuanganController extends Controller
             'title' => 'Error'
         ];
 
-        $param['versi_laporan_id'] = $request->input('id');
+        $param['versi_laporan_id'] = $request->input('versi_id');
         $param['laporan_keuangan_id'] = $request->input('laporan_keuangan_id');
 
         switch ($request->input('actionform')) {

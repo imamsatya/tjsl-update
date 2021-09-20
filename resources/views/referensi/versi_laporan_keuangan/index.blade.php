@@ -218,7 +218,7 @@
         $('.tree').treegrid({
             initialState : 'collapsed',
             treeColumn : 1,
-            indentTemplate : '<span style="width: 32px; height: 16px; display: inline-block; position: relative;"></span>'
+            indentTemplate : '<span style="width: 16px; height: 10px; display: inline-block; position: relative;"></span>'
         });
 
         $('#page-title').html("{{ $pagetitle }}");
