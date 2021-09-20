@@ -27,6 +27,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
     // login tanpa cas
     //    Route::get('/', 'App\Http\Controllers\HomeController@index')->name('home');
         Route::get('/', 'App\Http\Controllers\HomeController@index')->name('dashboard.index');
+        Route::post('/chartrealisasi', 'App\Http\Controllers\HomeController@chartrealisasi')->name('home.chartrealisasi');
 
         Route::prefix('role')->group(function(){
             Route::get('index', 'App\Http\Controllers\RoleController@index')->name('role.index');
