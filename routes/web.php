@@ -262,6 +262,8 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('store_child', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store_child')->name('referensi.versi_laporan_keuangan.store_child');
                 Route::post('delete_child', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@delete_child')->name('referensi.versi_laporan_keuangan.delete_child');
                 Route::post('delete_versi_laporan_keuangan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@delete_versi_laporan_keuangan')->name('referensi.versi_laporan_keuangan.delete_versi_laporan_keuangan');
+                Route::post('edit_parent', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@edit_parent')->name('referensi.versi_laporan_keuangan.edit_parent');
+                Route::post('edit_child', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@edit_child')->name('referensi.versi_laporan_keuangan.edit_child');
             });
 
             Route::prefix('laporan_keuangan')->group(function(){

@@ -133,7 +133,8 @@
 
                                                 <button type="button" data-id="{{$p->id}}"  data-versi_laporan_id="{{$p->id}}" data-laporan_keuangan_id="{{$l->id}}" data-parent_id="{{$c->parent_id}}" class="btn btn-sm btn-light btn-icon btn-warning cls-button-add-child" data-id="{{$p->id}}" data-toggle="tooltip" title="Tambah data Child Laporan"><i class="bi bi-plus fs-3"></i></button>
 
-                                                <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button>
+                                                {{-- <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button> --}}
+                                                <button type="button" data-id="{{$c->parent_id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-parent" data-toggle="tooltip" title="Ubah data {{@$c->label}}"><i class="bi bi-pencil fs-3"></i></button>
 
                                                 <button type="button" data-id="{{$c->parent_id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-parent" data-toggle="tooltip" title="Hapus data"><i class="bi bi-trash fs-3"></i></button>
                                             </td>
@@ -161,7 +162,9 @@
                                             </td>
                                             <td style="text-align:center;">
 
-                                                <button type="button" data-id="{{$d->child_id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button>
+                                                {{-- <button type="button" data-id="{{$d->child_id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button> --}}
+
+                                                <button type="button" data-id="{{$d->child_id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-child" data-toggle="tooltip" title="Ubah data {{@$d->label}}"><i class="bi bi-pencil fs-3"></i></button>
 
                                                 <button type="button" data-id="{{$d->child_id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-child" data-toggle="tooltip" title="Hapus data "><i class="bi bi-trash fs-3"></i></button>
                                             </td>
@@ -206,6 +209,8 @@
     var urldeleteParent = "{{route('referensi.versi_laporan_keuangan.delete_parent')}}";
     var urlupdatestatus = "{{route('referensi.versi_laporan_keuangan.update_status')}}";
     var urldeleteversilaporankeuangan = "{{route('referensi.versi_laporan_keuangan.delete_versi_laporan_keuangan')}}";
+    var urleditParent = "{{route('referensi.versi_laporan_keuangan.edit_parent')}}";
+    var urleditChild = "{{route('referensi.versi_laporan_keuangan.edit_child')}}";
 
     $(document).ready(function(){
 //        $('.tree').treegrid();
@@ -229,6 +234,14 @@
 
         $('body').on('click','.cls-button-edit',function(){
             winform(urledit, {'id':$(this).data('id')}, 'Ubah Data');
+        });
+
+        $('body').on('click','.cls-button-edit-parent',function(){
+            winform(urleditParent, {'id':$(this).data('id')}, 'Ubah Data Parent');
+        });
+
+        $('body').on('click','.cls-button-edit-child',function(){
+            winform(urleditChild, {'id':$(this).data('id')}, 'Ubah Data Parent');
         });
 
         $('body').on('click','.cls-button-edit-versi-laporan-keuangan',function(){

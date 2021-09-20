@@ -332,7 +332,9 @@ class VersiLaporanKeuanganController extends Controller
             'title' => 'Error'
         ];
        
-        if ($request->all()) {         
+        if ($request->all()) {  
+            $param['kode'] = $request->input('kode');
+            $param['label'] = $request->input('label');       
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
@@ -374,8 +376,9 @@ class VersiLaporanKeuanganController extends Controller
 
                 case 'update': DB::beginTransaction();
                                try{
-                            //       $versilaporankeuangan = VersiLaporanKeuangan::find((int)$request->input('id'));
-                            //       $versilaporankeuangan->update((array)$param);
+
+                                $data = LaporanKeuanganParent::find((int)$request->input('id'));
+                                $data->update((array)$param);
 
                                   DB::commit();
                                   $result = [
@@ -431,7 +434,10 @@ class VersiLaporanKeuanganController extends Controller
             'title' => 'Error'
         ];
 
-        if ($request->all()) {         
+        if ($request->all()) {  
+            $param['kode'] = $request->input('kode');
+            $param['label'] = $request->input('label');   
+            $param['is_pengurangan'] = $request->input('is_pengurangan');      
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
@@ -477,9 +483,10 @@ class VersiLaporanKeuanganController extends Controller
 
                 case 'update': DB::beginTransaction();
                                try{
-                            //       $versilaporankeuangan = VersiLaporanKeuangan::find((int)$request->input('id'));
-                            //       $versilaporankeuangan->update((array)$param);
 
+                                $data = LaporanKeuanganChild::find((int)$request->input('id'));
+                                $data->update((array)$param);
+                                
                                   DB::commit();
                                   $result = [
                                     'flag'  => 'success',
@@ -583,6 +590,45 @@ class VersiLaporanKeuanganController extends Controller
                     'relasi' => $relasi,
                     'laporankeuangan' => $laporankeuangan,
                     'laporan_keuangan_id' => (int)$request->input('id')
+
+                ]);
+        }catch(Exception $e){}
+
+    }
+
+    public function edit_parent(Request $request)
+    {
+
+        try{
+
+            $laporankeuanganparent = LaporanKeuanganParent::find((int)$request->input('id'));
+
+                return view($this->__route.'.form_parent',[
+                    'pagetitle' => $this->pagetitle,
+                    'actionform' => 'update',
+                    'data' => $laporankeuanganparent,
+                    'versi_id' => $request->versi_laporan_id,
+                    'lapor_id' => $request->laporan_keuangan_id,
+
+                ]);
+        }catch(Exception $e){}
+
+    }
+
+    public function edit_child(Request $request)
+    {
+
+        try{
+
+            $laporankeuanganparent = LaporanKeuanganChild::find((int)$request->input('id'));
+
+                return view($this->__route.'.form_child',[
+                    'pagetitle' => $this->pagetitle,
+                    'actionform' => 'update',
+                    'data' => $laporankeuanganparent,
+                    'versi_id' => $request->versi_laporan_id,
+                    'lapor_id' => $request->laporan_keuangan_id,
+                    'parent_id' => $request->parent_id,
 
                 ]);
         }catch(Exception $e){}
