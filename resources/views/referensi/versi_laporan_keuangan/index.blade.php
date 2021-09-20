@@ -111,8 +111,8 @@
 
                                         <button type="button" data-id="{{$p->id}}" data-versi_laporan_id="{{$p->id}}" data-laporan_keuangan_id="{{$l->id}}" class="btn btn-sm btn-light btn-icon btn-info cls-button-add-parent" data-id="{{$p->id}}" data-toggle="tooltip" title="Tambah data Parent Laporan"><i class="bi bi-plus fs-3"></i></button>
 
-                                        <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button>
-                                        <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-pilar" data-id="{{$l->id}}" data-nama="{{$l->nama}}" data-toggle="tooltip" title="Hapus data {{$l->nama}}"><i class="bi bi-trash fs-3"></i></button>
+                                        <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-versi-laporan-keuangan" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button>
+                                        <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-versi-laporan-keuangan" data-id="{{$l->id}}" data-nama="{{$l->nama}}" data-toggle="tooltip" title="Hapus data {{$l->nama}}"><i class="bi bi-trash fs-3"></i></button>
                                     </td>
                                   </tr>
 
@@ -135,7 +135,7 @@
 
                                                 <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button>
 
-                                                <button type="button" data-id="{{$c->parent_id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-child" data-toggle="tooltip" title="Hapus data"><i class="bi bi-trash fs-3"></i></button>
+                                                <button type="button" data-id="{{$c->parent_id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-parent" data-toggle="tooltip" title="Hapus data"><i class="bi bi-trash fs-3"></i></button>
                                             </td>
                                         </tr>
 
@@ -192,7 +192,7 @@
     var datatable;
     var urlcreate = "{{route('referensi.versi_laporan_keuangan.create')}}";
     var urledit = "{{route('referensi.versi_laporan_keuangan.edit')}}";
-    var urleditpilar = "{{route('referensi.versi_laporan_keuangan.edit_laporan')}}";
+    var urleditversilaporankeuangan = "{{route('referensi.versi_laporan_keuangan.edit_laporan')}}";
     var urladdlaporan = "{{route('referensi.versi_laporan_keuangan.add_laporan')}}";
     var urladdparent = "{{route('referensi.versi_laporan_keuangan.add_parent')}}";
     var urladdchild = "{{route('referensi.versi_laporan_keuangan.add_child')}}";
@@ -205,6 +205,7 @@
     var urldeleteChild = "{{route('referensi.versi_laporan_keuangan.delete_child')}}";
     var urldeleteParent = "{{route('referensi.versi_laporan_keuangan.delete_parent')}}";
     var urlupdatestatus = "{{route('referensi.versi_laporan_keuangan.update_status')}}";
+    var urldeleteversilaporankeuangan = "{{route('referensi.versi_laporan_keuangan.delete_versi_laporan_keuangan')}}";
 
     $(document).ready(function(){
 //        $('.tree').treegrid();
@@ -230,8 +231,8 @@
             winform(urledit, {'id':$(this).data('id')}, 'Ubah Data');
         });
 
-        $('body').on('click','.cls-button-edit-pilar',function(){
-            winform(urleditpilar, {'id':$(this).data('id'),'versi':$(this).data('versi')}, 'Ubah Data');
+        $('body').on('click','.cls-button-edit-versi-laporan-keuangan',function(){
+            winform(urleditversilaporankeuangan, {'id':$(this).data('id'),'versi':$(this).data('versi')}, 'Ubah Data');
         });
 
         $('body').on('click','.cls-button-delete',function(){
@@ -269,6 +270,10 @@
         
         $('body').on('change', '#edit_active', function() {
             onbtneditactive(this);
+        });
+
+        $('body').on('click','.cls-button-delete-versi-laporan-keuangan',function(){
+            onbtndeleteversilaporankeuangan(this);
         });
 
     });
@@ -476,6 +481,78 @@
                 url: urldeleteParent,
                 data:{
                     "id": $(element).data('id'),
+                },
+                type:'post',
+                dataType:'json',
+                beforeSend: function(){
+                    $.blockUI();
+                },
+                success: function(data){
+                    $.unblockUI();
+
+                    swal.fire({
+                            title: data.title,
+                            html: data.msg,
+                            icon: data.flag,
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });
+
+                    if(data.flag == 'success') {
+                        // datatable.ajax.reload( null, false );
+                        location.reload(); 
+                    }
+                    
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });  
+                    }
+                });
+            }
+        });	
+    }
+
+    function onbtndeleteversilaporankeuangan(element){
+        swal.fire({
+            title: "Pemberitahuan",
+            text: "Yakin hapus data "+$(element).data('nama')+" ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, hapus data",
+            cancelButtonText: "Tidak"
+        }).then(function(result) {
+            if (result.value) {
+                $.ajax({
+                url: urldeleteversilaporankeuangan,
+                data:{
+                    "id": $(element).data('id')
                 },
                 type:'post',
                 dataType:'json',

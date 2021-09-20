@@ -239,6 +239,30 @@ class VersiLaporanKeuanganController extends Controller
         return response()->json($result);
     }
 
+    public function delete_versi_laporan_keuangan(Request $request)
+    {
+        DB::beginTransaction();
+        try{
+            $data = RelasiLaporanKeuangan::where('laporan_keuangan_id',$request->id)->first();
+            $data->delete();
+
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses hapus data',
+                'title' => 'Sukses'
+            ];
+        }catch(\Exception $e){
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal hapus data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
     public function update_status(Request $request)
     {
         $result = [
@@ -520,7 +544,7 @@ class VersiLaporanKeuanganController extends Controller
         DB::beginTransaction();
         try{
             $data = LaporanKeuanganParent::find($request->id);           
-           $data->delete();
+            $data->delete();
 
             $relasi = RelasiLaporanKeuangan::where('parent_id',$request->id)->get();
 
@@ -551,8 +575,6 @@ class VersiLaporanKeuanganController extends Controller
             $versilaporankeuangan = VersiLaporanKeuangan::find((int)$request->input('versi'));
             $relasi = RelasiLaporanKeuangan::where('versi_laporan_id',(int)$request->input('versi'))->where('laporan_keuangan_id',(int)$request->input('id'));
             $laporankeuangan = LaporanKeuangan::get();
-            // $tpb = Tpb::get();
-            // $tpb_id = $relasi->pluck('tpb_id')->all();
 
                 return view($this->__route.'.form_laporan',[
                     'pagetitle' => $this->pagetitle,
@@ -560,8 +582,6 @@ class VersiLaporanKeuanganController extends Controller
                     'data' => $versilaporankeuangan,
                     'relasi' => $relasi,
                     'laporankeuangan' => $laporankeuangan,
-                    // 'tpb' => $tpb,
-                    // 'tpb_id' => $tpb_id,
                     'laporan_keuangan_id' => (int)$request->input('id')
 
                 ]);
@@ -579,8 +599,6 @@ class VersiLaporanKeuanganController extends Controller
 
         $param['versi_laporan_id'] = $request->input('id');
         $param['laporan_keuangan_id'] = $request->input('laporan_keuangan_id');
-        // $tpb = $request->input('tpb');
-        // $laporankeuangan = $request->input('laporan_keuangan_id');
 
         switch ($request->input('actionform')) {
             case 'insert': DB::beginTransaction();
@@ -616,11 +634,6 @@ class VersiLaporanKeuanganController extends Controller
                                 //                         ->where('laporan_keuangan_id',(int)$request->input('laporan_keuangan_id'));
                                 // $data->delete();
                                 
-                                // foreach($tpb as $p){
-                                //     $param['tpb_id'] = $p;
-                                //     RelasiPilarTpb::create((array)$param);
-                                // }
-
                                 // foreach($laporankeuangan as $p){
                                 //     $param['laporan_keuangan_id'] = $p;
                                 //     RelasiLaporanKeuangan::create((array)$param);
