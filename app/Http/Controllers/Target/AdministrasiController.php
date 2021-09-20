@@ -106,20 +106,20 @@ class AdministrasiController extends Controller
                                         'anggaran_tpbs.perusahaan_id',
                                         'pilar_pembangunans.nama', 
                                         'pilar_pembangunans.id')
-                            ->where('anggaran_tpbs.status_id',1)
+                            // ->where('anggaran_tpbs.status_id',1)
                             ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
                             ->get();
         $anggaran_bumn = $anggaran_bumn->select('anggaran_tpbs.perusahaan_id', 
                                                 'perusahaans.nama_lengkap',
                                                 'perusahaans.id',
                                                 DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'))
-                            ->where('anggaran_tpbs.status_id',1)
+                            // ->where('anggaran_tpbs.status_id',1)
                             ->groupBy('anggaran_tpbs.perusahaan_id')
                             ->groupBy('perusahaans.nama_lengkap')
                             ->groupBy('perusahaans.id')
                             ->get();
-        $anggaran = $anggaran->where('anggaran_tpbs.status_id',1)
-                            ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
+        $anggaran = $anggaran->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
+                            // ->where('anggaran_tpbs.status_id',1)
                             ->orderBy('no_tpb')->get();
 
         $target = TargetTpb::get();
