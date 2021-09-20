@@ -19,7 +19,7 @@
         <div class="col-lg-3">
             <label>Nilai Pengurangan</label>
             <div class="form-check form-check-solid form-switch" style="padding-top: 10px;">
-                <input class="form-check-input w-45px h-30px" type="checkbox" name="is_pengurangan" value="{{!empty(old('is_pengurangan'))? old('is_pengurangan') : ($actionform == 'update' && $data->is_pengurangan != ''? $data->is_pengurangan : old('is_pengurangan'))}}" id="googleswitch" >
+                <input class="form-check-input w-45px h-30px" type="checkbox" name="is_pengurangan" id="googleswitch" >
                 <label class="form-check-label" for="googleswitch"></label>
             </div>
         </div>

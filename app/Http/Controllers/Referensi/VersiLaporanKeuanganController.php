@@ -452,10 +452,10 @@ class VersiLaporanKeuanganController extends Controller
                                       'parent_id'=> $rel['parent_id'],
                                   ]);
                                   
-                                  $param = $request->except('actionform','_token','versi_laporan_id','laporan_keuangan_id','parent_id');
+                                  $param = $request->except('id','actionform','_token','versi_laporan_id','laporan_keuangan_id','parent_id');
                                  
                                   $param['is_pengurangan'] = $request->is_pengurangan? true : false;
-
+                                  
                                   $lapkeu_child = LaporanKeuanganChild::create((array)$param);
 
                                   $rel_id = RelasiLaporanKeuangan::select('id')->orderby('id','desc')->first();
