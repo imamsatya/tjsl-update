@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Perusahaan;
 use App\Models\User;
+use App\Models\Menu;
 use App\Models\PeriodeLaporan;
 use App\Models\Status;
 use App\Models\PumkAnggaran;
@@ -27,6 +28,7 @@ class AnggaranController extends Controller
     {
         $this->__route = 'pumk.anggaran';
         $this->pagetitle = 'Sumber dan Penggunaan Dana PUMK';
+        $this->breadcumb = Menu::where('route_name',$this->__route.'.index')->pluck('label')->first();
     }
 
     public function index(Request $request)
@@ -58,7 +60,7 @@ class AnggaranController extends Controller
 
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
-            'breadcrumb' => '',
+            'breadcrumb' => $this->breadcumb,
             'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'admin_tjsl' => $admin_tjsl,

@@ -25,7 +25,7 @@
             <div class="card-header pt-5">
                 <!--begin::Card title-->
                 <div class="card-title">
-                    <h2 class="d-flex align-items-center"><i class="fa fa-database" style="font-size: 20px;"></i> &nbsp {{ $pagetitle }}
+                    <h2 class="d-flex align-items-center"><i class="fa fa-database" style="font-size: 20px;"></i> &nbsp {{ $breadcrumb }}
                     <span class="text-gray-600 fs-6 ms-1"></span></h2>
                 </div>
                 <!--end::Card title-->
