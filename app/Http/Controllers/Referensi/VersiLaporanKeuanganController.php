@@ -217,9 +217,18 @@ class VersiLaporanKeuanganController extends Controller
 
     public function delete(Request $request)
     {
+      
         DB::beginTransaction();
         try{
-            $data = VersiLaporanKeuangan::find((int)$request->input('id'));
+
+            $data = RelasiLaporanKeuangan::where('versi_laporan_id',$request->id)->get();
+            
+            if($data){
+                foreach($data as $v){
+                    $v->delete();
+                }
+            }
+            $data = VersiLaporanKeuangan::find($request->id);
             $data->delete();
 
             DB::commit();
@@ -241,10 +250,19 @@ class VersiLaporanKeuanganController extends Controller
 
     public function delete_versi_laporan_keuangan(Request $request)
     {
+       
         DB::beginTransaction();
         try{
-            $data = RelasiLaporanKeuangan::where('laporan_keuangan_id',$request->id)->first();
-            $data->delete();
+
+            $data = RelasiLaporanKeuangan::where('laporan_keuangan_id',$request->id)
+                    ->where('versi_laporan_id',$request->versi)
+                    ->get();
+
+            if($data){
+                foreach($data as $v){
+                    $v->delete();
+                }
+            }
 
             DB::commit();
             $result = [

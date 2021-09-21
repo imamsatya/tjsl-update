@@ -109,9 +109,10 @@
                                     </td>
                                     <td style="text-align:center;">
 
-                                        <button type="button" data-id="{{$p->id}}" data-versi_laporan_id="{{$p->id}}" data-laporan_keuangan_id="{{$l->id}}" class="btn btn-sm btn-light btn-icon btn-info cls-button-add-parent" data-id="{{$p->id}}" data-toggle="tooltip" title="Tambah data Parent Laporan"><i class="bi bi-plus fs-3"></i></button>
+                                        <button type="button" data-id="{{$p->id}}" data-versi_laporan_id="{{$p->id}}" data-laporan_keuangan_id="{{$l->id}}" class="btn btn-sm btn-light btn-icon btn-secondary cls-button-add-parent" data-id="{{$p->id}}" data-toggle="tooltip" title="Tambah data Parent Laporan"><i class="bi bi-plus fs-3"></i></button>
 
                                         <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-versi-laporan-keuangan" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button>
+
                                         <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-versi-laporan-keuangan" data-id="{{$l->id}}" data-nama="{{$l->nama}}" data-toggle="tooltip" title="Hapus data {{$l->nama}}"><i class="bi bi-trash fs-3"></i></button>
                                     </td>
                                   </tr>
@@ -136,7 +137,7 @@
                                                 {{-- <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button> --}}
                                                 <button type="button" data-id="{{$c->parent_id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-parent" data-toggle="tooltip" title="Ubah data {{@$c->label}}"><i class="bi bi-pencil fs-3"></i></button>
 
-                                                <button type="button" data-id="{{$c->parent_id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-parent" data-toggle="tooltip" title="Hapus data"><i class="bi bi-trash fs-3"></i></button>
+                                                <button type="button" data-id="{{$c->parent_id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-parent" data-toggle="tooltip" title="Hapus data "><i class="bi bi-trash fs-3"></i></button>
                                             </td>
                                         </tr>
 
@@ -164,9 +165,9 @@
 
                                                 {{-- <button type="button" data-id="{{$d->child_id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button> --}}
 
-                                                <button type="button" data-id="{{$d->child_id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-child" data-toggle="tooltip" title="Ubah data {{$d->child_id}}"><i class="bi bi-pencil fs-3"></i></button>
+                                                <button type="button" data-id="{{$d->child_id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-child" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>
 
-                                                <button type="button" data-id="{{$d->child_id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-child" data-toggle="tooltip" title="Hapus data {{$d->child_id}}"><i class="bi bi-trash fs-3"></i></button>
+                                                <button type="button" data-id="{{$d->child_id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-child" data-toggle="tooltip" title="Hapus data "><i class="bi bi-trash fs-3"></i></button>
                                             </td>
                                             @endif
                                         </tr>
@@ -565,7 +566,8 @@
                 $.ajax({
                 url: urldeleteversilaporankeuangan,
                 data:{
-                    "id": $(element).data('id')
+                    "id": $(element).data('id'),
+                    "versi": $(element).data('versi')
                 },
                 type:'post',
                 dataType:'json',

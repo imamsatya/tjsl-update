@@ -18,11 +18,7 @@
         <div class="col-lg-3">
             <label>Nilai Pengurangan</label>
             <div class="form-check form-check-solid form-switch" style="padding-top: 10px;">
-                @if($data && $data->is_pengurangan)
-                <input class="form-check-input w-45px h-30px" type="checkbox" name="is_pengurangan" id="googleswitch" checked>
-                @else
                 <input class="form-check-input w-45px h-30px" type="checkbox" name="is_pengurangan" id="googleswitch" >
-                @endif
                 <label class="form-check-label" for="googleswitch"></label>
             </div>
         </div>
