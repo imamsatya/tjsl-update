@@ -142,12 +142,11 @@
                                         </tr>
 
                                         @php 
-                                        $child = $child->where('versi_laporan_id',$p->id)->where('laporan_id',$l->id);   
+                                        $childs = $child->where('versi_laporan_id',$p->id)->where('laporan_id',$l->id)->where('parent_id',$c->parent_id);   
 
                                         @endphp
-                                        @foreach($child as $d)                                        
-                                        <tr class="treegrid-child{{$d->child_id}} treegrid-parent-par{{$c->parent_id}}lapor{{$l->id}}versi{{$p->id}}" style="border-bottom:ridge;">
-                                            @if($c->parent_id == $d->parent_id)
+                                        @foreach($childs as $d)                                        
+                                        <tr class="treegrid-child{{$d->child_id}} treegrid-parent-par{{$c->parent_id}}lapor{{$l->id}}versi{{$p->id}} child{{$d->child_id}}" style="border-bottom:ridge;">
                                             <td></td>
                                             <td colspan="5"> 
                                                 <a class="badge badge-light-info fw-bolder me-auto px-4 py-3">
@@ -169,7 +168,6 @@
 
                                                 <button type="button" data-id="{{$d->child_id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-child" data-toggle="tooltip" title="Hapus data "><i class="bi bi-trash fs-3"></i></button>
                                             </td>
-                                            @endif
                                         </tr>
                                         @endforeach
                                     @endforeach
