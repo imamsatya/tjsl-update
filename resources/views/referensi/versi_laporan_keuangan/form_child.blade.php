@@ -1,7 +1,6 @@
 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
 	@csrf
-	{{-- <input type="text" name="id" id="id" readonly="readonly" value="{{ (int)$data->id }}" /> --}}
-    {{-- <input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" /> --}}
+    {{-- <input type="text" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : ''}}" /> --}}
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
 	<input type="hidden" name="versi_laporan_id" id="versi_laporan_id" readonly="readonly" value="{{ (int)$versi_id }}" />
     <input type="hidden" name="laporan_keuangan_id" id="laporan_keuangan_id" readonly="readonly" value="{{ (int)$lapor_id }}" />
@@ -19,7 +18,11 @@
         <div class="col-lg-3">
             <label>Nilai Pengurangan</label>
             <div class="form-check form-check-solid form-switch" style="padding-top: 10px;">
+                @if($data && $data->is_pengurangan)
+                <input class="form-check-input w-45px h-30px" type="checkbox" name="is_pengurangan" id="googleswitch" checked>
+                @else
                 <input class="form-check-input w-45px h-30px" type="checkbox" name="is_pengurangan" id="googleswitch" >
+                @endif
                 <label class="form-check-label" for="googleswitch"></label>
             </div>
         </div>

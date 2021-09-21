@@ -428,7 +428,7 @@ class VersiLaporanKeuanganController extends Controller
 
     public function store_child(Request $request)
     {
-    
+       
         $result = [
             'flag' => 'error',
             'msg' => 'Error System',
@@ -484,8 +484,9 @@ class VersiLaporanKeuanganController extends Controller
 
                 case 'update': DB::beginTransaction();
                                try{
-
                                 $data = LaporanKeuanganChild::find((int)$request->input('id'));
+                                $param = $request->except('id','actionform','_token','versi_laporan_id','laporan_keuangan_id','parent_id');
+
                                 $data->update((array)$param);
                                 
                                   DB::commit();
@@ -520,7 +521,7 @@ class VersiLaporanKeuanganController extends Controller
 
     public function delete_child(Request $request)
     {
-        
+       
         DB::beginTransaction();
         try{
             $data = LaporanKeuanganChild::find($request->id);
@@ -618,15 +619,14 @@ class VersiLaporanKeuanganController extends Controller
 
     public function edit_child(Request $request)
     {
-
+       
         try{
 
-            $laporankeuanganparent = LaporanKeuanganChild::find((int)$request->input('id'));
-
+            $laporankeuanganchild = LaporanKeuanganChild::find((int)$request->input('id'));
                 return view($this->__route.'.form_child',[
-                    'pagetitle' => $this->pagetitle,
+                    'pagetitle' => 'Child Laporan',
                     'actionform' => 'update',
-                    'data' => $laporankeuanganparent,
+                    'data' => $laporankeuanganchild,
                     'versi_id' => $request->versi_laporan_id,
                     'lapor_id' => $request->laporan_keuangan_id,
                     'parent_id' => $request->parent_id,

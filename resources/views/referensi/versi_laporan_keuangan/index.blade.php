@@ -100,7 +100,7 @@
                                        $lapor = $laporankeuangan->where('versi_laporan_id', $p->id);
                                   @endphp
                                   @foreach ($lapor as $l)  
-                                  <tr class="treegrid-{{$l->id}} treegrid-parent-{{$p->id}}" style="border-bottom:ridge;background-color:lightgrey;">
+                                  <tr class="treegrid-lapor{{$l->id}}versi{{$p->id}} treegrid-parent-{{$p->id}}" style="border-bottom:ridge;">
                                     <td></td>
                                     <td colspan="6">
                                         <a class="badge badge-light-danger fw-bolder me-auto px-4 py-3">
@@ -121,7 +121,7 @@
                                     
                                     @endphp
                                     @foreach($par as $c)
-                                        <tr class="treegrid-{{$c->parent_id}} treegrid-parent-{{$l->id}}" style="border-bottom:ridge;background-color:lightgrey;">
+                                        <tr class="treegrid-par{{$c->parent_id}}lapor{{$l->id}}versi{{$p->id}} treegrid-parent-lapor{{$l->id}}versi{{$p->id}}" style="border-bottom:ridge;">
                                             <td></td>
                                             <td colspan="5">
                                                 <a class="badge badge-light-primary fw-bolder me-auto px-4 py-3">
@@ -145,7 +145,7 @@
 
                                         @endphp
                                         @foreach($child as $d)                                        
-                                        <tr class="treegrid-{{$d->child_id}} treegrid-parent-{{$d->parent_id}}" style="border-bottom:ridge;background-color:lightgrey;">
+                                        <tr class="treegrid-child{{$d->child_id}} treegrid-parent-par{{$c->parent_id}}lapor{{$l->id}}versi{{$p->id}}" style="border-bottom:ridge;">
                                             @if($c->parent_id == $d->parent_id)
                                             <td></td>
                                             <td colspan="5"> 
@@ -164,9 +164,9 @@
 
                                                 {{-- <button type="button" data-id="{{$d->child_id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button> --}}
 
-                                                <button type="button" data-id="{{$d->child_id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-child" data-toggle="tooltip" title="Ubah data {{@$d->label}}"><i class="bi bi-pencil fs-3"></i></button>
+                                                <button type="button" data-id="{{$d->child_id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-child" data-toggle="tooltip" title="Ubah data {{$d->child_id}}"><i class="bi bi-pencil fs-3"></i></button>
 
-                                                <button type="button" data-id="{{$d->child_id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-child" data-toggle="tooltip" title="Hapus data "><i class="bi bi-trash fs-3"></i></button>
+                                                <button type="button" data-id="{{$d->child_id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-child" data-toggle="tooltip" title="Hapus data {{$d->child_id}}"><i class="bi bi-trash fs-3"></i></button>
                                             </td>
                                             @endif
                                         </tr>
