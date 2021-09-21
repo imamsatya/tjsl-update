@@ -1,18 +1,40 @@
 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
 	@csrf
-	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
+	<input type="hidden" name="id" id="id" readonly="readonly" value="{{ (int)$data->id }}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
 
     <div class="form-group row mb-5">
         <div class="col-lg-12">
-            <label>Kode Indikator</label>
-            <input type="text" class="form-control" name="kode" id="kode" value="{{!empty(old('kode'))? old('kode') : ($actionform == 'update' && $data->kode != ''? $data->kode : old('kode'))}}" required/>
+            <label>TPB</label>
+            <input type="text" class="form-control" name="tpb_id" id="tpb_id" value="{{$data->no_tpb . ' - '.$data->nama}}" disabled/>
         </div>
     </div>
     <div class="form-group row mb-5">
         <div class="col-lg-12">
-            <label>Keterangan</label>
-            <textarea class="form-control" name="keterangan" id="keterangan" required/>{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $data->keterangan != ''? $data->keterangan : old('keterangan'))}}</textarea>
+            <label>Kode Indikator</label>
+            <select class="form-select form-select-solid form-select2" name="kode_indikator[]" data-kt-select2="true" data-placeholder="Pilih Kode Indikator" data-dropdown-parent="#winform" data-allow-clear="true" required multiple="multiple">
+                <option></option>
+                @foreach($kode_indikator as $p)  
+                    @php
+                        $select = ($actionform == 'update' && in_array($p->id, $kode_indikator_id) ? 'selected="selected"' : '');
+                    @endphp
+                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->kode }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+    <div class="form-group row mb-5">
+        <div class="col-lg-12">
+            <label>Kode Tujuan TPB</label>
+            <select class="form-select form-select-solid form-select2" name="kode_tujuan_tpb[]" data-kt-select2="true" data-placeholder="Pilih Kode Tujuan TPB" data-dropdown-parent="#winform" data-allow-clear="true" required multiple="multiple">
+                <option></option>
+                @foreach($kode_tujuan_tpb as $p)  
+                    @php
+                        $select = ($actionform == 'update' && in_array($p->id, $kode_tujuan_tpb_id) ? 'selected="selected"' : '');
+                    @endphp
+                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->kode }}</option>
+                @endforeach
+            </select>
         </div>
     </div>
     <div class="text-center pt-15">
@@ -31,17 +53,27 @@
     $(document).ready(function(){
         $('.modal-title').html(title);
         $('.form-select2').select2();
-
         $('.modal').on('shown.bs.modal', function () {
             setFormValidate();
         });  
+        
+        $('.input-tanggal').flatpickr({
+			enableTime: false,
+			dateFormat: "d-m-Y",
+		});
     });
 
     function setFormValidate(){
         $('#form-edit').validate({
-            rules: {             		               		                              		               		               
+            rules: {
+                versi:{
+                        required: true
+                }               		               		                              		               		               
             },
-            messages: {                                    		                   		                   
+            messages: {
+                versi: {
+                    required: "Versi wajib diinput"
+                }                                      		                   		                   
             },	        
             highlight: function(element) {
                 $(element).closest('.form-control').addClass('is-invalid');
@@ -63,7 +95,7 @@
                 
                 $(form).ajaxSubmit({
                     type: 'post',
-                    url: urlstore,
+                    url: urlstoretpb,
                     data: {source : typesubmit},
                     dataType : 'json',
                     beforeSend: function(){
@@ -87,7 +119,7 @@
 
                         if(data.flag == 'success') {
                             $('#winform').modal('hide');
-                            datatable.ajax.reload( null, false );
+                            // location.reload(); 
                         }
                     },
                     error: function(jqXHR, exception){
@@ -122,5 +154,12 @@
                 return false;
         }
         });		
+    }
+    
+    function onlyNumberKey(e) {
+        var ASCIICode = (e.which) ? e.which : e.keyCode
+        if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+            return false;
+        return true;
     }
 </script>

@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 
 use App\Models\Perusahaan;
 use App\Models\User;
+use App\Models\Tpb;
 
 class HomeController extends Controller
 {
@@ -35,7 +36,7 @@ class HomeController extends Controller
     {
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
-        $perusahaan_id = ($request->perusahaan_id?$request->perusahaan_id:1);
+        $perusahaan_id = $request->perusahaan_id;
         $tahun = ($request->tahun?$request->tahun:date('Y'));
         $admin_bumn = false;
 
@@ -54,6 +55,8 @@ class HomeController extends Controller
             'perusahaan_id' => $perusahaan_id,
             'tahun' => $tahun,
             'admin_bumn' => $admin_bumn,
+            'tpb' => TPB::all(),
+            'tpb_id' => $request->tpb_id,
             'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
         ]);
     }
@@ -66,6 +69,34 @@ class HomeController extends Controller
             $json['pilar2'] = rand(0,100);
             $json['pilar3'] = rand(0,100);
             $json['pilar4'] = rand(0,100);
+            $json['realisasi1'] = '10.000.000';
+            $json['realisasi2'] = '20.000.000';
+            $json['realisasi3'] = '30.000.000';
+            $json['realisasi4'] = '40.000.000';
+            $json['target1'] = '100.000.000';
+            $json['target2'] = '100.000.000';
+            $json['target3'] = '100.000.000';
+            $json['target4'] = '100.000.000';
+            $json['sisa1'] = '90.000.000';
+            $json['sisa2'] = '80.000.000';
+            $json['sisa3'] = '70.000.000';
+            $json['sisa4'] = '60.000.000';
+
+            return response()->json($json);
+        }catch(\Exception $e){
+            $json = [];
+            return response()->json($json);
+        }
+    }
+    
+    public function charttpb(Request $request)
+    {
+        try{
+            $json = [];
+            $json['tpb'] = rand(0,100);
+            $json['realisasi'] = '10.000.000';
+            $json['target'] = '100.000.000';
+            $json['sisa'] = '90.000.000';
 
             return response()->json($json);
         }catch(\Exception $e){

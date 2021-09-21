@@ -23,8 +23,9 @@ class TargetGagalExcelSheet implements WithMultipleSheets
         $sheets[] = new TargetGagalExport($this->target,$this->perusahaan,$this->tahun);
         $sheets[] = new ReferensiJenisProgram();
         $sheets[] = new ReferensiCoreSubject();
-        $sheets[] = new ReferensiTpb($this->perusahaan);
-        $sheets[] = new ReferensiKodeIndikator($this->perusahaan);
+        $sheets[] = new ReferensiTpb();
+        $sheets[] = new ReferensiKodeTujuanTpb();
+        $sheets[] = new ReferensiKodeIndikator();
         $sheets[] = new ReferensiCaraPenyaluran();
         $sheets[] = new ReferensiPerusahaan();
         // $sheets[] = new ReferensiSatuanUkur();

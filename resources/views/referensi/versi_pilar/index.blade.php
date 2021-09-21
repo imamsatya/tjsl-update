@@ -108,7 +108,10 @@
                                     @foreach ($tpb as $c)      
                                         <tr class="treegrid-tpb{{$c->id}} treegrid-parent-pilar{{@$a->id}}versi{{@$p->id}} item-tpb{{$c->id}}">
                                             <td></td>
-                                            <td colspan="6">{{$c->no_tpb}} - {{$c->nama}}</td>
+                                            <td colspan="5">{{$c->no_tpb}} - {{$c->nama}}</td>
+                                            <td style="text-align:center;">
+                                                <button type="button" data-id="{{$c->id}}" data-tpb="{{$c->tpb_id}}" data-pilar="{{$a->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-tpb" data-id="{{$c->id}}" data-toggle="tooltip" title="Ubah data {{@$c->no_tpb}}"><i class="bi bi-pencil fs-3"></i></button>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 @endforeach
@@ -134,9 +137,11 @@
     var urlcreate = "{{route('referensi.versi_pilar.create')}}";
     var urledit = "{{route('referensi.versi_pilar.edit')}}";
     var urleditpilar = "{{route('referensi.versi_pilar.edit_pilar')}}";
+    var urledittpb = "{{route('referensi.versi_pilar.edit_tpb')}}";
     var urladdpilar = "{{route('referensi.versi_pilar.add_pilar')}}";
     var urlstore = "{{route('referensi.versi_pilar.store')}}";
     var urlstorepilar = "{{route('referensi.versi_pilar.store_pilar')}}";
+    var urlstoretpb = "{{route('referensi.versi_pilar.store_tpb')}}";
     var urldatatable = "{{route('referensi.versi_pilar.datatable')}}";
     var urldelete = "{{route('referensi.versi_pilar.delete')}}";
     var urldeletepilar = "{{route('referensi.versi_pilar.delete_pilar')}}";
@@ -166,6 +171,10 @@
 
         $('body').on('click','.cls-button-edit-pilar',function(){
             winform(urleditpilar, {'id':$(this).data('id'),'versi':$(this).data('versi')}, 'Ubah Data');
+        });
+
+        $('body').on('click','.cls-button-edit-tpb',function(){
+            winform(urledittpb, {'id':$(this).data('id'),'versi':$(this).data('versi')}, 'Ubah Data');
         });
 
         $('body').on('click','.cls-button-delete',function(){

@@ -28,6 +28,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
     //    Route::get('/', 'App\Http\Controllers\HomeController@index')->name('home');
         Route::get('/', 'App\Http\Controllers\HomeController@index')->name('dashboard.index');
         Route::post('/chartrealisasi', 'App\Http\Controllers\HomeController@chartrealisasi')->name('home.chartrealisasi');
+        Route::post('/charttpb', 'App\Http\Controllers\HomeController@charttpb')->name('home.charttpb');
 
         Route::prefix('role')->group(function(){
             Route::get('index', 'App\Http\Controllers\RoleController@index')->name('role.index');
@@ -56,9 +57,11 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('create', 'App\Http\Controllers\Referensi\VersiPilarController@create')->name('referensi.versi_pilar.create');
                 Route::post('edit', 'App\Http\Controllers\Referensi\VersiPilarController@edit')->name('referensi.versi_pilar.edit');
                 Route::post('edit_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@edit_pilar')->name('referensi.versi_pilar.edit_pilar');
+                Route::post('edit_tpb', 'App\Http\Controllers\Referensi\VersiPilarController@edit_tpb')->name('referensi.versi_pilar.edit_tpb');
                 Route::post('add_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@add_pilar')->name('referensi.versi_pilar.add_pilar');
                 Route::post('store', 'App\Http\Controllers\Referensi\VersiPilarController@store')->name('referensi.versi_pilar.store');
                 Route::post('store_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@store_pilar')->name('referensi.versi_pilar.store_pilar');
+                Route::post('store_tpb', 'App\Http\Controllers\Referensi\VersiPilarController@store_tpb')->name('referensi.versi_pilar.store_tpb');
                 Route::post('delete', 'App\Http\Controllers\Referensi\VersiPilarController@delete')->name('referensi.versi_pilar.delete');
                 Route::post('delete_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@delete_pilar')->name('referensi.versi_pilar.delete_pilar');
                 Route::post('update_status', 'App\Http\Controllers\Referensi\VersiPilarController@update_status')->name('referensi.versi_pilar.update_status');
@@ -108,6 +111,15 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('store', 'App\Http\Controllers\Referensi\KodeIndikatorController@store')->name('referensi.kode_indikator.store');
                 Route::post('delete', 'App\Http\Controllers\Referensi\KodeIndikatorController@delete')->name('referensi.kode_indikator.delete');
                 Route::get('datatable', 'App\Http\Controllers\Referensi\KodeIndikatorController@datatable')->name('referensi.kode_indikator.datatable');
+            });
+
+            Route::prefix('kode_tujuan_tpb')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@index')->name('referensi.kode_tujuan_tpb.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@create')->name('referensi.kode_tujuan_tpb.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@edit')->name('referensi.kode_tujuan_tpb.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@store')->name('referensi.kode_tujuan_tpb.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@delete')->name('referensi.kode_tujuan_tpb.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@datatable')->name('referensi.kode_tujuan_tpb.datatable');
             });
             
             Route::prefix('perusahaan')->group(function(){

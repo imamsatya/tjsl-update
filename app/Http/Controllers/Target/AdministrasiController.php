@@ -18,6 +18,7 @@ use App\Models\AnggaranTpb;
 use App\Models\TargetTpb;
 use App\Models\TargetMitra;
 use App\Models\KodeIndikator;
+use App\Models\KodeTujuanTpb;
 use App\Models\CaraPenyaluran;
 use App\Models\CoreSubject;
 use App\Models\SatuanUkur;
@@ -295,6 +296,7 @@ class AdministrasiController extends Controller
                     'actionform' => 'update',
                     'data' => $target,
                     'kode_indikator' => KodeIndikator::get(),
+                    'kode_tujuan_tpb' => KodeTujuanTpb::get(),
                     'satuan_ukur' => SatuanUkur::get(),
                     'cara_penyaluran' => CaraPenyaluran::get(),
                     'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),

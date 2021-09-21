@@ -37,6 +37,11 @@ class TargetTpb extends Model
     {
     	return $this->belongsTo('App\Models\KodeIndikator', 'kode_indikator_id');
     }
+
+    public function kode_tujuan_tpb()
+    {
+    	return $this->belongsTo('App\Models\KodeTujuanTpb', 'kode_tujuan_tpb_id');
+    }
     
     public function cara_penyaluran()
     {

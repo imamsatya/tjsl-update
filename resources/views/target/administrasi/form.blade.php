@@ -41,17 +41,31 @@
     </div>
     <div class="form-group row mb-5">
         <div class="col-lg-6">
-            <label>Kode Indikator - Kode Tujuan TPB</label>
+            <label>Kode Tujuan Tpb</label>
+            <select class="form-select form-select-solid form-select2" name="kode_tujuan_tpb_id" data-kt-select2="true" data-placeholder="Pilih Kode Tujuan TPB" data-dropdown-parent="#winform" required>
+                <option></option>
+                @foreach($kode_tujuan_tpb as $p)  
+                    @php
+                        $select = ($actionform == 'update' && ($p->id == $data->kode_tujuan_tpb_id) ? 'selected="selected"' : '');
+                    @endphp
+                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->kode }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-lg-6">
+            <label>Kode Indikator</label>
             <select class="form-select form-select-solid form-select2" name="kode_indikator_id" data-kt-select2="true" data-placeholder="Pilih Kode Indikator" data-dropdown-parent="#winform" required>
                 <option></option>
                 @foreach($kode_indikator as $p)  
                     @php
                         $select = ($actionform == 'update' && ($p->id == $data->kode_indikator_id) ? 'selected="selected"' : '');
                     @endphp
-                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->kode }} - {{ $p->kode_tujuan_tpb }}</option>
+                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->kode }}</option>
                 @endforeach
             </select>
         </div>
+    </div>
+    <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>Pelaksanaan Program</label>
             <select class="form-select form-select-solid form-select2" name="cara_penyaluran_id" data-kt-select2="true" data-placeholder="Pilih Pelaksanaan Program" data-dropdown-parent="#winform" required>
@@ -64,9 +78,7 @@
                 @endforeach
             </select>
         </div>
-    </div>
-    <div class="form-group row mb-5">
-        <div class="col-lg-12">
+        <div class="col-lg-6">
             <label>Mitra BUMN</label>
             <select class="form-select form-select-solid form-select2" name="mitra_bumn[]" data-kt-select2="true" data-placeholder="Pilih Mitra BUMN" data-dropdown-parent="#winform" multiple="multiple">
                 <option></option>

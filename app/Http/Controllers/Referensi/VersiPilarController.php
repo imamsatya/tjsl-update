@@ -14,7 +14,11 @@ use App\Http\Controllers\Controller;
 
 use App\Models\VersiPilar;
 use App\Models\RelasiPilarTpb;
+use App\Models\RelasiTpbKodeIndikator;
+use App\Models\RelasiTpbKodeTujuanTpb;
 use App\Models\PilarPembangunan;
+use App\Models\KodeIndikator;
+use App\Models\KodeTujuanTpb;
 use App\Models\Tpb;
 
 class VersiPilarController extends Controller
@@ -271,6 +275,45 @@ class VersiPilarController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store_tpb(Request $request)
+    {
+        $result = [
+            'flag' => 'error',
+            'msg' => 'Error System',
+            'title' => 'Error'
+        ];
+
+        $kode_indikator = $request->input('kode_indikator');
+        $kode_tujuan_tpb = $request->input('kode_tujuan_tpb');
+
+        DB::beginTransaction();
+        try{
+            $relasi = RelasiPilarTpb::find($request->input('id'));
+            $relasi->indikator()->sync($kode_indikator);
+            $relasi->tujuan_tpb()->sync($kode_tujuan_tpb);
+
+            DB::commit();
+            $result = [
+            'flag'  => 'success',
+            'msg' => 'Sukses ubah data',
+            'title' => 'Sukses'
+            ];
+        }catch(\Exception $e){
+            DB::rollback();
+            $result = [
+            'flag'  => 'warning',
+            'msg' => $e->getMessage(),
+            'title' => 'Gagal'
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
@@ -320,6 +363,37 @@ class VersiPilarController extends Controller
                     'tpb_id' => $tpb_id,
                     'pilar_pembangunan_id' => (int)$request->input('id')
 
+                ]);
+        }catch(Exception $e){}
+
+    }
+    
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+
+    public function edit_tpb(Request $request)
+    {
+        try{
+            $relasi = RelasiPilarTpb::select('relasi_pilar_tpbs.id','tpbs.no_tpb','tpbs.nama')
+                                    ->leftJoin('tpbs','tpbs.id','relasi_pilar_tpbs.tpb_id')
+                                    ->where('relasi_pilar_tpbs.id',(int)$request->input('id'))
+                                    ->first();
+            $kode_indikator_id = RelasiTpbKodeIndikator::where('relasi_pilar_tpb_id',(int)$request->input('id'))->pluck('kode_indikator_id')->all();
+            $kode_tujuan_tpb_id = RelasiTpbKodeTujuanTpb::where('relasi_pilar_tpb_id',(int)$request->input('id'))->pluck('kode_tujuan_tpb_id')->all();
+
+                return view($this->__route.'.form_tpb',[
+                    'pagetitle' => $this->pagetitle,
+                    'actionform' => 'update',
+                    'data' => $relasi,
+                    'tpb_id' => (int)$request->input('tpb'),
+                    'kode_indikator' => KodeIndikator::get(),
+                    'kode_tujuan_tpb' => KodeTujuanTpb::get(),
+                    'kode_indikator_id' => $kode_indikator_id,
+                    'kode_tujuan_tpb_id' => $kode_tujuan_tpb_id,
                 ]);
         }catch(Exception $e){}
 

@@ -36,7 +36,7 @@
                         <thead>
                             <tr>
                                 <th>No.</th>
-                                <th>Kode Indikator</th>
+                                <th>Kode</th>
                                 <th>Keterangan</th>
                                 <th style="text-align:center;">Aksi</th>
                             </tr>
@@ -54,11 +54,11 @@
 @section('addafterjs')
 <script>
     var datatable;
-    var urlcreate = "{{route('referensi.kode_indikator.create')}}";
-    var urledit = "{{route('referensi.kode_indikator.edit')}}";
-    var urlstore = "{{route('referensi.kode_indikator.store')}}";
-    var urldatatable = "{{route('referensi.kode_indikator.datatable')}}";
-    var urldelete = "{{route('referensi.kode_indikator.delete')}}";
+    var urlcreate = "{{route('referensi.kode_tujuan_tpb.create')}}";
+    var urledit = "{{route('referensi.kode_tujuan_tpb.edit')}}";
+    var urlstore = "{{route('referensi.kode_tujuan_tpb.store')}}";
+    var urldatatable = "{{route('referensi.kode_tujuan_tpb.datatable')}}";
+    var urldelete = "{{route('referensi.kode_tujuan_tpb.delete')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
