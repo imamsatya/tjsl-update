@@ -18,10 +18,11 @@
         <div class="col-lg-3">
             <label>Nilai Pengurangan</label>
             <div class="form-check form-check-solid form-switch" style="padding-top: 10px;">
-                <input class="form-check-input w-45px h-30px" type="checkbox" name="is_pengurangan" id="googleswitch" >
+                <input class="form-check-input w-45px h-30px" type="checkbox" name="is_pengurangan" id="googleswitch" {{$actionform == 'update'? ($data->is_pengurangan? 'checked' : '') : ''}}>
                 <label class="form-check-label" for="googleswitch"></label>
             </div>
         </div>
+        
     </div>
     <div class="text-center pt-15">
         <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" data-kt-roles-modal-action="cancel">Discard</button>

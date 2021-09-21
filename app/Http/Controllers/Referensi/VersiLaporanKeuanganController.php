@@ -505,7 +505,12 @@ class VersiLaporanKeuanganController extends Controller
                                try{
                                 $data = LaporanKeuanganChild::find((int)$request->input('id'));
                                 $param = $request->except('id','actionform','_token','versi_laporan_id','laporan_keuangan_id','parent_id');
-
+                                if(!$request->is_pengurangan){
+                                    $param['is_pengurangan'] = false;
+                                }else{
+                                    $param['is_pengurangan'] = $request->is_pengurangan == "on"? true : false; 
+                                }
+                               
                                 $data->update((array)$param);
                                 
                                   DB::commit();
