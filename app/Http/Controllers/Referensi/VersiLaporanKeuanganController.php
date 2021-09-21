@@ -350,7 +350,7 @@ class VersiLaporanKeuanganController extends Controller
             'msg' => 'Error System',
             'title' => 'Error'
         ];
-       //dd($request->all());
+
         if ($request->all()) {  
             $param['kode'] = $request->input('kode');
             $param['label'] = $request->input('label');       
@@ -432,6 +432,7 @@ class VersiLaporanKeuanganController extends Controller
 
     public function add_child(Request $request)
     {
+
         try{
                 return view($this->__route.'.form_child',[
                     'pagetitle' => 'Child Laporan',
@@ -598,14 +599,16 @@ class VersiLaporanKeuanganController extends Controller
 
     public function edit_laporan(Request $request)
     {
+        
         try{
             $versilaporankeuangan = VersiLaporanKeuangan::find((int)$request->input('versi'));
             $relasi = RelasiLaporanKeuangan::where('versi_laporan_id',(int)$request->input('versi'))->where('laporan_keuangan_id',(int)$request->input('id'));
             $laporankeuangan = LaporanKeuangan::get();
 
                 return view($this->__route.'.form_laporan',[
-                    'pagetitle' => $this->pagetitle,
+                    'pagetitle' => 'Relasi Laporan Keuangan',
                     'actionform' => 'update',
+                    'id' => $request->id,
                     'data' => $versilaporankeuangan,
                     'relasi' => $relasi,
                     'laporankeuangan' => $laporankeuangan,
@@ -618,7 +621,6 @@ class VersiLaporanKeuanganController extends Controller
 
     public function edit_parent(Request $request)
     {
-
         try{
 
             $laporankeuanganparent = LaporanKeuanganParent::find((int)$request->input('id'));
@@ -626,6 +628,7 @@ class VersiLaporanKeuanganController extends Controller
                 return view($this->__route.'.form_parent',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
+                    'id' => $request->id,
                     'data' => $laporankeuanganparent,
                     'versi_id' => $request->versi_laporan_id,
                     'lapor_id' => $request->laporan_keuangan_id,
@@ -637,13 +640,13 @@ class VersiLaporanKeuanganController extends Controller
 
     public function edit_child(Request $request)
     {
-       
+        
         try{
-
             $laporankeuanganchild = LaporanKeuanganChild::find((int)$request->input('id'));
                 return view($this->__route.'.form_child',[
                     'pagetitle' => 'Child Laporan',
                     'actionform' => 'update',
+                    'id' => $request->id,
                     'data' => $laporankeuanganchild,
                     'versi_id' => $request->versi_laporan_id,
                     'lapor_id' => $request->laporan_keuangan_id,
@@ -656,6 +659,7 @@ class VersiLaporanKeuanganController extends Controller
 
     public function store_laporan(Request $request)
     {
+       
         $result = [
             'flag' => 'error',
             'msg' => 'Error System',
@@ -668,11 +672,6 @@ class VersiLaporanKeuanganController extends Controller
         switch ($request->input('actionform')) {
             case 'insert': DB::beginTransaction();
                             try{
-                                
-                                // foreach($laporankeuangan as $p){
-                                //     $param['laporan_keuangan_id'] = $p;
-                                //     RelasiLaporanKeuangan::create((array)$param);
-                                // }
 
                                 $relasilaporankeuangan = RelasiLaporanKeuangan::create((array)$param);
 
@@ -695,17 +694,16 @@ class VersiLaporanKeuanganController extends Controller
 
             case 'update': DB::beginTransaction();
                             try{
-                                // $data = RelasiLaporanKeuangan::where('versi_laporan_id',(int)$request->input('id'))
-                                //                         ->where('laporan_keuangan_id',(int)$request->input('laporan_keuangan_id'));
-                                // $data->delete();
-                                
-                                // foreach($laporankeuangan as $p){
-                                //     $param['laporan_keuangan_id'] = $p;
-                                //     RelasiLaporanKeuangan::create((array)$param);
-                                // }
 
-                                $relasilaporankeuangan = RelasiLaporanKeuangan::find((int)$request->input('id'));
-                                $relasilaporankeuangan->update((array)$param);
+                                $relasilaporankeuangan = RelasiLaporanKeuangan::where('versi_laporan_id',$request->versi_id)->where('laporan_keuangan_id',$request->id)->get();
+
+                                if($relasilaporankeuangan){
+                                    foreach($relasilaporankeuangan as $v){
+                                        $v->update([
+                                            'laporan_keuangan_id'=>$request->laporan_keuangan_id
+                                        ]);
+                                    }
+                                }
 
                                 DB::commit();
                                 $result = [

@@ -1,7 +1,7 @@
 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
 	@csrf
 	{{-- <input type="text" name="id" id="id" readonly="readonly" value="{{ (int)$data->id }}" /> --}}
-    {{-- <input type="text" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" /> --}}
+    <input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? $id : ''}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
 	<input type="hidden" name="versi_laporan_id" id="versi_laporan_id" readonly="readonly" value="{{ (int)$versi_id }}" />
     <input type="hidden" name="laporan_keuangan_id" id="laporan_keuangan_id" readonly="readonly" value="{{ (int)$lapor_id }}" />
@@ -15,13 +15,6 @@
             <label>Label</label>
             <input type="text" class="form-control" name="label" id="label" value="{{!empty(old('label'))? old('label') : ($actionform == 'update' && $data->label != ''? $data->label : old('label'))}}" required/>
         </div>
-        {{-- <div class="col-lg-3">
-            <label>Nilai Pengurangan</label>
-            <div class="form-check form-check-solid form-switch" style="padding-top: 10px;">
-                <input class="form-check-input w-45px h-30px" type="checkbox" name="is_pengurangan" id="googleswitch" >
-                <label class="form-check-label" for="googleswitch"></label>
-            </div>
-        </div> --}}
     </div>
     <div class="text-center pt-15">
         <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" data-kt-roles-modal-action="cancel">Discard</button>
