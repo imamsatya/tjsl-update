@@ -103,8 +103,8 @@
                                   <tr class="treegrid-lapor{{$l->id}}versi{{$p->id}} treegrid-parent-{{$p->id}}" style="border-bottom:ridge;">
                                     <td></td>
                                     <td colspan="6">
-                                        <a class="badge badge-light-danger fw-bolder me-auto px-4 py-3">
-                                        {{$l->nama}}
+                                        <a class="badge badge-light-info fw-bolder me-auto px-4 py-3">
+                                       <strong style="font-size: 14px;"> {{$l->nama}} </strong>
                                         </a>
                                     </td>
                                     <td style="text-align:center;">
@@ -125,9 +125,9 @@
                                         <tr class="treegrid-par{{$c->parent_id}}lapor{{$l->id}}versi{{$p->id}} treegrid-parent-lapor{{$l->id}}versi{{$p->id}}" style="border-bottom:ridge;">
                                             <td></td>
                                             <td colspan="5">
-                                                <a class="badge badge-light-primary fw-bolder me-auto px-4 py-3">
-                                                {{$c->kode}} - {{$c->label}}
-                                                </a>
+                                                {{-- <a class="badge badge-light-primary fw-bolder me-auto px-4 py-3"> --}}
+                                                <strong> {{$c->kode}} - {{$c->label}}</strong>
+                                                {{-- </a> --}}
                                             </td>
                                             <td style="text-align:center;"></td>
                                             <td style="text-align:center;">
@@ -149,9 +149,9 @@
                                         <tr class="treegrid-child{{$d->child_id}} treegrid-parent-par{{$c->parent_id}}lapor{{$l->id}}versi{{$p->id}} child{{$d->child_id}}" style="border-bottom:ridge;">
                                             <td></td>
                                             <td colspan="5"> 
-                                                <a class="badge badge-light-info fw-bolder me-auto px-4 py-3">
+                                                {{-- <a class="badge badge-light-info fw-bolder me-auto px-4 py-3"> --}}
                                                     {{$d->kode}} - {{$d->label}}
-                                                </a>
+                                                {{-- </a> --}}
                                             </td>
                                             <td style="text-align:center;">
                                                 @if($d->is_pengurangan)
@@ -217,7 +217,7 @@
         $('.tree').treegrid({
             initialState : 'collapsed',
             treeColumn : 1,
-            indentTemplate : '<span style="width: 16px; height: 10px; display: inline-block; position: relative;"></span>'
+            indentTemplate : '<span style="width: 20px; height: 10px; display: inline-block; position: relative;"></span>'
         });
 
         $('#page-title').html("{{ $pagetitle }}");
