@@ -26,7 +26,7 @@ class AnggaranController extends Controller
     public function __construct()
     {
         $this->__route = 'pumk.anggaran';
-        $this->pagetitle = 'Data PUMK';
+        $this->pagetitle = 'Sumber dan Penggunaan Dana PUMK';
     }
 
     public function index(Request $request)
