@@ -57,19 +57,19 @@
         <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{$a->bumn_lengkap}}</td>
         <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{$a->periode}}</td>
         <td align="right" style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{$a->status}}</td>
-        <td align="right" style="background-color:#D5F5E3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->saldo_awal,0,'.','.')}}</td>
-        <td align="right" style="background-color:#D5F5E3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->income_mitra_binaan,0,'.','.')}}</td>
-        <td align="right" style="background-color:#D5F5E3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->income_bumn_pembina_lain,0,'.','.')}}</td>
-        <td align="right" style="background-color:#D5F5E3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->income_jasa_adm_pumk,0,'.','.')}}</td>
-        <td align="right" style="background-color:#D5F5E3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->income_adm_bank,0,'.','.')}}</td>
-        <td align="right" style="background-color:#D5F5E3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->income_total,0,'.','.')}}</td>
+        <td align="right" style="background-color:#D5F5E3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->saldo_awal,0,',',',')}}</td>
+        <td align="right" style="background-color:#D5F5E3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->income_mitra_binaan,0,',',',')}}</td>
+        <td align="right" style="background-color:#D5F5E3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->income_bumn_pembina_lain,0,',',',')}}</td>
+        <td align="right" style="background-color:#D5F5E3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->income_jasa_adm_pumk,0,',',',')}}</td>
+        <td align="right" style="background-color:#D5F5E3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->income_adm_bank,0,',',',')}}</td>
+        <td align="right" style="background-color:#D5F5E3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->income_total,0,',',',')}}</td>
         <td align="right" style="background-color:#FAD7A0; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">
-            {{number_format($a->outcome_mandiri,0,'.','.')}}
+            {{number_format($a->outcome_mandiri,0,',',',')}}
         </td>
-        <td align="right" style="background-color:#FAD7A0; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->outcome_kolaborasi_bumn,0,'.','.')}}</td>
-        <td align="right" style="background-color:#FAD7A0; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->outcome_bumn_khusus,0,'.','.')}}</td>
-        <td align="right" style="background-color:#FAD7A0; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->outcome_total,0,'.','.')}}</td>
-        <td align="right" style=" background-color:yellow; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->saldo_akhir,0,'.','.')}}</td>
+        <td align="right" style="background-color:#FAD7A0; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->outcome_kolaborasi_bumn,0,',',',')}}</td>
+        <td align="right" style="background-color:#FAD7A0; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->outcome_bumn_khusus,0,',',',')}}</td>
+        <td align="right" style="background-color:#FAD7A0; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->outcome_total,0,',',',')}}</td>
+        <td align="right" style=" background-color:yellow; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000">{{number_format($a->saldo_akhir,0,',',',')}}</td>
     </tr>
     @endforeach
     
