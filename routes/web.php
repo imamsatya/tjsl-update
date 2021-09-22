@@ -400,6 +400,18 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::get('datatable', 'App\Http\Controllers\LaporanManajemenController@datatable')->name('laporan_manajemen.datatable');
             Route::post('validasi', 'App\Http\Controllers\LaporanManajemenController@validasi')->name('laporan_manajemen.validasi');
             Route::post('log_status', 'App\Http\Controllers\LaporanManajemenController@log_status')->name('laporan_manajemen.log_status');
+            
+            Route::prefix('laporan_keuangan')->group(function(){
+                Route::get('index', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@index')->name('laporan_manajemen.laporan_keuangan.index');
+                Route::get('create', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@create')->name('laporan_manajemen.laporan_keuangan.create');
+                Route::post('edit', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@edit')->name('laporan_manajemen.laporan_keuangan.edit');
+                Route::post('store', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@store')->name('laporan_manajemen.laporan_keuangan.store');
+                Route::post('delete', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@delete')->name('laporan_manajemen.laporan_keuangan.delete');
+                Route::get('datatable', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@datatable')->name('laporan_manajemen.laporan_keuangan.datatable');
+                Route::post('validasi', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@validasi')->name('laporan_manajemen.laporan_keuangan.validasi');
+                Route::post('log_status', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@log_status')->name('laporan_manajemen.laporan_keuangan.log_status');
+                Route::post('getlaporankeuangan', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@getLaporanKeuangan')->name('laporan_manajemen.laporan_keuangan.getlaporankeuangan');
+            });
         });
         Auth::routes();
 
