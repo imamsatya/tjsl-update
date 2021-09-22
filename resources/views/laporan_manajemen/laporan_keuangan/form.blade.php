@@ -72,6 +72,7 @@
                         <div class="col-lg-6">
                             <label>Periode Laporan</label>
                             <select class="form-select form-select-solid form-select2" id="periode_laporan" name="periode_laporan" data-kt-select2="true" data-placeholder="Pilih Periode">
+                                <option></option>
                                 @foreach($periode_laporan as $p)  
                                     <option value="{{ $p->id }}">{{ $p->nama }}</option>
                                 @endforeach
