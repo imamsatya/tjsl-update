@@ -13,6 +13,10 @@ use Illuminate\Support\Str;
 use App\Models\Perusahaan;
 use App\Models\User;
 use App\Models\Tpb;
+use App\Models\KolekbilitasPendanaan;
+use App\Models\PeriodeLaporan;
+use App\Models\Status;
+use App\Models\Bulan;
 
 class HomeController extends Controller
 {
@@ -39,6 +43,8 @@ class HomeController extends Controller
         $perusahaan_id = $request->perusahaan_id;
         $tahun = ($request->tahun?$request->tahun:date('Y'));
         $admin_bumn = false;
+        $super_admin = false;
+        $admin_tjsl = false;
 
         if(!empty($users->getRoleNames())){
             foreach ($users->getRoleNames() as $v) {
@@ -46,9 +52,38 @@ class HomeController extends Controller
                     $admin_bumn = true;
                     $perusahaan_id = \Auth::user()->id_bumn;
                 }
+                if($v == 'Super Admin') {
+                    $super_admin = true;
+                    $perusahaan_id = $request->perusahaan_id;
+                }
+                if($v == 'Admin TJSL') {
+                    $admin_tjsl = true;
+                    $perusahaan_id = $request->perusahaan_id;
+                }
             }
         }
 
+        $kolek = KolekbilitasPendanaan::get();
+        $kol = $kolek;
+        $mitra = [];
+        if($perusahaan_id){
+            foreach($kol as $key=>$val){
+                $mitra[] = DB::select("SELECT COUNT(pumk_mitra_binaans.kolektibilitas_id) AS mitra, SUM(nominal_pendanaan) AS saldo
+                    FROM public.pumk_mitra_binaans
+                    LEFT JOIN kolekbilitas_pendanaan ON kolekbilitas_pendanaan.id = pumk_mitra_binaans.kolektibilitas_id
+                    where pumk_mitra_binaans.kolektibilitas_id = ".$val->id." AND
+                    pumk_mitra_binaans.perusahaan_id = ".$perusahaan_id."");
+            }
+        }else{
+            foreach($kol as $key=>$val){
+                $mitra[] = DB::select("SELECT COUNT(pumk_mitra_binaans.kolektibilitas_id) AS mitra, SUM(nominal_pendanaan) AS saldo
+                    FROM public.pumk_mitra_binaans
+                    LEFT JOIN kolekbilitas_pendanaan ON kolekbilitas_pendanaan.id = pumk_mitra_binaans.kolektibilitas_id
+                    where pumk_mitra_binaans.kolektibilitas_id = ".$val->id."");
+            }
+        }
+
+       
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
@@ -58,6 +93,16 @@ class HomeController extends Controller
             'tpb' => TPB::all(),
             'tpb_id' => $request->tpb_id,
             'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'filter_bumn_id' => $perusahaan_id,
+            'filter_periode_id' => $request->periode_id,
+            'filter_status_id' => $request->status_id,
+            'filter_tahun' => $request->tahun,
+            'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
+            'status' => Status::get(),
+            'mitra' => $mitra,
+            'kolek' => $kolek,
+            'admin_tjsl' => $admin_tjsl,
+            'bulan' => Bulan::get(),
         ]);
     }
     

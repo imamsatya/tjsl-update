@@ -190,6 +190,142 @@
         </div>
     </div>
 </div>
+
+
+
+<div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
+    <!--begin::Container-->
+    <div id="kt_content_container" class="container">
+        <!--begin::Card-->
+        <div class="card">
+
+            <!--begin::Card header-->
+            <div class="card-header pt-5">
+                <!--begin::Card title-->
+                <div class="card-title">
+                    <h2 class="d-flex align-items-center">Realisasi PUMK
+                    <span class="text-gray-600 fs-6 ms-1"></span></h2>
+                </div>
+                <!--end::Card title-->
+                <!--begin::Card toolbar-->
+                <div class="card-toolbar">
+                    <!--begin::Search-->
+                    <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
+
+                        <button type="button" class="btn btn-active btn-info btn-sm btn-icon btn-search cls-search"  data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button> &nbsp
+
+                    </div>
+                    <!--end::Search-->
+                    <!--end::Group actions-->
+                </div>
+                <!--end::Card toolbar-->
+            </div>
+            <!--begin::Card body-->
+            <div class="card-body p-0">
+                <!--begin::Heading-->
+                <div class="card-px py-10" >
+                  <div class="row" id="form-cari">
+                    <div class="form-group row  mb-5" >
+                        <div class="col-lg-4">
+                            <label>BUMN</label>
+                            @php
+                                $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
+                            @endphp
+                            <select class="form-select form-select-solid form-select2" id="perusahaan_id_pumk" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
+                                <option></option>
+                                @foreach($perusahaan as $bumn)  
+                                    @php
+                                        $select = (($bumn->id == $filter_bumn_id) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{ $bumn->id }}" {!! $select !!}>{{ $bumn->nama_lengkap }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-3">
+                            <label>Periode</label>
+                            <select id="periode_id" class="form-select form-select-solid form-select2" name="periode_id" data-kt-select2="true" data-placeholder="Pilih Periode" data-allow-clear="true">
+                                <option></option>
+                                @foreach($periode as $p)  
+                                    @php
+                                        $select = (($p->id == $filter_periode_id) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-3">
+                            <label>Bulan</label>
+                            <select id="status_id" class="form-select form-select-solid form-select2" name="status_id" data-kt-select2="true" data-placeholder="Pilih Status" data-allow-clear="true">
+                                <option></option>
+                                @foreach($bulan as $p)  
+                                    @php
+                                        $select = (($p->id == $filter_status_id) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-2">
+                            <label>Tahun</label>
+                            <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun" data-allow-clear="true">
+                                @php
+                                    for($i = date("Y"); $i>=2020; $i--){ @endphp
+                                    <option value="{{$i}}">{{$i}}</option>
+                                    @php }
+                                    $select = (($i == date("Y")) ? 'selected="selected"' : '');
+                                @endphp
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row  mb-5">
+                        <div class="col-lg-6">
+                            <button id="proses" class="btn-small btn-success me-3 text-white"><i class="fa fa-search text-white"></i> Filter</button>
+                            <button  onclick="window.location.href='{{route('dashboard.index')}}'" class="btn-small btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
+                        </div>
+                    </div>
+                    <div class="separator border-gray-200 mb-10"></div>
+                </div>
+                <h4 class="text-center">Kualitas Piutang</h4>   
+                    <!--begin: Datatable -->
+                    <div class="table-responsive"  >
+                        <table class="table" id="datatable">
+                            <thead style="background-color: #E8FFF3;">
+                                <tr style="border-top: ridge;">
+                                    @foreach($kolek as $val)
+                                    <th colspan="2" style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;border-left:ridge;border-right:ridge;">{{$val->nama}}</th>
+                                    @endforeach
+                                </tr>
+                                <tr style="border-top: ridge;">
+                                    @foreach($kolek as $key=>$val)
+                                    <th  style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;border-right:ridge;border-left:ridge;">Jumlah Mitra</th>
+                                    <th  style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;border-right:ridge;">Saldo Pinjaman</th>
+
+                                    @endforeach
+                                </tr>
+                            </thead>
+                            <tbody style="border-bottom: ridge;">
+                                <tr >
+                                    @foreach($mitra as $key=>$v)
+                                    <td style="border: ridge;text-align:center;">
+                                        {{$v[0]->mitra}}
+                                    </td>
+                                    <td style="border: ridge;text-align:center;">
+                                        {{ $v[0]->saldo? number_format($v[0]->saldo,0,',',',') : 0}}
+                                    </td>
+                                    @endforeach
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+            <!--end::Card body-->
+        </div>
+    </div>
+</div>
 @endsection
 
 
@@ -214,6 +350,14 @@
 
         initchartrealisasi();
         initcharttpb();
+
+        //pumk
+        $('#form-cari').hide();
+        $('.btn-search').hide();
+        $('body').on('click','.btn-search',function(){
+            $('#form-cari').toggle(600);
+        });
+        
     });
     
     function updatechartrealisasi(){
