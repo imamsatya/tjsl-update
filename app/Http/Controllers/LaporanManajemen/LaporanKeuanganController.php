@@ -261,7 +261,7 @@ class LaporanKeuanganController extends Controller
 
         try{
             $laporankeuangan = LaporanKeuanganNilai::find((int)$request->input('id'));
-            if($laporankeuangan->relasi->child_id){
+            if(@$laporankeuangan->relasi->child_id){
                 $label = LaporanKeuanganChild::find($laporankeuangan->relasi->child_id);
             }else{
                 $label = LaporanKeuanganChild::find($laporankeuangan->relasi->parent_id);

@@ -25,7 +25,7 @@ class LaporanKeuanganNilai extends Model
 
     public function relasi()
     {
-        return $this->belongsTo('App\Models\relasiLaporanKeuangan', 'relasi_laporan_keuangan_id');
+        return $this->belongsTo('App\Models\RelasiLaporanKeuangan', 'relasi_laporan_keuangan_id');
     }
 
     public function status()
