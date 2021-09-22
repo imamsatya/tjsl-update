@@ -39,10 +39,9 @@
             <label>Tahun</label>
             <select class="form-select form-select-solid form-select2" name="tahun" id="tahuns" data-kt-select2="true" data-placeholder="Pilih Tahun"  data-dropdown-parent="#winform" required>
                 @php
-                    for($i = date("Y"); $i>=2020; $i--){ @endphp
-                    <option value="{{$i}}">{{$i}}</option>
+                    for($i = date("Y")+1; $i>=2020; $i--){ @endphp
+                    <option value="{{$i}}" {{$i == date("Y")? 'selected="selected"' : ''}}>{{$i}}</option>
                     @php }
-                    $select = (($i == date("Y")) ? 'selected="selected"' : '');
                 @endphp
                 <option></option>
             </select>
