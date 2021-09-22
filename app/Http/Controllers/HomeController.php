@@ -68,7 +68,7 @@ class HomeController extends Controller
         $mitra = [];
         if($perusahaan_id){
             foreach($kol as $key=>$val){
-                $mitra[] = DB::select("SELECT COUNT(pumk_mitra_binaans.kolektibilitas_id) AS mitra, SUM(nominal_pendanaan) AS saldo
+                $mitra[] = DB::select("SELECT COUNT(pumk_mitra_binaans.kolektibilitas_id) AS mitra, SUM(saldo_pokok_pendanaan) AS saldo
                     FROM public.pumk_mitra_binaans
                     LEFT JOIN kolekbilitas_pendanaan ON kolekbilitas_pendanaan.id = pumk_mitra_binaans.kolektibilitas_id
                     where pumk_mitra_binaans.kolektibilitas_id = ".$val->id." AND
@@ -76,7 +76,7 @@ class HomeController extends Controller
             }
         }else{
             foreach($kol as $key=>$val){
-                $mitra[] = DB::select("SELECT COUNT(pumk_mitra_binaans.kolektibilitas_id) AS mitra, SUM(nominal_pendanaan) AS saldo
+                $mitra[] = DB::select("SELECT COUNT(pumk_mitra_binaans.kolektibilitas_id) AS mitra, SUM(saldo_pokok_pendanaan) AS saldo
                     FROM public.pumk_mitra_binaans
                     LEFT JOIN kolekbilitas_pendanaan ON kolekbilitas_pendanaan.id = pumk_mitra_binaans.kolektibilitas_id
                     where pumk_mitra_binaans.kolektibilitas_id = ".$val->id."");
