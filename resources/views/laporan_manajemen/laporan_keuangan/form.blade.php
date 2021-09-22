@@ -225,7 +225,7 @@
                         contentData += '<span style="font-weight:bold;">Jumlah</span>';
                     contentData += '</td>';
                     contentData += '<td style="text-align:right;font-weight:bold;">';
-                        contentData += 'Rp. <span class="jumlah">1235134</span>';
+                        contentData += 'Rp. <span class="jumlah">0</span>';
                     contentData += '</td>';
                     contentData += '<td>';
                     contentData += '</td>';
