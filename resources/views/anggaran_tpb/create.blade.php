@@ -24,8 +24,11 @@
         <div class="col-lg-6">
             <label>Tahun</label>
             <select class="form-select form-select-solid form-select2" name="tahun" data-kt-select2="true" data-dropdown-parent="#winform" required>
-                @php for($i = date("Y"); $i>=2020; $i--){ @endphp
-                <option value="{{$i}}">{{$i}}</option>
+                @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
+                @php
+                    $select = (($i ==  date("Y")) ? 'selected="selected"' : '');
+                @endphp
+                <option value="{{$i}}" {!! $select !!}>{{$i}}</option>
                 @php } @endphp
             </select>
         </div>

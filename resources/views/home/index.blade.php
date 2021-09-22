@@ -104,6 +104,7 @@
                             @endphp
                             <select class="form-select form-select-solid form-select2" id="tpb_id" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB" {{ $disabled }}>
                                 <option></option>
+                                <option value="all">Semua TPB</option>
                                 @foreach($tpb as $p)  
                                     @php
                                         $select = (($p->id == $tpb_id) ? 'selected="selected"' : '');
@@ -119,6 +120,7 @@
                             @endphp
                             <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
                                 <option></option>
+                                <option value="all">Semua BUMN</option>
                                 @foreach($perusahaan as $p)  
                                     @php
                                         $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
@@ -130,7 +132,7 @@
                         <div class="col-lg-2">
                             <label>Tahun</label>
                             <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true" >
-                                @php for($i = date("Y"); $i>=2020; $i--){ @endphp
+                                @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
                                     @php
                                         $select = (($i == $tahun) ? 'selected="selected"' : '');
                                     @endphp
