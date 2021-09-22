@@ -94,7 +94,7 @@
                         <div class="col-lg-3">
                             <label>Tahun</label>
                             <select class="form-select form-select-solid form-select2" id="filter_tahun" name="filter_tahun" data-kt-select2="true" >
-                                @php for($i = date("Y"); $i>=2020; $i--){ @endphp
+                                @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
                                     @php
                                         $select = (($i == $tahun) ? 'selected="selected"' : '');
                                     @endphp
