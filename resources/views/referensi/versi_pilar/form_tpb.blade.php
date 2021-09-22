@@ -11,12 +11,12 @@
     </div>
     <div class="form-group row mb-5">
         <div class="col-lg-12">
-            <label>Kode Indikator</label>
-            <select class="form-select form-select-solid form-select2" name="kode_indikator[]" data-kt-select2="true" data-placeholder="Pilih Kode Indikator" data-dropdown-parent="#winform" data-allow-clear="true" required multiple="multiple">
+            <label>Kode Tujuan TPB</label>
+            <select class="form-select form-select-solid form-select2" name="kode_tujuan_tpb[]" data-kt-select2="true" data-placeholder="Pilih Kode Tujuan TPB" data-dropdown-parent="#winform" data-allow-clear="true" multiple="multiple">
                 <option></option>
-                @foreach($kode_indikator as $p)  
+                @foreach($kode_tujuan_tpb as $p)  
                     @php
-                        $select = ($actionform == 'update' && in_array($p->id, $kode_indikator_id) ? 'selected="selected"' : '');
+                        $select = ($actionform == 'update' && in_array($p->id, $kode_tujuan_tpb_id) ? 'selected="selected"' : '');
                     @endphp
                     <option value="{{ $p->id }}" {!! $select !!}>{{ $p->kode }}</option>
                 @endforeach
@@ -25,12 +25,12 @@
     </div>
     <div class="form-group row mb-5">
         <div class="col-lg-12">
-            <label>Kode Tujuan TPB</label>
-            <select class="form-select form-select-solid form-select2" name="kode_tujuan_tpb[]" data-kt-select2="true" data-placeholder="Pilih Kode Tujuan TPB" data-dropdown-parent="#winform" data-allow-clear="true" required multiple="multiple">
+            <label>Kode Indikator</label>
+            <select class="form-select form-select-solid form-select2" name="kode_indikator[]" data-kt-select2="true" data-placeholder="Pilih Kode Indikator" data-dropdown-parent="#winform" data-allow-clear="true" multiple="multiple">
                 <option></option>
-                @foreach($kode_tujuan_tpb as $p)  
+                @foreach($kode_indikator as $p)  
                     @php
-                        $select = ($actionform == 'update' && in_array($p->id, $kode_tujuan_tpb_id) ? 'selected="selected"' : '');
+                        $select = ($actionform == 'update' && in_array($p->id, $kode_indikator_id) ? 'selected="selected"' : '');
                     @endphp
                     <option value="{{ $p->id }}" {!! $select !!}>{{ $p->kode }}</option>
                 @endforeach
