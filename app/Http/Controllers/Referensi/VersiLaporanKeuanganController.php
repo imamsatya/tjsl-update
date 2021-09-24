@@ -457,10 +457,12 @@ class VersiLaporanKeuanganController extends Controller
             'title' => 'Error'
         ];
 
-        if ($request->all()) {  
+        if ($request->all()) {   
             $param['kode'] = $request->input('kode');
-            $param['label'] = $request->input('label');   
-            $param['is_pengurangan'] = $request->input('is_pengurangan');      
+            $param['label'] = $request->input('label');       
+            $param['is_pengurangan'] = $request->input('is_pengurangan');       
+            $param['is_input'] = $request->input('is_input');       
+            $param['formula'] = $request->input('formula');   
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
