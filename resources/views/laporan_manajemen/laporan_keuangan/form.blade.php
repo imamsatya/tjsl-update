@@ -359,6 +359,9 @@
                             }else if(data.parent[i].is_input){
                                 contentData += '<input name="relasi_id[]" type="hidden" value="'+data.parent[i].relasi_laporan_keuangan_id+'"/>';
                                 contentData += '<input name="nilai[]" data-is_pengurangan="'+data.parent[i].is_pengurangan+'" class="nilai nilai-input form-control" data-kode="'+data.parent[i].kode+'" style="text-align:right;" type="text"/>';
+                            }else{
+                                contentData += '<input name="relasi_id[]" type="hidden" value="'+data.parent[i].relasi_laporan_keuangan_id+'"/>';
+                                contentData += '<input name="nilai[]" data-is_pengurangan="'+data.parent[i].is_pengurangan+'" class="nilai nilai-input form-control" data-kode="'+data.parent[i].kode+'" style="text-align:right;" type="hidden"/>';
                             }
                             contentData += '</td>';
                         contentData += '</tr>';
@@ -377,6 +380,9 @@
                                 }else if(child[j].is_input){
                                     contentData += '<input name="relasi_id[]" type="hidden" value="'+child[j].relasi_laporan_keuangan_id+'"/>';
                                     contentData += '<input name="nilai[]" data-is_pengurangan="'+child[j].is_pengurangan+'" class="nilai nilai-input form-control" data-kode="'+child[j].kode+'" style="text-align:right;" type="text"/>';
+                                }else{
+                                    contentData += '<input name="relasi_id[]" type="hidden" value="'+child[j].relasi_laporan_keuangan_id+'"/>';
+                                    contentData += '<input name="nilai[]" data-is_pengurangan="'+child[j].is_pengurangan+'" class="nilai nilai-input form-control" data-kode="'+child[j].kode+'" style="text-align:right;" type="hidden"/>';
                                 }
                                 contentData += '</td>';
                             contentData += '</tr>';
