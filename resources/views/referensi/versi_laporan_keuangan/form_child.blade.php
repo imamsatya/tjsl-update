@@ -7,13 +7,22 @@
     <input type="hidden" name="parent_id" id="parent_id" readonly="readonly" value="{{ (int)$parent_id }}" />
 
     <div class="form-group row mb-5">
-        <div class="col-lg-2">
+        <div class="col-lg-5">
             <label>Kode</label>
             <input type="text" class="form-control" name="kode" id="kode" value="{{!empty(old('kode'))? old('kode') : ($actionform == 'update' && $data->kode != ''? $data->kode : old('kode'))}}" required/>
         </div>
         <div class="col-lg-7">
             <label>Label</label>
             <input type="text" class="form-control" name="label" id="label" value="{{!empty(old('label'))? old('label') : ($actionform == 'update' && $data->label != ''? $data->label : old('label'))}}" required/>
+        </div>
+    </div>
+    <div class="form-group row mb-5">
+        <div class="col-lg-2">
+            <label>Input Nilai</label>
+            <div class="form-check form-check-solid form-switch" style="padding-top: 10px;">
+                <input class="form-check-input w-45px h-30px" type="checkbox" name="is_input" id="googleswitch" {{$actionform == 'update'? ($data->is_input? 'checked' : '') : ''}}>
+                <label class="form-check-label" for="googleswitch"></label>
+            </div>
         </div>
         <div class="col-lg-3">
             <label>Nilai Pengurangan</label>
@@ -22,7 +31,10 @@
                 <label class="form-check-label" for="googleswitch"></label>
             </div>
         </div>
-        
+        <div class="col-lg-7">
+            <label>Formula</label>
+            <input type="text" class="form-control" name="formula" id="formula" value="{{!empty(old('formula'))? old('formula') : ($actionform == 'update' && $data->formula != ''? $data->formula : old('formula'))}}"/>
+        </div>
     </div>
     <div class="text-center pt-15">
         <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" data-kt-roles-modal-action="cancel">Discard</button>

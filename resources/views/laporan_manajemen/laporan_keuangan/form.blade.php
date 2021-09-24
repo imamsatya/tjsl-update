@@ -50,7 +50,12 @@
                             <label>BUMN</label>
                             @php
                                 $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
+                                $perusahaan_hidden = '';
+                                if($admin_bumn){
+                                    $perusahaan_hidden = '<input type="hidden" name="perusahaan_id" value="'.$perusahaan_id.'" />';
+                                }
                             @endphp
+                            {!!$perusahaan_hidden!!}
                             <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }} required>
                                 <option></option>
                                 @foreach($perusahaan as $p)  
@@ -306,13 +311,11 @@
                                 contentData += '<span style="font-weight:bold;">'+data.parent[i].label+'</span>';
                             contentData += '</td>';
                             contentData += '<td>';
+                            console.log(data.parent[i]);
+                            if(data.parent[i].is_input){
                                 contentData += '<input name="relasi_id[]" type="hidden" value="'+data.parent[i].relasi_laporan_keuangan_id+'"/>';
                                 contentData += '<input name="nilai[]" data-is_pengurangan="'+data.parent[i].is_pengurangan+'" class="nilai form-control" style="text-align:right;" type="text"/>';
-                            contentData += '</td>';
-                            contentData += '<td>';
-                                if(data.parent[i].is_pengurangan){
-                                    contentData += '<span>(-)</span>';
-                                }
+                            }
                             contentData += '</td>';
                         contentData += '</tr>';
 
@@ -324,36 +327,20 @@
                                     contentData += '<span style="padding-left: 30px;">'+child[j].label+'</span>';
                                 contentData += '</td>';
                                 contentData += '<td>';
+                                if(child[j].is_input){
                                     contentData += '<input name="relasi_id[]" type="hidden" value="'+child[j].relasi_laporan_keuangan_id+'"/>';
                                     contentData += '<input name="nilai[]" data-is_pengurangan="'+child[j].is_pengurangan+'" class="nilai form-control" style="text-align:right;" type="text"/>';
-                                contentData += '</td>';
-                                contentData += '<td>';
-                                    if(child[j].is_pengurangan){
-                                        contentData += '<span>(-)</span>';
-                                    }
+                                }
                                 contentData += '</td>';
                             contentData += '</tr>';
                         }
                     }
-                    
-                    contentData += '<tr>';
-                        contentData += '<td>';
-                            contentData += '<span style="font-weight:bold;">Jumlah</span>';
-                        contentData += '</td>';
-                        contentData += '<td style="text-align:right;font-weight:bold;">';
-                            contentData += 'Rp. <span class="jumlah">0</span>';
-                        contentData += '</td>';
-                        contentData += '<td>';
-                        contentData += '</td>';
-                    contentData += '</tr>';
 
                     contentData += '<tr>';
                         contentData += '<td>';
                         contentData += '</td>';
                         contentData += '<td style="text-align:right;">';
                             contentData += '<button id="simpan" type="submit" class="btn btn-success me-3">Simpan</button>';
-                        contentData += '</td>';
-                        contentData += '<td>';
                         contentData += '</td>';
                     contentData += '</tr>';
 

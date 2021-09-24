@@ -24,10 +24,12 @@
                 <div class="card-toolbar">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
-                        <button type="button" class="btn btn-primary btn-sm btn-icon btn-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
-                        <button type="button" class="btn btn-danger btn-sm btn-icon btn-cancel-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Batalkan Validasi"><i class="bi bi-check fs-3"></i></button> 
-                        <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button> &nbsp
-                        <button type="button" class="btn btn-success btn-sm btn-icon cls-upload"  data-toggle="tooltip" title="Upload Data Program"><i class="bi bi-upload fs-3"></i></button> &nbsp
+                        <button type="button" class="btn btn-active btn-info btn-sm btn-icon btn-search cls-search btn-search-active" style="margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
+                        <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-search cls-search btn-search-unactive" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
+                        <button type="button" class="btn btn-primary btn-sm btn-icon btn-validasi cls-validasi" style="display:none;margin-right:3px;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
+                        <button type="button" class="btn btn-danger btn-sm btn-icon btn-cancel-validasi cls-validasi" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Batalkan Validasi"><i class="bi bi-check fs-3"></i></button> 
+                        <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi" style="display:none;margin-right:3px;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
+                        <button type="button" class="btn btn-success btn-sm btn-icon cls-upload" style="margin-right:3px;" data-toggle="tooltip" title="Upload Data Program"><i class="bi bi-upload fs-3"></i></button>
                         <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-excel fs-3"></i></button>
                     </div>
                     <!--end::Search-->
@@ -39,6 +41,7 @@
             <div class="card-body p-0">
                 <!--begin::Heading-->
                 <div class="card-px py-10">
+                  <div class="row" id="form-cari">
                     <div class="form-group row  mb-5">
                         <div class="col-lg-6">
                             <label>BUMN</label>
@@ -112,6 +115,7 @@
                         </div>
                     </div>
                     <div class="separator border-gray-200 mb-10"></div>
+                  </div>
                     
                     <!--begin: Datatable -->
                     <div class="table-responsive">
@@ -317,6 +321,18 @@
 
         $('body').on('click','.btn-disable-validasi',function(){
             onbtndisablevalidasi(this);
+        });
+        
+        $('body').on('click','.btn-search-active',function(){
+            $('.btn-search-active').hide();
+            $('.btn-search-unactive').show();
+            $('#form-cari').toggle(600);
+        });
+
+        $('body').on('click','.btn-search-unactive',function(){
+            $('.btn-search-active').show();
+            $('.btn-search-unactive').hide();
+            $('#form-cari').toggle(600);
         });
 
         $('body').on('click','.cls-add-kegiatan',function(){

@@ -20,6 +20,8 @@
                 <div class="card-toolbar">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
+                        <button type="button" class="btn btn-active btn-info btn-sm btn-icon btn-search cls-search btn-search-active" style="margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
+                        <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-search cls-search btn-search-unactive" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
                     </div>
                     <!--end::Search-->
                     <!--end::Group actions-->
@@ -30,6 +32,7 @@
             <div class="card-body p-0">
                 <!--begin::Heading-->
                 <div class="card-px py-10">
+                  <div class="row" id="form-cari">
                     <div class="form-group row  mb-5">
                         <div class="col-lg-6">
                             <label>BUMN</label>
@@ -84,6 +87,7 @@
                         </div>
                     </div>
                     <div class="separator border-gray-200 mb-10"></div>
+                  </div>
                     <!--begin: Datatable -->
                     <table class="table table-striped- table-bordered table-hover table-checkable" id="datatable">
                         <thead>
@@ -129,6 +133,18 @@
             winform(urllog, {'id':$(this).data('id')}, 'Log Status');
         });
 
+        $('body').on('click','.cls-button-edit-disabled',function(){
+            swal.fire({
+                    title: "Gagal",
+                    html: 'Laporan Keuangan Belum Diinput!',
+                    icon: 'error',
+
+                    buttonsStyling: true,
+
+                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+            });	
+        });
+
         $('body').on('click','.cls-button-edit',function(){
             winform(urledit, {'id':$(this).data('id')}, 'Ubah Data');
         });
@@ -147,6 +163,18 @@
 
         $('#proses').on('click', function(event){
             datatable.ajax.reload();
+        });
+
+        $('body').on('click','.btn-search-active',function(){
+            $('.btn-search-active').hide();
+            $('.btn-search-unactive').show();
+            $('#form-cari').toggle(600);
+        });
+
+        $('body').on('click','.btn-search-unactive',function(){
+            $('.btn-search-active').show();
+            $('.btn-search-unactive').hide();
+            $('#form-cari').toggle(600);
         });
 
         setDatatable();

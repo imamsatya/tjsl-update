@@ -29,10 +29,12 @@
                 <div class="card-toolbar">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
-                        <button type="button" class="btn btn-primary btn-sm btn-icon btn-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
-                        <button type="button" class="btn btn-danger btn-sm btn-icon btn-cancel-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Batalkan Validasi"><i class="bi bi-check fs-3"></i></button> 
-                        <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi" style="display:none;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button> &nbsp
-                        <button type="button" class="btn btn-success btn-sm btn-icon cls-add"  data-toggle="tooltip" title="Tambah Data"><i class="bi bi-plus fs-3"></i></button> &nbsp
+                        <button type="button" class="btn btn-active btn-info btn-sm btn-icon btn-search cls-search btn-search-active" style="margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
+                        <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-search cls-search btn-search-unactive" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
+                        <button type="button" class="btn btn-primary btn-sm btn-icon btn-validasi cls-validasi" style="display:none;margin-right:3px;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
+                        <button type="button" class="btn btn-danger btn-sm btn-icon btn-cancel-validasi cls-validasi" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Batalkan Validasi"><i class="bi bi-check fs-3"></i></button> 
+                        <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi" style="display:none;margin-right:3px;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
+                        <button type="button" class="btn btn-success btn-sm btn-icon cls-add" style="margin-right:3px;" data-toggle="tooltip" title="Tambah Data"><i class="bi bi-plus fs-3"></i></button>
                         <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-excel fs-3"></i></button>
                     </div>
                     <!--end::Search-->
@@ -44,6 +46,7 @@
             <div class="card-body p-0">
                 <!--begin::Heading-->
                 <div class="card-px py-10">
+                  <div class="row" id="form-cari">
                     <div class="form-group row  mb-5">
                         <div class="col-lg-6">
                             <label>BUMN</label>
@@ -103,6 +106,7 @@
                         </div>
                     </div>
                     <div class="separator border-gray-200 mb-10"></div>
+                  </div>
 
                     <!--begin: Datatable -->
                     <div class="table-responsive">
@@ -112,27 +116,30 @@
                                     <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No.</th>
                                     <th style="font-weight:bold;border-bottom: 1px solid #c8c7c7;">Laporan Manajemen</th>
                                     <th style="text-align:right;font-weight:bold;width:160px;border-bottom: 1px solid #c8c7c7;">Nilai (Rp.)</th>
-                                    <th style="text-align:center;font-weight:bold;width:10px;border-bottom: 1px solid #c8c7c7;"></th>
                                     <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>    
                             @php 
                                 $total=0;
+                                $no=1;
                             @endphp  
                             @foreach ($laporan_bumn as $b)     
                                 @if(!$perusahaan_id)
                                 <tr class="treegrid-bumn{{@$b->perusahaan_id}}" >
-                                    <td></td>
+                                    <td style="text-align:center;">
+                                        @if(!$perusahaan_id)
+                                        {{$no++}}
+                                        @endif
+                                    </td>
                                     <td>{{$b->nama_lengkap}}</td>
-                                    <td></td>
                                     <td></td>
                                     <td></td>
                                 </tr>  
                                 @endif   
                                 
                                 @php 
-                                    $no=1;
+                                    $no2=1;
                                     $jenis = $laporan_jenis->where('perusahaan_id', $b->perusahaan_id);
                                     
                                     $class_parent = '';
@@ -142,10 +149,14 @@
                                 @endphp 
                                 @foreach ($jenis as $j)   
                                 <tr class="treegrid-bumn{{@$b->perusahaan_id}}jenis{{$j->laporan_keuangan_id}} {{$class_parent}} item-jenis{{$j->laporan_keuangan_id}}" >
-                                    <td>{{$no++}}</td>
+                                    <td style="text-align:center;">
+                                        @if($perusahaan_id)
+                                        {{$no2++}}
+                                        @endif
+                                    </td>
                                     <td>{{$j->nama}}</td>
-                                    <td></td>
-                                    <td></td>
+                                    <td style="text-align:right;">
+                                    </td>
                                     <td></td>
                                 </tr>  
                                     
@@ -156,10 +167,18 @@
                                     <tr class="treegrid-bumn{{@$b->perusahaan_id}}id{{$p->id}} treegrid-parent-bumn{{@$b->perusahaan_id}}jenis{{$j->laporan_keuangan_id}} item-bumn{{@$b->perusahaan_id}}id{{$p->id}}" >
                                         <td></td>
                                         <td style="font-weight:bold;">{{$p->label}}</td>
-                                        <td style="text-align:right;">{{number_format($p->nilai,0,',',',')}}</td>
-                                        <td style="font-weight:bold;"></td>
+                                            <td style="text-align:right;">
+                                                @php
+                                                    $nilai=($p->is_pengurangan?'(':'');
+                                                    $nilai.=number_format($p->nilai,0,',',',');
+                                                    $nilai.=($p->is_pengurangan?')':'');
+                                                @endphp
+                                                {{$nilai}}
+                                            </td>
                                         <td style="text-align:center;">
+                                            @if($p->is_input && $j->status_id!=1)
                                             <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$p->id}}" data-toggle="tooltip" title="Ubah data {{$p->label}}"><i class="bi bi-pencil fs-3"></i></button>
+                                            @endif
                                         </td>
                                     </tr> 
                                     
@@ -171,10 +190,18 @@
                                         <tr class="treegrid-bumn{{@$b->perusahaan_id}}id{{$c->id}} treegrid-parent-bumn{{@$b->perusahaan_id}}id{{$p->id}} item-bumn{{@$b->perusahaan_id}}id{{$c->id}}" >
                                             <td></td>
                                             <td>{{$c->label}}</td>
-                                            <td style="text-align:right;">{{number_format($c->nilai,0,',',',')}}</td>
-                                            <td>{{($c->is_pengurangan?'(-)':'')}}</td>
+                                            <td style="text-align:right;">
+                                                @php
+                                                    $nilai=($c->is_pengurangan?'(':'');
+                                                    $nilai.=number_format($c->nilai,0,',',',');
+                                                    $nilai.=($c->is_pengurangan?')':'');
+                                                @endphp
+                                                {{$nilai}}
+                                            </td>
                                             <td style="text-align:center;">
+                                                @if($c->is_input && $j->status_id!=1)
                                                 <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$c->id}}" data-toggle="tooltip" title="Ubah data {{$c->label}}"><i class="bi bi-pencil fs-3"></i></button>
+                                                @endif
                                             </td>
                                             @php 
                                                 if($c->is_pengurangan){
@@ -189,20 +216,9 @@
                                 @endforeach
                             @endforeach
                             @if($total==0)
-                                <td colspan="5" style="text-align:center;font-style:italic">Data Kosong</td>
+                                <td colspan="4" style="text-align:center;font-style:italic">Data Kosong</td>
                             @endif
                             </tbody>
-                            <tfoot>
-                                <tr>
-                                    @if($total!=0)
-                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
-                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">Total</th>
-                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">{{number_format($total,0,',',',')}}</th>
-                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
-                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
-                                    @endif
-                                </tr>
-                            </tfoot>
                         </table> 
                     </div>
                 </div>
@@ -247,6 +263,18 @@
 
         $('body').on('click','.cls-button-delete',function(){
             onbtndelete(this);
+        });
+
+        $('body').on('click','.btn-search-active',function(){
+            $('.btn-search-active').hide();
+            $('.btn-search-unactive').show();
+            $('#form-cari').toggle(600);
+        });
+
+        $('body').on('click','.btn-search-unactive',function(){
+            $('.btn-search-active').show();
+            $('.btn-search-unactive').hide();
+            $('#form-cari').toggle(600);
         });
 
         $('#proses').on('click', function(event){
