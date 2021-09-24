@@ -58,7 +58,7 @@ class LaporanManajemenController extends Controller
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
             'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
-            'periode' => PeriodeLaporan::get(),
+            'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
             'status' => Status::get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id
@@ -138,7 +138,10 @@ class LaporanManajemenController extends Controller
                     $button .= '<a class="tooltips btn btn-sm btn-light btn-icon btn-warning" title="Download File '.@$row->periode->nama.'" href="'.\URL::to('file_upload/laporan_manajemen/'.$row->file_name).'" download="Download File '.@$row->periode->nama.'" ><i class="bi bi-download fs-3"></i></a> ';
                 }
                 
-                if($row->status_id != 1){
+                if($row->status_id == 3){
+                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-disabled" data-id="'.$id.'" data-toggle="tooltip" title="Upload File '.@$row->periode->nama.'"><i class="bi bi-upload fs-3"></i></button> ';
+                }
+                if($row->status_id == 2){
                     $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Upload File '.@$row->periode->nama.'"><i class="bi bi-upload fs-3"></i></button> ';
                 }
                 
@@ -244,7 +247,7 @@ class LaporanManajemenController extends Controller
                                   $laporan_manajemen = LaporanManajemen::find((int)$request->input('id'));
                                   $dataUpload = $this->uploadFile($request->file('file_name'), (int)$request->input('id'), @$laporan_manajemen->perusahaan->nama_lengkap, @$laporan_manajemen->periode->nama);
                                   $param2['file_name']  = $dataUpload->fileRaw;
-                                  $param2['status_id']  = 2;
+                                  $param2['status_id']  = 1;
                                   $param2['user_id']  = \Auth::user()->id;
                                   $param2['waktu']  = date('Y-m-d H:i:s');
                                   $laporan_manajemen->update((array)$param2);
