@@ -432,7 +432,7 @@
                         s_lancar,
                         s_kurang_lancar,
                         s_diragukan,
-                        0
+                        s_macet
                        ],
                 tooltip: {
                     valueSuffix: '{value}'
