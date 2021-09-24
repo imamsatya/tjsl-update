@@ -14,7 +14,7 @@
                 <option></option>
                 @foreach($jenis_laporan as $p)
                 @php
-                    $select = ($actionform == 'update' && ($p->jenis_laporan == 'PUMK') ? 'selected="selected"' : '');
+                    $select = ($actionform == 'update' && in_array($p->id, $jenis_laporan_id) ? 'selected="selected"' : '');
                 @endphp
                 <option value="{{$p->id}}" {{$select}} >{{$p->nama}}</option>
                 @endforeach

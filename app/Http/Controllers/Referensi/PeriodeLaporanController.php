@@ -252,11 +252,13 @@ class PeriodeLaporanController extends Controller
         try{
 
             $periode_laporan = PeriodeLaporan::find((int)$request->input('id'));
+            $jenis_laporan_id = PeriodeHasJenis::where("periode_laporan_id", $request->input('id'))->pluck('jenis_laporan_id')->all();
 
                 return view($this->__route.'.form',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
                     'jenis_laporan' => JenisLaporan::get(),
+                    'jenis_laporan_id' => $jenis_laporan_id,
                     'data' => $periode_laporan
 
                 ]);
