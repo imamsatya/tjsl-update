@@ -13,6 +13,14 @@
                                     <td>{{$data->perusahaan_text?$data->perusahaan_text:"-"}}</td>
                                 </tr>
                                 <tr>
+                                    <td>Bulan</td>
+                                    <td>{{$data->bulan_text?$data->bulan_text:"-"}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Tahun</td>
+                                    <td>{{$data->tahun?$data->tahun:"-"}}</td>
+                                </tr>
+                                <tr>
                                     <td>Nama Mitra</td>
                                     <td>{{$data->nama_mitra?$data->nama_mitra:"-"}}</td>
                                 </tr>
