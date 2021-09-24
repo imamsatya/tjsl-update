@@ -457,10 +457,12 @@ class VersiLaporanKeuanganController extends Controller
             'title' => 'Error'
         ];
 
-        if ($request->all()) {  
+        if ($request->all()) {   
             $param['kode'] = $request->input('kode');
-            $param['label'] = $request->input('label');   
-            $param['is_pengurangan'] = $request->input('is_pengurangan');      
+            $param['label'] = $request->input('label');       
+            $param['is_pengurangan'] = $request->input('is_pengurangan');       
+            $param['is_input'] = $request->input('is_input');       
+            $param['formula'] = $request->input('formula');   
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
@@ -478,6 +480,7 @@ class VersiLaporanKeuanganController extends Controller
                                   $param = $request->except('id','actionform','_token','versi_laporan_id','laporan_keuangan_id','parent_id');
                                  
                                   $param['is_pengurangan'] = $request->is_pengurangan? true : false;
+                                  $param['is_input'] = $request->is_input? true : false;
                                   
                                   $lapkeu_child = LaporanKeuanganChild::create((array)$param);
 
@@ -512,6 +515,11 @@ class VersiLaporanKeuanganController extends Controller
                                     $param['is_pengurangan'] = false;
                                 }else{
                                     $param['is_pengurangan'] = $request->is_pengurangan == "on"? true : false; 
+                                }
+                                if(!$request->is_input){
+                                    $param['is_input'] = false;
+                                }else{
+                                    $param['is_input'] = $request->is_input == "on"? true : false; 
                                 }
                                
                                 $data->update((array)$param);
