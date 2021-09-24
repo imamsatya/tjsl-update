@@ -64,69 +64,6 @@ class HomeController extends Controller
             }
         }
 
-        $kolek = KolekbilitasPendanaan::get();
-        $kol = $kolek;
-        $mitra = [];
-        if($perusahaan_id){
-            foreach($kol as $key=>$val){
-                $mitra[] = DB::select("SELECT COUNT(pumk_mitra_binaans.kolektibilitas_id) AS mitra, SUM(saldo_pokok_pendanaan) AS saldo
-                    FROM public.pumk_mitra_binaans
-                    LEFT JOIN kolekbilitas_pendanaan ON kolekbilitas_pendanaan.id = pumk_mitra_binaans.kolektibilitas_id
-                    where pumk_mitra_binaans.kolektibilitas_id = ".$val->id." AND
-                    pumk_mitra_binaans.perusahaan_id = ".$perusahaan_id."");
-            }
-        }else{
-            foreach($kol as $key=>$val){
-                $mitra[] = DB::select("SELECT COUNT(pumk_mitra_binaans.kolektibilitas_id) AS mitra, SUM(saldo_pokok_pendanaan) AS saldo
-                    FROM public.pumk_mitra_binaans
-                    LEFT JOIN kolekbilitas_pendanaan ON kolekbilitas_pendanaan.id = pumk_mitra_binaans.kolektibilitas_id
-                    where pumk_mitra_binaans.kolektibilitas_id = ".$val->id."");
-            }
-        }
-
-        $kolek = KolekbilitasPendanaan::select('nama')->pluck('nama');
-
-        $mitra_lancar = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
-                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                        ->where('kolekbilitas_pendanaan.nama','ilike','%lancar%')->count();
-
-        $saldo_lancar = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
-                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                        ->where('kolekbilitas_pendanaan.nama','ilike','%lancar%')
-                        ->pluck('total');
-
-        $mitra_kurang_lancar = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
-                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                        ->where('kolekbilitas_pendanaan.nama','ilike','%kurang lancar%')->count();                        
-
-        $saldo_kurang_lancar = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
-                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                        ->where('kolekbilitas_pendanaan.nama','ilike','%kurang lancar%')
-                        ->pluck('total');
-
-        $mitra_diragukan = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
-                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                        ->where('kolekbilitas_pendanaan.nama','ilike','%Diragukan%')->count();                        
-
-        $saldo_diragukan = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
-                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                        ->where('kolekbilitas_pendanaan.nama','ilike','%Diragukan%')
-                        ->pluck('total');
-
-        $mitra_macet = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
-                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                        ->where('kolekbilitas_pendanaan.nama','ilike','%Macet%')->count();                          
-
-        $saldo_macet = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
-                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                        ->where('kolekbilitas_pendanaan.nama','ilike','%Macet%')
-                        ->pluck('total');
-                        
-                        
-        $users = User::select(\DB::raw("COUNT(*) as count"))
-                        ->whereYear('created_at', date('Y'))
-                        ->pluck('count');
-       
        
         return view($this->__route.'.index',[
             'users' =>$users,
@@ -142,22 +79,173 @@ class HomeController extends Controller
             'filter_periode_id' => $request->periode_id,
             'filter_status_id' => $request->status_id,
             'filter_tahun' => $request->tahun,
-            'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
-            'status' => Status::get(),
-            'mitra_lancar' => $mitra_lancar,
-            'mitra_kurang_lancar' => $mitra_kurang_lancar,
-            'mitra_diragukan' => $mitra_diragukan,
-            'mitra_macet' => $mitra_macet,
-            'saldo_lancar' => $saldo_lancar? $saldo_lancar : '',
-            'saldo_kurang_lancar' => $saldo_kurang_lancar?$saldo_kurang_lancar :'',
-            'saldo_diragukan' => $saldo_diragukan?$saldo_diragukan : '',
-            'saldo_macet' => $saldo_macet?$saldo_macet : '',
-            'kolek' => json_encode($kolek),
-            'admin_tjsl' => $admin_tjsl,
             'bulan' => Bulan::get(),
         ]);
     }
+
+    public function chartmb(Request $request)
+    {
+        try{
+            $json = [];
+            $kolek = KolekbilitasPendanaan::select('nama')->pluck('nama');
+            $perusahaan = $request->perusahaan_id_pumk;
+            $bulan = $request->bulan_pumk;
+            $tahun = $request->tahun_pumk;
+
+            $json['mitra_lancar'] =  PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
+                            ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                            ->where('kolekbilitas_pendanaan.nama','ilike','%lancar%')
+                            ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
+                                if($perusahaan){
+                                    $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
+                                }
+                                if($bulan){
+                                    $query->where('pumk_mitra_binaans.bulan', '=', $bulan);
+                                }
+                                if($tahun){
+                                    $query->where('pumk_mitra_binaans.tahun', '=', $tahun);
+                                }
+                            })
+                            ->count();
+                         
+            $json['saldo_lancar'] = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
+                            ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                            ->where('kolekbilitas_pendanaan.nama','ilike','%lancar%')
+                            ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
+                                if($perusahaan){
+                                    $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
+                                }
+                                if($bulan){
+                                    $query->where('pumk_mitra_binaans.bulan', '=', $bulan);
+                                }
+                                if($tahun){
+                                    $query->where('pumk_mitra_binaans.tahun', '=', $tahun);
+                                }
+                            })
+                            ->pluck('total')->first();
     
+            $json['mitra_kurang_lancar'] = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
+                            ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                            ->where('kolekbilitas_pendanaan.nama','ilike','%kurang lancar%')
+                            ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
+                                if($perusahaan){
+                                    $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
+                                }
+                                if($bulan){
+                                    $query->where('pumk_mitra_binaans.bulan', '=', $bulan);
+                                }
+                                if($tahun){
+                                    $query->where('pumk_mitra_binaans.tahun', '=', $tahun);
+                                }
+                            })
+                            ->count();                        
+    
+           $json['saldo_kurang_lancar'] = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
+                            ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                            ->where('kolekbilitas_pendanaan.nama','ilike','%kurang lancar%')
+                            ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
+                                if($perusahaan){
+                                    $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
+                                }
+                                if($bulan){
+                                    $query->where('pumk_mitra_binaans.bulan', '=', $bulan);
+                                }
+                                if($tahun){
+                                    $query->where('pumk_mitra_binaans.tahun', '=', $tahun);
+                                }
+                            })
+                            ->pluck('total')->first();
+    
+            $json['mitra_diragukan'] = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
+                            ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                            ->where('kolekbilitas_pendanaan.nama','ilike','%Diragukan%')
+                            ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
+                                if($perusahaan){
+                                    $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
+                                }
+                                if($bulan){
+                                    $query->where('pumk_mitra_binaans.bulan', '=', $bulan);
+                                }
+                                if($tahun){
+                                    $query->where('pumk_mitra_binaans.tahun', '=', $tahun);
+                                }
+                            })
+                            ->count();                        
+    
+            $json['saldo_diragukan'] = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
+                            ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                            ->where('kolekbilitas_pendanaan.nama','ilike','%Diragukan%')
+                            ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
+                                if($perusahaan){
+                                    $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
+                                }
+                                if($bulan){
+                                    $query->where('pumk_mitra_binaans.bulan', '=', $bulan);
+                                }
+                                if($tahun){
+                                    $query->where('pumk_mitra_binaans.tahun', '=', $tahun);
+                                }
+                            })
+                            ->pluck('total')->first();
+    
+            $json['mitra_macet'] = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
+                            ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                            ->where('kolekbilitas_pendanaan.nama','ilike','%Macet%')
+                            ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
+                                if($perusahaan){
+                                    $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
+                                }
+                                if($bulan){
+                                    $query->where('pumk_mitra_binaans.bulan', '=', $bulan);
+                                }
+                                if($tahun){
+                                    $query->where('pumk_mitra_binaans.tahun', '=', $tahun);
+                                }
+                            })
+                            ->count();                          
+    
+            $json['saldo_macet'] = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
+                            ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                            ->where('kolekbilitas_pendanaan.nama','ilike','%Macet%')
+                            ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
+                                if($perusahaan){
+                                    $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
+                                }
+                                if($bulan){
+                                    $query->where('pumk_mitra_binaans.bulan', '=', $bulan);
+                                }
+                                if($tahun){
+                                    $query->where('pumk_mitra_binaans.tahun', '=', $tahun);
+                                }
+                            })
+                            ->pluck('total')->first();
+            
+            
+            $json['bumn'] = '';
+            $json['bulan'] = '';
+            $json['tahun'] = '';
+            
+            if($perusahaan){
+                $bumn = Perusahaan::find($perusahaan);
+                $json['bumn'] = ' '.$bumn->nama_lengkap;
+            }
+
+            if($bulan){
+                $bulan = Bulan::find($bulan);
+                $json['bulan'] = 'Bulan '.$bulan->nama;
+            }
+
+            if($tahun){
+                $json['tahun'] = 'Tahun '.$tahun;
+            }
+
+            return response()->json($json);
+        }catch(\Exception $e){
+            $json = [];
+            return response()->json($json);
+        }
+    }    
+
     public function chartrealisasi(Request $request)
     {
         try{

@@ -214,7 +214,7 @@
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
 
-                        <button type="button" class="btn btn-active btn-info btn-sm btn-icon btn-search cls-search"  data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button> &nbsp
+                        <button type="button" class="btn btn-active btn-outline-info btn-sm btn-search cls-search"  data-toggle="tooltip" title="Cari Data" style="font-size: 16px;"><i class="bi bi-search fs-3"></i>Cari</button> &nbsp
 
                     </div>
                     <!--end::Search-->
@@ -228,7 +228,7 @@
                 <div class="card-px py-10" >
                   <div class="row" id="form-cari">
                     <div class="form-group row  mb-5" >
-                        <div class="col-lg-4">
+                        <div class="col-lg-6">
                             <label>BUMN</label>
                             @php
                                 $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
@@ -243,21 +243,9 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-lg-3">
-                            <label>Periode</label>
-                            <select id="periode_id" class="form-select form-select-solid form-select2" name="periode_id" data-kt-select2="true" data-placeholder="Pilih Periode" data-allow-clear="true">
-                                <option></option>
-                                @foreach($periode as $p)  
-                                    @php
-                                        $select = (($p->id == $filter_periode_id) ? 'selected="selected"' : '');
-                                    @endphp
-                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-lg-3">
+                        <div class="col-lg-4">
                             <label>Bulan</label>
-                            <select id="status_id" class="form-select form-select-solid form-select2" name="status_id" data-kt-select2="true" data-placeholder="Pilih Status" data-allow-clear="true">
+                            <select id="bulan_id_pumk" class="form-select form-select-solid form-select2" name="bulan_id_pumk" data-kt-select2="true" data-placeholder="Pilih Bulan" data-allow-clear="true">
                                 <option></option>
                                 @foreach($bulan as $p)  
                                     @php
@@ -269,7 +257,7 @@
                         </div>
                         <div class="col-lg-2">
                             <label>Tahun</label>
-                            <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun" data-allow-clear="true">
+                            <select class="form-select form-select-solid form-select2" id="tahun_pumk" name="tahun_pumk" data-kt-select2="true" data-placeholder="Pilih Tahun" data-allow-clear="true">
                                 @php
                                     for($i = date("Y"); $i>=2020; $i--){ @endphp
                                     <option value="{{$i}}">{{$i}}</option>
@@ -281,17 +269,17 @@
                         </div>
                     </div>
 
-                    <div class="form-group row  mb-5">
+                    {{-- <div class="form-group row  mb-5">
                         <div class="col-lg-6">
                             <button id="proses" class="btn-small btn-success me-3 text-white"><i class="fa fa-search text-white"></i> Filter</button>
                             <button  onclick="window.location.href='{{route('dashboard.index')}}'" class="btn-small btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="separator border-gray-200 mb-10"></div>
                 </div>
                     <!--begin: Datatable -->
                     <div>
-                        <div class="portlet-body" id="containers">
+                        <div class="portlet-body" id="mb_chart">
                         </div>
                     </div>
                 </div>
@@ -313,14 +301,7 @@
 <script>
     var urlchartrealisasi = "{{route('home.chartrealisasi')}}";
     var urlcharttpb = "{{route('home.charttpb')}}";
-    var mitra_lancar =  <?php echo json_encode($mitra_lancar) ?>;
-    var mitra_kurang_lancar =  <?php echo json_encode($mitra_kurang_lancar) ?>;
-    var mitra_diragukan =  <?php echo json_encode($mitra_diragukan) ?>;
-    var mitra_macet =  <?php echo json_encode($mitra_macet) ?>;
-    var saldo_lancar =  <?php echo json_encode((int)$saldo_lancar[0]) ?>;
-    var saldo_kurang_lancar =  <?php echo json_encode((int)$saldo_kurang_lancar[0]) ?>;
-    var saldo_diragukan =  <?php echo json_encode((int)$saldo_diragukan[0]) ?>;
-    var saldo_macet =  <?php echo json_encode((int)$saldo_macet[0]) ?>;
+    var urlchartmb = "{{route('home.chartmb')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
@@ -338,28 +319,59 @@
 
         initchartrealisasi();
         initcharttpb();
-        initmitra();
 
         //pumk
+        $('#perusahaan_id_pumk').on('change', function(event){
+            updatechartmb();
+        });
+        $('#tahun_pumk').on('change', function(event){
+            updatechartmb();
+        });
+        $('#bulan_id_pumk').on('change', function(event){
+            updatechartmb();
+        });
+
+        updatechartmb();
+        
         $('#form-cari').hide();
-        $('.btn-search').hide();
         $('body').on('click','.btn-search',function(){
             $('#form-cari').toggle(600);
         });
 
-        
+
     });
 
-    function initmitra() {
+    function updatechartmb(){
+        $.ajax({
+            url: urlchartmb,
+            data: {
+                'perusahaan_id_pumk' : $("#perusahaan_id_pumk").val(),
+                'tahun_pumk' : $("#tahun_pumk").val(),
+                'bulan_pumk' : $("#bulan_id_pumk").val()
+            },
+            type: "POST",
+            dataType: "json", 
+            success: function(data){
+                initmitra(data);
+            }                       
+        });
+    }
+
+    function initmitra(data) {
+        let s_lancar = data.saldo_lancar? parseInt(data.saldo_lancar) : 0;
+        let s_kurang_lancar = data.saldo_kurang_lancar? parseInt(data.saldo_kurang_lancar) : 0;
+        let s_diragukan = data.saldo_diragukan? parseInt(data.saldo_diragukan) : 0;
+        let s_macet = data.saldo_macet? parseInt(data.saldo_macet) : 0;
+     
         Highcharts.setOptions({
             colors: ['#E67E22','#6495ED']
         });
-        Highcharts.chart('containers', {
+        Highcharts.chart('mb_chart', {
             chart: {
                 zoomType: 'xy'
             },
             title: {
-                text: 'Kualitas Piutang'
+                text: 'Kualitas Piutang'+ data.bumn + ' ' + data.bulan + ' ' + data.tahun
             },
             subtitle: {
                 text: ''
@@ -389,7 +401,9 @@
                     }
                 },
                 labels: {
-                    format: '{value}',
+                    formatter: function(){
+                        return this.value.toLocaleString("fi-FI");
+                    },
                     style: {
                         color: Highcharts.getOptions().colors[0]
                     }
@@ -414,7 +428,12 @@
                 name: 'Saldo Pinjaman (Rp)',
                 type: 'spline',
                 yAxis: 1,
-                data: [saldo_lancar, saldo_kurang_lancar, saldo_diragukan, saldo_macet],
+                data: [
+                        s_lancar,
+                        s_kurang_lancar,
+                        s_diragukan,
+                        0
+                       ],
                 tooltip: {
                     valueSuffix: '{value}'
 
@@ -426,7 +445,12 @@
             }, {
                 name: 'Mitra Binaan',
                 type: 'column',
-                data: [mitra_lancar, mitra_kurang_lancar, mitra_diragukan, mitra_macet],
+                data: [
+                        data.mitra_lancar, 
+                        data.mitra_kurang_lancar, 
+                        data.mitra_diragukan, 
+                        data.mitra_macet
+                      ],
                 tooltip: {
                     valueSuffix: ''
                 },
@@ -436,7 +460,6 @@
             }]
         });
     }
-
 
     function updatechartrealisasi(){
         $.ajax({
