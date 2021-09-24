@@ -89,6 +89,7 @@ class LaporanKeuanganController extends Controller
         $laporan_parent = LaporanKeuanganNilai::select('laporan_keuangan_nilais.id',
                                                 'laporan_keuangan_parent.is_pengurangan',
                                                 'laporan_keuangan_parent.is_input',
+                                                'laporan_keuangan_parent.formula',
                                                 'laporan_keuangan_parent.label',
                                                 'laporan_keuangan_nilais.nilai',
                                                 'relasi_laporan_keuangan.parent_id',
@@ -106,6 +107,7 @@ class LaporanKeuanganController extends Controller
                                 ->GroupBy('laporan_keuangan_parent.is_input')
                                 ->GroupBy('laporan_keuangan_parent.label')
                                 ->GroupBy('laporan_keuangan_parent.kode')
+                                ->GroupBy('laporan_keuangan_parent.formula')
                                 ->GroupBy('laporan_keuangan_nilais.id')
                                 ->GroupBy('laporan_keuangan_nilais.nilai')
                                 ->GroupBy('laporan_keuangan_nilais.laporan_keuangan_id')
@@ -115,6 +117,7 @@ class LaporanKeuanganController extends Controller
         $laporan_child = LaporanKeuanganNilai::select('laporan_keuangan_nilais.id',
                                                     'laporan_keuangan_child.is_pengurangan',
                                                     'laporan_keuangan_child.is_input',
+                                                    'laporan_keuangan_child.formula',
                                                     'laporan_keuangan_child.label',
                                                     'laporan_keuangan_nilais.nilai',
                                                     'relasi_laporan_keuangan.parent_id',
@@ -131,6 +134,7 @@ class LaporanKeuanganController extends Controller
                                 ->GroupBy('relasi_laporan_keuangan.id')
                                 ->GroupBy('laporan_keuangan_child.is_input')
                                 ->GroupBy('laporan_keuangan_child.is_pengurangan')
+                                ->GroupBy('laporan_keuangan_child.formula')
                                 ->GroupBy('laporan_keuangan_child.label')
                                 ->GroupBy('laporan_keuangan_child.kode')
                                 ->GroupBy('laporan_keuangan_nilais.id')
@@ -401,7 +405,16 @@ class LaporanKeuanganController extends Controller
 
         $versilaporankeuangan = VersiLaporanKeuangan::orderBy('status')->orderBy('tanggal_akhir', 'desc')->first();
 
-        $parent = RelasiLaporanKeuangan::select('laporan_keuangans.nama','relasi_laporan_keuangan.id as relasi_laporan_keuangan_id','relasi_laporan_keuangan.versi_laporan_id','laporan_keuangans.id AS laporan_id','relasi_laporan_keuangan.parent_id','laporan_keuangan_parent.kode','laporan_keuangan_parent.label','laporan_keuangan_parent.is_pengurangan','laporan_keuangan_parent.is_input')
+        $parent = RelasiLaporanKeuangan::select('laporan_keuangans.nama',
+                                            'relasi_laporan_keuangan.id as relasi_laporan_keuangan_id',
+                                            'relasi_laporan_keuangan.versi_laporan_id',
+                                            'laporan_keuangans.id AS laporan_id',
+                                            'relasi_laporan_keuangan.parent_id',
+                                            'laporan_keuangan_parent.kode',
+                                            'laporan_keuangan_parent.label',
+                                            'laporan_keuangan_parent.is_pengurangan',
+                                            'laporan_keuangan_parent.formula',
+                                            'laporan_keuangan_parent.is_input')
                                 ->leftJoin('laporan_keuangans', 'laporan_keuangans.id', 'relasi_laporan_keuangan.laporan_keuangan_id')
                                 ->leftJoin('laporan_keuangan_parent', 'laporan_keuangan_parent.id', 'relasi_laporan_keuangan.parent_id')
                                 ->where('relasi_laporan_keuangan.parent_id','<>',null)
@@ -411,7 +424,17 @@ class LaporanKeuanganController extends Controller
 
         $return['parent']   = $parent;
         foreach($parent as $p){
-            $child = RelasiLaporanKeuangan::select('laporan_keuangans.nama','relasi_laporan_keuangan.id as relasi_laporan_keuangan_id','relasi_laporan_keuangan.versi_laporan_id','laporan_keuangans.id AS laporan_id','relasi_laporan_keuangan.parent_id','relasi_laporan_keuangan.child_id','laporan_keuangan_child.kode','laporan_keuangan_child.label','laporan_keuangan_child.is_pengurangan','laporan_keuangan_child.is_input')
+            $child = RelasiLaporanKeuangan::select('laporan_keuangans.nama',
+                                            'relasi_laporan_keuangan.id as relasi_laporan_keuangan_id',
+                                            'relasi_laporan_keuangan.versi_laporan_id',
+                                            'laporan_keuangans.id AS laporan_id',
+                                            'relasi_laporan_keuangan.parent_id',
+                                            'relasi_laporan_keuangan.child_id',
+                                            'laporan_keuangan_child.kode',
+                                            'laporan_keuangan_child.label',
+                                            'laporan_keuangan_child.is_pengurangan',
+                                            'laporan_keuangan_child.formula',
+                                            'laporan_keuangan_child.is_input')
                                     ->leftJoin('laporan_keuangans', 'laporan_keuangans.id', 'relasi_laporan_keuangan.laporan_keuangan_id')
                                     ->leftJoin('laporan_keuangan_parent', 'laporan_keuangan_parent.id', 'relasi_laporan_keuangan.parent_id')
                                     ->leftJoin('laporan_keuangan_child', 'laporan_keuangan_child.id', 'relasi_laporan_keuangan.child_id')

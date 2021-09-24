@@ -268,6 +268,48 @@
         });		
     }
     
+    function calculateFormula() {
+        $('.nilai').each(function() {
+            var sum = 0;
+            var formula = $(this).attr('data-formula'); 
+            var input_formula = $(this);
+            if(formula){
+                var arr_plus = formula.split('+');
+                for(i=0;i<arr_plus.length;i++){
+                    var arr_minus = arr_plus[i].split('-');
+                    for(j=0;j<arr_minus.length;j++){
+                        var class_name = '*[data-kode="'+arr_minus[j]+'"]';
+                        var value = 0;
+                        $(class_name).each( function() { 
+                            if (this.value.length != 0) {
+                                value = $(this).val().replace(/-\D/g, "").replace(/,/g, "");
+                            }
+                        });
+                        if(j==0){
+                            sum+=parseInt(value);
+                        }else{
+                            sum-=parseInt(value);
+                        }
+                    }
+                }
+                input_formula.val(addCommas(sum));
+            }
+        });
+    }
+    
+    function addCommas(nStr)
+    {
+        nStr += '';
+        x = nStr.split('.');
+        x1 = x[0];
+        x2 = x.length > 1 ? '.' + x[1] : '';
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1' + ',' + '$2');
+        }
+        return x1 + x2;
+    }
+
     function calculateJumlah() {
         var sum = 0;
         $('.nilai').each(function() {
@@ -311,10 +353,12 @@
                                 contentData += '<span style="font-weight:bold;">'+data.parent[i].label+'</span>';
                             contentData += '</td>';
                             contentData += '<td>';
-                            console.log(data.parent[i]);
-                            if(data.parent[i].is_input){
+                            if(data.parent[i].formula!=null){
                                 contentData += '<input name="relasi_id[]" type="hidden" value="'+data.parent[i].relasi_laporan_keuangan_id+'"/>';
-                                contentData += '<input name="nilai[]" data-is_pengurangan="'+data.parent[i].is_pengurangan+'" class="nilai form-control" style="text-align:right;" type="text"/>';
+                                contentData += '<input name="nilai[]" value="0" data-formula="'+data.parent[i].formula+'" data-is_pengurangan="'+data.parent[i].is_pengurangan+'" class="nilai form-control" data-kode="'+data.parent[i].kode+'" style="text-align:right;background-color:#eef3f7;" type="text" readonly/>';
+                            }else if(data.parent[i].is_input){
+                                contentData += '<input name="relasi_id[]" type="hidden" value="'+data.parent[i].relasi_laporan_keuangan_id+'"/>';
+                                contentData += '<input name="nilai[]" data-is_pengurangan="'+data.parent[i].is_pengurangan+'" class="nilai nilai-input form-control" data-kode="'+data.parent[i].kode+'" style="text-align:right;" type="text"/>';
                             }
                             contentData += '</td>';
                         contentData += '</tr>';
@@ -327,9 +371,12 @@
                                     contentData += '<span style="padding-left: 30px;">'+child[j].label+'</span>';
                                 contentData += '</td>';
                                 contentData += '<td>';
-                                if(child[j].is_input){
+                                if(child[j].formula!=null){
                                     contentData += '<input name="relasi_id[]" type="hidden" value="'+child[j].relasi_laporan_keuangan_id+'"/>';
-                                    contentData += '<input name="nilai[]" data-is_pengurangan="'+child[j].is_pengurangan+'" class="nilai form-control" style="text-align:right;" type="text"/>';
+                                    contentData += '<input name="nilai[]" value="0" data-formula="'+child[j].formula+'" data-is_pengurangan="'+child[j].is_pengurangan+'" class="nilai form-control" data-kode="'+child[j].kode+'" style="text-align:right;background-color:#eef3f7;" type="text" readonly/>';
+                                }else if(child[j].is_input){
+                                    contentData += '<input name="relasi_id[]" type="hidden" value="'+child[j].relasi_laporan_keuangan_id+'"/>';
+                                    contentData += '<input name="nilai[]" data-is_pengurangan="'+child[j].is_pengurangan+'" class="nilai nilai-input form-control" data-kode="'+child[j].kode+'" style="text-align:right;" type="text"/>';
                                 }
                                 contentData += '</td>';
                             contentData += '</tr>';
@@ -359,8 +406,8 @@
                         ;
                         });
                     });
-                    $('.nilai').keyup(function() {
-                        calculateJumlah();
+                    $('.nilai-input').keyup(function() {
+                        calculateFormula();
                     });
                 }else{
                     swal.fire({
