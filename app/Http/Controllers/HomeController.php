@@ -14,6 +14,7 @@ use App\Models\Perusahaan;
 use App\Models\User;
 use App\Models\Tpb;
 use App\Models\KolekbilitasPendanaan;
+use App\Models\PumkMitraBinaan;
 use App\Models\PeriodeLaporan;
 use App\Models\Status;
 use App\Models\Bulan;
@@ -83,8 +84,52 @@ class HomeController extends Controller
             }
         }
 
+        $kolek = KolekbilitasPendanaan::select('nama')->pluck('nama');
+
+        $mitra_lancar = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
+                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                        ->where('kolekbilitas_pendanaan.nama','ilike','%lancar%')->count();
+
+        $saldo_lancar = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
+                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                        ->where('kolekbilitas_pendanaan.nama','ilike','%lancar%')
+                        ->pluck('total');
+
+        $mitra_kurang_lancar = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
+                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                        ->where('kolekbilitas_pendanaan.nama','ilike','%kurang lancar%')->count();                        
+
+        $saldo_kurang_lancar = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
+                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                        ->where('kolekbilitas_pendanaan.nama','ilike','%kurang lancar%')
+                        ->pluck('total');
+
+        $mitra_diragukan = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
+                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                        ->where('kolekbilitas_pendanaan.nama','ilike','%Diragukan%')->count();                        
+
+        $saldo_diragukan = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
+                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                        ->where('kolekbilitas_pendanaan.nama','ilike','%Diragukan%')
+                        ->pluck('total');
+
+        $mitra_macet = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
+                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                        ->where('kolekbilitas_pendanaan.nama','ilike','%Macet%')->count();                          
+
+        $saldo_macet = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
+                        ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                        ->where('kolekbilitas_pendanaan.nama','ilike','%Macet%')
+                        ->pluck('total');
+                        
+                        
+        $users = User::select(\DB::raw("COUNT(*) as count"))
+                        ->whereYear('created_at', date('Y'))
+                        ->pluck('count');
+       
        
         return view($this->__route.'.index',[
+            'users' =>$users,
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
             'perusahaan_id' => $perusahaan_id,
@@ -99,8 +144,15 @@ class HomeController extends Controller
             'filter_tahun' => $request->tahun,
             'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
             'status' => Status::get(),
-            'mitra' => $mitra,
-            'kolek' => $kolek,
+            'mitra_lancar' => $mitra_lancar,
+            'mitra_kurang_lancar' => $mitra_kurang_lancar,
+            'mitra_diragukan' => $mitra_diragukan,
+            'mitra_macet' => $mitra_macet,
+            'saldo_lancar' => $saldo_lancar? $saldo_lancar : '',
+            'saldo_kurang_lancar' => $saldo_kurang_lancar?$saldo_kurang_lancar :'',
+            'saldo_diragukan' => $saldo_diragukan?$saldo_diragukan : '',
+            'saldo_macet' => $saldo_macet?$saldo_macet : '',
+            'kolek' => json_encode($kolek),
             'admin_tjsl' => $admin_tjsl,
             'bulan' => Bulan::get(),
         ]);

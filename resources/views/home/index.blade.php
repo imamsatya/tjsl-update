@@ -289,38 +289,10 @@
                     </div>
                     <div class="separator border-gray-200 mb-10"></div>
                 </div>
-                <h4 class="text-center">Kualitas Piutang</h4>   
                     <!--begin: Datatable -->
-                    <div class="table-responsive"  >
-                        <table class="table" id="datatable">
-                            <thead style="background-color: #E8FFF3;">
-                                <tr style="border-top: ridge;">
-                                    @foreach($kolek as $val)
-                                    <th colspan="2" style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;border-left:ridge;border-right:ridge;">{{$val->nama}}</th>
-                                    @endforeach
-                                </tr>
-                                <tr style="border-top: ridge;">
-                                    @foreach($kolek as $key=>$val)
-                                    <th  style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;border-right:ridge;border-left:ridge;">Jumlah Mitra</th>
-                                    <th  style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;border-right:ridge;">Saldo Pinjaman</th>
-
-                                    @endforeach
-                                </tr>
-                            </thead>
-                            <tbody style="border-bottom: ridge;">
-                                <tr >
-                                    @foreach($mitra as $key=>$v)
-                                    <td style="border: ridge;text-align:center;">
-                                        {{$v[0]->mitra}}
-                                    </td>
-                                    <td style="border: ridge;text-align:center;">
-                                        {{ $v[0]->saldo? number_format($v[0]->saldo,0,',',',') : 0}}
-                                    </td>
-                                    @endforeach
-                                </tr>
-                            </tbody>
-                        </table>
-
+                    <div>
+                        <div class="portlet-body" id="containers">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -332,9 +304,23 @@
 
 
 @section('addafterjs')
+ <script src="{{ asset('plugins/Highcharts-9.2.2/code/highcharts.js') }}"></script>
+ <script src="{{ asset('plugins/Highcharts-9.2.2/code/highcharts-3d.js') }}"></script>
+ <script src="{{ asset('plugins/Highcharts-9.2.2/code/modules/exporting.js') }}"></script>
+ <script src="{{ asset('plugins/Highcharts-9.2.2/code/modules/accessibility.js') }}"></script>
+ <script src="{{ asset('plugins/Highcharts-9.2.2/code/modules/export-data.js') }}"></script>
+
 <script>
     var urlchartrealisasi = "{{route('home.chartrealisasi')}}";
     var urlcharttpb = "{{route('home.charttpb')}}";
+    var mitra_lancar =  <?php echo json_encode($mitra_lancar) ?>;
+    var mitra_kurang_lancar =  <?php echo json_encode($mitra_kurang_lancar) ?>;
+    var mitra_diragukan =  <?php echo json_encode($mitra_diragukan) ?>;
+    var mitra_macet =  <?php echo json_encode($mitra_macet) ?>;
+    var saldo_lancar =  <?php echo json_encode((int)$saldo_lancar[0]) ?>;
+    var saldo_kurang_lancar =  <?php echo json_encode((int)$saldo_kurang_lancar[0]) ?>;
+    var saldo_diragukan =  <?php echo json_encode((int)$saldo_diragukan[0]) ?>;
+    var saldo_macet =  <?php echo json_encode((int)$saldo_macet[0]) ?>;
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
@@ -352,6 +338,7 @@
 
         initchartrealisasi();
         initcharttpb();
+        initmitra();
 
         //pumk
         $('#form-cari').hide();
@@ -359,9 +346,98 @@
         $('body').on('click','.btn-search',function(){
             $('#form-cari').toggle(600);
         });
+
         
     });
-    
+
+    function initmitra() {
+        Highcharts.setOptions({
+            colors: ['#E67E22','#6495ED']
+        });
+        Highcharts.chart('containers', {
+            chart: {
+                zoomType: 'xy'
+            },
+            title: {
+                text: 'Kualitas Piutang'
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: [{
+                categories: ["Lancar","Kurang Lancar","Diragukan","Macet"],
+                crosshair: true
+            }],
+            yAxis: [{
+                labels: {
+                    format: '{value}',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                title: {
+                    text: 'Mitra Binaan',
+                    style: {
+                        color: Highcharts.getOptions().colors[2]
+                    }
+                }
+            }, { 
+                title: {
+                    text: 'Saldo Pinjaman (Rp)',
+                    style: {
+                        color: Highcharts.getOptions().colors[2]
+                    }
+                },
+                labels: {
+                    format: '{value}',
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                opposite: true
+            }],
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                layout: 'horizontal',
+                align: 'center',
+                x: 0,
+                verticalAlign: 'top',
+                y: 15,
+                floating: true,
+                backgroundColor:
+                    Highcharts.defaultOptions.legend.backgroundColor || 
+                    'rgba(255,255,255,0.25)'
+            },
+            series: [{
+                name: 'Saldo Pinjaman (Rp)',
+                type: 'spline',
+                yAxis: 1,
+                data: [saldo_lancar, saldo_kurang_lancar, saldo_diragukan, saldo_macet],
+                tooltip: {
+                    valueSuffix: '{value}'
+
+                },
+                style: {
+                        color: Highcharts.getOptions().colors[0]
+                },
+
+            }, {
+                name: 'Mitra Binaan',
+                type: 'column',
+                data: [mitra_lancar, mitra_kurang_lancar, mitra_diragukan, mitra_macet],
+                tooltip: {
+                    valueSuffix: ''
+                },
+                style: {
+                        color: Highcharts.getOptions().colors[1]
+                }
+            }]
+        });
+    }
+
+
     function updatechartrealisasi(){
         $.ajax({
             url: urlchartrealisasi,
