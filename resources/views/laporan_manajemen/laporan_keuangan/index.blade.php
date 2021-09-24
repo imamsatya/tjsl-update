@@ -75,8 +75,7 @@
                     <div class="form-group row  mb-5">
                         <div class="col-lg-6">
                             <label>Periode Laporan</label>
-                            <select class="form-select form-select-solid form-select2" id="periode_laporan" name="periode_laporan" data-kt-select2="true" data-placeholder="Pilih Periode">
-                                <option></option>
+                            <select class="form-select form-select-solid form-select2" id="periode_laporan_id" name="periode_laporan_id" data-kt-select2="true" data-placeholder="Pilih Periode">
                                 @foreach($periode_laporan as $p)  
                                     @php
                                         $select = (($p->id == $periode_laporan_id) ? 'selected="selected"' : '');
@@ -87,7 +86,7 @@
                         </div>
                         <div class="col-lg-6">
                             <label>Jenis Laporan</label>
-                            <select class="form-select form-select-solid form-select2" id="jenis_laporan" name="jenis_laporan" data-kt-select2="true" data-placeholder="Pilih Jenis Laporan">
+                            <select class="form-select form-select-solid form-select2" id="jenis_laporan_id" name="jenis_laporan_id" data-kt-select2="true" data-placeholder="Pilih Jenis Laporan">
                                 <option></option>
                                 @foreach($jenis_laporan as $p)  
                                     @php
@@ -107,141 +106,104 @@
 
                     <!--begin: Datatable -->
                     <div class="table-responsive">
-                        <table class="table  table-bordered  tree  table-checkable">
+                        <table class="table table-striped table-bordered table-hover tree  table-checkable">
                             <thead>
                                 <tr>
-                                    <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No</th>
-                                    <th style="font-weight:bold;border-bottom: 1px solid #c8c7c7;">Versi Laporan</th>
-                                    <th style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">Tanggal Awal</th>
-                                    <th style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">Tanggal Akhir</th>
-                                    <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Keterangan</th>
-                                    <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Status</th>
-                                    <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Nilai Pengurangan</th>
-                                    <th style="text-align:center;width:120px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
+                                    <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No.</th>
+                                    <th style="font-weight:bold;border-bottom: 1px solid #c8c7c7;">Laporan Manajemen</th>
+                                    <th style="text-align:right;font-weight:bold;width:160px;border-bottom: 1px solid #c8c7c7;">Nilai (Rp.)</th>
+                                    <th style="text-align:center;font-weight:bold;width:10px;border-bottom: 1px solid #c8c7c7;"></th>
+                                    <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
                                 </tr>
                             </thead>
-
-                            <tbody>
-                                @php $no=1; @endphp
-                                @foreach ($versilaporankeuangan as $p)   
-                                  <tr class="treegrid-{{$p->id}} versi" style="background-color: rgb(231, 231, 231) ;border-bottom:ridge;">
-                                        <td style="text-align:center;">{{$no++}}</td>
-                                        <td><strong> Versi {{$p->versi}} </strong></td>
-                                        <td>
-                                        <strong>
-                                            @if($p->tanggal_awal)
-                                            {{date("d-m-Y",strtotime($p->tanggal_awal))}}
-                                            @endif
-                                        </strong>
-                                        </td>
-                                        <td>
-                                        <strong>
-                                            @if($p->tanggal_akhir)
-                                            {{date("d-m-Y",strtotime($p->tanggal_akhir))}}
-                                            @endif
-                                        </strong>
-                                        </td>
-                                        <td><strong>{{$p->keterangan}}</strong></td>
-                                        <td style="text-align:center;">
-                                        <strong>
-                                            @php
-                                                $status = '';
-                                                if($p->tanggal_akhir == '' || $p->tanggal_akhir >=  date('Y-m-d')){
-                                                    $status = 'Aktif';
-                                                }
-                                            @endphp
-                                            {{ $status }}
-                                        </strong>
-                                        </td>
-                                        <td></td>
-                                        <td style="text-align:center;">
-                                            <button type="button" data-id="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-success cls-button-add-laporan" data-id="{{$p->id}}" data-toggle="tooltip" title="Tamba data Laporan"><i class="bi bi-plus fs-3"></i></button>
-                                            <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$p->id}}" data-toggle="tooltip" title="Ubah data versi {{@$p->versi}}"><i class="bi bi-pencil fs-3"></i></button>
-                                            <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="{{$p->id}}" data-nama="Versi {{$p->versi}}" data-toggle="tooltip" title="Hapus data Versi {{$p->versi}}"><i class="bi bi-trash fs-3"></i></button>
-                                        </td>
-                                  </tr>
-                                  @php
-                                       $lapor = $laporankeuangan->where('versi_laporan_id', $p->id);
-                                  @endphp
-                                  @foreach ($lapor as $l)  
-                                  <tr class="treegrid-lapor{{$l->id}}versi{{$p->id}} treegrid-parent-{{$p->id}}" style="border-bottom:ridge;">
+                            <tbody>    
+                            @php 
+                                $total=0;
+                            @endphp  
+                            @foreach ($laporan_bumn as $b)     
+                                @if(!$perusahaan_id)
+                                <tr class="treegrid-bumn{{@$b->perusahaan_id}}" >
                                     <td></td>
-                                    <td colspan="6">
-                                        <a class="badge badge-light-info fw-bolder me-auto px-4 py-3">
-                                       <strong style="font-size: 14px;"> {{$l->nama}} </strong>
-                                        </a>
-                                    </td>
-                                    <td style="text-align:center;">
-
-                                        <button type="button" data-id="{{$p->id}}" data-versi_laporan_id="{{$p->id}}" data-laporan_keuangan_id="{{$l->id}}" class="btn btn-sm btn-light btn-icon btn-secondary cls-button-add-parent" data-id="{{$p->id}}" data-toggle="tooltip" title="Tambah data Parent Laporan"><i class="bi bi-plus fs-3"></i></button>
-
-                                        <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-versi-laporan-keuangan" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button>
-
-                                        <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-versi-laporan-keuangan" data-id="{{$l->id}}" data-nama="{{$l->nama}}" data-toggle="tooltip" title="Hapus data {{$l->nama}}"><i class="bi bi-trash fs-3"></i></button>
-                                    </td>
-                                  </tr>
-
-                                    @php 
-                                    $par = $parent->where('versi_laporan_id',$p->id)->where('laporan_id',$l->id);   
+                                    <td>{{$b->nama_lengkap}}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>  
+                                @endif   
+                                
+                                @php 
+                                    $no=1;
+                                    $jenis = $laporan_jenis->where('perusahaan_id', $b->perusahaan_id);
                                     
-                                    @endphp
-                                    @foreach($par as $c)
-                                        <tr class="treegrid-par{{$c->parent_id}}lapor{{$l->id}}versi{{$p->id}} treegrid-parent-lapor{{$l->id}}versi{{$p->id}}" style="border-bottom:ridge;">
-                                            <td></td>
-                                            <td colspan="5">
-                                                {{-- <a class="badge badge-light-primary fw-bolder me-auto px-4 py-3"> --}}
-                                                <strong> {{$c->kode}} - {{$c->label}}</strong>
-                                                {{-- </a> --}}
-                                            </td>
-                                            <td style="text-align:center;"></td>
-                                            <td style="text-align:center;">
-
-                                                <button type="button" data-id="{{$p->id}}"  data-versi_laporan_id="{{$p->id}}" data-laporan_keuangan_id="{{$l->id}}" data-parent_id="{{$c->parent_id}}" class="btn btn-sm btn-light btn-icon btn-warning cls-button-add-child" data-id="{{$p->id}}" data-toggle="tooltip" title="Tambah data Child Laporan"><i class="bi bi-plus fs-3"></i></button>
-
-                                                {{-- <button type="button" data-id="{{$l->id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button> --}}
-                                                <button type="button" data-id="{{$c->parent_id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-parent" data-toggle="tooltip" title="Ubah data {{@$c->label}}"><i class="bi bi-pencil fs-3"></i></button>
-
-                                                <button type="button" data-id="{{$c->parent_id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-parent" data-toggle="tooltip" title="Hapus data "><i class="bi bi-trash fs-3"></i></button>
-                                            </td>
-                                        </tr>
-
+                                    $class_parent = '';
+                                    if(!$perusahaan_id){
+                                        $class_parent = 'treegrid-parent-bumn' . $b->perusahaan_id;
+                                    }
+                                @endphp 
+                                @foreach ($jenis as $j)   
+                                <tr class="treegrid-bumn{{@$b->perusahaan_id}}jenis{{$j->laporan_keuangan_id}} {{$class_parent}} item-jenis{{$j->laporan_keuangan_id}}" >
+                                    <td>{{$no++}}</td>
+                                    <td>{{$j->nama}}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>  
+                                    
+                                    @php 
+                                        $parent = $laporan_parent->where('perusahaan_id', $b->perusahaan_id)->where('laporan_keuangan_id', $j->laporan_keuangan_id);
+                                    @endphp 
+                                    @foreach ($parent as $p)   
+                                    <tr class="treegrid-bumn{{@$b->perusahaan_id}}id{{$p->id}} treegrid-parent-bumn{{@$b->perusahaan_id}}jenis{{$j->laporan_keuangan_id}} item-bumn{{@$b->perusahaan_id}}id{{$p->id}}" >
+                                        <td></td>
+                                        <td style="font-weight:bold;">{{$p->label}}</td>
+                                        <td style="text-align:right;">{{number_format($p->nilai,0,',',',')}}</td>
+                                        <td style="font-weight:bold;"></td>
+                                        <td style="text-align:center;">
+                                            <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$p->id}}" data-toggle="tooltip" title="Ubah data {{$p->label}}"><i class="bi bi-pencil fs-3"></i></button>
+                                        </td>
+                                    </tr> 
+                                    
                                         @php 
-                                        $childs = $child->where('versi_laporan_id',$p->id)->where('laporan_id',$l->id)->where('parent_id',$c->parent_id);   
-
-                                        @endphp
-                                        @foreach($childs as $d)                                        
-                                        <tr class="treegrid-child{{$d->child_id}} treegrid-parent-par{{$c->parent_id}}lapor{{$l->id}}versi{{$p->id}} child{{$d->child_id}}" style="border-bottom:ridge;">
+                                            $child = $laporan_child->where('perusahaan_id', $b->perusahaan_id)->where('laporan_keuangan_id', $j->laporan_keuangan_id)->where('parent_id', $p->parent_id);
+                                            $total += $p->nilai;
+                                        @endphp 
+                                        @foreach ($child as $c)   
+                                        <tr class="treegrid-bumn{{@$b->perusahaan_id}}id{{$c->id}} treegrid-parent-bumn{{@$b->perusahaan_id}}id{{$p->id}} item-bumn{{@$b->perusahaan_id}}id{{$c->id}}" >
                                             <td></td>
-                                            <td colspan="5"> 
-                                                {{-- <a class="badge badge-light-info fw-bolder me-auto px-4 py-3"> --}}
-                                                    {{$d->kode}} - {{$d->label}}
-                                                {{-- </a> --}}
-                                            </td>
+                                            <td>{{$c->label}}</td>
+                                            <td style="text-align:right;">{{number_format($c->nilai,0,',',',')}}</td>
+                                            <td>{{($c->is_pengurangan?'(-)':'')}}</td>
                                             <td style="text-align:center;">
-                                                @if($d->is_pengurangan)
-                                                <a class="badge badge-light-info fw-bolder me-auto px-4 py-3">
-                                                {{$d->is_pengurangan ? "Ya" : ""}}
-                                                </a>
-                                                @endif
+                                                <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$c->id}}" data-toggle="tooltip" title="Ubah data {{$c->label}}"><i class="bi bi-pencil fs-3"></i></button>
                                             </td>
-                                            <td style="text-align:center;">
-
-                                                {{-- <button type="button" data-id="{{$d->child_id}}" data-versi="{{$p->id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-pilar" data-id="{{$l->id}}" data-toggle="tooltip" title="Ubah data {{@$l->nama}}"><i class="bi bi-pencil fs-3"></i></button> --}}
-
-                                                <button type="button" data-id="{{$d->child_id}}" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-child" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>
-
-                                                <button type="button" data-id="{{$d->child_id}}" class="btn btn-sm btn-danger btn-icon cls-button-delete-child" data-toggle="tooltip" title="Hapus data "><i class="bi bi-trash fs-3"></i></button>
-                                            </td>
-                                        </tr>
-                                        @endforeach
+                                            @php 
+                                                if($c->is_pengurangan){
+                                                    $total -= $c->nilai;
+                                                }else{
+                                                    $total += $c->nilai;
+                                                }
+                                            @endphp 
+                                        </tr>  
+                                        @endforeach 
                                     @endforeach
-                                  @endforeach
                                 @endforeach
-
+                            @endforeach
+                            @if($total==0)
+                                <td colspan="5" style="text-align:center;font-style:italic">Data Kosong</td>
+                            @endif
                             </tbody>
-                        </table>
-
-
+                            <tfoot>
+                                <tr>
+                                    @if($total!=0)
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">Total</th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">{{number_format($total,0,',',',')}}</th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
+                                    @endif
+                                </tr>
+                            </tfoot>
+                        </table> 
                     </div>
                 </div>
             </div>
@@ -258,11 +220,10 @@
     var urlcreate = "{{route('laporan_manajemen.laporan_keuangan.create')}}";
     var urledit = "{{route('laporan_manajemen.laporan_keuangan.edit')}}";
     var urlstore = "{{route('laporan_manajemen.laporan_keuangan.store')}}";
+    var urlupdate = "{{route('laporan_manajemen.laporan_keuangan.update')}}";
     var urldelete = "{{route('laporan_manajemen.laporan_keuangan.delete')}}";
 
     $(document).ready(function(){
-//        $('.tree').treegrid();
-
         $('.tree').treegrid({
             initialState : 'collapsed',
             treeColumn : 1,
@@ -288,6 +249,15 @@
             onbtndelete(this);
         });
 
+        $('#proses').on('click', function(event){
+            var url = window.location.origin + '/laporan_manajemen/laporan_keuangan/index';
+            var perusahaan_id = $('#perusahaan_id').val();
+            var tahun = $('#tahun').val();
+            var jenis_laporan_id = $('#jenis_laporan_id').val();
+            var periode_laporan_id = $('#periode_laporan_id').val();
+
+            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&periode_laporan_id=' + periode_laporan_id + '&jenis_laporan_id=' + jenis_laporan_id;
+        });
     });
     
     function onbtndelete(element){

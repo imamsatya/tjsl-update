@@ -93,20 +93,20 @@ class AnggaranTpbController extends Controller
                                                     DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'), 
                                                     'pilar_pembangunans.nama as pilar_nama', 
                                                     'pilar_pembangunans.id as pilar_id')
-                            ->groupBy('relasi_pilar_tpbs.pilar_pembangunan_id', 
-                                        'anggaran_tpbs.perusahaan_id',
-                                        'pilar_pembangunans.nama', 
-                                        'pilar_pembangunans.id')
-                            ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
-                            ->get();
+                                        ->groupBy('relasi_pilar_tpbs.pilar_pembangunan_id', 
+                                                    'anggaran_tpbs.perusahaan_id',
+                                                    'pilar_pembangunans.nama', 
+                                                    'pilar_pembangunans.id')
+                                        ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
+                                        ->get();
         $anggaran_bumn = $anggaran_bumn->select('anggaran_tpbs.perusahaan_id', 
                                                 'perusahaans.nama_lengkap',
                                                 'perusahaans.id',
                                                 DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'))
-                            ->groupBy('anggaran_tpbs.perusahaan_id')
-                            ->groupBy('perusahaans.nama_lengkap')
-                            ->groupBy('perusahaans.id')
-                            ->get();
+                                        ->groupBy('anggaran_tpbs.perusahaan_id')
+                                        ->groupBy('perusahaans.nama_lengkap')
+                                        ->groupBy('perusahaans.id')
+                                        ->get();
         $anggaran = $anggaran->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')->orderBy('no_tpb')->get();
         
         return view($this->__route.'.index',[
