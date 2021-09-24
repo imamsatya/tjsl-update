@@ -176,7 +176,7 @@
                                                 {{$nilai}}
                                             </td>
                                         <td style="text-align:center;">
-                                            @if($p->is_input)
+                                            @if($p->is_input && $j->status_id!=1)
                                             <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$p->id}}" data-toggle="tooltip" title="Ubah data {{$p->label}}"><i class="bi bi-pencil fs-3"></i></button>
                                             @endif
                                         </td>
@@ -199,7 +199,7 @@
                                                 {{$nilai}}
                                             </td>
                                             <td style="text-align:center;">
-                                                @if($c->is_input)
+                                                @if($c->is_input && $j->status_id!=1)
                                                 <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$c->id}}" data-toggle="tooltip" title="Ubah data {{$c->label}}"><i class="bi bi-pencil fs-3"></i></button>
                                                 @endif
                                             </td>

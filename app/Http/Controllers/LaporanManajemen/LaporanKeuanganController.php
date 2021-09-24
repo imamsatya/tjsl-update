@@ -70,11 +70,18 @@ class LaporanKeuanganController extends Controller
 
         $laporan_jenis = LaporanKeuanganNilai::select('laporan_keuangans.nama',
                                                 'laporan_keuangans.id as laporan_keuangan_id', 
-                                                'laporan_keuangan_nilais.perusahaan_id')
+                                                'laporan_keuangan_nilais.perusahaan_id',
+                                                'laporan_manajemens.status_id')
                                 ->leftJoin('relasi_laporan_keuangan', 'relasi_laporan_keuangan.id', 'laporan_keuangan_nilais.relasi_laporan_keuangan_id')
                                 ->leftJoin('laporan_keuangans', 'laporan_keuangans.id', 'relasi_laporan_keuangan.laporan_keuangan_id')
+                                ->leftJoin('laporan_manajemens', function($join){
+                                                $join->on('laporan_manajemens.perusahaan_id', '=', 'laporan_keuangan_nilais.perusahaan_id');
+                                                $join->on('laporan_manajemens.periode_laporan_id', '=', 'laporan_keuangan_nilais.periode_laporan_id');
+                                                $join->on(DB::Raw("CAST (laporan_manajemens.tahun AS text)"), '=', DB::Raw("CAST (laporan_keuangan_nilais.tahun AS text)"));
+                                                })
                                 ->where('laporan_keuangan_nilais.periode_laporan_id',$periode_laporan_id)
                                 ->GroupBy('laporan_keuangan_nilais.perusahaan_id')
+                                ->GroupBy('laporan_manajemens.status_id')
                                 ->GroupBy('laporan_keuangans.id')
                                 ->GroupBy('laporan_keuangans.nama')
                                 ->orderBy('laporan_keuangans.nama');
