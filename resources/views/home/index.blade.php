@@ -214,7 +214,7 @@
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
 
-                        <button type="button" class="btn btn-active btn-info btn-sm btn-icon btn-search cls-search"  data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button> &nbsp
+                        <button type="button" class="btn btn-active btn-outline-info btn-sm btn-search cls-search"  data-toggle="tooltip" title="Cari Data" style="font-size: 16px;"><i class="bi bi-search fs-3"></i>Cari</button> &nbsp
 
                     </div>
                     <!--end::Search-->
@@ -401,7 +401,9 @@
                     }
                 },
                 labels: {
-                    format: '{value}',
+                    formatter: function(){
+                        return this.value.toLocaleString("fi-FI");
+                    },
                     style: {
                         color: Highcharts.getOptions().colors[0]
                     }
