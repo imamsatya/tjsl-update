@@ -480,6 +480,7 @@ class VersiLaporanKeuanganController extends Controller
                                   $param = $request->except('id','actionform','_token','versi_laporan_id','laporan_keuangan_id','parent_id');
                                  
                                   $param['is_pengurangan'] = $request->is_pengurangan? true : false;
+                                  $param['is_input'] = $request->is_input? true : false;
                                   
                                   $lapkeu_child = LaporanKeuanganChild::create((array)$param);
 
@@ -512,8 +513,10 @@ class VersiLaporanKeuanganController extends Controller
                                 $param = $request->except('id','actionform','_token','versi_laporan_id','laporan_keuangan_id','parent_id');
                                 if(!$request->is_pengurangan){
                                     $param['is_pengurangan'] = false;
+                                    $param['is_input'] = false;
                                 }else{
                                     $param['is_pengurangan'] = $request->is_pengurangan == "on"? true : false; 
+                                    $param['is_input'] = $request->is_input == "on"? true : false; 
                                 }
                                
                                 $data->update((array)$param);
