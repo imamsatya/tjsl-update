@@ -368,15 +368,24 @@ class LaporanKeuanganController extends Controller
         DB::beginTransaction();
         try{
 
-            $data = RelasiLaporanKeuangan::where('versi_laporan_id',$request->id)->get();
+            $laporankeuangan = LaporanKeuanganNilai::where('laporan_keuangan_id',$request->laporan_keuangan_id)->where('perusahaan_id',$request->perusahaan_id)->where('tahun',$request->tahun)->where('periode_laporan_id',$request->periode_laporan_id)->get();
             
-            if($data){
-                foreach($data as $v){
+            if($laporankeuangan){
+                foreach($laporankeuangan as $v){
                     $v->delete();
                 }
             }
-            $data = VersiLaporanKeuangan::find($request->id);
-            $data->delete();
+            
+            $laporankeuangan_first = LaporanKeuanganNilai::where('perusahaan_id',$request->perusahaan_id)->where('tahun',$request->tahun)->where('periode_laporan_id',$request->periode_laporan_id)->first();
+            
+            if(!$laporankeuangan){
+                $laporan_manajemen = LaporanManajemen::where('perusahaan_id',$request->perusahaan_id)
+                                                        ->where('periode_laporan_id',$request->periode_laporan_id)
+                                                        ->where('tahun',$request->tahun)->first();
+                $param2['status_id']  = 3;
+                $laporan_manajemen->update((array)$param2);
+                LaporanManajemenController::store_log($laporan_manajemen->id,$param2['status_id']);
+            }
 
             DB::commit();
             $result = [

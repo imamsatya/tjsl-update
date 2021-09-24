@@ -155,9 +155,12 @@
                                         @endif
                                     </td>
                                     <td>{{$j->nama}}</td>
-                                    <td style="text-align:right;">
-                                    </td>
                                     <td></td>
+                                    <td style="text-align:center;">
+                                        @if($j->status_id!=1)
+                                            <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-perusahaan_id="{{$b->perusahaan_id}}" data-laporan_keuangan_id="{{$j->laporan_keuangan_id}}" data-nama="{{ $j->nama }}" data-toggle="tooltip" title="Hapus data {{ $j->nama }}"><i class="bi bi-trash fs-3"></i></button>
+                                        @endif
+                                    </td>
                                 </tr>  
                                     
                                     @php 
@@ -301,7 +304,10 @@
                 $.ajax({
                 url: urldelete,
                 data:{
-                    "id": $(element).data('id')
+                    "laporan_keuangan_id": $(element).data('laporan_keuangan_id'),
+                    "perusahaan_id": $(element).data('perusahaan_id'),
+                    "periode_laporan_id":$('#periode_laporan_id').val(),
+                    "tahun":$('#tahun').val(),
                 },
                 type:'post',
                 dataType:'json',
