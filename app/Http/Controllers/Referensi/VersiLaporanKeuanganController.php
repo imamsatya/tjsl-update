@@ -513,9 +513,12 @@ class VersiLaporanKeuanganController extends Controller
                                 $param = $request->except('id','actionform','_token','versi_laporan_id','laporan_keuangan_id','parent_id');
                                 if(!$request->is_pengurangan){
                                     $param['is_pengurangan'] = false;
-                                    $param['is_input'] = false;
                                 }else{
                                     $param['is_pengurangan'] = $request->is_pengurangan == "on"? true : false; 
+                                }
+                                if(!$request->is_input){
+                                    $param['is_input'] = false;
+                                }else{
                                     $param['is_input'] = $request->is_input == "on"? true : false; 
                                 }
                                
