@@ -46,8 +46,7 @@ class RowImport implements ToCollection, WithMultipleSheets, WithMappedCells
     public function mapping(): array
     {
         return [
-            'perusahaan' => 'A2',
-            'tahun'  => 'A3',
+            'perusahaan' => 'A2'
         ];
     }
 

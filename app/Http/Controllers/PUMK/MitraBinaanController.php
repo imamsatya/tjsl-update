@@ -28,6 +28,7 @@ use App\Models\PumkMitraBinaan;
 
 use App\Models\PeriodeLaporan;
 use App\Models\Status;
+use App\Models\Bulan;
 use App\Models\PumkAnggaran;
 use App\Models\LogPumkAnggaran;
 use App\Exports\MitraBinaanExport;
@@ -250,12 +251,13 @@ class MitraBinaanController extends Controller
     {
         
        try{
-            $select = ['pumk_mitra_binaans.*','perusahaans.nama_lengkap AS perusahaan_text','provinsis.nama AS prov_text','kotas.nama AS kota_text','sektor_usaha.nama AS sektor_usaha_text','cara_penyalurans.nama AS cara_penyaluran_text','skala_usahas.name AS skala_usaha_text','kolekbilitas_pendanaan.nama AS kolektibilitas_text','kondisi_pinjaman.nama AS kondisi_pinjaman_text','jenis_pembayaran.nama AS jenis_pembayaran_text','bank_account.nama AS bank_account_text','users.name AS user_create_text'];
+            $select = ['bulans.nama AS bulan_text','pumk_mitra_binaans.*','perusahaans.nama_lengkap AS perusahaan_text','provinsis.nama AS prov_text','kotas.nama AS kota_text','sektor_usaha.nama AS sektor_usaha_text','cara_penyalurans.nama AS cara_penyaluran_text','skala_usahas.name AS skala_usaha_text','kolekbilitas_pendanaan.nama AS kolektibilitas_text','kondisi_pinjaman.nama AS kondisi_pinjaman_text','jenis_pembayaran.nama AS jenis_pembayaran_text','bank_account.nama AS bank_account_text','users.name AS user_create_text'];
 
             $data = PumkMitraBinaan::select($select)
                     ->leftjoin('perusahaans','perusahaans.id','=','pumk_mitra_binaans.perusahaan_id')
                     ->leftjoin('provinsis','provinsis.id','=','pumk_mitra_binaans.provinsi_id')
                     ->leftjoin('kotas','kotas.id','=','pumk_mitra_binaans.kota_id')
+                    ->leftjoin('bulans','bulans.id','=','pumk_mitra_binaans.bulan')
                     ->leftjoin('sektor_usaha','sektor_usaha.id','=','pumk_mitra_binaans.sektor_usaha_id')
                     ->leftjoin('cara_penyalurans','cara_penyalurans.id','=','pumk_mitra_binaans.cara_penyaluran_id')
                     ->leftjoin('skala_usahas','skala_usahas.id','=','pumk_mitra_binaans.skala_usaha_id')
@@ -266,7 +268,7 @@ class MitraBinaanController extends Controller
                     ->leftjoin('users','users.id','=','pumk_mitra_binaans.created_by_id')
                     ->where('pumk_mitra_binaans.id',(int)$request->id)
                     ->first();
-
+           
             return view($this->__route.'.show',[
                     'pagetitle' => $this->pagetitle,
                     'data' => $data

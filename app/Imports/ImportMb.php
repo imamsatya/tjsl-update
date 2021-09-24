@@ -59,6 +59,20 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
         $kode = uniqid();
 
        foreach ($row as $ar) {
+            // cek bulan
+            try{
+                $nama = $ar['bulan'] == null? true : false;
+
+                if($nama){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Bulan Kosong<br>';
+                }
+            }catch(\Exception $e){
+                DB::rollback();
+                $is_gagal = true;
+                $keterangan .= 'Baris '.rtrim($ar['no']).' Bulan Kosong<br>';
+            }
             // cek nama mitra
             try{
                 $nama = $ar['nama_mitra_binaan'] == null? true : false;
@@ -407,6 +421,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     //buat data baru jika identitas & kolek belum ada
                     if(($cek_identitas && $cek_kolektibilitas) == 0 ){
                         $mitra = PumkMitraBinaan::create([
+                            'bulan' => rtrim($ar['bulan']),
+                            'tahun' => (int)date('Y'),
                             'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                             'no_identitas' => rtrim($ar['no_identitas']),
                             'provinsi_id' => rtrim($ar['id_provinsi']),
@@ -443,6 +459,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     }else{
                         if($ar['id_tambahan_pendanaan'] == 1){
                             $mitra = PumkMitraBinaan::create([
+                                'bulan' => rtrim($ar['bulan']),
+                                'tahun' => (int)date('Y'),
                                 'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                                 'no_identitas' => rtrim($ar['no_identitas']),
                                 'provinsi_id' => rtrim($ar['id_provinsi']),
@@ -480,6 +498,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             $mitra = PumkMitraBinaan::where('no_identitas',$ar['no_identitas'])
                             ->where('kolektibilitas_id',(int)$ar['id_kolektibilitas_pendanaan'])
                             ->update([
+                            'bulan' => rtrim($ar['bulan']),
+                            'tahun' => (int)date('Y'),
                             'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                             //'no_identitas' => rtrim($ar['no_identitas']),
                             'provinsi_id' => rtrim($ar['id_provinsi']),
@@ -529,6 +549,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                         // record data invalid identitas ke gagal upload
                         //$keterangan_gagal = 'no.identitas tidak valid/lebih dari 16 angka';
                         $mitra = UploadGagalPumkMitraBinaan::create([
+                            'bulan' => rtrim($ar['bulan']),
+                            'tahun' => (int)date('Y'),
                             'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                             'no_identitas' => rtrim($ar['no_identitas']),
                             'provinsi_id' => rtrim($ar['id_provinsi']),
