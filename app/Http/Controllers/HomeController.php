@@ -219,6 +219,25 @@ class HomeController extends Controller
                                 }
                             })
                             ->pluck('total')->first();
+            
+            
+            $json['bumn'] = '';
+            $json['bulan'] = '';
+            $json['tahun'] = '';
+            
+            if($perusahaan){
+                $bumn = Perusahaan::find($perusahaan);
+                $json['bumn'] = ' '.$bumn->nama_lengkap;
+            }
+
+            if($bulan){
+                $bulan = Bulan::find($bulan);
+                $json['bulan'] = 'Bulan '.$bulan->nama;
+            }
+
+            if($tahun){
+                $json['tahun'] = 'Tahun '.$tahun;
+            }
 
             return response()->json($json);
         }catch(\Exception $e){

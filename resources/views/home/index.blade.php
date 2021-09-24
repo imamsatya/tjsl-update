@@ -362,7 +362,7 @@
         let s_kurang_lancar = data.saldo_kurang_lancar? parseInt(data.saldo_kurang_lancar) : 0;
         let s_diragukan = data.saldo_diragukan? parseInt(data.saldo_diragukan) : 0;
         let s_macet = data.saldo_macet? parseInt(data.saldo_macet) : 0;
-
+     
         Highcharts.setOptions({
             colors: ['#E67E22','#6495ED']
         });
@@ -371,7 +371,7 @@
                 zoomType: 'xy'
             },
             title: {
-                text: 'Kualitas Piutang'
+                text: 'Kualitas Piutang'+ data.bumn + ' ' + data.bulan + ' ' + data.tahun
             },
             subtitle: {
                 text: ''
