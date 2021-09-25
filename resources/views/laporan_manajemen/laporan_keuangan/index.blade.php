@@ -148,7 +148,7 @@
                                     }
                                 @endphp 
                                 @foreach ($jenis as $j)   
-                                <tr class="treegrid-bumn{{@$b->perusahaan_id}}jenis{{$j->laporan_keuangan_id}} {{$class_parent}} item-jenis{{$j->laporan_keuangan_id}}" >
+                                <tr class="treegrid-bumn{{@$b->perusahaan_id}}jenis{{$j->laporan_keuangan_id}} {{$class_parent}} item-bumn{{@$b->perusahaan_id}}jenis{{$j->laporan_keuangan_id}}" >
                                     <td style="text-align:center;">
                                         @if($perusahaan_id)
                                         {{$no2++}}
@@ -158,6 +158,7 @@
                                     <td></td>
                                     <td style="text-align:center;">
                                         @if($j->status_id!=1)
+                                            <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-laporan" data-id="{{$p->id}}" data-toggle="tooltip" title="Ubah data {{$p->label}}"><i class="bi bi-pencil fs-3"></i></button>
                                             <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-perusahaan_id="{{$b->perusahaan_id}}" data-laporan_keuangan_id="{{$j->laporan_keuangan_id}}" data-nama="{{ $j->nama }}" data-toggle="tooltip" title="Hapus data {{ $j->nama }}"><i class="bi bi-trash fs-3"></i></button>
                                         @endif
                                     </td>
@@ -172,15 +173,18 @@
                                         <td style="font-weight:bold;">{{$p->label}}</td>
                                             <td style="text-align:right;">
                                                 @php
-                                                    $nilai=($p->is_pengurangan?'(':'');
-                                                    $nilai.=number_format($p->nilai,0,',',',');
-                                                    $nilai.=($p->is_pengurangan?')':'');
+                                                    $nilai=number_format($p->nilai,0,',',',');
+                                                    if($p->is_pengurangan || $p->nilai<0){
+                                                        $nilai = '('.number_format(abs($p->nilai),0,',',',').')';
+                                                    }else if(!$p->is_input && $p->formula==''){
+                                                        $nilai = '';
+                                                    }
                                                 @endphp
                                                 {{$nilai}}
                                             </td>
                                         <td style="text-align:center;">
                                             @if($p->is_input && $j->status_id!=1)
-                                            <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$p->id}}" data-toggle="tooltip" title="Ubah data {{$p->label}}"><i class="bi bi-pencil fs-3"></i></button>
+                                            <!-- <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$p->id}}" data-toggle="tooltip" title="Ubah data {{$p->label}}"><i class="bi bi-pencil fs-3"></i></button> -->
                                             @endif
                                         </td>
                                     </tr> 
@@ -195,15 +199,18 @@
                                             <td>{{$c->label}}</td>
                                             <td style="text-align:right;">
                                                 @php
-                                                    $nilai=($c->is_pengurangan?'(':'');
-                                                    $nilai.=number_format($c->nilai,0,',',',');
-                                                    $nilai.=($c->is_pengurangan?')':'');
+                                                    $nilai=number_format($c->nilai,0,',',',');
+                                                    if($c->is_pengurangan || $c->nilai<0){
+                                                        $nilai = '('.number_format(abs($c->nilai),0,',',',').')';
+                                                    }else if(!$c->is_input && $c->formula==''){
+                                                        $nilai = '';
+                                                    }
                                                 @endphp
                                                 {{$nilai}}
                                             </td>
                                             <td style="text-align:center;">
                                                 @if($c->is_input && $j->status_id!=1)
-                                                <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$c->id}}" data-toggle="tooltip" title="Ubah data {{$c->label}}"><i class="bi bi-pencil fs-3"></i></button>
+                                                <!-- <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$c->id}}" data-toggle="tooltip" title="Ubah data {{$c->label}}"><i class="bi bi-pencil fs-3"></i></button> -->
                                                 @endif
                                             </td>
                                             @php 
