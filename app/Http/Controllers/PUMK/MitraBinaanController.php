@@ -96,7 +96,8 @@ class MitraBinaanController extends Controller
                     ->leftjoin('provinsis','provinsis.id','=','pumk_mitra_binaans.provinsi_id')
                     ->leftjoin('kotas','kotas.id','=','pumk_mitra_binaans.kota_id')
                     ->leftjoin('sektor_usaha','sektor_usaha.id','=','pumk_mitra_binaans.sektor_usaha_id')
-                    ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','=','pumk_mitra_binaans.kolektibilitas_id');
+                    ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','=','pumk_mitra_binaans.kolektibilitas_id')
+                    ->where('pumk_mitra_binaans.is_arsip',false);
 
             if($request->perusahaan_id){
                 $data = $data->where('pumk_mitra_binaans.perusahaan_id',$request->perusahaan_id);

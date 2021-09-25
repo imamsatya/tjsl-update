@@ -10,7 +10,7 @@ class PumkMitraBinaan extends Model
     protected $guarded = [];
     protected $table = 'pumk_mitra_binaans';
     protected $fillable = [
-        'bulan','tahun',
+        'bulan','tahun','is_arsip',
         'perusahaan_id','kode_upload',
         'nama_mitra', 'no_identitas', 'provinsi_id', 'kota_id', 
         'sektor_usaha_id', 'skala_usaha_id', 'cara_penyaluran_id', 

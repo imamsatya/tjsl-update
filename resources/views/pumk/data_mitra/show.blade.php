@@ -127,7 +127,11 @@
                                 <tr>
                                     <td>Kolektibilitas Pendanaan</td>
                                     <td>{{$data->kolektibilitas_text?$data->kolektibilitas_text:"-"}}</td>
-                                </tr>     
+                                </tr>
+                                <tr>
+                                    <td>Status Tambah Pendanaan</td>
+                                    <td>{{$data->id_tambahan_pendanaan? ($data->id_tambahan_pendanaan == 1? "Ya" : "Tidak") : "-"}}</td>
+                                </tr>      
                             </tbody>
                         </table>
                     </div>

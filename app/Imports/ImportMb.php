@@ -443,7 +443,9 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                         ]);
                         $berhasil++;
                     }else{
+                        // jika no ktp sudah ada
                         if($ar['id_tambahan_pendanaan'] == 1){
+
                             $mitra = PumkMitraBinaan::create([
                                 'bulan' => (int)date('m'),
                                 'tahun' => (int)date('Y'),
@@ -480,14 +482,21 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                                 'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):2
                             ]);
                             $berhasil++;
-                        }else{
-                            $mitra = PumkMitraBinaan::where('no_identitas',$ar['no_identitas'])
-                            ->where('kolektibilitas_id',(int)$ar['id_kolektibilitas_pendanaan'])
-                            ->update([
+                        }
+                        else{
+                            //update data jika no ktp sudah ada
+                            // $mitra = PumkMitraBinaan::where('no_identitas',$ar['no_identitas'])
+                            // ->where('kolektibilitas_id',(int)$ar['id_kolektibilitas_pendanaan'])
+                            // ->update([
+                            $last_data = PumkMitraBinaan::select('no_identitas','is_arsip')
+                                ->where('no_identitas',(int)$ar['no_identitas'])->update([
+                                    'is_arsip'=> true
+                                ]);
+                            $mitra = PumkMitraBinaan::create([                             
                             'bulan' => (int)date('m'),
                             'tahun' => (int)date('Y'),
                             'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
-                            //'no_identitas' => rtrim($ar['no_identitas']),
+                            'no_identitas' => rtrim($ar['no_identitas']),
                             'provinsi_id' => rtrim($ar['id_provinsi']),
                             'kota_id' => rtrim($ar['id_kota']),
                             'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
@@ -513,7 +522,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
                             'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
                             'hasil_produk_jasa' => $ar['produkjasa_yang_dihasilkan'] ? rtrim($ar['produkjasa_yang_dihasilkan']):0,
-                            'created_by_id' => \Auth::user()->id,
+                            'updated_by_id' => \Auth::user()->id,
                             'perusahaan_id' => $perusahaan->id,
                             'kode_upload' => $kode,
                             'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):2
