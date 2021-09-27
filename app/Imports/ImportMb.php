@@ -489,7 +489,11 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             // ->where('kolektibilitas_id',(int)$ar['id_kolektibilitas_pendanaan'])
                             // ->update([
                             $last_data = PumkMitraBinaan::select('no_identitas','is_arsip')
-                                ->where('no_identitas',(int)$ar['no_identitas'])->update([
+                                ->where('no_identitas',(int)$ar['no_identitas'])
+                                ->where('no_pinjaman',$ar['no_pinjaman'])
+                                ->where('bulan',(int) date('m'))
+                                ->where('tahun',(int) date('Y'))
+                                ->update([
                                     'is_arsip'=> true
                                 ]);
                             $mitra = PumkMitraBinaan::create([                             
