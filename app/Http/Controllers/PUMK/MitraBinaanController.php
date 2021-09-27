@@ -86,11 +86,13 @@ class MitraBinaanController extends Controller
             'admin_tjsl' => $admin_tjsl,
             'super_admin' => $super_admin,
             'filter_bumn_id' => $perusahaan_id,
+            'bulan' => Bulan::get()
         ]);
     }
 
     public function datatable(Request $request)
     {
+
         try{
             $data = PumkMitraBinaan::select('pumk_mitra_binaans.*','provinsis.nama AS provinsi','kotas.nama AS kota','sektor_usaha.nama AS sektor_usaha','kolekbilitas_pendanaan.nama AS kolektibilitas')
                     ->leftjoin('provinsis','provinsis.id','=','pumk_mitra_binaans.provinsi_id')
@@ -141,6 +143,14 @@ class MitraBinaanController extends Controller
 
             if($request->identitas){
                 $data = $data->where('pumk_mitra_binaans.no_identitas',$request->identitas);
+            }
+
+            if($request->bulan_id){
+                $data = $data->where('pumk_mitra_binaans.bulan',(int)$request->bulan_id);
+            }
+
+            if($request->tambahan_pendanaan_id){
+                $data = $data->where('pumk_mitra_binaans.id_tambahan_pendanaan',(int)$request->tambahan_pendanaan_id);
             }
 
             return datatables()->of($data->get())
