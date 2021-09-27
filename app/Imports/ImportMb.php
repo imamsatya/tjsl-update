@@ -360,30 +360,30 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Data Jenis Pembayaran tidak sesuai referensi<br>';
                 }
-            } 
-            // cek bank account
-                if(!$is_gagal && rtrim($ar['id_jenis_pembayaran']) > 2){
-                    if(rtrim($ar['id_bank_account']) !== ""){
-                        try{
-                            $bank = BankAccount::find(rtrim($ar['id_bank_account']));
-                            if(!$bank){
-                                DB::rollback();
-                                $is_gagal = true;
-                                $keterangan .= 'Baris '.rtrim($ar['no']).' Jika Pembayaran Virtual Account, maka Bank Account wajib diisi.<br>';
-                            }
-                        }catch(\Exception $e){
-                                DB::rollback();
-                                $is_gagal = true;
-                                $keterangan .= 'Baris '.rtrim($ar['no']).' Jika Pembayaran Virtual Account, maka Bank Account wajib diisi.<br>';
-                            
+            }
+            
+            if(!$is_gagal && rtrim($ar['id_jenis_pembayaran']) > 2){
+                $cek = rtrim($ar['id_bank_account']) == "" ? 0 : rtrim($ar['id_bank_account']);
+                if($cek > 0){
+                    try{
+                        $bank = BankAccount::find(rtrim($ar['id_bank_account']));
+                        if(!$bank){
+                            DB::rollback();
+                            $is_gagal = true;
+                            $keterangan .= 'Baris '.rtrim($ar['no']).' Bank Account tidak sesuai referensi<br>';
                         }
-                    }else{
-                        //DB::rollback();
+                    }catch(\Exception $e){
+                        DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.rtrim($ar['no']).' Jika Pembayaran Virtual Account, maka Bank Account wajib diisi.<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Bank Account tidak sesuai referensi<br>';
                     }
-   
+                }else{
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Jika Jenis Pembayaran Virtual Account, maka Bank Account wajib diisi.<br>';                    
                 }
+
+            }
 
             //proses
             // cek kegiatan
