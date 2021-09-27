@@ -43,11 +43,22 @@ class UploadMitraBinaanController extends Controller
         $perusahaan_id = $request->perusahaan_id;
         
         $admin_bumn = false;
+        $super_admin = false;
+        $admin_tjsl = false;
+
         if(!empty($users->getRoleNames())){
             foreach ($users->getRoleNames() as $v) {
                 if($v == 'Admin BUMN') {
                     $admin_bumn = true;
                     $perusahaan_id = \Auth::user()->id_bumn;
+                }
+                if($v == 'Super Admin') {
+                    $super_admin = true;
+                    $perusahaan_id = $request->perusahaan_id;
+                }
+                if($v == 'Admin TJSL') {
+                    $admin_tjsl = true;
+                    $perusahaan_id = $request->perusahaan_id;
                 }
             }
         }
@@ -57,6 +68,8 @@ class UploadMitraBinaanController extends Controller
             'breadcrumb' => 'Mitra Binaan - Upload',
             'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
+            'admin_tjsl' => $admin_tjsl,
+            'super_admin' => $super_admin,
             'tahun' => ($request->tahun?$request->tahun:date('Y')),
             'data' => null,
             'perusahaan_id' => $perusahaan_id,

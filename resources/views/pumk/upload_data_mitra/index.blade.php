@@ -29,7 +29,7 @@
                 <!--begin::Heading-->
                 <div class="card-px py-10">
 
-                @if($admin_bumn)
+                @if($admin_bumn || $super_admin)
                 <form class="kt-form kt-form--label-right" method="POST" id="form-edit" enctype="multipart/form-data" >
 	                @csrf
                     <div class="form-group row  mb-5">
