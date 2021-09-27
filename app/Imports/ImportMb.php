@@ -146,7 +146,12 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Jika pelaksanaan program kolaborasi, maka Sumber Dana Wajib Diisi.<br>';
                 }
+            }
+            
+            if(!$is_gagal && rtrim($ar['id_pelaksanaan_program']) == 1){
+                $ar['sumber_dana'] = $perusahaan->nama_lengkap;
             } 
+
             // cek tgl tempo
             if(!$is_gagal){
                 try{
