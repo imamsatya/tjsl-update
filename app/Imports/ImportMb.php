@@ -115,20 +115,36 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Tanggal Awal Pendanaan Kosong.<br>';
                 }
-            } 
-            // cek Sumber dana
+            }
+            // cek Cara Penyaluran / Pelaksanaan Program
             if(!$is_gagal){
+                try{
+                    $pp = CaraPenyaluran::find(rtrim($ar['id_pelaksanaan_program']));
+                    if(!$pp){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Pelaksanaan Program tidak sesuai referensi<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Pelaksanaan Program tidak sesuai referensi<br>';
+                }
+            }                
+            // cek Sumber dana
+
+            if(!$is_gagal && rtrim($ar['id_pelaksanaan_program']) == 2){
                 try{
                     $p = $ar['sumber_dana'] !== null? true : false;
                     if(!$p){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.rtrim($ar['no']).' Sumber Dana Kosong.<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Jika pelaksanaan program kolaborasi, maka Sumber Dana Wajib Diisi.<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Sumber Dana Kosong.<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Jika pelaksanaan program kolaborasi, maka Sumber Dana Wajib Diisi.<br>';
                 }
             } 
             // cek tgl tempo
@@ -299,21 +315,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Data Skala Usaha tidak sesuai referensi<br>';
                 }
             }
-            // cek Cara Penyaluran / Pelaksanaan Program
-            if(!$is_gagal){
-                try{
-                    $pp = CaraPenyaluran::find(rtrim($ar['id_pelaksanaan_program']));
-                    if(!$pp){
-                        DB::rollback();
-                        $is_gagal = true;
-                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Pelaksanaan Program tidak sesuai referensi<br>';
-                    }
-                }catch(\Exception $e){
-                    DB::rollback();
-                    $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Pelaksanaan Program tidak sesuai referensi<br>';
-                }
-            }            
+         
             // cek Kolektibilitas
             if(!$is_gagal){
                 try{
@@ -359,36 +361,29 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Data Jenis Pembayaran tidak sesuai referensi<br>';
                 }
             } 
-            // cek Jenis Pembayaran
-            if(!$is_gagal){
-                try{
-                    $bank = BankAccount::find(rtrim($ar['id_bank_account']));
-                    if(!$bank){
-                        DB::rollback();
+            // cek bank account
+                if(!$is_gagal && rtrim($ar['id_jenis_pembayaran']) > 2){
+                    if(rtrim($ar['id_bank_account']) !== ""){
+                        try{
+                            $bank = BankAccount::find(rtrim($ar['id_bank_account']));
+                            if(!$bank){
+                                DB::rollback();
+                                $is_gagal = true;
+                                $keterangan .= 'Baris '.rtrim($ar['no']).' Jika Pembayaran Virtual Account, maka Bank Account wajib diisi.<br>';
+                            }
+                        }catch(\Exception $e){
+                                DB::rollback();
+                                $is_gagal = true;
+                                $keterangan .= 'Baris '.rtrim($ar['no']).' Jika Pembayaran Virtual Account, maka Bank Account wajib diisi.<br>';
+                            
+                        }
+                    }else{
+                        //DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Bank Account tidak sesuai referensi<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Jika Pembayaran Virtual Account, maka Bank Account wajib diisi.<br>';
                     }
-                }catch(\Exception $e){
-                    DB::rollback();
-                    $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Bank Account tidak sesuai referensi<br>';
+   
                 }
-            }
-            
-            if(!$is_gagal){
-                try{
-                    $bank = BankAccount::find(rtrim($ar['id_bank_account']));
-                    if(!$bank){
-                        DB::rollback();
-                        $is_gagal = true;
-                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Bank Account tidak sesuai referensi<br>';
-                    }
-                }catch(\Exception $e){
-                    DB::rollback();
-                    $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Bank Account tidak sesuai referensi<br>';
-                }
-            }
 
             //proses
             // cek kegiatan
