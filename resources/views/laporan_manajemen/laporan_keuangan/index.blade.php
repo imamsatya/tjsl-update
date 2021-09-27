@@ -35,7 +35,7 @@
                         <button type="button" class="btn btn-danger btn-sm btn-icon btn-cancel-validasi cls-validasi" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Batalkan Validasi"><i class="bi bi-check fs-3"></i></button> 
                         <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi" style="display:none;margin-right:3px;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
                         <button type="button" class="btn btn-success btn-sm btn-icon cls-add" style="margin-right:3px;" data-toggle="tooltip" title="Tambah Data"><i class="bi bi-plus fs-3"></i></button>
-                        <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-excel fs-3"></i></button>
+                        <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download PDF"><i class="bi bi-file-pdf fs-3"></i></button>
                     </div>
                     <!--end::Search-->
                     <!--end::Group actions-->
@@ -158,7 +158,7 @@
                                     <td></td>
                                     <td style="text-align:center;">
                                         @if($j->status_id!=1)
-                                            <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-laporan" data-id="{{$p->id}}" data-toggle="tooltip" title="Ubah data {{$p->label}}"><i class="bi bi-pencil fs-3"></i></button>
+                                            <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-perusahaan_id="{{$b->perusahaan_id}}" data-laporan_keuangan_id="{{$j->laporan_keuangan_id}}" data-id="{{$p->id}}" data-toggle="tooltip" title="Ubah data {{$p->label}}"><i class="bi bi-pencil fs-3"></i></button>
                                             <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-perusahaan_id="{{$b->perusahaan_id}}" data-laporan_keuangan_id="{{$j->laporan_keuangan_id}}" data-nama="{{ $j->nama }}" data-toggle="tooltip" title="Hapus data {{ $j->nama }}"><i class="bi bi-trash fs-3"></i></button>
                                         @endif
                                     </td>
@@ -248,6 +248,7 @@
     var urlstore = "{{route('laporan_manajemen.laporan_keuangan.store')}}";
     var urlupdate = "{{route('laporan_manajemen.laporan_keuangan.update')}}";
     var urldelete = "{{route('laporan_manajemen.laporan_keuangan.delete')}}";
+    var urlexport = "{{route('laporan_manajemen.laporan_keuangan.export_pdf')}}";
 
     $(document).ready(function(){
         $('.tree').treegrid({
@@ -268,11 +269,29 @@
         });
 
         $('body').on('click','.cls-button-edit',function(){
-            winform(urledit, {'id':$(this).data('id')}, 'Ubah Data');
+            var url = window.location.origin + '/laporan_manajemen/laporan_keuangan/edit';
+            var perusahaan_id = $(this).data('perusahaan_id');
+            var tahun = $('#tahun').val();
+            var laporan_keuangan_id = $(this).data('laporan_keuangan_id');
+            var periode_laporan_id = $('#periode_laporan_id').val();
+
+            var url = window.location.origin + '/laporan_manajemen/laporan_keuangan/edit';
+            var form = $('<form action="' + url + '" method="post">' +
+            '@csrf <input type="hidden" name="perusahaan_id" value="' + perusahaan_id + '" />' +
+            '<input type="hidden" name="tahun" value="' + tahun + '" />' +
+            '<input type="hidden" name="laporan_keuangan_id" value="' + laporan_keuangan_id + '" />' +
+            '<input type="hidden" name="periode_laporan_id" value="' + periode_laporan_id + '" />' +
+            '</form>');
+            $('body').append(form);
+            form.submit();
         });
 
         $('body').on('click','.cls-button-delete',function(){
             onbtndelete(this);
+        });
+
+        $('body').on('click','.cls-export',function(){
+            exportPdf();
         });
 
         $('body').on('click','.btn-search-active',function(){
@@ -298,6 +317,84 @@
         });
     });
     
+    function exportPdf()
+    {
+        var perusahaan_id = $('#perusahaan_id').val();
+        var tahun = $('#tahun').val();
+        var jenis_laporan_id = $('#jenis_laporan_id').val();
+        var periode_laporan_id = $('#periode_laporan_id').val();
+
+        $.ajax({
+            type: 'post',
+            data: {
+                'perusahaan_id' : perusahaan_id,
+                'tahun' : tahun,
+                'laporan_keuangan_id' : jenis_laporan_id,
+                'periode_laporan_id' : periode_laporan_id
+            },
+            beforeSend: function () {
+                $.blockUI();
+            },
+            url: urlexport,
+            xhrFields: {
+                responseType: 'blob',
+            },
+            success: function(data){
+                $.unblockUI();
+
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+                
+                today = dd + '-' + mm + '-' + yyyy;
+                var filename = 'Data Laporan Keuangan '+today+'.pdf';
+
+                var blob = new Blob([data], {
+                    type: "application/pdf"
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
+
+                document.body.appendChild(link);
+
+                link.click();
+                document.body.removeChild(link);
+            },
+            error: function(jqXHR, exception){
+                $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+            swal.fire({
+                    title: "Error System",
+                    html: msgerror+', coba ulangi kembali !!!',
+                    icon: 'error',
+
+                    buttonsStyling: true,
+
+                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+            });      
+                
+            }
+        });
+        return false;
+    }
+
     function onbtndelete(element){
         swal.fire({
             title: "Pemberitahuan",

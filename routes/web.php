@@ -413,6 +413,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('validasi', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@validasi')->name('laporan_manajemen.laporan_keuangan.validasi');
                 Route::post('log_status', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@log_status')->name('laporan_manajemen.laporan_keuangan.log_status');
                 Route::post('getlaporankeuangan', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@getLaporanKeuangan')->name('laporan_manajemen.laporan_keuangan.getlaporankeuangan');
+                Route::post('export_pdf', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@export_pdf')->name('laporan_manajemen.laporan_keuangan.export_pdf');
             });
         });
         Auth::routes();
