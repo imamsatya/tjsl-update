@@ -119,7 +119,14 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
             // cek Cara Penyaluran / Pelaksanaan Program
             if(!$is_gagal){
                 try{
-                    $pp = CaraPenyaluran::find(rtrim($ar['id_pelaksanaan_program']));
+                    $p = rtrim($ar['id_pelaksanaan_program'])? true : false;
+
+                    if($p){
+                        $pp = CaraPenyaluran::find(rtrim($ar['id_pelaksanaan_program']));
+                    }else{
+                        $ar['id_pelaksanaan_program'] = 0;
+                    }
+
                     if(!$pp){
                         DB::rollback();
                         $is_gagal = true;
@@ -168,65 +175,65 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                 }
             } 
             // cek saldo pokok
-            if(!$is_gagal){
-                try{
-                    $p = $ar['saldo_pokok_pendanaan'] !== null? true : false;
-                    if(!$p){
-                        DB::rollback();
-                        $is_gagal = true;
-                        $keterangan .= 'Baris '.rtrim($ar['no']).'Saldo Pokok Pendanaan Kosong.<br>';
-                    }
-                }catch(\Exception $e){
-                    DB::rollback();
-                    $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).'Saldo Pokok Pendanaan Kosong.<br>';
-                }
-            } 
+            // if(!$is_gagal){
+            //     try{
+            //         $p = $ar['saldo_pokok_pendanaan'] !== null? true : false;
+            //         if(!$p){
+            //             DB::rollback();
+            //             $is_gagal = true;
+            //             $keterangan .= 'Baris '.rtrim($ar['no']).'Saldo Pokok Pendanaan Kosong.<br>';
+            //         }
+            //     }catch(\Exception $e){
+            //         DB::rollback();
+            //         $is_gagal = true;
+            //         $keterangan .= 'Baris '.rtrim($ar['no']).'Saldo Pokok Pendanaan Kosong.<br>';
+            //     }
+            // } 
             // cek saldo jasa Admin pendanaan
-            if(!$is_gagal){
-                try{
-                    $p = $ar['saldo_jasa_admin_pendanaan'] !== null? true : false;
-                    if(!$p){
-                        DB::rollback();
-                        $is_gagal = true;
-                        $keterangan .= 'Baris '.rtrim($ar['no']).'Saldo Jasa Admin Pendanaan Kosong.<br>';
-                    }
-                }catch(\Exception $e){
-                    DB::rollback();
-                    $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).'Saldo Jasa Admin Pendanaan Kosong.<br>';
-                }
-            } 
-            // cek penerimaan_pokok_bulan_berjalan
-            if(!$is_gagal){
-                try{
-                    $p = $ar['penerimaan_pokok_bulan_berjalan'] !== null? true : false;
-                    if(!$p){
-                        DB::rollback();
-                        $is_gagal = true;
-                        $keterangan .= 'Baris '.rtrim($ar['no']).'Penerimaan Pokok Bulan Berjalan Kosong.<br>';
-                    }
-                }catch(\Exception $e){
-                    DB::rollback();
-                    $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).'Penerimaan Pokok Bulan Berjalan Kosong.<br>';
-                }
-            } 
-            // cek penerimaan_Jasa Admin_bulan_berjalan
-            if(!$is_gagal){
-                try{
-                    $p = $ar['penerimaan_jasa_admin_bulan_berjalan'] !== null? true : false;
-                    if(!$p){
-                        DB::rollback();
-                        $is_gagal = true;
-                        $keterangan .= 'Baris '.rtrim($ar['no']).'Penerimaan Jasa Admin Bulan Berjalan Kosong.<br>';
-                    }
-                }catch(\Exception $e){
-                    DB::rollback();
-                    $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).'Penerimaan Jasa Admin Bulan Berjalan Kosong.<br>';
-                }
-            } 
+            // if(!$is_gagal){
+            //     try{
+            //         $p = $ar['saldo_jasa_admin_pendanaan'] !== null? true : false;
+            //         if(!$p){
+            //             DB::rollback();
+            //             $is_gagal = true;
+            //             $keterangan .= 'Baris '.rtrim($ar['no']).'Saldo Jasa Admin Pendanaan Kosong.<br>';
+            //         }
+            //     }catch(\Exception $e){
+            //         DB::rollback();
+            //         $is_gagal = true;
+            //         $keterangan .= 'Baris '.rtrim($ar['no']).'Saldo Jasa Admin Pendanaan Kosong.<br>';
+            //     }
+            // } 
+            // // cek penerimaan_pokok_bulan_berjalan
+            // if(!$is_gagal){
+            //     try{
+            //         $p = $ar['penerimaan_pokok_bulan_berjalan'] !== null? true : false;
+            //         if(!$p){
+            //             DB::rollback();
+            //             $is_gagal = true;
+            //             $keterangan .= 'Baris '.rtrim($ar['no']).'Penerimaan Pokok Bulan Berjalan Kosong.<br>';
+            //         }
+            //     }catch(\Exception $e){
+            //         DB::rollback();
+            //         $is_gagal = true;
+            //         $keterangan .= 'Baris '.rtrim($ar['no']).'Penerimaan Pokok Bulan Berjalan Kosong.<br>';
+            //     }
+            // } 
+            // // cek penerimaan_Jasa Admin_bulan_berjalan
+            // if(!$is_gagal){
+            //     try{
+            //         $p = $ar['penerimaan_jasa_admin_bulan_berjalan'] !== null? true : false;
+            //         if(!$p){
+            //             DB::rollback();
+            //             $is_gagal = true;
+            //             $keterangan .= 'Baris '.rtrim($ar['no']).'Penerimaan Jasa Admin Bulan Berjalan Kosong.<br>';
+            //         }
+            //     }catch(\Exception $e){
+            //         DB::rollback();
+            //         $is_gagal = true;
+            //         $keterangan .= 'Baris '.rtrim($ar['no']).'Penerimaan Jasa Admin Bulan Berjalan Kosong.<br>';
+            //     }
+            // } 
             // cek tgl_penerimaan_terakhir
             if(!$is_gagal){
                 try{
@@ -246,34 +253,48 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
             // cek provinsi 
             if(!$is_gagal){
                 try{
-                    $provinsi = Provinsi::find(rtrim($ar['id_provinsi']));
+                    $prov = rtrim($ar['id_provinsi'])? true : false;
+
+                    if($prov){
+                        $provinsi = Provinsi::find(rtrim($ar['id_provinsi']));
+                    }else{
+                        $ar['id_provinsi'] = 0;
+                    }
+
                     if(!$provinsi){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Provinsi tidak sesuai referensi<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Provinsi Tidak sesuai Referensi<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Provinsi tidak sesuai referensi<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Provinsi Kosong<br>';
                 }
             }         
             // cek kota
             if(!$is_gagal){
                 try{
-                    $kota = Kota::find(rtrim($ar['id_kota']));
+                    $kotas = rtrim($ar['id_kota'])? true : false;
+
+                    if($kotas){
+                        $kota = Kota::find(rtrim($ar['id_kota']));
+                    }else{
+                        $ar['id_kota'] = 0;
+                    }                    
+                    
                     if(!$kota){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai referensi<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota Tidak Sesuai referensi.<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai referensi<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota Kosong.<br>';
                 }
             }
-            // cek relasi provinsi kota
+            // // cek relasi provinsi kota
             if(!$is_gagal){
                 try{
                     $kota = Kota::where('id',rtrim($ar['id_kota']))
@@ -293,7 +314,15 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
             // cek sektor
             if(!$is_gagal){
                 try{
-                    $sektor = SektorUsaha::find(rtrim($ar['id_sektor_usaha']));
+
+                    $sektors = rtrim($ar['id_sektor_usaha'])? true : false;
+
+                    if($sektors){
+                        $sektor = SektorUsaha::find(rtrim($ar['id_sektor_usaha']));
+                    }else{
+                        $ar['id_sektor_usaha'] = 0;
+                    }   
+
                     if(!$sektor){
                         DB::rollback();
                         $is_gagal = true;
@@ -302,13 +331,20 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Sektor Usaha tidak sesuai referensi<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Sektor Usaha Kosong.<br>';
                 }
             }
             // cek Skala
             if(!$is_gagal){
                 try{
-                    $skala = SkalaUsaha::find(rtrim($ar['id_skala_usaha']));
+                    $params = rtrim($ar['id_skala_usaha'])? true : false;
+
+                    if($params){
+                        $skala = SkalaUsaha::find(rtrim($ar['id_skala_usaha']));
+                    }else{
+                        $ar['id_skala_usaha'] = 0;
+                    }   
+                    
                     if(!$skala){
                         DB::rollback();
                         $is_gagal = true;
@@ -317,14 +353,21 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Skala Usaha tidak sesuai referensi<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Skala Usaha Kosong.<br>';
                 }
             }
          
             // cek Kolektibilitas
             if(!$is_gagal){
                 try{
-                    $kolek = KolekbilitasPendanaan::find(rtrim($ar['id_kolektibilitas_pendanaan']));
+                    $params = rtrim($ar['id_kolektibilitas_pendanaan'])? true : false;
+
+                    if($params){
+                        $kolek = KolekbilitasPendanaan::find(rtrim($ar['id_kolektibilitas_pendanaan']));
+                    }else{
+                        $ar['id_kolektibilitas_pendanaan'] = 0;
+                    }   
+                    
                     if(!$kolek){
                         DB::rollback();
                         $is_gagal = true;
@@ -333,13 +376,21 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kolektibilitas tidak sesuai referensi<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kolektibilitas Kosong.<br>';
                 }
-            }    
+            }
+
             // cek KondisiPinjaman
             if(!$is_gagal){
                 try{
-                    $kondisi = KondisiPinjaman::find(rtrim($ar['id_kondisi_pinjaman']));
+                    $params = rtrim($ar['id_kondisi_pinjaman'])? true : false;
+
+                    if($params){
+                        $kondisi = KondisiPinjaman::find(rtrim($ar['id_kondisi_pinjaman']));
+                    }else{
+                        $ar['id_kondisi_pinjaman'] = 0;
+                    } 
+                    
                     if(!$kondisi){
                         DB::rollback();
                         $is_gagal = true;
@@ -348,13 +399,145 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kondisi Pinjaman tidak sesuai referensi<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kondisi Pinjaman Kosong.<br>';
                 }
             } 
+            // cek tambah pendanaan
+            if(!$is_gagal){
+                try{
+                    $params = rtrim($ar['id_tambahan_pendanaan'])? true : false;
+                    if(rtrim($ar['id_tambahan_pendanaan']) == 1 || rtrim($ar['id_tambahan_pendanaan']) == 2){
+                        $tambah = true;
+                    }else{
+                        $tambah = false;
+                    }
+                    if(!$tambah){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong.<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong.<br>';
+                }
+            }   
+
+            // cek nilai asset
+            if(!$is_gagal){
+                try{
+                    $params = rtrim($ar['nilai_aset'])? true : false;
+                    if($params){
+                        $ar['nilai_aset'];
+                        $aset = true;
+                    }else{
+                        $ar['nilai_aset'] = 0;
+                        $aset = false;
+                    }
+                }catch(\Exception $e){
+                }
+            }    
+            // cek nilai omset
+            if(!$is_gagal){
+                try{
+                    $params = rtrim($ar['nilai_omset'])? true : false;
+                    if($params){
+                        $ar['nilai_omset'];
+                        $cek = true;
+                    }else{
+                        $ar['nilai_omset'] = 0;
+                        $cek = false;
+                    }
+                }catch(\Exception $e){
+                }
+            }  
+
+            // cek nominal Pendanaan
+            if(!$is_gagal){
+                try{
+                    $params = rtrim($ar['nominal_pendanaan'])? true : false;
+                    if($params){
+                        $ar['nominal_pendanaan'];
+                        $cek = true;
+                    }else{
+                        $ar['nominal_pendanaan'] = 0;
+                        $cek = false;
+                    }
+                }catch(\Exception $e){
+                }
+            }              
+
+            // cek saldo pokok Pendanaan
+            if(!$is_gagal){
+                try{
+                    $params = rtrim($ar['saldo_pokok_pendanaan'])? true : false;
+                    if($params){
+                        $ar['saldo_pokok_pendanaan'];
+                        $cek = true;
+                    }else{
+                        $ar['saldo_pokok_pendanaan'] = 0;
+                        $cek = false;
+                    }
+                }catch(\Exception $e){
+                }
+            }   
+
+            // cek saldo jasa adm Pendanaan
+            if(!$is_gagal){
+                try{
+                    $params = rtrim($ar['saldo_jasa_admin_pendanaan'])? true : false;
+                    if($params){
+                        $ar['saldo_jasa_admin_pendanaan'];
+                        $cek = true;
+                    }else{
+                        $ar['saldo_jasa_admin_pendanaan'] = 0;
+                        $cek = false;
+                    }
+                }catch(\Exception $e){
+                }
+            }            
+
+            // cek saldo jasa adm Pendanaan
+            if(!$is_gagal){
+                try{
+                    $params = rtrim($ar['penerimaan_pokok_bulan_berjalan'])? true : false;
+                    if($params){
+                        $ar['penerimaan_pokok_bulan_berjalan'];
+                        $cek = true;
+                    }else{
+                        $ar['penerimaan_pokok_bulan_berjalan'] = 0;
+                        $cek = false;
+                    }
+                }catch(\Exception $e){
+                }
+            } 
+
+            // cek saldo jasa adm Pendanaan
+            if(!$is_gagal){
+                try{
+                    $params = rtrim($ar['penerimaan_jasa_admin_bulan_berjalan'])? true : false;
+                    if($params){
+                        $ar['penerimaan_jasa_admin_bulan_berjalan'];
+                        $cek = true;
+                    }else{
+                        $ar['penerimaan_jasa_admin_bulan_berjalan'] = 0;
+                        $cek = false;
+                    }
+                }catch(\Exception $e){
+                }
+            }             
+
             // cek Jenis Pembayaran
             if(!$is_gagal){
                 try{
-                    $jenis = JenisPembayaran::find(rtrim($ar['id_jenis_pembayaran']));
+                    $params = rtrim($ar['id_jenis_pembayaran'])? true : false;
+
+                    if($params){
+                        $jenis = JenisPembayaran::find(rtrim($ar['id_jenis_pembayaran']));
+                    }else{
+                        $ar['id_jenis_pembayaran'] = 0;
+                    } 
+
                     if(!$jenis){
                         DB::rollback();
                         $is_gagal = true;
@@ -363,7 +546,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Jenis Pembayaran tidak sesuai referensi<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Jenis Pembayaran Kosong.<br>';
                 }
             }
             
