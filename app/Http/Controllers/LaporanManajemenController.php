@@ -75,6 +75,20 @@ class LaporanManajemenController extends Controller
      */
     public function datatable(Request $request)
     {
+        $id_users = \Auth::user()->id;
+        $users = User::where('id', $id_users)->first();
+        
+        $admin_bumn = false;
+        $perusahaan_id = null;
+        if(!empty($users->getRoleNames())){
+            foreach ($users->getRoleNames() as $v) {
+                if($v == 'Admin BUMN') {
+                    $admin_bumn = true;
+                    $perusahaan_id = \Auth::user()->id_bumn;
+                }
+            }
+        }
+  
         $laporan = LaporanManajemen::Select('laporan_manajemens.*')
                                     ->leftJoin('periode_laporans','periode_laporans.id', 'laporan_manajemens.periode_laporan_id')
                                     ->leftJoin('periode_has_jenis','periode_has_jenis.periode_laporan_id', 'periode_laporans.id')
@@ -159,10 +173,12 @@ class LaporanManajemenController extends Controller
                     }
                 }
                 
-                if($row->status_id != 1){
-                    $button .= '<button type="button" data-periode="'.@$row->periode->nama.'" class="btn btn-sm btn-success btn-icon cls-validasi" data-id="'.$id.'" data-toggle="tooltip" title="Validasi '.@$row->periode->nama.'"><i class="bi bi-check fs-3"></i></button>';
-                }else{
-                    $button .= '<button type="button" data-periode="'.@$row->periode->nama.'"  class="btn btn-sm btn-danger btn-icon cls-cancel-validasi" data-id="'.$id.'" data-toggle="tooltip" title="Batalkan Validasi '.@$row->periode->nama.'"><i class="bi bi-check fs-3"></i></button>';
+                if(!$admin_bumn){
+                    if($row->status_id != 1){
+                        $button .= '<button type="button" data-periode="'.@$row->periode->nama.'" class="btn btn-sm btn-success btn-icon cls-validasi" data-id="'.$id.'" data-toggle="tooltip" title="Validasi '.@$row->periode->nama.'"><i class="bi bi-check fs-3"></i></button>';
+                    }else{
+                        $button .= '<button type="button" data-periode="'.@$row->periode->nama.'"  class="btn btn-sm btn-danger btn-icon cls-cancel-validasi" data-id="'.$id.'" data-toggle="tooltip" title="Batalkan Validasi '.@$row->periode->nama.'"><i class="bi bi-check fs-3"></i></button>';
+                    }
                 }
 
                 $button .= '</div>';
