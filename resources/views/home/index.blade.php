@@ -428,6 +428,7 @@
                 name: 'Saldo Pinjaman (Rp)',
                 type: 'spline',
                 yAxis: 1,
+                zIndex: 1,
                 data: [
                         s_lancar,
                         s_kurang_lancar,
@@ -445,6 +446,7 @@
             }, {
                 name: 'Mitra Binaan',
                 type: 'column',
+                zIndex: 0,
                 data: [
                         data.mitra_lancar, 
                         data.mitra_kurang_lancar, 
