@@ -566,12 +566,12 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     if(!$tambah){
                         DB::rollback();
                         $is_gagal = false;
-                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong.<br>';
+                        // $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong diubah default sistem.<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = false;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong.<br>';
+                    // $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong diubah default sistem.<br>';
                 }
             }   
             
