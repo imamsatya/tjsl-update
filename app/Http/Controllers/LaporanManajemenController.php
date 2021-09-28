@@ -147,7 +147,7 @@ class LaporanManajemenController extends Controller
                 if($row->waktu) $waktu = date("d-m-Y", strtotime($row->waktu));
                 return $waktu;
             })
-            ->addColumn('action', function ($row) use($jumlah_laporan){
+            ->addColumn('action', function ($row) use($jumlah_laporan,$admin_bumn){
                 $id = (int)$row->id;
                 $jumlah_laporan_keuangan = LaporanKeuanganNilai::select('laporan_keuangan_nilais.laporan_keuangan_id')
                                     ->where('laporan_keuangan_nilais.perusahaan_id',$row->perusahaan_id)
