@@ -190,6 +190,13 @@ class LaporanKeuanganController extends Controller
             $laporan_parent = $laporan_parent->where('laporan_keuangan_nilais.laporan_keuangan_id', (int)$request->laporan_keuangan_id);
             $laporan_child = $laporan_child->where('laporan_keuangan_nilais.laporan_keuangan_id', (int)$request->laporan_keuangan_id);
         }
+
+        if($request->jenis_laporan_id){
+            $laporan_bumn = $laporan_bumn->where('laporan_keuangan_nilais.laporan_keuangan_id', (int)$request->jenis_laporan_id);
+            $laporan_jenis = $laporan_jenis->where('laporan_keuangan_nilais.laporan_keuangan_id', (int)$request->jenis_laporan_id);
+            $laporan_parent = $laporan_parent->where('laporan_keuangan_nilais.laporan_keuangan_id', (int)$request->jenis_laporan_id);
+            $laporan_child = $laporan_child->where('laporan_keuangan_nilais.laporan_keuangan_id', (int)$request->jenis_laporan_id);
+        }
         
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
@@ -381,6 +388,7 @@ class LaporanKeuanganController extends Controller
                                 ->leftJoin('laporan_keuangans', 'laporan_keuangans.id', 'relasi_laporan_keuangan.laporan_keuangan_id')
                                 ->leftJoin('laporan_keuangan_parent', 'laporan_keuangan_parent.id', 'relasi_laporan_keuangan.parent_id')
                                 ->where('relasi_laporan_keuangan.parent_id','<>',null)
+                                ->where('relasi_laporan_keuangan.child_id',null)
                                 ->where('laporan_keuangans.id', $request->laporan_keuangan_id)
                                 ->where('laporan_keuangan_nilais.periode_laporan_id', $request->periode_laporan_id)
                                 ->where('laporan_keuangan_nilais.perusahaan_id', $request->perusahaan_id)
@@ -505,6 +513,7 @@ class LaporanKeuanganController extends Controller
                                 ->leftJoin('laporan_keuangans', 'laporan_keuangans.id', 'relasi_laporan_keuangan.laporan_keuangan_id')
                                 ->leftJoin('laporan_keuangan_parent', 'laporan_keuangan_parent.id', 'relasi_laporan_keuangan.parent_id')
                                 ->where('relasi_laporan_keuangan.parent_id','<>',null)
+                                ->where('relasi_laporan_keuangan.child_id',null)
                                 ->where('relasi_laporan_keuangan.versi_laporan_id', $versilaporankeuangan->id)
                                 ->where('laporan_keuangans.id', $request->id)
                                 ->distinct('relasi_laporan_keuangan.parent_id')->get();
@@ -667,6 +676,13 @@ class LaporanKeuanganController extends Controller
             $laporan_jenis = $laporan_jenis->where('laporan_keuangan_nilais.laporan_keuangan_id', (int)$request->laporan_keuangan_id);
             $laporan_parent = $laporan_parent->where('laporan_keuangan_nilais.laporan_keuangan_id', (int)$request->laporan_keuangan_id);
             $laporan_child = $laporan_child->where('laporan_keuangan_nilais.laporan_keuangan_id', (int)$request->laporan_keuangan_id);
+        }
+
+        if($request->jenis_laporan_id){
+            $laporan_bumn = $laporan_bumn->where('laporan_keuangan_nilais.laporan_keuangan_id', (int)$request->jenis_laporan_id);
+            $laporan_jenis = $laporan_jenis->where('laporan_keuangan_nilais.laporan_keuangan_id', (int)$request->jenis_laporan_id);
+            $laporan_parent = $laporan_parent->where('laporan_keuangan_nilais.laporan_keuangan_id', (int)$request->jenis_laporan_id);
+            $laporan_child = $laporan_child->where('laporan_keuangan_nilais.laporan_keuangan_id', (int)$request->jenis_laporan_id);
         }
 
         try{
