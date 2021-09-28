@@ -16,14 +16,16 @@ use DB;
 class MitraBinaanExport implements FromView , WithTitle, WithColumnFormatting
 {
     const FORMAT_NUMBER_CUSTOM = '#,';
-    public function __construct($mitra){
+    public function __construct($mitra,$bank){
         $this->mitra = $mitra ;
+        $this->bank = $bank ;
     }
 
     public function view(): View
     {  
       return view('pumk.data_mitra.export', [
-          'data' => $this->mitra, 
+          'data' => $this->mitra,
+          'bank' =>  $this->bank,
           'tanggal' => date('d-m-Y'),
 
       ]);

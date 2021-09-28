@@ -95,7 +95,16 @@
             <td style="text-align: center;">{{$val->kolektibilitas?$val->kolektibilitas:""}}</td>
             <td style="text-align: center;">{{$val->kondisi_pinjaman?$val->kondisi_pinjaman:""}}</td>
             <td style="text-align: center;">{{$val->jenis_pembayaran?$val->jenis_pembayaran:""}}</td>
-            <td style="text-align: center;">{{$val->bank?$val->bank:""}}</td>
+
+            @if($val->bank_account_id !== null || $val->bank_account_id !== "")
+                @php
+                    $banks = $bank->where('id',(int)$val->bank_account_id)->pluck('nama')->first();
+                @endphp
+                <td style="text-align: center;">{{$banks}}</td>
+            @else
+                <td style="text-align: center;"></td>
+            @endif
+
             <td style="text-align: center;">{{$val->jumlah_sdm?$val->jumlah_sdm:""}}</td>
             <td style="text-align: right;">{{$val->kelebihan_angsuran? number_format($val->kelebihan_angsuran,0,',',','):""}}</td>
             <td style="text-align: center;">{{$val->subsektor?$val->subsektor:""}}</td>
