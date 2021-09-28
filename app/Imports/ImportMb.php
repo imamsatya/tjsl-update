@@ -407,7 +407,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     //buat data baru jika identitas & kolek belum ada
                     if(($cek_identitas && $cek_kolektibilitas) == 0 ){
                         $mitra = PumkMitraBinaan::create([
-                            'bulan' => (int)date('m'),
+                            'bulan' => (int)date('m')-1,
                             'tahun' => (int)date('Y'),
                             'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                             'no_identitas' => rtrim($ar['no_identitas']),
@@ -447,7 +447,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                         if($ar['id_tambahan_pendanaan'] == 1){
 
                             $mitra = PumkMitraBinaan::create([
-                                'bulan' => (int)date('m'),
+                                'bulan' => (int)date('m')-1,
                                 'tahun' => (int)date('Y'),
                                 'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                                 'no_identitas' => rtrim($ar['no_identitas']),
@@ -491,13 +491,13 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             $last_data = PumkMitraBinaan::select('no_identitas','is_arsip')
                                 ->where('no_identitas',(int)$ar['no_identitas'])
                                 ->where('no_pinjaman',$ar['no_pinjaman'])
-                                ->where('bulan',(int) date('m'))
+                                ->where('bulan',(int) date('m')-1)
                                 ->where('tahun',(int) date('Y'))
                                 ->update([
                                     'is_arsip'=> true
                                 ]);
                             $mitra = PumkMitraBinaan::create([                             
-                            'bulan' => (int)date('m'),
+                            'bulan' => (int)date('m')-1,
                             'tahun' => (int)date('Y'),
                             'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                             'no_identitas' => rtrim($ar['no_identitas']),
