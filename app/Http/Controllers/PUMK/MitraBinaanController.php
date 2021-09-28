@@ -86,11 +86,13 @@ class MitraBinaanController extends Controller
             'admin_tjsl' => $admin_tjsl,
             'super_admin' => $super_admin,
             'filter_bumn_id' => $perusahaan_id,
+            'bulan' => Bulan::get()
         ]);
     }
 
     public function datatable(Request $request)
     {
+
         try{
             $data = PumkMitraBinaan::select('pumk_mitra_binaans.*','provinsis.nama AS provinsi','kotas.nama AS kota','sektor_usaha.nama AS sektor_usaha','kolekbilitas_pendanaan.nama AS kolektibilitas')
                     ->leftjoin('provinsis','provinsis.id','=','pumk_mitra_binaans.provinsi_id')
@@ -141,6 +143,14 @@ class MitraBinaanController extends Controller
 
             if($request->identitas){
                 $data = $data->where('pumk_mitra_binaans.no_identitas',$request->identitas);
+            }
+
+            if($request->bulan_id){
+                $data = $data->where('pumk_mitra_binaans.bulan',(int)$request->bulan_id);
+            }
+
+            if($request->tambahan_pendanaan_id){
+                $data = $data->where('pumk_mitra_binaans.id_tambahan_pendanaan',(int)$request->tambahan_pendanaan_id);
             }
 
             return datatables()->of($data->get())
@@ -251,8 +261,8 @@ class MitraBinaanController extends Controller
     public function show(Request $request)
     {
         
-       try{
-            $select = ['bulans.nama AS bulan_text','pumk_mitra_binaans.*','perusahaans.nama_lengkap AS perusahaan_text','provinsis.nama AS prov_text','kotas.nama AS kota_text','sektor_usaha.nama AS sektor_usaha_text','cara_penyalurans.nama AS cara_penyaluran_text','skala_usahas.name AS skala_usaha_text','kolekbilitas_pendanaan.nama AS kolektibilitas_text','kondisi_pinjaman.nama AS kondisi_pinjaman_text','jenis_pembayaran.nama AS jenis_pembayaran_text','bank_account.nama AS bank_account_text','users.name AS user_create_text'];
+      try{
+            $select = ['bulans.nama AS bulan_text','pumk_mitra_binaans.*','perusahaans.nama_lengkap AS perusahaan_text','provinsis.nama AS prov_text','kotas.nama AS kota_text','sektor_usaha.nama AS sektor_usaha_text','cara_penyalurans.nama AS cara_penyaluran_text','skala_usahas.name AS skala_usaha_text','kolekbilitas_pendanaan.nama AS kolektibilitas_text','kondisi_pinjaman.nama AS kondisi_pinjaman_text','jenis_pembayaran.nama AS jenis_pembayaran_text','users.name AS user_create_text'];
 
             $data = PumkMitraBinaan::select($select)
                     ->leftjoin('perusahaans','perusahaans.id','=','pumk_mitra_binaans.perusahaan_id')
@@ -265,14 +275,19 @@ class MitraBinaanController extends Controller
                     ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','=','pumk_mitra_binaans.kolektibilitas_id')
                     ->leftjoin('kondisi_pinjaman','kondisi_pinjaman.id','=','pumk_mitra_binaans.kondisi_pinjaman_id')
                     ->leftjoin('jenis_pembayaran','jenis_pembayaran.id','=','pumk_mitra_binaans.jenis_pembayaran_id')
-                    ->leftjoin('bank_account','bank_account.id','=','pumk_mitra_binaans.bank_account_id')
                     ->leftjoin('users','users.id','=','pumk_mitra_binaans.created_by_id')
                     ->where('pumk_mitra_binaans.id',(int)$request->id)
                     ->first();
-           
+
+            $bank = '';
+            if($data->bank_account_id !== null || $data->bank_account_id !== ""){
+                $bank = BankAccount::where('id',(int)$data->bank_account_id)->pluck('nama')->first();
+            }
+
             return view($this->__route.'.show',[
                     'pagetitle' => $this->pagetitle,
-                    'data' => $data
+                    'data' => $data,
+                    'bank' => $bank
                 ]);
        }catch(Exception $e){}
 

@@ -47,7 +47,7 @@
                 <div class="card-px py-10" >
                   <div class="row" id="form-cari">
                     <div class="form-group row  mb-5" >
-                        <div class="col-lg-3">
+                        <div class="col-lg-3">   
                             <label>BUMN</label>
                             @php
                                 $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
@@ -147,16 +147,37 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-lg-3">
+                            <label>Bulan</label>
+                            <select class="form-select form-select-solid form-select2" id="bulan_id" name="bulan_id" data-kt-select2="true" data-placeholder="Pilih Bulan" data-allow-clear="true">
+                                <option></option>
+                                @foreach($bulan as $bu)  
+                                    <option value="{{ $bu->id }}" >{{ $bu->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-3">
+                            <label>Tambahan Pendanaan</label>
+                            <select class="form-select form-select-solid form-select2" id="tambahan_pendanaan_id" name="tambahan_pendanaan_id" data-kt-select2="true" data-placeholder="Pilih status Tambahan" data-allow-clear="true">
+                                <option></option>
+                                    <option value="1" >Ya</option>
+                                    <option value="2" >Tidak</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="form-group row  mb-5">
                         <div class="col-lg-6">
                             <label>No. Identitas</label>
                             <input type="text" class="form-control " id="identitas" name="identitas" placeholder="masukan nomor identitas..." >
                         </div>
-                    </div>
-                    <div class="form-group row  mb-5">
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 mt-8">
                             <button id="proses" class="btn-small btn-success me-3 text-white"><i class="fa fa-search text-white"></i> Cari</button>
                             <button id="reset" class="btn-small btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
                         </div>
+                    </div>
+                    <div class="form-group row  mb-5">
+
                     </div>
                     <div class="separator border-gray-200 mb-10"></div>
                 </div>   
@@ -224,6 +245,8 @@
                         d.kondisi_pinjaman_id =  $("#kondisi_id").val();
                         d.jenis_pembayaran_id =  $("#jp_id").val();
                         d.bank_account_id =  $("#bank_account_id").val();
+                        d.bulan_id =  $("#bulan_id").val();
+                        d.tambahan_pendanaan_id =  $("#tambahan_pendanaan_id").val();
                     }
             },
             columns: [
@@ -297,6 +320,8 @@
        $("#kondisi_id").val("").trigger('change');
        $("#jp_id").val("").trigger('change');
        $("#bank_account_id").val("").trigger('change');
+       $("#bulan_id").val("").trigger('change');
+       $("#tambahan_pendanaan_id").val("").trigger('change');
        $('#proses').trigger('click');
     });
 

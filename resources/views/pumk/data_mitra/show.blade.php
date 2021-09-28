@@ -62,7 +62,7 @@
                                 </tr>
                                 <tr>
                                     <td>Bank Account</td>
-                                    <td>{{$data->bank_account_text?$data->bank_account_text:"-"}}</td>
+                                    <td>{{$bank?$bank:"-"}}</td>
                                 </tr>
                                 <tr>
                                     <td>Nominal Pendanaan</td>
