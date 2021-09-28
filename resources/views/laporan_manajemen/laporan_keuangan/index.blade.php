@@ -116,7 +116,8 @@
                                     <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No.</th>
                                     <th style="font-weight:bold;border-bottom: 1px solid #c8c7c7;">Laporan Manajemen</th>
                                     <th style="text-align:right;font-weight:bold;width:160px;border-bottom: 1px solid #c8c7c7;">Nilai (Rp.)</th>
-                                    <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
+                                    <th style="text-align:center;font-weight:bold;border-bottom: 1px solid #c8c7c7;">Status</th>
+                                    <th style="text-align:center;width:90px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>    
@@ -134,6 +135,19 @@
                                     </td>
                                     <td>{{$b->nama_lengkap}}</td>
                                     <td></td>
+                                    <td style="text-align:center;">
+                                        @php
+                                        $class = 'primary';
+                                        if($b->status_id == 1){
+                                            $class = 'success';
+                                        }else if($b->status_id == 3){
+                                            $class = 'warning';
+                                        }
+                                        @endphp
+                                        @if(!$perusahaan_id)
+                                        <span class="btn cls-log badge badge-light-{{$class}} fw-bolder me-auto px-4 py-3" data-id="{{$b->laporan_manajemen_id}}" >{{$b->status_nama}}</span>
+                                        @endif
+                                    </td>
                                     <td></td>
                                 </tr>  
                                 @endif   
@@ -157,6 +171,19 @@
                                     <td>{{$j->nama}}</td>
                                     <td></td>
                                     <td style="text-align:center;">
+                                        @php
+                                        $class = 'primary';
+                                        if($j->status_id == 1){
+                                            $class = 'success';
+                                        }else if($j->status_id == 3){
+                                            $class = 'warning';
+                                        }
+                                        @endphp
+                                        @if($perusahaan_id)
+                                        <span class="btn cls-log badge badge-light-{{$class}} fw-bolder me-auto px-4 py-3" data-id="{{$j->laporan_manajemen_id}}" >{{$j->status_nama}}</span>
+                                        @endif
+                                    </td>
+                                    <td style="text-align:center;">
                                         @if($j->status_id!=1)
                                             <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-perusahaan_id="{{$b->perusahaan_id}}" data-laporan_keuangan_id="{{$j->laporan_keuangan_id}}" data-id="{{$p->id}}" data-toggle="tooltip" title="Ubah data {{$p->label}}"><i class="bi bi-pencil fs-3"></i></button>
                                             <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-perusahaan_id="{{$b->perusahaan_id}}" data-laporan_keuangan_id="{{$j->laporan_keuangan_id}}" data-nama="{{ $j->nama }}" data-toggle="tooltip" title="Hapus data {{ $j->nama }}"><i class="bi bi-trash fs-3"></i></button>
@@ -171,17 +198,18 @@
                                     <tr class="treegrid-bumn{{@$b->perusahaan_id}}id{{$p->id}} treegrid-parent-bumn{{@$b->perusahaan_id}}jenis{{$j->laporan_keuangan_id}} item-bumn{{@$b->perusahaan_id}}id{{$p->id}}" >
                                         <td></td>
                                         <td style="font-weight:bold;">{{$p->label}}</td>
-                                            <td style="text-align:right;">
-                                                @php
-                                                    $nilai=number_format($p->nilai,0,',',',');
-                                                    if($p->is_pengurangan || $p->nilai<0){
-                                                        $nilai = '('.number_format(abs($p->nilai),0,',',',').')';
-                                                    }else if(!$p->is_input && $p->formula==''){
-                                                        $nilai = '';
-                                                    }
-                                                @endphp
-                                                {{$nilai}}
-                                            </td>
+                                        <td style="text-align:right;">
+                                            @php
+                                                $nilai=number_format($p->nilai,0,',',',');
+                                                if($p->is_pengurangan || $p->nilai<0){
+                                                    $nilai = '('.number_format(abs($p->nilai),0,',',',').')';
+                                                }else if(!$p->is_input && $p->formula==''){
+                                                    $nilai = '';
+                                                }
+                                            @endphp
+                                            {{$nilai}}
+                                        </td>
+                                        <td></td>
                                         <td style="text-align:center;">
                                             @if($p->is_input && $j->status_id!=1)
                                             <!-- <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$p->id}}" data-toggle="tooltip" title="Ubah data {{$p->label}}"><i class="bi bi-pencil fs-3"></i></button> -->
@@ -208,6 +236,7 @@
                                                 @endphp
                                                 {{$nilai}}
                                             </td>
+                                            <td></td>
                                             <td style="text-align:center;">
                                                 @if($c->is_input && $j->status_id!=1)
                                                 <!-- <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$c->id}}" data-toggle="tooltip" title="Ubah data {{$c->label}}"><i class="bi bi-pencil fs-3"></i></button> -->
@@ -226,7 +255,7 @@
                                 @endforeach
                             @endforeach
                             @if($total==0)
-                                <td colspan="4" style="text-align:center;font-style:italic">Data Kosong</td>
+                                <td colspan="5" style="text-align:center;font-style:italic">Data Kosong</td>
                             @endif
                             </tbody>
                         </table> 

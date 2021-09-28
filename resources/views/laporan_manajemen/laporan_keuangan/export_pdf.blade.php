@@ -213,7 +213,7 @@ $i = 0;
             text-align:center;
         }
         table td {
-            padding:7px;
+            padding:5px;
         }
     </style>
 </head>

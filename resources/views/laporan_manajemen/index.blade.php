@@ -136,7 +136,7 @@
         $('body').on('click','.cls-button-edit-disabled',function(){
             swal.fire({
                     title: "Gagal",
-                    html: 'Laporan Keuangan Belum Diinput!',
+                    html: 'Laporan Keuangan Belum Lengkap!',
                     icon: 'error',
 
                     buttonsStyling: true,

@@ -62,18 +62,33 @@ class LaporanKeuanganController extends Controller
             $periode_laporan_id = $periode_first->id;
         }
 
-        $laporan_bumn = LaporanKeuanganNilai::select('perusahaans.nama_lengkap','perusahaans.id as perusahaan_id')
+        $laporan_bumn = LaporanKeuanganNilai::select('perusahaans.nama_lengkap',
+                                                'perusahaans.id as perusahaan_id',
+                                                'laporan_manajemens.id as laporan_manajemen_id',
+                                                'laporan_manajemens.status_id',
+                                                'statuses.nama as status_nama')
                                 ->leftJoin('relasi_laporan_keuangan', 'relasi_laporan_keuangan.id', 'laporan_keuangan_nilais.relasi_laporan_keuangan_id')
                                 ->leftJoin('perusahaans', 'perusahaans.id', 'laporan_keuangan_nilais.perusahaan_id')
+                                ->leftJoin('laporan_manajemens', function($join){
+                                                $join->on('laporan_manajemens.perusahaan_id', '=', 'laporan_keuangan_nilais.perusahaan_id');
+                                                $join->on('laporan_manajemens.periode_laporan_id', '=', 'laporan_keuangan_nilais.periode_laporan_id');
+                                                $join->on(DB::Raw("CAST (laporan_manajemens.tahun AS text)"), '=', DB::Raw("CAST (laporan_keuangan_nilais.tahun AS text)"));
+                                                })
+                                ->leftJoin('statuses', 'statuses.id', 'laporan_manajemens.status_id')
                                 ->where('laporan_keuangan_nilais.periode_laporan_id',$periode_laporan_id)
                                 ->GroupBy('perusahaans.id')
+                                ->GroupBy('laporan_manajemens.id')
+                                ->GroupBy('laporan_manajemens.status_id')
+                                ->GroupBy('statuses.nama')
                                 ->GroupBy('perusahaans.nama_lengkap')
                                 ->orderBy('perusahaans.nama_lengkap');
 
         $laporan_jenis = LaporanKeuanganNilai::select('laporan_keuangans.nama',
                                                 'laporan_keuangans.id as laporan_keuangan_id', 
                                                 'laporan_keuangan_nilais.perusahaan_id',
-                                                'laporan_manajemens.status_id')
+                                                'laporan_manajemens.id as laporan_manajemen_id',
+                                                'laporan_manajemens.status_id',
+                                                'statuses.nama as status_nama')
                                 ->leftJoin('relasi_laporan_keuangan', 'relasi_laporan_keuangan.id', 'laporan_keuangan_nilais.relasi_laporan_keuangan_id')
                                 ->leftJoin('laporan_keuangans', 'laporan_keuangans.id', 'relasi_laporan_keuangan.laporan_keuangan_id')
                                 ->leftJoin('laporan_manajemens', function($join){
@@ -81,9 +96,12 @@ class LaporanKeuanganController extends Controller
                                                 $join->on('laporan_manajemens.periode_laporan_id', '=', 'laporan_keuangan_nilais.periode_laporan_id');
                                                 $join->on(DB::Raw("CAST (laporan_manajemens.tahun AS text)"), '=', DB::Raw("CAST (laporan_keuangan_nilais.tahun AS text)"));
                                                 })
+                                ->leftJoin('statuses', 'statuses.id', 'laporan_manajemens.status_id')
                                 ->where('laporan_keuangan_nilais.periode_laporan_id',$periode_laporan_id)
                                 ->GroupBy('laporan_keuangan_nilais.perusahaan_id')
+                                ->GroupBy('laporan_manajemens.id')
                                 ->GroupBy('laporan_manajemens.status_id')
+                                ->GroupBy('statuses.nama')
                                 ->GroupBy('laporan_keuangans.id')
                                 ->GroupBy('laporan_keuangans.nama')
                                 ->orderBy('laporan_keuangans.nama');
