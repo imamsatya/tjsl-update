@@ -402,26 +402,6 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kondisi Pinjaman Kosong.<br>';
                 }
             } 
-            // cek tambah pendanaan
-            if(!$is_gagal){
-                try{
-                    $params = rtrim($ar['id_tambahan_pendanaan'])? true : false;
-                    if(rtrim($ar['id_tambahan_pendanaan']) == 1 || rtrim($ar['id_tambahan_pendanaan']) == 2){
-                        $tambah = true;
-                    }else{
-                        $tambah = false;
-                    }
-                    if(!$tambah){
-                        DB::rollback();
-                        $is_gagal = true;
-                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong.<br>';
-                    }
-                }catch(\Exception $e){
-                    DB::rollback();
-                    $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong.<br>';
-                }
-            }   
 
             // cek nilai asset
             if(!$is_gagal){
@@ -573,6 +553,27 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
 
             }
 
+            // cek tambah pendanaan
+            if(!$is_gagal){
+                try{
+                    $params = rtrim($ar['id_tambahan_pendanaan'])? true : false;
+                    if(rtrim($ar['id_tambahan_pendanaan']) == 1 || rtrim($ar['id_tambahan_pendanaan']) == 2){
+                        $tambah = true;
+                    }else{
+                        $tambah = false;
+                    }
+                    if(!$tambah){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong.<br>';
+                    }
+                }catch(\Exception $e){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong.<br>';
+                }
+            }   
+            
             //proses
             // cek kegiatan
             if(!$is_gagal){
