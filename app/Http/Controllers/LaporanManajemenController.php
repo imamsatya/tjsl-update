@@ -13,6 +13,8 @@ use Illuminate\Support\Str;
 use Datatables;
 use App\Http\Controllers\Controller;
 
+use App\Models\LaporanKeuangan;
+use App\Models\LaporanKeuanganNilai;
 use App\Models\LaporanManajemen;
 use App\Models\LogLaporanManajemen;
 use App\Models\PeriodeLaporan;
@@ -96,7 +98,8 @@ class LaporanManajemenController extends Controller
         if($request->status_id){
             $laporan = $laporan->where('laporan_manajemens.status_id', $request->status_id);
         }
-        
+
+        $jumlah_laporan = LaporanKeuangan::get()->Count();
         try{
             return datatables()->of($laporan)
             ->addColumn('status', function ($row){
@@ -110,7 +113,6 @@ class LaporanManajemenController extends Controller
                     $class = 'warning';
                 }
                 $status = '<span class="btn cls-log badge badge-light-'.$class.' fw-bolder me-auto px-4 py-3" data-id="'.$row->id.'" >'.@$row->status->nama.'</span>';
-                // $status .= '<br>Fitri Hidayanti, '.$row->waktu;
 
                 return $status;
             })
@@ -131,18 +133,30 @@ class LaporanManajemenController extends Controller
                 if($row->waktu) $waktu = date("d-m-Y", strtotime($row->waktu));
                 return $waktu;
             })
-            ->addColumn('action', function ($row){
+            ->addColumn('action', function ($row) use($jumlah_laporan){
                 $id = (int)$row->id;
+                $jumlah_laporan_keuangan = LaporanKeuanganNilai::select('laporan_keuangan_nilais.laporan_keuangan_id')
+                                    ->where('laporan_keuangan_nilais.perusahaan_id',$row->perusahaan_id)
+                                    ->where('laporan_keuangan_nilais.tahun',$row->tahun)
+                                    ->where('laporan_keuangan_nilais.periode_laporan_id',$row->periode_laporan_id)
+                                    ->groupBy('laporan_keuangan_nilais.perusahaan_id')
+                                    ->groupBy('laporan_keuangan_nilais.tahun')
+                                    ->groupBy('laporan_keuangan_nilais.laporan_keuangan_id')
+                                    ->groupBy('laporan_keuangan_nilais.periode_laporan_id')
+                                    ->get()->count();
+
                 $button = '<div align="center">';
                 if($row->file_name){
                     $button .= '<a class="tooltips btn btn-sm btn-light btn-icon btn-warning" title="Download File '.@$row->periode->nama.'" href="'.\URL::to('file_upload/laporan_manajemen/'.$row->file_name).'" download="Download File '.@$row->periode->nama.'" ><i class="bi bi-download fs-3"></i></a> ';
                 }
                 
-                if($row->status_id == 3){
-                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit-disabled" data-id="'.$id.'" data-toggle="tooltip" title="Upload File '.@$row->periode->nama.'"><i class="bi bi-upload fs-3"></i></button> ';
-                }
-                if($row->status_id == 2){
-                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Upload File '.@$row->periode->nama.'"><i class="bi bi-upload fs-3"></i></button> ';
+                if($row->status_id != 1){
+                    if($row->status_id == 3 || $jumlah_laporan != $jumlah_laporan_keuangan){
+                        $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-default cls-button-edit-disabled" data-id="'.$id.'" data-toggle="tooltip" title="Upload File '.@$row->periode->nama.'"><i class="bi bi-upload fs-3"></i></button> ';
+                    }
+                    if($row->status_id == 2 && $jumlah_laporan == $jumlah_laporan_keuangan){
+                        $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Upload File '.@$row->periode->nama.'"><i class="bi bi-upload fs-3"></i></button> ';
+                    }
                 }
                 
                 if($row->status_id != 1){
