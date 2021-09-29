@@ -182,7 +182,7 @@
                             <span id="chart_tpb" class="chart2" data-percent="0" style="margin-left: -50px; margin-bottom:60px;">
                                 <span class="percent2"></span>
                             </span><br>
-                            <span id="chart_title" class="caption-subject font-grey-gallery" style="font-weight:bold;">All TPB</span><br>
+                            <span id="chart_title" class="caption-subject font-grey-gallery" style="font-weight:bold;">Semua TPB</span><br>
                             <span id="chart_detail" style="font-size:12px;"></span>
                         </div>
                     </div>
@@ -309,9 +309,11 @@
         
         $('#perusahaan_id').on('change', function(event){
             updatechartrealisasi();
+            updatecharttpb();
         });
         $('#tahun').on('change', function(event){
             updatechartrealisasi();
+            updatecharttpb();
         });
         $('#tpb_id').on('change', function(event){
             updatecharttpb();
