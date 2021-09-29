@@ -265,20 +265,17 @@ class HomeController extends Controller
             $pilar[3] = PilarPembangunan::where('nama','Pilar Pembangunan Hukum dan Tata Kelola')->first();
             
             for($i=0;$i<4;$i++){
-                $kegiatan[$i] = Kegiatan::Select(DB::Raw('sum(kegiatans.realisasi) as realisasi'))
+                $kegiatan[$i] = Kegiatan::Select(DB::Raw('sum(kegiatan_realisasis.anggaran) as realisasi'))
                                         ->leftJoin('target_tpbs', 'target_tpbs.id', '=', 'kegiatans.target_tpb_id')
                                         ->leftJoin('anggaran_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
                                         ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                                        ->leftJoin('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
                                         ->where('relasi_pilar_tpbs.pilar_pembangunan_id',$pilar[$i]->id);
                                         
                 $anggaran[$i] = AnggaranTpb::Select(DB::Raw('sum(anggaran_tpbs.anggaran) as anggaran'))
                                         ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
                                         ->where('relasi_pilar_tpbs.pilar_pembangunan_id',$pilar[$i]->id);
 
-                if($request->tpb_id && $request->tpb_id!='all'){
-                    $kegiatan[$i] = $kegiatan[$i]->where('relasi_pilar_tpbs.tpb_id',$request->tpb_id);
-                    $anggaran[$i] = $anggaran[$i]->where('relasi_pilar_tpbs.tpb_id',$request->tpb_id);
-                }
                 if($request->perusahaan_id && $request->perusahaan_id!='all'){
                     $kegiatan[$i] = $kegiatan[$i]->where('anggaran_tpbs.perusahaan_id',$request->perusahaan_id);
                     $anggaran[$i] = $anggaran[$i]->where('anggaran_tpbs.perusahaan_id',$request->perusahaan_id);
@@ -300,7 +297,7 @@ class HomeController extends Controller
                     $arr['realisasi'][$i] = number_format($kegiatan[$i]->realisasi,0,'.','.');
                     $arr['target'][$i] = number_format($anggaran[$i]->anggaran,0,'.','.');
                     $arr['sisa'][$i] = number_format(($anggaran[$i]->anggaran-$kegiatan[$i]->realisasi),0,'.','.');
-                    $arr['pilar'][$i] = $kegiatan[$i]->realisasi/$anggaran[$i]->anggaran*0.01;
+                    $arr['pilar'][$i] = $kegiatan[$i]->realisasi/$anggaran[$i]->anggaran*100;
                 }
             }
             
@@ -331,10 +328,11 @@ class HomeController extends Controller
     public function charttpb(Request $request)
     {
         try{
-            $kegiatan = Kegiatan::Select(DB::Raw('sum(kegiatans.realisasi) as realisasi'))
+            $kegiatan = Kegiatan::Select(DB::Raw('sum(kegiatan_realisasis.anggaran) as realisasi'))
                                     ->leftJoin('target_tpbs', 'target_tpbs.id', '=', 'kegiatans.target_tpb_id')
                                     ->leftJoin('anggaran_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
-                                    ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id');
+                                    ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                                    ->leftJoin('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id');
                                     
             $anggaran = AnggaranTpb::Select(DB::Raw('sum(anggaran_tpbs.anggaran) as anggaran'))
                                     ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id');
@@ -364,7 +362,7 @@ class HomeController extends Controller
                 $json['realisasi'] = number_format($kegiatan->realisasi,0,'.','.');
                 $json['target'] = number_format($anggaran->anggaran,0,'.','.');
                 $json['sisa'] = number_format(($anggaran->anggaran-$kegiatan->realisasi),0,'.','.');
-                $json['tpb'] = $kegiatan->realisasi/$anggaran->anggaran*0.01;
+                $json['tpb'] = $kegiatan->realisasi/$anggaran->anggaran*100;
             }
 
             return response()->json($json);
