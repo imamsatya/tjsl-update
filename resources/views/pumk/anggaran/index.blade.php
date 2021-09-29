@@ -109,7 +109,7 @@
                     <div class="form-group row  mb-5">
                         <div class="col-lg-6">
                             <button id="proses" class="btn-small btn-success me-3 text-white"><i class="fa fa-search text-white"></i> Filter</button>
-                            <button  onclick="window.location.href='{{route('pumk.anggaran.index')}}'" class="btn-small btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
+                            <button id="reset" class="btn-small btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
                         </div>
                     </div>
                     <div class="separator border-gray-200 mb-10"></div>
@@ -280,10 +280,14 @@
     }); 
 
     $('#reset').click(function(){
-       $('#perusahaan_id').val("").trigger('change');
+       if("{{ $admin_bumn }}"){
+        $("#perusahaan_id").val("{{$filter_bumn_id}}").trigger('change');
+       }else{
+        $("#perusahaan_id").val("").trigger('change');
+       }
        $('#periode_id').val("").trigger('change');
        $("#status_id").val("").trigger('change');
-       $("#tahun").val("").trigger('change');
+    //    $("#tahun").val("").trigger('change');
        $('#proses').trigger('click');
     });    
     
