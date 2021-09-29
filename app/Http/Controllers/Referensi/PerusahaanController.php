@@ -49,7 +49,8 @@ class PerusahaanController extends Controller
     public function datatable(Request $request)
     {
         try{
-            return datatables()->of(Perusahaan::query())
+            $perusahaan = Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get();
+            return datatables()->of($perusahaan)
             ->addColumn('action', function ($row){
                 $id = (int)$row->id;
                 $button = '<div align="center">';
