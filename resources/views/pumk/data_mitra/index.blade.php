@@ -310,7 +310,11 @@
     $('#reset').click(function(){
        $('#perusahaan_id').val("").trigger('change');
        $('#identitas').val("").trigger('change');
-       $("#perusahaan_id").val("").trigger('change');
+       if("{{ $admin_bumn }}"){
+        $("#perusahaan_id").val("{{$filter_bumn_id}}").trigger('change');
+       }else{
+        $("#perusahaan_id").val("").trigger('change');
+       }
        $("#provinsi_id").val("").trigger('change');
        $("#kota_id").val("").trigger('change');
        $("#sektor_usaha_id").val("").trigger('change');
