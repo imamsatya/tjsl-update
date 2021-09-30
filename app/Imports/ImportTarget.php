@@ -196,6 +196,7 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                     ]);
                     
                     AdministrasiController::store_log($target->id,$target->status_id);
+                    DB::commit();
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
