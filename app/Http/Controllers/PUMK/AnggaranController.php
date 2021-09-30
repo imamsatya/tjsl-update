@@ -488,7 +488,7 @@ class AnggaranController extends Controller
                                         $data_status = Status::where('nama','In Progress')->pluck('id')->first();
                                         $param['status_id'] = $data_status; 
                                     }else if($status->nama == 'In Progress'){
-                                        $data_status = Status::where('nama','Finish')->pluck('id')->first();
+                                        $data_status = Status::where('nama','In Progress')->pluck('id')->first();
                                         $param['status_id'] = $data_status; 
                                     }else if($status->nama == 'Finish'){
                                         $data_status = Status::where('nama','In Progress')->pluck('id')->first();
