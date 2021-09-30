@@ -242,6 +242,7 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
 
                         AdministrasiController::store_log($realisasi->id,$realisasi->status_id);
                         $berhasil++;
+                        DB::commit();
                     }else{
                         DB::rollback();
                         $is_gagal = true;
@@ -274,6 +275,7 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'anggaran' => rtrim($ar[$param_anggaran]),
                     ]);
                     $gagal++;
+                    DB::commit();
                 }catch(\Exception $e){dd($e->getMessage());
                     DB::rollback();
                 }
