@@ -3,6 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Doctrine\DBAL\Types\FloatType;
+use Doctrine\DBAL\Types\Type;
 
 class AlterChangeTipeDataPumkMb extends Migration
 {
@@ -13,6 +15,10 @@ class AlterChangeTipeDataPumkMb extends Migration
      */
     public function up()
     {
+
+        if (!Type::hasType('double')) {
+            Type::addType('double', FloatType::class);
+        }
         Schema::table('pumk_mitra_binaans', function (Blueprint $table) {
             $table->double('nilai_aset')->change();
             $table->double('nilai_omset')->change();
