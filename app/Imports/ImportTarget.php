@@ -82,7 +82,7 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
             }
 
             //cek core subject 
-            if(!$is_gagal){
+            if(!$is_gagal && rtrim($ar['id_core_subject_iso_26000'])!=''){
                 try{
                     $core_subject = CoreSubject::find(rtrim($ar['id_core_subject_iso_26000']));
                     if(!$core_subject){
