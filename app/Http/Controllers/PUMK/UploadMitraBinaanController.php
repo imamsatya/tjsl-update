@@ -215,8 +215,8 @@ class UploadMitraBinaanController extends Controller
             DB::commit();
             $result = [
             'flag'  => 'success',
-            'msg' => 'Sukses tambah data',
-            'title' => 'Sukses'
+            'msg' => 'File Terupload',
+            'title' => ''
             ];
         }catch(\Exception $e){
             DB::rollback();
