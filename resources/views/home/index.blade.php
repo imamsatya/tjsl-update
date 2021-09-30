@@ -99,10 +99,7 @@
                     <div class="form-group row  mb-5">
                         <div class="col-lg-5">
                             <label>TPB</label>
-                            @php
-                                $disabled = (($admin_bumn) ? 'disabled="true"' : '');
-                            @endphp
-                            <select class="form-select form-select-solid form-select2" id="tpb_id" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB" {{ $disabled }}>
+                            <select class="form-select form-select-solid form-select2" id="tpb_id" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB">
                                 <option></option>
                                 <option value="all">Semua TPB</option>
                                 @foreach($tpb as $p)  
