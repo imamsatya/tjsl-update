@@ -290,13 +290,19 @@ class AdministrasiController extends Controller
         try{
             $target = TargetTpb::find((int)$request->input('id'));
             $mitra_bumn = TargetMitra::where('target_mitras.target_tpb_id',$target->id)->pluck('perusahaan_id','perusahaan_id')->all();
+            $kode_indikator = KodeIndikator::LeftJoin('relasi_tpb_kode_indikators', 'relasi_tpb_kode_indikators.kode_indikator_id','kode_indikators.id')
+                                            ->LeftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id','relasi_tpb_kode_indikators.relasi_pilar_tpb_id')
+                                            ->where('relasi_pilar_tpbs.tpb_id',$target->tpb_id)->get();
+            $kode_tujuan_tpb = KodeTujuanTpb::LeftJoin('relasi_tpb_kode_tujuan_tpbs', 'relasi_tpb_kode_tujuan_tpbs.kode_tujuan_tpb_id','kode_tujuan_tpbs.id')
+                                            ->LeftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id','relasi_tpb_kode_tujuan_tpbs.relasi_pilar_tpb_id')
+                                            ->where('relasi_pilar_tpbs.tpb_id',$target->tpb_id)->get();
 
                 return view($this->__route.'.form',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
                     'data' => $target,
-                    'kode_indikator' => KodeIndikator::get(),
-                    'kode_tujuan_tpb' => KodeTujuanTpb::get(),
+                    'kode_indikator' => $kode_indikator,
+                    'kode_tujuan_tpb' => $kode_tujuan_tpb,
                     'satuan_ukur' => SatuanUkur::get(),
                     'cara_penyaluran' => CaraPenyaluran::get(),
                     'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
