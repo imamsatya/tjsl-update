@@ -97,8 +97,8 @@
                 { data: 'email', name: 'email' },
                 { data: 'handphone', name: 'handphone' },
                 { data: 'perusahaan', name: 'perusahaan' },
-                { data: 'roles', name: 'roles' },
-                { data: 'action', name:'action'},
+                { data: 'roles', name: 'roles', searchable: false },
+                { data: 'action', name:'action', searchable: false},
             ],
             drawCallback: function( settings ) {
                 var info = datatable.page.info();
