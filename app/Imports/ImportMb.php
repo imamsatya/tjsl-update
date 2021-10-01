@@ -531,7 +531,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                 }
             }
             
-            if(!$is_gagal && rtrim($ar['id_jenis_pembayaran']) > 2){
+            if(!$is_gagal && rtrim($ar['id_jenis_pembayaran']) > 1){
                 $cek = rtrim($ar['id_bank_account']) == "" ? 0 : rtrim($ar['id_bank_account']);
                 if($cek > 0){
                     try{
