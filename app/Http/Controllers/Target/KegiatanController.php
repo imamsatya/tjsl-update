@@ -68,9 +68,10 @@ class KegiatanController extends Controller
      * @throws \Exception
      */
     public function datatable(Request $request)
-    {
+    {   
+        $target_tpb = TargetTpb::OrderBy('program')->get();
         try{
-            return datatables()->of(TargetTpb::query())
+            return datatables()->of($target_tpb)
             ->addColumn('action', function ($row){
                 $id = (int)$row->id;
                 $button = '<div align="center">';

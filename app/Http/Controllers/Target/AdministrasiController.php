@@ -107,25 +107,23 @@ class AdministrasiController extends Controller
                                         'anggaran_tpbs.perusahaan_id',
                                         'pilar_pembangunans.nama', 
                                         'pilar_pembangunans.id')
-                            // ->where('anggaran_tpbs.status_id',1)
                             ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
                             ->get();
         $anggaran_bumn = $anggaran_bumn->select('anggaran_tpbs.perusahaan_id', 
                                                 'perusahaans.nama_lengkap',
                                                 'perusahaans.id',
                                                 DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'))
-                            // ->where('anggaran_tpbs.status_id',1)
                             ->groupBy('anggaran_tpbs.perusahaan_id')
                             ->groupBy('perusahaans.nama_lengkap')
                             ->groupBy('perusahaans.id')
                             ->get();
         $anggaran = $anggaran->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
-                            // ->where('anggaran_tpbs.status_id',1)
-                            ->orderBy('no_tpb')->get();
+                            ->orderBy('relasi_pilar_tpbs.tpb_id')->get();
 
         $target = TargetTpb::get();
         if($request->status_id){
-            $target = TargetTpb::where('target_tpbs.status_id', $request->status_id)->get();
+            $target = TargetTpb::where('target_tpbs.status_id', $request->status_id)
+                            ->orderBy('target_tpbs.tpb_id')->get();
         }
 
         return view($this->__route.'.index',[
