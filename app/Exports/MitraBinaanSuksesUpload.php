@@ -20,6 +20,17 @@ class MitraBinaanSuksesUpload implements WithMultipleSheets
     {
         $sheets = [];
         $sheets[] = new MitraBinaanSuksesUploadExport($this->kode);
+        $sheets[] = new ReferensiPerusahaan();
+        $sheets[] = new ReferensiProvinsi();
+        $sheets[] = new ReferensiKota();
+        $sheets[] = new ReferensiSektorUsaha();
+        $sheets[] = new ReferensiSkalaUsaha();
+        $sheets[] = new ReferensiCaraPenyaluran();
+        $sheets[] = new ReferensiKolektibilitasPendanaan();
+        $sheets[] = new ReferensiKondisiPinjaman();
+        $sheets[] = new ReferensiJenisPembayaran();
+        $sheets[] = new ReferensiBankAccount();
+        $sheets[] = new ReferensiTambahanPendanaan();
 
         return $sheets;
     }

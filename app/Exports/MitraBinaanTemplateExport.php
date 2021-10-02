@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Illuminate\Contracts\View\View;
 use DB;
 use App\Models\PumkMitraBinaan;
+use App\Models\Bulan;
 
 class MitraBinaanTemplateExport implements FromView , WithTitle
 {
@@ -28,8 +29,11 @@ class MitraBinaanTemplateExport implements FromView , WithTitle
     //   } 
       $perusahaan = empty($this->perusahaan)? 'PT/PERUM ... ' : $this->perusahaan->nama_lengkap; 
       
+      $bulan_static = (int)date('m')-1;
+      $bulan = Bulan::where('id',$bulan_static)->pluck('nama')->first();
+
       return view('pumk.upload_data_mitra.template', [
-          'periode' => "Periode : ".date('M')."-". date('Y'), 
+          'periode' => "Periode : ".$bulan."-". date('Y'), 
           'perusahaan' => $perusahaan, 
           'data' => $data, 
       ]);

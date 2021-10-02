@@ -20,7 +20,6 @@
         <td colspan="29" style="background-color : #e3e3e3 ;width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">LAPORAN PENDANAAN UMK</font></b></td>
     </tr>
     @php
-        $bumn = [];
         if(!empty($bumn)){
             $perusahaan = $bumn->where('id', (int)$data[0]->perusahaan_id)->pluck('nama_lengkap')->first();
         }
