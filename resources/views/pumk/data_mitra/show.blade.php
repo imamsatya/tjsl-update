@@ -49,10 +49,6 @@
                                     <td>{{$data->skala_usaha_text?$data->skala_usaha_text:"-"}}</td>
                                 </tr>
                                 <tr>
-                                    <td>Cara Penyaluran</td>
-                                    <td>{{$data->cara_penyaluran_text?$data->cara_penyaluran_text:"-"}}</td>
-                                </tr>
-                                <tr>
                                     <td>Kondisi Pinjaman</td>
                                     <td>{{$data->kondisi_pinjaman_text?$data->kondisi_pinjaman_text:"-"}}</td>
                                 </tr>
@@ -67,6 +63,10 @@
                                 <tr>
                                     <td>Nominal Pendanaan</td>
                                     <td>{{$data->nominal_pendanaan?number_format($data->nominal_pendanaan,0,',',',') : 0}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Pelaksanaan Program</td>
+                                    <td>{{$data->cara_penyaluran_text?$data->cara_penyaluran_text:"-"}}</td>
                                 </tr>
                                 <tr>
                                     <td>Sumber Dana</td>

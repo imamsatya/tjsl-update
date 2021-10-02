@@ -279,6 +279,20 @@ class MitraBinaanController extends Controller
                     ->where('pumk_mitra_binaans.id',(int)$request->id)
                     ->first();
 
+            if($data->sumber_dana){
+                $cek_sumber = is_numeric($data->sumber_dana[0])? true : false;
+                if($cek_sumber){
+                    $sumber_bumn = [];
+                    $arr = array_map('intval', explode(',', $data->sumber_dana));
+                    foreach($arr as $val){
+                        $sumber_bumn[] = ' '.Perusahaan::where('id',(int)$val)->pluck('nama_lengkap')->first().' ';
+                        
+                    }
+                    $result_sumber = json_encode($sumber_bumn);
+                    $data->sumber_dana = str_replace(']','',str_replace('[','',(preg_replace('/"/',"",$result_sumber))));
+                }
+            }
+
             $bank = '';
             if($data->bank_account_id !== null || $data->bank_account_id !== ""){
                 $bank = BankAccount::where('id',(int)$data->bank_account_id)->pluck('nama')->first();
