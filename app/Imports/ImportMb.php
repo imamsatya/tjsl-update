@@ -153,7 +153,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
             
             // sumber dana jika pelaksanaan program mandiri
             if(!$is_gagal && rtrim($ar['id_pelaksanaan_program']) == $mandiri){
-                $ar['sumber_dana'] = $perusahaan->nama_lengkap;
+                $ar['sumber_dana'] = $perusahaan->id;
             }
             // sumber dana jika pelaksanaan program kolaborasi
             if(!$is_gagal && rtrim($ar['id_pelaksanaan_program']) == $kolaborasi){
