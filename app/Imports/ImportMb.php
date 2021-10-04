@@ -49,7 +49,18 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
     }
     public function collection(Collection $row)
     {
-        $perusahaan = Perusahaan::where('nama_lengkap', $this->perusahaan)->first();
+        $bumn_cek = $this->perusahaan? true : false;
+        if($bumn_cek){
+            $count = Perusahaan::where('nama_lengkap', $this->perusahaan)->count();
+            if($count > 0){
+                $perusahaan = Perusahaan::where('nama_lengkap', $this->perusahaan)->first();
+            }else{
+                trigger_error('Header Nama Perusahaan Tidak Sesuai Referensi.');
+            }
+        }else{
+            trigger_error('Header Nama Perusahaan Kosong.');
+        }
+        
         $berhasil = 0;
         $update = 0;
         $gagal = 0;
@@ -570,14 +581,14 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             'nilai_omset' => rtrim($ar['nilai_omset']),
                             'no_pinjaman' => rtrim($ar['no_pinjaman']),
                             'sumber_dana' => rtrim($ar['sumber_dana']),
-                            'tgl_awal' => $ar['tgl_awal_pendanaan']? (string)$ar['tgl_awal_pendanaan'] : null,
-                            'tgl_jatuh_tempo' => $ar['tgl_jatuh_tempo'] ? (string) $ar['tgl_jatuh_tempo'] : null,
+                            'tgl_awal' => $ar['tgl_awal_pendanaan']? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_awal_pendanaan'])->format('d-m-Y') : null,
+                            'tgl_jatuh_tempo' => $ar['tgl_jatuh_tempo'] ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_jatuh_tempo'])->format('d-m-Y') : null,
                             'nominal_pendanaan' => rtrim($ar['nominal_pendanaan']),
                             'saldo_pokok_pendanaan' => rtrim($ar['saldo_pokok_pendanaan']),
                             'saldo_jasa_adm_pendanaan' => rtrim($ar['saldo_jasa_admin_pendanaan']),
                             'penerimaan_pokok_bulan_berjalan' => rtrim($ar['penerimaan_pokok_bulan_berjalan']),
                             'penerimaan_jasa_adm_bulan_berjalan' => rtrim($ar['penerimaan_jasa_admin_bulan_berjalan']),
-                            'tgl_penerimaan_terakhir' => $ar['tgl_penerimaan_terakhir'] ? (string)$ar['tgl_penerimaan_terakhir'] : null,
+                            'tgl_penerimaan_terakhir' => $ar['tgl_penerimaan_terakhir'] ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_penerimaan_terakhir'])->format('d-m-Y') : null,
                             'jumlah_sdm' => $ar['sdm_di_mb'] ? rtrim($ar['sdm_di_mb']):0,
                             'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
                             'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
@@ -612,14 +623,14 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                                 'nilai_omset' => rtrim($ar['nilai_omset']),
                                 'no_pinjaman' => rtrim($ar['no_pinjaman']),
                                 'sumber_dana' => rtrim($ar['sumber_dana']),
-                                'tgl_awal' => $ar['tgl_awal_pendanaan']? (string)$ar['tgl_awal_pendanaan'] : null,
-                                'tgl_jatuh_tempo' => $ar['tgl_jatuh_tempo'] ? (string) $ar['tgl_jatuh_tempo'] : null,
+                                'tgl_awal' => $ar['tgl_awal_pendanaan']? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_awal_pendanaan'])->format('d-m-Y') : null,
+                                'tgl_jatuh_tempo' => $ar['tgl_jatuh_tempo'] ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_jatuh_tempo'])->format('d-m-Y') : null,
                                 'nominal_pendanaan' => rtrim($ar['nominal_pendanaan']),
                                 'saldo_pokok_pendanaan' => rtrim($ar['saldo_pokok_pendanaan']),
                                 'saldo_jasa_adm_pendanaan' => rtrim($ar['saldo_jasa_admin_pendanaan']),
                                 'penerimaan_pokok_bulan_berjalan' => rtrim($ar['penerimaan_pokok_bulan_berjalan']),
                                 'penerimaan_jasa_adm_bulan_berjalan' => rtrim($ar['penerimaan_jasa_admin_bulan_berjalan']),
-                                'tgl_penerimaan_terakhir' => $ar['tgl_penerimaan_terakhir'] ? (string)$ar['tgl_penerimaan_terakhir'] : null,
+                                'tgl_penerimaan_terakhir' => $ar['tgl_penerimaan_terakhir'] ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_penerimaan_terakhir'])->format('d-m-Y') : null,
                                 'jumlah_sdm' => $ar['sdm_di_mb'] ? rtrim($ar['sdm_di_mb']):0,
                                 'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
                                 'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
@@ -662,14 +673,14 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             'nilai_omset' => rtrim($ar['nilai_omset']),
                             'no_pinjaman' => rtrim($ar['no_pinjaman']),
                             'sumber_dana' => rtrim($ar['sumber_dana']),
-                            'tgl_awal' => $ar['tgl_awal_pendanaan']? (string)$ar['tgl_awal_pendanaan'] : null,
-                            'tgl_jatuh_tempo' => $ar['tgl_jatuh_tempo'] ? (string) $ar['tgl_jatuh_tempo'] : null,
+                            'tgl_awal' => $ar['tgl_awal_pendanaan']? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_awal_pendanaan'])->format('d-m-Y') : null,
+                            'tgl_jatuh_tempo' => $ar['tgl_jatuh_tempo'] ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_jatuh_tempo'])->format('d-m-Y') : null,
                             'nominal_pendanaan' => rtrim($ar['nominal_pendanaan']),
                             'saldo_pokok_pendanaan' => rtrim($ar['saldo_pokok_pendanaan']),
                             'saldo_jasa_adm_pendanaan' => rtrim($ar['saldo_jasa_admin_pendanaan']),
                             'penerimaan_pokok_bulan_berjalan' => rtrim($ar['penerimaan_pokok_bulan_berjalan']),
                             'penerimaan_jasa_adm_bulan_berjalan' => rtrim($ar['penerimaan_jasa_admin_bulan_berjalan']),
-                            'tgl_penerimaan_terakhir' => $ar['tgl_penerimaan_terakhir'] ? (string)$ar['tgl_penerimaan_terakhir'] : null,
+                            'tgl_penerimaan_terakhir' => $ar['tgl_penerimaan_terakhir'] ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_penerimaan_terakhir'])->format('d-m-Y') : null,
                             'jumlah_sdm' => $ar['sdm_di_mb'] ? rtrim($ar['sdm_di_mb']):0,
                             'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
                             'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
@@ -713,14 +724,14 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             'nilai_omset' => rtrim($ar['nilai_omset']),
                             'no_pinjaman' => rtrim($ar['no_pinjaman']),
                             'sumber_dana' => rtrim($ar['sumber_dana']),
-                            'tgl_awal' => $ar['tgl_awal_pendanaan']? (string)$ar['tgl_awal_pendanaan'] : null,
-                            'tgl_jatuh_tempo' => $ar['tgl_jatuh_tempo'] ? (string) $ar['tgl_jatuh_tempo'] : null,
+                            'tgl_awal' => $ar['tgl_awal_pendanaan']? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_awal_pendanaan'])->format('d-m-Y') : null,
+                            'tgl_jatuh_tempo' => $ar['tgl_jatuh_tempo'] ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_jatuh_tempo'])->format('d-m-Y') : null,
                             'nominal_pendanaan' => rtrim($ar['nominal_pendanaan']),
                             'saldo_pokok_pendanaan' => rtrim($ar['saldo_pokok_pendanaan']),
                             'saldo_jasa_adm_pendanaan' => rtrim($ar['saldo_jasa_admin_pendanaan']),
                             'penerimaan_pokok_bulan_berjalan' => rtrim($ar['penerimaan_pokok_bulan_berjalan']),
                             'penerimaan_jasa_adm_bulan_berjalan' => rtrim($ar['penerimaan_jasa_admin_bulan_berjalan']),
-                            'tgl_penerimaan_terakhir' => $ar['tgl_penerimaan_terakhir'] ? (string)$ar['tgl_penerimaan_terakhir'] : null,
+                            'tgl_penerimaan_terakhir' => $ar['tgl_penerimaan_terakhir'] ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_penerimaan_terakhir'])->format('d-m-Y') : null,
                             'jumlah_sdm' => $ar['sdm_di_mb'] ? rtrim($ar['sdm_di_mb']):0,
                             'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
                             'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
