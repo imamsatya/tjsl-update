@@ -95,9 +95,14 @@ class HomeController extends Controller
             $bulan = $request->bulan_pumk? (int)$request->bulan_pumk : ((int)date('m') - 1);
             $tahun = $request->tahun_pumk;
 
+            $id_lancar = KolekbilitasPendanaan::where('nama','ilike','%lancar%')->pluck('id')->first();
+            $id_kurang_lancar = KolekbilitasPendanaan::where('nama','ilike','%kurang% %lancar%')->pluck('id')->first();
+            $id_diragukan = KolekbilitasPendanaan::where('nama','ilike','%diragukan%')->pluck('id')->first();
+            $id_macet = KolekbilitasPendanaan::where('nama','ilike','%macet%')->pluck('id')->first();
+
             $json['mitra_lancar'] =  PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
                             ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                            ->where('kolekbilitas_pendanaan.id', env('ID_LANCAR'))
+                            ->where('kolekbilitas_pendanaan.id', $id_lancar)
                             ->where('pumk_mitra_binaans.is_arsip',false)
                             ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
                                 if($perusahaan){
@@ -114,7 +119,7 @@ class HomeController extends Controller
                          
             $json['saldo_lancar'] = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
                             ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                            ->where('kolekbilitas_pendanaan.id', env('ID_LANCAR'))
+                            ->where('kolekbilitas_pendanaan.id', $id_lancar)
                             ->where('pumk_mitra_binaans.is_arsip',false)
                             ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
                                 if($perusahaan){
@@ -131,7 +136,7 @@ class HomeController extends Controller
     
             $json['mitra_kurang_lancar'] = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
                             ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                            ->where('kolekbilitas_pendanaan.id', env('ID_KURANG_LANCAR'))
+                            ->where('kolekbilitas_pendanaan.id', $id_kurang_lancar)
                             ->where('pumk_mitra_binaans.is_arsip',false)
                             ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
                                 if($perusahaan){
@@ -148,7 +153,7 @@ class HomeController extends Controller
     
            $json['saldo_kurang_lancar'] = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
                             ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                            ->where('kolekbilitas_pendanaan.id', env('ID_KURANG_LANCAR'))
+                            ->where('kolekbilitas_pendanaan.id', $id_kurang_lancar)
                             ->where('pumk_mitra_binaans.is_arsip',false)
                             ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
                                 if($perusahaan){
@@ -165,7 +170,7 @@ class HomeController extends Controller
     
             $json['mitra_diragukan'] = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
                             ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                            ->where('kolekbilitas_pendanaan.id', env('ID_DIRAGUKAN'))
+                            ->where('kolekbilitas_pendanaan.id', $id_diragukan)
                             ->where('pumk_mitra_binaans.is_arsip',false)
                             ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
                                 if($perusahaan){
@@ -182,7 +187,7 @@ class HomeController extends Controller
     
             $json['saldo_diragukan'] = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
                             ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                            ->where('kolekbilitas_pendanaan.id', env('ID_DIRAGUKAN'))
+                            ->where('kolekbilitas_pendanaan.id', $id_diragukan)
                             ->where('pumk_mitra_binaans.is_arsip',false)
                             ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
                                 if($perusahaan){
@@ -199,7 +204,7 @@ class HomeController extends Controller
     
             $json['mitra_macet'] = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
                             ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                            ->where('kolekbilitas_pendanaan.id', env('ID_MACET'))
+                            ->where('kolekbilitas_pendanaan.id', $id_macet)
                             ->where('pumk_mitra_binaans.is_arsip',false)
                             ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
                                 if($perusahaan){
@@ -216,7 +221,7 @@ class HomeController extends Controller
     
             $json['saldo_macet'] = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
                             ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
-                            ->where('kolekbilitas_pendanaan.id', env('ID_MACET'))
+                            ->where('kolekbilitas_pendanaan.id', $id_macet)
                             ->where('pumk_mitra_binaans.is_arsip',false)
                             ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
                                 if($perusahaan){
