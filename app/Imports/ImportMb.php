@@ -90,7 +90,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
 
             // cek no ktp
             try{
-                $no_id = strlen($ar['no_identitas']) == 16? true : false;
+                $no_id = strlen(preg_replace('/[^0-9]/','',$ar['no_identitas'])) == 16? true : false;
                 if(!$no_id){
                     DB::rollback();
                     $is_gagal = true;
@@ -556,7 +556,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $s_gagal = false;
     
                     //cek apakah no identitas belum ada dan kolek belum lunas? jika ya create
-                    $cek_identitas = PumkMitraBinaan::where('no_identitas',$ar['no_identitas'] )
+                    $no_id = preg_replace('/[^0-9]/','',$ar['no_identitas']);
+                    $cek_identitas = PumkMitraBinaan::where('no_identitas',$no_id)
                                      ->count();
                     $cek_kolektibilitas = PumkMitraBinaan::where('kolektibilitas_id',(int)$ar['id_kolektibilitas_pendanaan'] )
                                      ->count();
@@ -567,7 +568,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             'bulan' => (int)date('m')-1,
                             'tahun' => (int)date('Y'),
                             'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
-                            'no_identitas' => rtrim($ar['no_identitas']),
+                            'no_identitas' => rtrim(preg_replace('/[^0-9]/','',$ar['no_identitas'])),
                             'provinsi_id' => rtrim($ar['id_provinsi']),
                             'kota_id' => rtrim($ar['id_kota']),
                             'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
@@ -609,7 +610,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                                 'bulan' => (int)date('m')-1,
                                 'tahun' => (int)date('Y'),
                                 'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
-                                'no_identitas' => rtrim($ar['no_identitas']),
+                                'no_identitas' => rtrim(preg_replace('/[^0-9]/','',$ar['no_identitas'])),
                                 'provinsi_id' => rtrim($ar['id_provinsi']),
                                 'kota_id' => rtrim($ar['id_kota']),
                                 'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
@@ -648,7 +649,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             // ->where('kolektibilitas_id',(int)$ar['id_kolektibilitas_pendanaan'])
                             // ->update([
                             $last_data = PumkMitraBinaan::select('no_identitas','is_arsip')
-                                ->where('no_identitas',(int)$ar['no_identitas'])
+                                ->where('no_identitas',(int)preg_replace('/[^0-9]/','',$ar['no_identitas']))
                                 ->where('no_pinjaman',$ar['no_pinjaman'])
                                 ->where('bulan',(int) date('m')-1)
                                 ->where('tahun',(int) date('Y'))
@@ -659,7 +660,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             'bulan' => (int)date('m')-1,
                             'tahun' => (int)date('Y'),
                             'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
-                            'no_identitas' => rtrim($ar['no_identitas']),
+                            'no_identitas' => rtrim(preg_replace('/[^0-9]/','',$ar['no_identitas'])),
                             'provinsi_id' => rtrim($ar['id_provinsi']),
                             'kota_id' => rtrim($ar['id_kota']),
                             'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
@@ -710,7 +711,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             'bulan' => (int)date('m'),
                             'tahun' => (int)date('Y'),
                             'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
-                            'no_identitas' => rtrim($ar['no_identitas']),
+                            'no_identitas' => rtrim(preg_replace('/[^0-9]/','',$ar['no_identitas'])),
                             'provinsi_id' => rtrim($ar['id_provinsi']),
                             'kota_id' => rtrim($ar['id_kota']),
                             'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),

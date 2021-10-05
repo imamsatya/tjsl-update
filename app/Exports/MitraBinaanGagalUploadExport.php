@@ -15,7 +15,7 @@ use DB;
 use App\Models\UploadGagalPumkMitraBinaan;
 use App\Models\Perusahaan;
 use App\Models\Bulan;
-class MitraBinaanGagalUploadExport implements FromView , WithTitle
+class MitraBinaanGagalUploadExport implements FromView , WithTitle, WithColumnFormatting
 {
     public function __construct($kode){
         $this->kode = $kode ;
@@ -47,5 +47,13 @@ class MitraBinaanGagalUploadExport implements FromView , WithTitle
     {
         return 'Input Data Mitra Binaan' ;
     }
-    
+
+    public function columnFormats(): array
+    {
+        return [
+            'M' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'N' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'T' => NumberFormat::FORMAT_DATE_DDMMYYYY
+        ];
+    }    
 }
