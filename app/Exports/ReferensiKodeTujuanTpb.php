@@ -5,9 +5,11 @@ use App\Models\KodeTujuanTpb;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Illuminate\Contracts\View\View;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class ReferensiKodeTujuanTpb implements FromView , WithTitle
+class ReferensiKodeTujuanTpb implements FromView , WithTitle, WithColumnFormatting
 {   
     public function view(): View
     {
@@ -26,6 +28,13 @@ class ReferensiKodeTujuanTpb implements FromView , WithTitle
     public function title(): string
     {
         return 'Referensi Kode Tujuan TPB' ;
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            'C' => NumberFormat::FORMAT_TEXT
+        ];
     }
 }
 ?>
