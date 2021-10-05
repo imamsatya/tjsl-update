@@ -280,17 +280,19 @@ class MitraBinaanController extends Controller
                     ->first();
 
             if($data->sumber_dana){
-                $cek_sumber = is_numeric($data->sumber_dana[0])? true : false;
-                if($cek_sumber){
                     $sumber_bumn = [];
-                    $arr = array_map('intval', explode(',', $data->sumber_dana));
+                    $arr = explode(',', $data->sumber_dana);                    
                     foreach($arr as $val){
-                        $sumber_bumn[] = ' '.Perusahaan::where('id',(int)$val)->pluck('nama_lengkap')->first().' ';
-                        
+                        if(is_numeric($val)){
+                            $sumber_bumn[] = ' '.Perusahaan::where('id',(int)$val)->pluck('nama_lengkap')->first().' ';
+                        }
+                        if(!is_numeric($val)){
+                            $sumber_bumn[] = " ".$val." ";
+                        }
                     }
+
                     $result_sumber = json_encode($sumber_bumn);
                     $data->sumber_dana = str_replace(']','',str_replace('[','',(preg_replace('/"/',"",$result_sumber))));
-                }
             }
 
             $bank = '';
