@@ -147,6 +147,9 @@ class MitraBinaanController extends Controller
 
             if($request->bulan_id){
                 $data = $data->where('pumk_mitra_binaans.bulan',(int)$request->bulan_id);
+            }else{
+                $static_bulan = (int)date('m')-1;
+                $data = $data->where('pumk_mitra_binaans.bulan',$static_bulan);
             }
 
             if($request->tambahan_pendanaan_id){
