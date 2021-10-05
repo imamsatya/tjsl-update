@@ -5,9 +5,11 @@ use App\Models\KodeIndikator;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Illuminate\Contracts\View\View;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class ReferensiKodeIndikator implements FromView , WithTitle
+class ReferensiKodeIndikator implements FromView , WithTitle, WithColumnFormatting
 {   
     public function view(): View
     {
@@ -26,6 +28,13 @@ class ReferensiKodeIndikator implements FromView , WithTitle
     public function title(): string
     {
         return 'Referensi Kode Indikator' ;
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            'C' => NumberFormat::FORMAT_TEXT
+        ];
     }
 }
 ?>
