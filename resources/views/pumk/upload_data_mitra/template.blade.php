@@ -81,7 +81,8 @@
             <td>{{$val->kota_id?$val->kota_id:""}}</td>
             <td>{{$val->sektor_usaha_id?$val->sektor_usaha_id:""}}</td>
             <td>{{$val->skala_usaha_id?$val->skala_usaha_id:""}}</td>
-            <td style="text-align: center;">{{$val->no_identitas? preg_replace('/(?<=\d)(?=(\d{4})+$)/', ' ', $val->no_identitas):""}}</td>
+            {{-- <td style="text-align: center;">{{$val->no_identitas? preg_replace('/(?<=\d)(?=(\d{4})+$)/', ' ', $val->no_identitas):""}}</td> --}}
+            <td>{{$val->no_identitas? "'".$val->no_identitas:""}}</td>
             <td>{{$val->nilai_aset?$val->nilai_aset:""}}</td>
             <td>{{$val->nilai_omset?$val->nilai_omset:""}}</td>
             <td>{{$val->no_pinjaman?$val->no_pinjaman:""}}</td>
