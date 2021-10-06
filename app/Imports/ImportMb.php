@@ -26,6 +26,7 @@ use App\Models\KolekbilitasPendanaan;
 use App\Models\KondisiPinjaman;
 use App\Models\JenisPembayaran;
 use App\Models\BankAccount;
+use App\Models\Bulan;
 use App\Models\UploadPumkMitraBinaan;
 use App\Models\UploadGagalPumkMitraBinaan;
 
@@ -116,7 +117,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Nomor Pinjaman Kosong.<br>';
                 }
-            }
+            }    
 
             // cek tgl awal
             if(!$is_gagal){
@@ -546,7 +547,33 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     // $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong diubah default sistem.<br>';
                 }
             }   
-            
+
+            // cek status lunas angsuran sebelumnya
+            if(!$is_gagal){
+                try{
+                    $lunas = KolekbilitasPendanaan::where('nama','ilike','%lunas%')->pluck('id')->first();
+                    $cek_data_sebelumnya = PumkMitraBinaan::where('no_pinjaman',$ar['no_pinjaman'])
+                                        ->where('no_identitas',preg_replace('/[^0-9]/','',$ar['no_identitas']))
+                                        ->where('kolektibilitas_id',$lunas)    
+                                        ->count();
+
+                    if($cek_data_sebelumnya > 0){
+                        $data = PumkMitraBinaan::where('no_pinjaman',$ar['no_pinjaman'])
+                        ->where('no_identitas',preg_replace('/[^0-9]/','',$ar['no_identitas']))
+                        ->where('kolektibilitas_id',$lunas)
+                        ->orderby('id','desc')    
+                        ->first();
+
+                        $bulan = Bulan::where('id',(int)$data->bulan)->pluck('nama')->first();
+                        $bumn = Perusahaan::where('id',(int)$data->perusahaan_id)->pluck('nama_lengkap')->first();
+
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Nomor pinjaman <strong>'.$ar['no_pinjaman'].'</strong> a/n. <strong>'.$data->nama_mitra.'</strong> di '.$bumn.' telah lunas pada <strong>'.$bulan.' '.$data->tahun.'</strong><br>';
+                    }
+                }catch(\Exception $e){}
+            }                   
+
         //proses data
             // cek kegiatan
             if(!$is_gagal){
