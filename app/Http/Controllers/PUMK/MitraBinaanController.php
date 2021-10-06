@@ -413,6 +413,23 @@ class MitraBinaanController extends Controller
         }
      
         $mitra = $data->where('is_arsip',false)->get();
+
+        foreach($mitra as $k=>$value){
+            $sumber_bumn = [];
+            $arr = explode(',', $value->sumber_dana); 
+            foreach($arr as $val){
+                if(is_numeric($val)){
+                    $sumber_bumn[] = ' '.Perusahaan::where('id',(int)$val)->pluck('nama_lengkap')->first().' ';
+                }
+                if(!is_numeric($val)){
+                    $sumber_bumn[] = " ".$val." ";
+                }
+            }
+
+            $result_sumber = json_encode($sumber_bumn);
+            $value->sumber_dana = str_replace(']','',str_replace('[','',(preg_replace('/"/',"",$result_sumber))));
+        }
+
         $bank = BankAccount::get();
         $namaFile = "Data Mitra Binaan ".date('dmY').".xlsx";
         return Excel::download(new MitraBinaanExport($mitra,$bank), $namaFile);

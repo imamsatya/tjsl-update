@@ -17,10 +17,10 @@
     <body>
     <table cellspacing="0" border="0">
     <tr>
-        <td colspan="29" style="background-color : #e3e3e3 ;width:5px; border-top: 1px sol#000000; border-bottom: 1px sol#000000; border-left: 2px sol#000000; border-right: 1px sol#000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">LAPORAN PENDANAAN UMK</font></b></td>
+        <td colspan="30" style="background-color : #e3e3e3 ;width:5px; border-top: 1px sol#000000; border-bottom: 1px sol#000000; border-left: 2px sol#000000; border-right: 1px sol#000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">LAPORAN PENDANAAN UMK</font></b></td>
     </tr>
     <tr>
-        <td colspan="29" style="background-color : #e3e3e3 ;width:5px; border-top: 1px sol#000000; border-bottom: 1px sol#000000; border-left: 2px sol#000000; border-right: 1px sol#000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">{{date('d-F-Y')}}</font></b></td>
+        <td colspan="30" style="background-color : #e3e3e3 ;width:5px; border-top: 1px sol#000000; border-bottom: 1px sol#000000; border-left: 2px sol#000000; border-right: 1px sol#000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">Tanggal Cetak : {{date('d-F-Y')}}</font></b></td>
     </tr>
     {{-- <tr>
         <td colspan="29" style="background-color : #e3e3e3 ;width:5px; border-top: 1px sol#000000; border-bottom: 1px sol#000000; border-left: 2px sol#000000; border-right: 1px sol#000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000"></font></b></td>
@@ -71,45 +71,45 @@
         @endphp
         @foreach($data as $val)
         <tr>
-            <td style="text-align: center;">{{$i++}}</td>
-            <td>{{$val->bumn?$val->bumn:""}}</td>
-            <td>{{$val->nama_mitra?$val->nama_mitra:""}}</td>
-            <td style="text-align: center;">{{$val->provinsi? ucwords($val->provinsi):""}}</td>
-            <td style="text-align: center;">{{$val->kota? ucwords($val->kota):""}}</td>
-            <td style="text-align: center;">{{$val->sektor_usaha?$val->sektor_usaha:""}}</td>
-            <td style="text-align: center;">{{$val->skala_usaha?$val->skala_usaha:""}}</td>
-            <td style="text-align: center;">{{$val->no_identitas?"'".$val->no_identitas:""}}</td>
-            <td style="text-align: right;">{{$val->nilai_aset? number_format($val->nilai_aset,0,',',','):""}}</td>
-            <td style="text-align: right;">{{$val->nilai_omset? number_format($val->nilai_omset,0,',',','):""}}</td>
-            <td style="text-align: center;">{{$val->no_pinjaman?$val->no_pinjaman:""}}</td>
-            <td style="text-align: center;">{{$val->cara_penyaluran?$val->cara_penyaluran:""}}</td>
-            <td style="text-align: center;">{{$val->sumber_dana?$val->sumber_dana:""}}</td>
-            <td style="text-align: center;">{{$val->tgl_awal?date('d/m/Y', strtotime($val->tgl_awal)):""}}</td>
-            <td style="text-align: center;">{{$val->tgl_jatuh_tempo?date('d/m/Y', strtotime($val->tgl_jatuh_tempo)):""}}</td>
-            <td style="text-align: right;">{{$val->nominal_pendanaan? number_format($val->nominal_pendanaan,0,',',','):""}}</td>
-            <td style="text-align: right;">{{$val->saldo_pokok_pendanaan? number_format($val->saldo_pokok_pendanaan,0,',',','):""}}</td>
-            <td style="text-align: right;">{{$val->saldo_jasa_adm_pendanaan? number_format($val->saldo_jasa_adm_pendanaan,0,',',','):""}}</td>
-            <td style="text-align: right;">{{$val->penerimaan_pokok_bulan_berjalan? number_format($val->penerimaan_pokok_bulan_berjalan,0,',',','):""}}</td>
-            <td style="text-align: right;">{{$val->penerimaan_jasa_adm_bulan_berjalan? number_format($val->penerimaan_jasa_adm_bulan_berjalan,0,',',','):""}}</td>
-            <td style="text-align: center;">{{$val->tgl_penerimaan_terakhir?date('d/m/Y', strtotime($val->tgl_penerimaan_terakhir)):""}}</td>
-            <td style="text-align: center;">{{$val->kolektibilitas?$val->kolektibilitas:""}}</td>
-            <td style="text-align: center;">{{$val->kondisi_pinjaman?$val->kondisi_pinjaman:""}}</td>
-            <td style="text-align: center;">{{$val->jenis_pembayaran?$val->jenis_pembayaran:""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$i++}}</td>
+            <td style="vertical-align: top;">{{$val->bumn?$val->bumn:""}}</td>
+            <td style="vertical-align: top;">{{$val->nama_mitra?$val->nama_mitra:""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->provinsi? ucwords($val->provinsi):""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->kota? ucwords($val->kota):""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->sektor_usaha?$val->sektor_usaha:""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->skala_usaha?$val->skala_usaha:""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->no_identitas?"'".$val->no_identitas:""}}</td>
+            <td style="text-align: right;vertical-align: top;">{{$val->nilai_aset? number_format($val->nilai_aset,0,',',','):""}}</td>
+            <td style="text-align: right;vertical-align: top;">{{$val->nilai_omset? number_format($val->nilai_omset,0,',',','):""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->no_pinjaman?$val->no_pinjaman:""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->cara_penyaluran?$val->cara_penyaluran:""}}</td>
+            <td style="text-align: center;word-wrap:break-word;vertical-align: top;">{{$val->sumber_dana?$val->sumber_dana:""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->tgl_awal?date('d/m/Y', strtotime($val->tgl_awal)):""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->tgl_jatuh_tempo?date('d/m/Y', strtotime($val->tgl_jatuh_tempo)):""}}</td>
+            <td style="text-align: right;vertical-align: top;">{{$val->nominal_pendanaan? number_format($val->nominal_pendanaan,0,',',','):""}}</td>
+            <td style="text-align: right;vertical-align: top;">{{$val->saldo_pokok_pendanaan? number_format($val->saldo_pokok_pendanaan,0,',',','):""}}</td>
+            <td style="text-align: right;vertical-align: top;">{{$val->saldo_jasa_adm_pendanaan? number_format($val->saldo_jasa_adm_pendanaan,0,',',','):""}}</td>
+            <td style="text-align: right;vertical-align: top;">{{$val->penerimaan_pokok_bulan_berjalan? number_format($val->penerimaan_pokok_bulan_berjalan,0,',',','):""}}</td>
+            <td style="text-align: right;vertical-align: top;">{{$val->penerimaan_jasa_adm_bulan_berjalan? number_format($val->penerimaan_jasa_adm_bulan_berjalan,0,',',','):""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->tgl_penerimaan_terakhir?date('d/m/Y', strtotime($val->tgl_penerimaan_terakhir)):""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->kolektibilitas?$val->kolektibilitas:""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->kondisi_pinjaman?$val->kondisi_pinjaman:""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->jenis_pembayaran?$val->jenis_pembayaran:""}}</td>
 
             @if($val->bank_account_id !== null || $val->bank_account_id !== "")
                 @php
                     $banks = $bank->where('id',(int)$val->bank_account_id)->pluck('nama')->first();
                 @endphp
-                <td style="text-align: center;">{{$banks}}</td>
+                <td style="text-align: center;vertical-align: top;">{{$banks}}</td>
             @else
-                <td style="text-align: center;"></td>
+                <td style="text-align: center;vertical-align: top;"></td>
             @endif
 
-            <td style="text-align: center;">{{$val->jumlah_sdm?$val->jumlah_sdm:""}}</td>
-            <td style="text-align: right;">{{$val->kelebihan_angsuran? number_format($val->kelebihan_angsuran,0,',',','):""}}</td>
-            <td style="text-align: center;">{{$val->subsektor?$val->subsektor:""}}</td>
-            <td style="text-align: center;">{{$val->hasil_produk_jasa?$val->hasil_produk_jasa:""}}</td>
-            <td style="text-align: center;">{{$val->id_tambahan_pendanaan? ($val->id_tambahan_pendanaan == 1? "Ya":""):""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->jumlah_sdm?$val->jumlah_sdm:""}}</td>
+            <td style="text-align: right;vertical-align: top;">{{$val->kelebihan_angsuran? number_format($val->kelebihan_angsuran,0,',',','):""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->subsektor?$val->subsektor:""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->hasil_produk_jasa?$val->hasil_produk_jasa:""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->id_tambahan_pendanaan? ($val->id_tambahan_pendanaan == 1? "Ya":""):""}}</td>
         </tr>
         @endforeach
     {{-- @endif --}}
