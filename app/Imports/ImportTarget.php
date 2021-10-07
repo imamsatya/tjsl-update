@@ -244,7 +244,7 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']) ,
                         'mitra_bumn_id' => rtrim($ar['id_mitra_bumn']) ,
                         'jangka_waktu' => rtrim($ar['jangka_waktu_penerapan_dalam_tahun']) ,
-                        'anggaran_alokasi' => rtrim($ar['alokasi_anggaran_tahun_2021_dalam_rupiah']) ,
+                        'anggaran_alokasi' => rtrim($ar[$param_alokasi]) ,
                     ]);
                     $gagal++;
                     DB::commit();

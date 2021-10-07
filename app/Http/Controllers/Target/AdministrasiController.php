@@ -396,9 +396,10 @@ class AdministrasiController extends Controller
     {
         $perusahaan_id =  ($request->perusahaan_id?$request->perusahaan_id:1);
         $perusahaan = Perusahaan::where('id', $perusahaan_id)->first();
+        $filter_tahun = $request->tahun;
         $namaFile = "Template Data Program.xlsx";
         
-        return Excel::download(new TargetTemplateExcelSheet($perusahaan), $namaFile);
+        return Excel::download(new TargetTemplateExcelSheet($perusahaan,$filter_tahun), $namaFile);
     }
     
     /**

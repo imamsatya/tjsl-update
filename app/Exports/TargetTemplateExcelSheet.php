@@ -8,8 +8,9 @@ class TargetTemplateExcelSheet implements WithMultipleSheets
 {
     use Exportable;
     
-     public function __construct($perusahaan){
+     public function __construct($perusahaan,$filter_tahun){
         $this->perusahaan = $perusahaan ;
+        $this->tahun = $filter_tahun ;
      }
 
     /**
@@ -18,7 +19,7 @@ class TargetTemplateExcelSheet implements WithMultipleSheets
     public function sheets(): array
     {
         $sheets = [];
-        $sheets[] = new TargetTemplateExport($this->perusahaan);
+        $sheets[] = new TargetTemplateExport($this->perusahaan,$this->tahun);
         $sheets[] = new ReferensiJenisProgram();
         $sheets[] = new ReferensiCoreSubject();
         $sheets[] = new ReferensiTpb();
