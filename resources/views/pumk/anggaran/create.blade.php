@@ -11,16 +11,16 @@
     <div class="form-group row mb-5">
         <div class="col-lg-12">
             <label>BUMN</label>
-            @php
+            {{-- @php
                 $disabled = (($admin_bumn) ? 'disabled' : '');
-            @endphp
+            @endphp --}}
             <select class="form-select form-select-solid form-select2" id="bumn_id" name="bumn_id" data-kt-select2="true" data-placeholder="Pilih BUMN"  data-dropdown-parent="#winform" required {{$disabled}}>
                 <option></option>
                 @foreach($perusahaan as $p)  
                     @php
                         $select = (($admin_bumn) && ($p->id == $perusahaan_id) ? 'selected="selected"' : '');
                     @endphp
-                    <option value="{{ $p->id }}" {{$select}} {{$disabled}}>{{ $p->nama_lengkap }}</option>
+                    <option value="{{ $p->id }}" {{$select}}>{{ $p->nama_lengkap }}</option>
                 @endforeach
             </select>
         </div>
