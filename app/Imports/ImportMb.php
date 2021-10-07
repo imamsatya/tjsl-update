@@ -535,7 +535,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             $tambah = true;
                         }else{
                             $tambah = false;
-                            $ar['id_tambahan_pendanaan'] = null;
+                            $ar['id_tambahan_pendanaan'];
                         }
                         if(!$tambah){
                             DB::rollback();
@@ -548,7 +548,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                         // $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong diubah default sistem.<br>';
                     }
                 }else{
-                    $ar['id_tambahan_pendanaan'] = 2;
+                    $ar['id_tambahan_pendanaan'];
                     $is_gagal = false;
                 }
 
