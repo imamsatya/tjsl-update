@@ -528,24 +528,30 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
 
             // cek tambah pendanaan
             if(!$is_gagal){
-                try{
-                    $params = rtrim($ar['id_tambahan_pendanaan'])? true : false;
-                    if(rtrim($ar['id_tambahan_pendanaan']) == 1 || rtrim($ar['id_tambahan_pendanaan']) == 2){
-                        $tambah = true;
-                    }else{
-                        $tambah = false;
-                        $ar['id_tambahan_pendanaan'] = 2;
-                    }
-                    if(!$tambah){
+                $params = rtrim($ar['id_tambahan_pendanaan'])? true : false;
+                if($params){
+                    try{
+                        if(rtrim($ar['id_tambahan_pendanaan']) == 1 || rtrim($ar['id_tambahan_pendanaan']) == 2){
+                            $tambah = true;
+                        }else{
+                            $tambah = false;
+                            $ar['id_tambahan_pendanaan'] = null;
+                        }
+                        if(!$tambah){
+                            DB::rollback();
+                            $is_gagal = true;
+                            $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai referensi.<br>';
+                        }
+                    }catch(\Exception $e){
                         DB::rollback();
-                        $is_gagal = false;
+                        $is_gagal = true;
                         // $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong diubah default sistem.<br>';
                     }
-                }catch(\Exception $e){
-                    DB::rollback();
+                }else{
+                    $ar['id_tambahan_pendanaan'] = 2;
                     $is_gagal = false;
-                    // $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong diubah default sistem.<br>';
                 }
+
             }   
 
             // cek status lunas angsuran sebelumnya
