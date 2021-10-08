@@ -46,9 +46,9 @@
                 <option></option>
                 @foreach($kode_tujuan_tpb as $p)  
                     @php
-                        $select = ($actionform == 'update' && ($p->id == $data->kode_tujuan_tpb_id) ? 'selected="selected"' : '');
+                        $select = ($actionform == 'update' && ($p->kode_tujuan_tpb_id == $data->kode_tujuan_tpb_id) ? 'selected="selected"' : '');
                     @endphp
-                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->kode }}</option>
+                    <option value="{{ $p->kode_tujuan_tpb_id }}" {!! $select !!}>{{ $p->kode }}</option>
                 @endforeach
             </select>
         </div>
@@ -58,9 +58,9 @@
                 <option></option>
                 @foreach($kode_indikator as $p)  
                     @php
-                        $select = ($actionform == 'update' && ($p->id == $data->kode_indikator_id) ? 'selected="selected"' : '');
+                        $select = ($actionform == 'update' && ($p->kode_indikator_id == $data->kode_indikator_id) ? 'selected="selected"' : '');
                     @endphp
-                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->kode }}</option>
+                    <option value="{{ $p->kode_indikator_id }}" {!! $select !!}>{{ $p->kode }}</option>
                 @endforeach
             </select>
         </div>
