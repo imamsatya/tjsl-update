@@ -437,8 +437,12 @@ class AnggaranController extends Controller
             case 'insert': DB::beginTransaction();
                             try{
                                 $validasi = true;
+                                $perusahaan_id = \Auth::user()->id_bumn;
                                 $param = $request->all();
                                 $param = $request->except(['actionform','id','_token']);
+                                if($request->bumn_id == null){
+                                    $param['bumn_id'] = $perusahaan_id;
+                                }
                                 $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^-0-9]/','',$request->saldo_awal);
                                 $param['income_mitra_binaan'] = $request->income_mitra_binaan == null? 0 : preg_replace('/[^-0-9]/','',$request->income_mitra_binaan);
                                 $param['income_bumn_pembina_lain'] = $request->income_bumn_pembina_lain == null? 0 : preg_replace('/[^-0-9]/','',$request->income_bumn_pembina_lain);
@@ -489,8 +493,8 @@ class AnggaranController extends Controller
             case 'update': DB::beginTransaction();
                             try{
                                 $param = $request->all();
-
-                                $param = $request->except(['actionform','_token','bumn_id']);
+                                
+                                $param = $request->except(['actionform','_token']);
                                 $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^-0-9]/','',$request->saldo_awal);
                                 if((int)$param['saldo_awal'] !== 0){
                                     $status_ids = (int)$param['status_id'];
