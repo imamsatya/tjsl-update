@@ -14,8 +14,8 @@ use Illuminate\Contracts\View\View;
 use DB;
 use App\Models\PumkMitraBinaan;
 use App\Models\Perusahaan;
-
-class MitraBinaanSuksesUploadExport implements FromView , WithTitle
+use App\Models\Bulan;
+class MitraBinaanSuksesUploadExport implements FromView , WithTitle, WithColumnFormatting
 {
     public function __construct($kode){
         $this->kode = $kode ;
@@ -29,18 +29,32 @@ class MitraBinaanSuksesUploadExport implements FromView , WithTitle
       if($this->kode){
         $data = PumkMitraBinaan::where('kode_upload',$this->kode)->get();
       }
+
       $bumn = Perusahaan::get();
+
+      $bulan_static = (int)date('m', strtotime($data[0]->created_at))-1;
+      $bulan = Bulan::where('id',$bulan_static)->pluck('nama')->first();
+
       return view('pumk.upload_data_mitra.template', [
-          'periode' => "Periode : ".date('M')."-". date('Y'), 
+          'periode' => "Periode : ".$bulan."-". date('Y'), 
           'perusahaan' => null, 
           'data' => $data,
-          'bumn' => $bumn 
+          'bumn' => $bumn? $bumn : [] 
       ]);
     }
 
     public function title(): string
     {
         return 'Input Data Mitra Binaan' ;
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            'M' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'N' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'T' => NumberFormat::FORMAT_DATE_DDMMYYYY
+        ];
     }
     
 }

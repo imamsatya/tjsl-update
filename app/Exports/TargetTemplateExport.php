@@ -15,14 +15,15 @@ use DB;
 
 class TargetTemplateExport implements FromView , WithTitle
 {
-    public function __construct($perusahaan){
+    public function __construct($perusahaan,$filter_tahun ){
         $this->perusahaan = $perusahaan ;
+        $this->tahun = $filter_tahun ;
     }
 
     public function view(): View
     {  
       return view('target.administrasi.template', [
-          'tahun' => date('Y'), 
+          'tahun' => $this->tahun? $this->tahun : date('Y'), 
           'perusahaan' => $this->perusahaan, 
           'tanggal' => date('d-m-Y'),
       ]);

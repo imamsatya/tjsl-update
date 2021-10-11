@@ -147,6 +147,9 @@ class MitraBinaanController extends Controller
 
             if($request->bulan_id){
                 $data = $data->where('pumk_mitra_binaans.bulan',(int)$request->bulan_id);
+            }else{
+                $static_bulan = (int)date('m')-1;
+                $data = $data->where('pumk_mitra_binaans.bulan',$static_bulan);
             }
 
             if($request->tambahan_pendanaan_id){
@@ -279,6 +282,22 @@ class MitraBinaanController extends Controller
                     ->where('pumk_mitra_binaans.id',(int)$request->id)
                     ->first();
 
+            if($data->sumber_dana){
+                    $sumber_bumn = [];
+                    $arr = explode(',', $data->sumber_dana);                    
+                    foreach($arr as $val){
+                        if(is_numeric($val)){
+                            $sumber_bumn[] = ' '.Perusahaan::where('id',(int)$val)->pluck('nama_lengkap')->first().' ';
+                        }
+                        if(!is_numeric($val)){
+                            $sumber_bumn[] = " ".$val." ";
+                        }
+                    }
+
+                    $result_sumber = json_encode($sumber_bumn);
+                    $data->sumber_dana = str_replace(']','',str_replace('[','',(preg_replace('/"/',"",$result_sumber))));
+            }
+
             $bank = '';
             if($data->bank_account_id !== null || $data->bank_account_id !== ""){
                 $bank = BankAccount::where('id',(int)$data->bank_account_id)->pluck('nama')->first();
@@ -394,6 +413,23 @@ class MitraBinaanController extends Controller
         }
      
         $mitra = $data->where('is_arsip',false)->get();
+
+        foreach($mitra as $k=>$value){
+            $sumber_bumn = [];
+            $arr = explode(',', $value->sumber_dana); 
+            foreach($arr as $val){
+                if(is_numeric($val)){
+                    $sumber_bumn[] = ' '.Perusahaan::where('id',(int)$val)->pluck('nama_lengkap')->first().' ';
+                }
+                if(!is_numeric($val)){
+                    $sumber_bumn[] = " ".$val." ";
+                }
+            }
+
+            $result_sumber = json_encode($sumber_bumn);
+            $value->sumber_dana = str_replace(']','',str_replace('[','',(preg_replace('/"/',"",$result_sumber))));
+        }
+
         $bank = BankAccount::get();
         $namaFile = "Data Mitra Binaan ".date('dmY').".xlsx";
         return Excel::download(new MitraBinaanExport($mitra,$bank), $namaFile);

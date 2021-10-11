@@ -107,25 +107,23 @@ class AdministrasiController extends Controller
                                         'anggaran_tpbs.perusahaan_id',
                                         'pilar_pembangunans.nama', 
                                         'pilar_pembangunans.id')
-                            // ->where('anggaran_tpbs.status_id',1)
                             ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
                             ->get();
         $anggaran_bumn = $anggaran_bumn->select('anggaran_tpbs.perusahaan_id', 
                                                 'perusahaans.nama_lengkap',
                                                 'perusahaans.id',
                                                 DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'))
-                            // ->where('anggaran_tpbs.status_id',1)
                             ->groupBy('anggaran_tpbs.perusahaan_id')
                             ->groupBy('perusahaans.nama_lengkap')
                             ->groupBy('perusahaans.id')
                             ->get();
         $anggaran = $anggaran->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
-                            // ->where('anggaran_tpbs.status_id',1)
-                            ->orderBy('no_tpb')->get();
+                            ->orderBy('relasi_pilar_tpbs.tpb_id')->get();
 
         $target = TargetTpb::get();
         if($request->status_id){
-            $target = TargetTpb::where('target_tpbs.status_id', $request->status_id)->get();
+            $target = TargetTpb::where('target_tpbs.status_id', $request->status_id)
+                            ->orderBy('target_tpbs.tpb_id')->get();
         }
 
         return view($this->__route.'.index',[
@@ -290,13 +288,19 @@ class AdministrasiController extends Controller
         try{
             $target = TargetTpb::find((int)$request->input('id'));
             $mitra_bumn = TargetMitra::where('target_mitras.target_tpb_id',$target->id)->pluck('perusahaan_id','perusahaan_id')->all();
+            $kode_indikator = KodeIndikator::LeftJoin('relasi_tpb_kode_indikators', 'relasi_tpb_kode_indikators.kode_indikator_id','kode_indikators.id')
+                                            ->LeftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id','relasi_tpb_kode_indikators.relasi_pilar_tpb_id')
+                                            ->where('relasi_pilar_tpbs.tpb_id',$target->tpb_id)->get();
+            $kode_tujuan_tpb = KodeTujuanTpb::LeftJoin('relasi_tpb_kode_tujuan_tpbs', 'relasi_tpb_kode_tujuan_tpbs.kode_tujuan_tpb_id','kode_tujuan_tpbs.id')
+                                            ->LeftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id','relasi_tpb_kode_tujuan_tpbs.relasi_pilar_tpb_id')
+                                            ->where('relasi_pilar_tpbs.tpb_id',$target->tpb_id)->get();
 
                 return view($this->__route.'.form',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
                     'data' => $target,
-                    'kode_indikator' => KodeIndikator::get(),
-                    'kode_tujuan_tpb' => KodeTujuanTpb::get(),
+                    'kode_indikator' => $kode_indikator,
+                    'kode_tujuan_tpb' => $kode_tujuan_tpb,
                     'satuan_ukur' => SatuanUkur::get(),
                     'cara_penyaluran' => CaraPenyaluran::get(),
                     'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
@@ -392,9 +396,10 @@ class AdministrasiController extends Controller
     {
         $perusahaan_id =  ($request->perusahaan_id?$request->perusahaan_id:1);
         $perusahaan = Perusahaan::where('id', $perusahaan_id)->first();
+        $filter_tahun = $request->tahun;
         $namaFile = "Template Data Program.xlsx";
         
-        return Excel::download(new TargetTemplateExcelSheet($perusahaan), $namaFile);
+        return Excel::download(new TargetTemplateExcelSheet($perusahaan,$filter_tahun), $namaFile);
     }
     
     /**

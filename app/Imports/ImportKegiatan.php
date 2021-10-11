@@ -104,19 +104,19 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
             
             // cek input angka numeric
             if(!$is_gagal){
-                if(!is_numeric($ar[$param_alokasi])){
+                if(!is_int($ar[$param_alokasi])){
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Data Alokasi Anggaran harus angka<br>';
                 }
-                if(!is_numeric($ar[$param_anggaran])){
+                if(!is_int($ar[$param_anggaran])){
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Data Realisasi Anggaran harus angka<br>';
                 }
-                if(!is_numeric($ar[$param_target])){
+                if(!is_int($ar[$param_target])){
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Data Target harus angka<br>';
                 }
-                if(!is_numeric($ar[$param_realisasi])){
+                if(!is_int($ar[$param_realisasi])){
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Data Realisasi harus angka<br>';
                 }
@@ -242,6 +242,7 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
 
                         AdministrasiController::store_log($realisasi->id,$realisasi->status_id);
                         $berhasil++;
+                        DB::commit();
                     }else{
                         DB::rollback();
                         $is_gagal = true;
@@ -274,6 +275,7 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'anggaran' => rtrim($ar[$param_anggaran]),
                     ]);
                     $gagal++;
+                    DB::commit();
                 }catch(\Exception $e){dd($e->getMessage());
                     DB::rollback();
                 }

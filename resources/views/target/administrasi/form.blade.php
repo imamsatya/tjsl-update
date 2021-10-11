@@ -28,7 +28,7 @@
         </div>
         <div class="col-lg-6">
             <label>Core Subject</label>
-            <select class="form-select form-select-solid form-select2" name="core_subject_id" data-kt-select2="true" data-placeholder="Pilih Core Subject" data-dropdown-parent="#winform" required>
+            <select class="form-select form-select-solid form-select2" name="core_subject_id" data-kt-select2="true" data-placeholder="Pilih Core Subject" data-dropdown-parent="#winform">
                 <option></option>
                 @foreach($core_subject as $p)  
                     @php
@@ -46,21 +46,21 @@
                 <option></option>
                 @foreach($kode_tujuan_tpb as $p)  
                     @php
-                        $select = ($actionform == 'update' && ($p->id == $data->kode_tujuan_tpb_id) ? 'selected="selected"' : '');
+                        $select = ($actionform == 'update' && ($p->kode_tujuan_tpb_id == $data->kode_tujuan_tpb_id) ? 'selected="selected"' : '');
                     @endphp
-                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->kode }}</option>
+                    <option value="{{ $p->kode_tujuan_tpb_id }}" {!! $select !!}>{{ $p->kode }}</option>
                 @endforeach
             </select>
         </div>
         <div class="col-lg-6">
             <label>Kode Indikator</label>
-            <select class="form-select form-select-solid form-select2" name="kode_indikator_id" data-kt-select2="true" data-placeholder="Pilih Kode Indikator" data-dropdown-parent="#winform" required>
+            <select class="form-select form-select-solid form-select2" name="kode_indikator_id" data-kt-select2="true" data-placeholder="Pilih Kode Indikator" data-dropdown-parent="#winform">
                 <option></option>
                 @foreach($kode_indikator as $p)  
                     @php
-                        $select = ($actionform == 'update' && ($p->id == $data->kode_indikator_id) ? 'selected="selected"' : '');
+                        $select = ($actionform == 'update' && ($p->kode_indikator_id == $data->kode_indikator_id) ? 'selected="selected"' : '');
                     @endphp
-                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->kode }}</option>
+                    <option value="{{ $p->kode_indikator_id }}" {!! $select !!}>{{ $p->kode }}</option>
                 @endforeach
             </select>
         </div>

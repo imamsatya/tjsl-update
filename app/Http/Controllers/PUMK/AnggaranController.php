@@ -161,8 +161,8 @@ class AnggaranController extends Controller
             ->addColumn('action', function ($p){
                 $id = (int)$p->id;
                 if($p->status !== 'Finish'){
-
                     if($p->periode !== 'RKA'){
+                        //jika status belum finish dan peride bukan RKA
                         if(\Auth::user()->getRoleNames()->first() == 'Admin BUMN'){
                             $btn = '<div style="width:120px;text-align:center;"><span>
                             <button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Edit data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-pencil fs-3"></i></button>
@@ -181,11 +181,14 @@ class AnggaranController extends Controller
                         }
 
                     }else{
+                      //jika status belum finish dan peride RKA
                         if(\Auth::user()->getRoleNames()->first() == 'Admin BUMN'){
                         $btn = '<div style="width:120px;text-align:center;"><span>
                         <button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Edit data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-pencil fs-3"></i></button>
 
                         <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pumkanggaran" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Hapus data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-trash fs-3"></i></button>
+
+                        <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Lihat detail data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-info fs-3"></i></button>
                         </span><div>
                         ';
                         }else{
@@ -193,13 +196,14 @@ class AnggaranController extends Controller
                             <button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Edit data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-pencil fs-3"></i></button>
                             <button type="button" class="btn btn-sm btn-warning btn-icon cls-button-update-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="update status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-check fs-3"></i></button>
                             <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pumkanggaran" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Hapus data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-trash fs-3"></i></button>
+                            <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Lihat detail data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-info fs-3"></i></button>
                             </span><div>
                             ';                            
                         }
                     }
                    
                 }else{
-
+                    //jika status finish dan peride bukan RKA
                     if($p->periode !== 'RKA'){
                         if(\Auth::user()->getRoleNames()->first() == 'Admin BUMN'){
                         $btn = '
@@ -212,11 +216,17 @@ class AnggaranController extends Controller
                             ';                            
                         }
                     }else{
+                      //jika status finish dan peride RKA
                         $btn = '';
                         if(\Auth::user()->getRoleNames()->first() !== 'Admin BUMN'){
                         $btn = '
                         <button type="button" class="btn btn-sm btn-secondary btn-icon cls-button-aktivasi-status" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'"" data-toggle="tooltip" title="Aktivasi kembali status '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-layer-backward fs-3"></i></button>
+                        <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Lihat detail data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-info fs-3"></i></button>
                         ';
+                        }else{
+                            $btn = '
+                            <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Lihat detail data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-info fs-3"></i></button>
+                            ';                            
                         }                    
                     }
                 }
@@ -283,15 +293,16 @@ class AnggaranController extends Controller
                         ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id')
                         ->where('pumk_anggarans.id',$request->id)
                         ->first();
-
+        
         $data_rka = PumkAnggaran::select('pumk_anggarans.*','perusahaans.nama_lengkap AS bumn_lengkap','periode_laporans.nama AS periode','statuses.nama AS status')
                         ->leftJoin('perusahaans','perusahaans.id','pumk_anggarans.bumn_id')
                         ->leftJoin('periode_laporans', 'periode_laporans.id', 'pumk_anggarans.periode_id')
                         ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id')
                         ->where('pumk_anggarans.bumn_id',$data->bumn_id)
                         ->where('periode_laporans.nama','ilike','%RKA%')
-                        ->where('statuses.nama','ilike','%Finish%')
+                        //->where('statuses.nama','ilike','%Finish%')
                         ->first();
+        $status_rka = $data_rka->status == 'Finish'? true : false;
 
         //hitung persentase
         $const = 100;
@@ -359,7 +370,7 @@ class AnggaranController extends Controller
                 $p_outcome_total = $data->outcome_total/$data_rka->outcome_total * $const;
             }
             
-
+         
         return view($this->__route.'.show',[
             'pagetitle' => $this->pagetitle,
             'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
@@ -378,6 +389,7 @@ class AnggaranController extends Controller
             'p_outcome_kolaborasi_bumn' => $p_outcome_kolaborasi_bumn,
             'p_outcome_bumn_khusus' => $p_outcome_bumn_khusus,
             'p_outcome_total' => $p_outcome_total,
+            'status_rka' => $status_rka
         ]);
 
     }
@@ -425,8 +437,12 @@ class AnggaranController extends Controller
             case 'insert': DB::beginTransaction();
                             try{
                                 $validasi = true;
+                                $perusahaan_id = \Auth::user()->id_bumn;
                                 $param = $request->all();
                                 $param = $request->except(['actionform','id','_token']);
+                                if($request->bumn_id == null){
+                                    $param['bumn_id'] = $perusahaan_id;
+                                }
                                 $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^-0-9]/','',$request->saldo_awal);
                                 $param['income_mitra_binaan'] = $request->income_mitra_binaan == null? 0 : preg_replace('/[^-0-9]/','',$request->income_mitra_binaan);
                                 $param['income_bumn_pembina_lain'] = $request->income_bumn_pembina_lain == null? 0 : preg_replace('/[^-0-9]/','',$request->income_bumn_pembina_lain);
@@ -477,8 +493,8 @@ class AnggaranController extends Controller
             case 'update': DB::beginTransaction();
                             try{
                                 $param = $request->all();
-
-                                $param = $request->except(['actionform','_token','bumn_id']);
+                                
+                                $param = $request->except(['actionform','_token']);
                                 $param['saldo_awal'] = $request->saldo_awal == null? 0 : preg_replace('/[^-0-9]/','',$request->saldo_awal);
                                 if((int)$param['saldo_awal'] !== 0){
                                     $status_ids = (int)$param['status_id'];
@@ -488,7 +504,7 @@ class AnggaranController extends Controller
                                         $data_status = Status::where('nama','In Progress')->pluck('id')->first();
                                         $param['status_id'] = $data_status; 
                                     }else if($status->nama == 'In Progress'){
-                                        $data_status = Status::where('nama','Finish')->pluck('id')->first();
+                                        $data_status = Status::where('nama','In Progress')->pluck('id')->first();
                                         $param['status_id'] = $data_status; 
                                     }else if($status->nama == 'Finish'){
                                         $data_status = Status::where('nama','In Progress')->pluck('id')->first();
@@ -692,9 +708,8 @@ class AnggaranController extends Controller
                         ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id')
                         ->where('pumk_anggarans.bumn_id',$data->bumn_id)
                         ->where('periode_laporans.nama','ilike','%RKA%')
-                        ->where('statuses.nama','ilike','%Finish%')
+                        //->where('statuses.nama','ilike','%Finish%')
                         ->first();
-
         //hitung persentase
         $const = 100;
             //dana tersedia

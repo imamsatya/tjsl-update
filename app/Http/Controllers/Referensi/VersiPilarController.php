@@ -47,11 +47,11 @@ class VersiPilarController extends Controller
                                 ->GroupBy('pilar_pembangunans.id')
                                 ->GroupBy('pilar_pembangunans.nama')
                                 ->GroupBy('relasi_pilar_tpbs.versi_pilar_id')
-                                ->orderBy('pilar_pembangunans.nama')
+                                ->orderBy('pilar_pembangunans.id')
                                 ->get();
         $tpbs = RelasiPilarTPB::select('tpbs.nama','tpbs.no_tpb', 'relasi_pilar_tpbs.*')
                                 ->leftJoin('tpbs', 'tpbs.id', 'relasi_pilar_tpbs.tpb_id')
-                                ->orderBy('tpbs.no_tpb')
+                                ->orderBy('tpbs.id')
                                 ->get();
 
         return view($this->__route.'.index',[

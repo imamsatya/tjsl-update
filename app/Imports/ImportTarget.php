@@ -82,7 +82,7 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
             }
 
             //cek core subject 
-            if(!$is_gagal){
+            if(!$is_gagal && rtrim($ar['id_core_subject_iso_26000'])!=''){
                 try{
                     $core_subject = CoreSubject::find(rtrim($ar['id_core_subject_iso_26000']));
                     if(!$core_subject){
@@ -186,7 +186,7 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'unit_owner' => rtrim($ar['unit_owner']) ,
                         'file_name' => $this->nama_file,
                         'jenis_program_id' => rtrim($ar['id_kriteria_program']) ,
-                        'core_subject_id' => rtrim($ar['id_core_subject_iso_26000']) ,
+                        'core_subject_id' => (rtrim($ar['id_core_subject_iso_26000'])?rtrim($ar['id_core_subject_iso_26000']):null),
                         'tpb_id' => rtrim($ar['id_tpb']) ,
                         'kode_indikator_id' => (rtrim($ar['id_kode_indikator'])?rtrim($ar['id_kode_indikator']):null),
                         'kode_tujuan_tpb_id' => rtrim($ar['id_kode_tujuan_tpb']) ,
@@ -196,6 +196,7 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                     ]);
                     
                     AdministrasiController::store_log($target->id,$target->status_id);
+                    DB::commit();
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
@@ -243,7 +244,7 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']) ,
                         'mitra_bumn_id' => rtrim($ar['id_mitra_bumn']) ,
                         'jangka_waktu' => rtrim($ar['jangka_waktu_penerapan_dalam_tahun']) ,
-                        'anggaran_alokasi' => rtrim($ar['alokasi_anggaran_tahun_2021_dalam_rupiah']) ,
+                        'anggaran_alokasi' => rtrim($ar[$param_alokasi]) ,
                     ]);
                     $gagal++;
                     DB::commit();
