@@ -88,14 +88,14 @@
             <td>{{$val->no_pinjaman?$val->no_pinjaman:""}}</td>
             <td>{{$val->cara_penyaluran_id?$val->cara_penyaluran_id:""}}</td>
             <td>{{$val->sumber_dana?$val->sumber_dana:""}}</td>
-            <td>{{$val->tgl_awal?\PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($val->tgl_awal):"-"}}</td>
-            <td>{{$val->tgl_jatuh_tempo?\PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($val->tgl_jatuh_tempo):"-"}}</td>
+            <td>{{$val->tgl_awal?\PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($val->tgl_awal)? \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($val->tgl_awal) : $val->tgl_awal :"-"}}</td>
+            <td>{{$val->tgl_jatuh_tempo?\PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($val->tgl_jatuh_tempo)?\PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($val->tgl_jatuh_tempo) : $val->tgl_jatuh_tempo :"-"}}</td>
             <td>{{$val->nominal_pendanaan?$val->nominal_pendanaan:""}}</td>
             <td>{{$val->saldo_pokok_pendanaan?$val->saldo_pokok_pendanaan:""}}</td>
             <td>{{$val->saldo_jasa_adm_pendanaan?$val->saldo_jasa_adm_pendanaan:""}}</td>
             <td>{{$val->penerimaan_pokok_bulan_berjalan?$val->penerimaan_pokok_bulan_berjalan:""}}</td>
             <td>{{$val->penerimaan_jasa_adm_bulan_berjalan?$val->penerimaan_jasa_adm_bulan_berjalan:""}}</td>
-            <td>{{$val->tgl_penerimaan_terakhir?\PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($val->tgl_penerimaan_terakhir):"-"}}</td>
+            <td>{{$val->tgl_penerimaan_terakhir?\PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($val->tgl_penerimaan_terakhir)? \PhpOffice\PhpSpreadsheet\Shared\Date::PHPToExcel($val->tgl_penerimaan_terakhir) : $val->tgl_penerimaan_terakhir :"-"}}</td>
             <td>{{$val->kolektibilitas_id?$val->kolektibilitas_id:""}}</td>
             <td>{{$val->kondisi_pinjaman_id?$val->kondisi_pinjaman_id:""}}</td>
             <td>{{$val->jenis_pembayaran_id?$val->jenis_pembayaran_id:""}}</td>
