@@ -11,18 +11,18 @@
 										<!--begin::Activities-->
 										<div class="d-flex align-items-stretch">
 											<!--begin::drawer toggle-->
-											<div class="topbar-item px-3 px-lg-5" id="kt_activities_toggle">
+											{{-- <div class="topbar-item px-3 px-lg-5" id="kt_activities_toggle">
 												<i class="bi bi-box-seam fs-3"></i>
-											</div>
+											</div> --}}
 											<!--end::drawer toggle-->
 										</div>
 										<!--end::Activities-->
 										<!--begin::Quick links-->
 										<div class="d-flex align-items-stretch">
 											<!--begin::Menu wrapper-->
-											<div class="topbar-item px-3 px-lg-5" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
+											{{-- <div class="topbar-item px-3 px-lg-5" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
 												<i class="bi bi-bar-chart fs-3"></i>
-											</div>
+											</div> --}}
 
 <!--layout-partial:layout/topbar/partials/_quick-links-menu.html-->
 
@@ -32,18 +32,18 @@
 										<!--begin::Chat-->
 										<div class="d-flex align-items-stretch">
 											<!--begin::Menu wrapper-->
-											<div class="topbar-item position-relative px-3 px-lg-5" id="kt_drawer_chat_toggle">
+											{{-- <div class="topbar-item position-relative px-3 px-lg-5" id="kt_drawer_chat_toggle">
 												<i class="bi bi-chat-left-text fs-3"></i>
-											</div>
+											</div> --}}
 											<!--end::Menu wrapper-->
 										</div>
 										<!--end::Chat-->
 										<!--begin::Notifications-->
 										<div class="d-flex align-items-stretch">
 											<!--begin::Menu wrapper-->
-											<div class="topbar-item position-relative px-3 px-lg-5" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
+											{{-- <div class="topbar-item position-relative px-3 px-lg-5" data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-kt-menu-flip="bottom">
 												<i class="bi bi-app-indicator fs-3"></i>
-											</div>
+											</div> --}}
 
 <!--layout-partial:layout/topbar/partials/_notifications-menu.html-->
 
