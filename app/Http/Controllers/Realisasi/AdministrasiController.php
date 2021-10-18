@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Models\User;
+use App\Models\Status;
 use App\Models\TargetTpb;
 use App\Models\SatuanUkur;
 use App\Models\Perusahaan;
@@ -52,7 +53,7 @@ class AdministrasiController extends Controller
         $users = User::where('id', $id_users)->first();
         $perusahaan_id = ($request->perusahaan_id?$request->perusahaan_id:1);
         $target_tpb_id = $request->target_tpb_id;
-        
+
         $admin_bumn = false;
         if(!empty($users->getRoleNames())){
             foreach ($users->getRoleNames() as $v) {
@@ -62,7 +63,23 @@ class AdministrasiController extends Controller
                 }
             }
         }
-        
+
+        $can_download_template = true;
+        if($admin_bumn){
+            $is_finish = Status::whereRaw("lower(replace(nama,' ','')) =?","finish")->pluck('id')->first();
+            $cek_program = TargetTpb::select('anggaran_tpbs.perusahaan_id','target_tpbs.*')
+                    ->leftjoin('anggaran_tpbs','anggaran_tpbs.id','target_tpbs.anggaran_tpb_id')
+                    ->where('anggaran_tpbs.perusahaan_id',$perusahaan_id)
+                    ->where('target_tpbs.status_id',$is_finish)
+                    ->count();
+
+            if($cek_program > 0){
+                $can_download_template = true; 
+            }else{
+                $can_download_template = false;
+            }
+        }
+
         $tahun = ($request->tahun?$request->tahun:date('Y'));
         $pilar = PilarPembangunan::get();
         $tpb = Tpb::get();
@@ -80,6 +97,7 @@ class AdministrasiController extends Controller
             'target_tpb_id' => $target_tpb_id,
             'bulans' => Bulan::get(),
             'tpb' => $tpb,
+            'can_download_template'  => $can_download_template 
         ]);
     }
 
