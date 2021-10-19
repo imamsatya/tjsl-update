@@ -548,7 +548,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     }
                 }else{
                     $ar['id_tambahan_pendanaan'];
-                    $is_gagal = false;
+                    $is_gagal = true;
                 }
 
             // cek status lunas angsuran sebelumnya
