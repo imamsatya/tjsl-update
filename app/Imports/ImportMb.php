@@ -211,14 +211,15 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
 
             // cek no ktp
             if(!$is_gagal){
+
                 try{
-                    $no_id = strlen(preg_replace('/[^0-9]/','',$ar['no_identitas'])) == 16? substr($ar['no_identitas'],-1) == 0? false : true : false;
+                    $no_id = strlen(preg_replace('/[^0-9]/','',$ar['no_identitas'])) == 16? substr($ar['no_identitas'],-4) == 0? false : true : false;
 
                     if(!$no_id){
                         //jika no ktp tidak 16 digit dan angka terakhir bukan 0
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= "Baris ".$no++." Nomor Identitas Wajib 16 Digit dan angka terakhir bukan nol. Gunakan tanda kutip satu (') di awal penulisan nomor identitas untuk menghindari pembulatan otomatis pada excel.<br>";
+                        $keterangan .= "Baris ".$no++." Nomor Identitas Wajib 16 Digit dan 4 digit terakhir bukan nol. <br>";
                     }
 
                 }catch(\Exception $e){

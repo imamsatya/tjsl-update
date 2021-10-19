@@ -202,10 +202,18 @@ class UploadMitraBinaanController extends Controller
 
         $param['file_name'] = $request->input('file_name');
 
+
        try{
             $mb = UploadPumkMitraBinaan::create((array)$param);
 
             $dataUpload = $this->uploadFile($request->file('file_name'), $mb->id);
+           
+          //fungsi 
+           if((int)preg_replace('/[^0-9]/','',ini_get('memory_limit')) < 512){
+                ini_set('memory_limit','512M');
+                ini_set('max_execution_limit','0');
+           }
+           
             Excel::import(new RowImportmb($dataUpload->fileRaw, $mb->id), public_path('file_upload/upload_mitra_binaan/'.$dataUpload->fileRaw));
 
             $param2['file_name']  = $dataUpload->fileRaw;
