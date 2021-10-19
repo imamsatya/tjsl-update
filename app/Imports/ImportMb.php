@@ -527,7 +527,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
             }
 
             // cek tambah pendanaan
-                $params = rtrim($ar['id_tambahan_pendanaan'])? true : false;
+                $params = is_numeric(rtrim($ar['id_tambahan_pendanaan']))? true : false;
                 if($params){
                     try{
                         if(rtrim($ar['id_tambahan_pendanaan']) == 1 || rtrim($ar['id_tambahan_pendanaan']) == 2){
@@ -544,11 +544,12 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     }catch(\Exception $e){
                         DB::rollback();
                         $is_gagal = true;
-                        // $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong diubah default sistem.<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Harus diisi Angka ID sesuai referensi Tambahan Pendanaan.<br>';   
                     }
                 }else{
                     $ar['id_tambahan_pendanaan'];
                     $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Harus diisi Angka ID sesuai referensi Tambahan Pendanaan.<br>';                    
                 }
 
             // cek status lunas angsuran sebelumnya
@@ -771,7 +772,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             'perusahaan_id' => $perusahaan->id,
                             'kode_upload' => $kode,
                             'keterangan_gagal' => $keterangan,
-                            'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):2
+                            'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):$ar['id_tambahan_pendanaan']
                         ]);
                     $gagal++;
                     DB::commit();
