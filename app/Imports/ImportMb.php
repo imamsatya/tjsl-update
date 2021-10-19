@@ -77,7 +77,6 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
 
        foreach ($row as $ar) {
         $is_gagal = false;
-
         //validasi data
             // cek nama mitra
             try{
@@ -86,12 +85,12 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                 if($nama){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Nama Mitra Kosong<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Nama Mitra Kosong<br>';
                 }
             }catch(\Exception $e){
                 DB::rollback();
                 $is_gagal = true;
-                $keterangan .= 'Baris '.$no++.' Nama Mitra Kosong<br>';
+                $keterangan .= 'Baris '.rtrim($ar['no']).' Nama Mitra Kosong<br>';
             }
 
             // cek provinsi 
@@ -108,12 +107,12 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     if(!$provinsi){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Data Provinsi Tidak sesuai Referensi<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Provinsi Tidak sesuai Referensi<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Data Provinsi Wajib Diisi Angka ID sesuai Referensi Provinsi.<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Provinsi Wajib Diisi Angka ID sesuai Referensi Provinsi.<br>';
                 }
 
             // cek kota
@@ -130,12 +129,12 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     if(!$kota){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Data Kota Tidak Sesuai referensi.<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota Tidak Sesuai referensi.<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Data Kota Wajib Diisi Angka ID sesuai Referensi Kota.<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota Wajib Diisi Angka ID sesuai Referensi Kota.<br>';
                 }
 
             // cek relasi provinsi kota
@@ -146,12 +145,12 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     if(!$kota){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Data Kota tidak sesuai Provinsi<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai Provinsi<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Data Kota tidak sesuai Provinsi<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai Provinsi<br>';
                 }
 
             // cek sektor
@@ -168,12 +167,12 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     if(!$sektor){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Data Sektor Usaha tidak sesuai referensi<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Sektor Usaha tidak sesuai referensi<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Data Sektor Usaha Wajib Diisi Angka ID sesuai Referensi Sektor Usaha.<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Sektor Usaha Wajib Diisi Angka ID sesuai Referensi Sektor Usaha.<br>';
                 }
 
             // cek Skala
@@ -190,12 +189,12 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     if(!$skala){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Data Skala Usaha tidak sesuai referensi<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Skala Usaha tidak sesuai referensi<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Data Skala Usaha Wajib Diisi Angka ID sesuai Referensi Skala Usaha.<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Skala Usaha Wajib Diisi Angka ID sesuai Referensi Skala Usaha.<br>';
                 }
 
             // cek no ktp
@@ -206,13 +205,13 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                         //jika no ktp tidak 16 digit dan angka terakhir bukan 0
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= "Baris ".$no++." Nomor Identitas Wajib 16 Digit dan 4 digit terakhir bukan nol. <br>";
+                        $keterangan .= "Baris ".rtrim($ar['no'])." Nomor Identitas Wajib 16 Digit dan 4 digit terakhir bukan nol. <br>";
                     }
 
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Nomor Identitas Harus 16 Digit dan angka terakhir bukan nol.<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Nomor Identitas Harus 16 Digit dan angka terakhir bukan nol.<br>';
                 }
 
             // cek nilai asset
@@ -225,7 +224,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     }else if($params && !$is_angka){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Nilai aset harus angka / boleh kosong.<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Nilai aset harus angka / boleh kosong.<br>';
                     }else{
                         $ar['nilai_aset'] = 0;
                     }
@@ -241,7 +240,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     }else if($params && !$is_angka){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Nilai omset harus angka / boleh kosong.<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Nilai omset harus angka / boleh kosong.<br>';
                     }else{
                         $ar['nilai_omset'] = 0;
                     }
@@ -254,12 +253,12 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     if(!$nopim){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Nomor Pinjaman Kosong.<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Nomor Pinjaman Kosong.<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Nomor Pinjaman Kosong.<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Nomor Pinjaman Kosong.<br>';
                 }
 
             // cek Cara Penyaluran / Pelaksanaan Program
@@ -276,13 +275,13 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     if(!$pp){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Data Pelaksanaan Program tidak sesuai referensi<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Pelaksanaan Program tidak sesuai referensi<br>';
                     }
 
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Data Pelaksanaan Program Wajib Diisi Angka ID sesuai Referensi Pelaksanaan Program.<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Pelaksanaan Program Wajib Diisi Angka ID sesuai Referensi Pelaksanaan Program.<br>';
                 }
 
 
@@ -302,12 +301,12 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     if(!$p){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Jika pelaksanaan program kolaborasi, maka Sumber Dana Wajib Diisi.<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Jika pelaksanaan program kolaborasi, maka Sumber Dana Wajib Diisi.<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Jika pelaksanaan program kolaborasi, maka Sumber Dana Wajib Diisi.<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Jika pelaksanaan program kolaborasi, maka Sumber Dana Wajib Diisi.<br>';
                 }
             } 
 
@@ -318,17 +317,17 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     if(!$tglawal){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Tanggal Awal Pendanaan Kosong.<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Tanggal Awal Pendanaan Kosong.<br>';
                     }else if(!is_numeric($ar['tgl_awal_pendanaan'])){
                         DB::rollback();
                         $ar['tgl_awal_pendanaan'];
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Kesalahan format Tanggal Awal Pendanaan.<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Kesalahan format Tanggal Awal Pendanaan.<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Tanggal Awal Pendanaan Kosong.<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Tanggal Awal Pendanaan Kosong.<br>';
                 }
 
             // cek tgl tempo
@@ -337,17 +336,17 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     if(!$p){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Tanggal Jatuh Tempo Kosong.<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Tanggal Jatuh Tempo Kosong.<br>';
                     }else if(!is_numeric($ar['tgl_jatuh_tempo'])){
                         DB::rollback();
                         $ar['tgl_jatuh_tempo'];
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Kesalahan format Tanggal Jatuh Tempo.<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Kesalahan format Tanggal Jatuh Tempo.<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.'Tanggal Jatuh Tempo Kosong.<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).'Tanggal Jatuh Tempo Kosong.<br>';
                 }
 
             // cek nominal Pendanaan
@@ -421,17 +420,17 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     if(!$p){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Tanggal Penerimaan Terakhir Kosong.<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Tanggal Penerimaan Terakhir Kosong.<br>';
                     }else if(!is_numeric($ar['tgl_penerimaan_terakhir'])){
                             DB::rollback();
                             $ar['tgl_penerimaan_terakhir'];
                             $is_gagal = true;
-                            $keterangan .= 'Baris '.$no++.' Kesalahan format Tanggal Penerimaan Terakhir.<br>';
+                            $keterangan .= 'Baris '.rtrim($ar['no']).' Kesalahan format Tanggal Penerimaan Terakhir.<br>';
                         }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Tanggal Penerimaan Terakhir Kosong.<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Tanggal Penerimaan Terakhir Kosong.<br>';
                 }
         
             // cek Kolektibilitas
@@ -448,12 +447,12 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     if(!$kolek){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Data Kolektibilitas tidak sesuai referensi<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kolektibilitas tidak sesuai referensi<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Data Kolektibilitas Wajib Diisi Angka ID sesuai Referensi Kolektibilitas Pendanaan.<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kolektibilitas Wajib Diisi Angka ID sesuai Referensi Kolektibilitas Pendanaan.<br>';
                 }
 
             // cek KondisiPinjaman
@@ -470,12 +469,12 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     if(!$kondisi){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Data Kondisi Pinjaman tidak sesuai referensi<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kondisi Pinjaman tidak sesuai referensi<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Data Kondisi Pinjaman Wajib Diisi Angka ID sesuai Referensi Kondisi Pinjaman.<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kondisi Pinjaman Wajib Diisi Angka ID sesuai Referensi Kondisi Pinjaman.<br>';
                 }
 
 
@@ -493,12 +492,12 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     if(!$jenis){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Data Jenis Pembayaran tidak sesuai referensi<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data Jenis Pembayaran tidak sesuai referensi<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Data Jenis Pembayaran Wajib Diisi Angka ID sesuai Referensi Jenis Pembayaran.<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Data Jenis Pembayaran Wajib Diisi Angka ID sesuai Referensi Jenis Pembayaran.<br>';
                 }
             
             //cek bank account
@@ -512,17 +511,17 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                         if(!$bank){
                             DB::rollback();
                             $is_gagal = true;
-                            $keterangan .= 'Baris '.$no++.' Bank Account tidak sesuai referensi<br>';
+                            $keterangan .= 'Baris '.rtrim($ar['no']).' Bank Account tidak sesuai referensi<br>';
                         }
                     }catch(\Exception $e){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Bank Account tidak sesuai referensi<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Bank Account tidak sesuai referensi<br>';
                     }
                 }else{
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' Jika Jenis Pembayaran Virtual Account, maka Bank Account wajib diisi angka ID sesuai referensi Bank Account.<br>';                    
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Jika Jenis Pembayaran Virtual Account, maka Bank Account wajib diisi angka ID sesuai referensi Bank Account.<br>';                    
                 }
 
             }
@@ -540,12 +539,12 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                         if(!$tambah){
                             DB::rollback();
                             $is_gagal = true;
-                            $keterangan .= 'Baris '.$no++.' Data Tambahan Pendanaan Tidak Sesuai angka ID referensi Tambahan Pendanaan.<br>';
+                            $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai angka ID referensi Tambahan Pendanaan.<br>';
                         }
                     }catch(\Exception $e){
                         DB::rollback();
                         $is_gagal = true;
-                        // $keterangan .= 'Baris '.$no++.' Data Tambahan Pendanaan Tidak Sesuai/Kosong diubah default sistem.<br>';
+                        // $keterangan .= 'Baris '.rtrim($ar['no']).' Data Tambahan Pendanaan Tidak Sesuai/Kosong diubah default sistem.<br>';
                     }
                 }else{
                     $ar['id_tambahan_pendanaan'];
@@ -572,7 +571,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
 
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.$no++.' Nomor pinjaman <strong>'.$ar['no_pinjaman'].'</strong> a/n. <strong>'.$data->nama_mitra.'</strong> di '.$bumn.' telah lunas pada <strong>'.$bulan.' '.$data->tahun.'</strong><br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Nomor pinjaman <strong>'.$ar['no_pinjaman'].'</strong> a/n. <strong>'.$data->nama_mitra.'</strong> di '.$bumn.' telah lunas pada <strong>'.$bulan.' '.$data->tahun.'</strong><br>';
                     }
                 }catch(\Exception $e){}
 
@@ -729,7 +728,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                 }catch(\Exception $e){dd($e->getMessage());
                     DB::rollback();
                     $is_gagal = true;
-                    $keterangan .= 'Baris '.$no++.' isian tidak sesuai Referensi<br>';
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' isian tidak sesuai Referensi<br>';
                 }
             }
 
