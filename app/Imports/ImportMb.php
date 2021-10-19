@@ -72,7 +72,6 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
         $gagal = 0;
         
         $keterangan = '';
-        $keterangan_gagal = '';
         $kode = uniqid();
         $no = 1;
 
@@ -96,7 +95,6 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
             }
 
             // cek provinsi 
-            if(!$is_gagal){
                 try{
                     $prov = rtrim($ar['id_provinsi'])? true : false;
                     $is_angka = is_numeric($ar['id_provinsi'])? true : false;
@@ -117,10 +115,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no++.' Data Provinsi Wajib Diisi Angka ID sesuai Referensi Provinsi.<br>';
                 }
-            }
 
             // cek kota
-            if(!$is_gagal){
                 try{
                     $kotas = rtrim($ar['id_kota'])? true : false;
                     $is_angka = is_numeric($ar['id_kota'])? true : false;
@@ -141,10 +137,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no++.' Data Kota Wajib Diisi Angka ID sesuai Referensi Kota.<br>';
                 }
-            }
 
             // cek relasi provinsi kota
-            if(!$is_gagal){
                 try{
                     $kota = Kota::where('id',rtrim($ar['id_kota']))
                                 ->where('provinsi_id',rtrim($ar['id_provinsi']))
@@ -159,10 +153,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no++.' Data Kota tidak sesuai Provinsi<br>';
                 }
-            }
 
             // cek sektor
-            if(!$is_gagal){
                 try{
                     $sektors = rtrim($ar['id_sektor_usaha'])? true : false;
                     $is_angka = is_numeric($ar['id_kota'])? true : false;
@@ -183,10 +175,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no++.' Data Sektor Usaha Wajib Diisi Angka ID sesuai Referensi Sektor Usaha.<br>';
                 }
-            }
 
             // cek Skala
-            if(!$is_gagal){
                 try{
                     $params = rtrim($ar['id_skala_usaha'])? true : false;
                     $is_angka = is_numeric($ar['id_kota'])? true : false;
@@ -207,13 +197,10 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no++.' Data Skala Usaha Wajib Diisi Angka ID sesuai Referensi Skala Usaha.<br>';
                 }
-            }
 
             // cek no ktp
-            if(!$is_gagal){
-
                 try{
-                    $no_id = strlen(preg_replace('/[^0-9]/','',$ar['no_identitas'])) == 16? substr($ar['no_identitas'],-4) == 0? false : true : false;
+                    $no_id = strlen(preg_replace('/[^0-9]/','',$ar['no_identitas'])) == 16? substr($ar['no_identitas'],-4) == 0000? false : true : false;
 
                     if(!$no_id){
                         //jika no ktp tidak 16 digit dan angka terakhir bukan 0
@@ -227,10 +214,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no++.' Nomor Identitas Harus 16 Digit dan angka terakhir bukan nol.<br>';
                 }
-            }
 
             // cek nilai asset
-            if(!$is_gagal){
                 try{
                     $params = rtrim($ar['nilai_aset'])? true : false;
                     $is_angka = is_numeric($ar['nilai_aset'])? true : false;
@@ -245,10 +230,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                         $ar['nilai_aset'] = 0;
                     }
                 }catch(\Exception $e){}
-            }
 
             // cek nilai omset
-            if(!$is_gagal){
                 try{
                     $params = rtrim($ar['nilai_omset'])? true : false;
                     $is_angka = is_numeric($ar['nilai_omset'])? true : false;
@@ -264,10 +247,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     }
                 }catch(\Exception $e){
                 }
-            }
 
             // cek no pinjaman
-            if(!$is_gagal){
                 try{
                     $nopim = $ar['no_pinjaman'] !== null? true : false;
                     if(!$nopim){
@@ -280,10 +261,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no++.' Nomor Pinjaman Kosong.<br>';
                 }
-            }    
 
             // cek Cara Penyaluran / Pelaksanaan Program
-            if(!$is_gagal){
                 try{
                     $p = rtrim($ar['id_pelaksanaan_program'])? true : false;
                     $is_angka = is_numeric($ar['id_pelaksanaan_program'])? true : false;
@@ -305,7 +284,6 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no++.' Data Pelaksanaan Program Wajib Diisi Angka ID sesuai Referensi Pelaksanaan Program.<br>';
                 }
-            }
 
 
             // cek Sumber dana
@@ -314,11 +292,11 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
             $kolaborasi = $program->where('nama','Kolaborasi')->pluck('id')->first();
             
             // sumber dana jika pelaksanaan program mandiri
-            if(!$is_gagal && rtrim($ar['id_pelaksanaan_program']) == $mandiri){
+            if(rtrim($ar['id_pelaksanaan_program']) == $mandiri){
                 $ar['sumber_dana'] = $perusahaan->id;
             }
             // sumber dana jika pelaksanaan program kolaborasi
-            if(!$is_gagal && rtrim($ar['id_pelaksanaan_program']) == $kolaborasi){
+            if(rtrim($ar['id_pelaksanaan_program']) == $kolaborasi){
                 try{
                     $p = $ar['sumber_dana'] !== null? true : false;
                     if(!$p){
@@ -334,7 +312,6 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
             } 
 
             // cek tgl awal
-            if(!$is_gagal){
                 try{
                     $tglawal = $ar['tgl_awal_pendanaan'] !== null? true : false;
                     
@@ -353,10 +330,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no++.' Tanggal Awal Pendanaan Kosong.<br>';
                 }
-            }
 
             // cek tgl tempo
-            if(!$is_gagal){
                 try{
                     $p = $ar['tgl_jatuh_tempo'] !== null? true : false;
                     if(!$p){
@@ -374,10 +349,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no++.'Tanggal Jatuh Tempo Kosong.<br>';
                 }
-            } 
 
             // cek nominal Pendanaan
-            if(!$is_gagal){
                 try{
                     $params = rtrim($ar['nominal_pendanaan'])? true : false;
                     if($params){
@@ -389,10 +362,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     }
                 }catch(\Exception $e){
                 }
-            }              
 
             // cek saldo pokok Pendanaan
-            if(!$is_gagal){
                 try{
                     $params = rtrim($ar['saldo_pokok_pendanaan'])? true : false;
                     if($params){
@@ -404,10 +375,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     }
                 }catch(\Exception $e){
                 }
-            }   
 
             // cek saldo jasa adm Pendanaan
-            if(!$is_gagal){
                 try{
                     $params = rtrim($ar['saldo_jasa_admin_pendanaan'])? true : false;
                     if($params){
@@ -419,10 +388,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     }
                 }catch(\Exception $e){
                 }
-            }            
 
             // cek penerimaan_pokok_bulan_berjalan
-            if(!$is_gagal){
                 try{
                     $params = rtrim($ar['penerimaan_pokok_bulan_berjalan'])? true : false;
                     if($params){
@@ -434,10 +401,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     }
                 }catch(\Exception $e){
                 }
-            } 
 
             // cek penerimaan_jasa_admin_bulan_berjalan
-            if(!$is_gagal){
                 try{
                     $params = rtrim($ar['penerimaan_jasa_admin_bulan_berjalan'])? true : false;
                     if($params){
@@ -449,10 +414,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     }
                 }catch(\Exception $e){
                 }
-            }             
 
             // cek tgl_penerimaan_terakhir
-            if(!$is_gagal){
                 try{
                     $p = $ar['tgl_penerimaan_terakhir'] !== null? true : false;
                     if(!$p){
@@ -470,10 +433,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no++.' Tanggal Penerimaan Terakhir Kosong.<br>';
                 }
-            } 
         
             // cek Kolektibilitas
-            if(!$is_gagal){
                 try{
                     $params = rtrim($ar['id_kolektibilitas_pendanaan'])? true : false;
                     $is_angka = is_numeric($ar['id_kolektibilitas_pendanaan'])? true : false;
@@ -494,10 +455,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no++.' Data Kolektibilitas Wajib Diisi Angka ID sesuai Referensi Kolektibilitas Pendanaan.<br>';
                 }
-            }
 
             // cek KondisiPinjaman
-            if(!$is_gagal){
                 try{
                     $params = rtrim($ar['id_kondisi_pinjaman'])? true : false;
                     $is_angka = is_numeric($ar['id_kondisi_pinjaman'])? true : false;
@@ -518,11 +477,9 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no++.' Data Kondisi Pinjaman Wajib Diisi Angka ID sesuai Referensi Kondisi Pinjaman.<br>';
                 }
-            }   
 
 
             // cek Jenis Pembayaran
-            if(!$is_gagal){
                 try{
                     $params = rtrim($ar['id_jenis_pembayaran'])? true : false;
                     $is_angka = is_numeric($ar['id_jenis_pembayaran'])? true : false;
@@ -543,12 +500,11 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no++.' Data Jenis Pembayaran Wajib Diisi Angka ID sesuai Referensi Jenis Pembayaran.<br>';
                 }
-            }
             
             //cek bank account
             $jenisP = JenisPembayaran::where('nama','Manual')->pluck('id')->first();
 
-            if(!$is_gagal && rtrim($ar['id_jenis_pembayaran']) > $jenisP){
+            if(rtrim($ar['id_jenis_pembayaran']) > $jenisP){
                 $cek = rtrim($ar['id_bank_account']) == "" ? 0 : rtrim($ar['id_bank_account']);
                 if($cek > 0){
                     try{
@@ -572,7 +528,6 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
             }
 
             // cek tambah pendanaan
-            if(!$is_gagal){
                 $params = rtrim($ar['id_tambahan_pendanaan'])? true : false;
                 if($params){
                     try{
@@ -596,10 +551,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $ar['id_tambahan_pendanaan'];
                     $is_gagal = false;
                 }
-            }   
 
             // cek status lunas angsuran sebelumnya
-            if(!$is_gagal){
                 try{
                     $lunas = KolekbilitasPendanaan::where('nama','ilike','%lunas%')->pluck('id')->first();
                     $cek_data_sebelumnya = PumkMitraBinaan::where('no_pinjaman',$ar['no_pinjaman'])
@@ -622,7 +575,6 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                         $keterangan .= 'Baris '.$no++.' Nomor pinjaman <strong>'.$ar['no_pinjaman'].'</strong> a/n. <strong>'.$data->nama_mitra.'</strong> di '.$bumn.' telah lunas pada <strong>'.$bulan.' '.$data->tahun.'</strong><br>';
                     }
                 }catch(\Exception $e){}
-            }                   
 
         //proses data
             // cek kegiatan
@@ -718,6 +670,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                                 'kode_upload' => $kode,
                                 'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):2
                             ]);
+                            DB::commit();
                             $berhasil++;
                         }
                         else{
@@ -768,6 +721,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             'kode_upload' => $kode,
                             'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):2
                             ]);
+                            DB::commit();
                             $berhasil++;
                         }
 
@@ -821,11 +775,13 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):2
                         ]);
                     $gagal++;
+                    DB::commit();
                 }catch(\Exception $e){dd($e->getMessage());
                     DB::rollback();
                 }
             } 
         }
+   //     dump($keterangan);
         $mb_upload = UploadPumkMitraBinaan::find((int)$this->mb_upload);
         $param['perusahaan_id'] = $perusahaan->id;
         $param['tahun'] = $this->tahun;
