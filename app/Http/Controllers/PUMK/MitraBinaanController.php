@@ -149,6 +149,10 @@ class MitraBinaanController extends Controller
                 $data = $data->where('pumk_mitra_binaans.no_identitas',$request->identitas);
             }
 
+            if($request->nama_mitra){
+                $data = $data->where('pumk_mitra_binaans.nama_mitra','ilike','%'.$request->nama_mitra.'%');
+            }
+
             if($request->bulan_id){
                 $data = $data->where('pumk_mitra_binaans.bulan',(int)$request->bulan_id);
             }else{
