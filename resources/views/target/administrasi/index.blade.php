@@ -113,6 +113,8 @@
                             <button id="cari" class="btn btn-sm btn-success me-3">Cari</button>
                             @if($can_download_template)
                             <button id="download" class="btn btn-sm btn-primary me-3"><i class="bi bi-download fs-3"></i>Download Template</button>
+                            @else
+                            <button id="download" class="btn btn-sm btn-secondary me-3" disabled><i class="bi bi-download fs-3"></i>Download Template</button>
                             @endif
                         </div>
                     </div>

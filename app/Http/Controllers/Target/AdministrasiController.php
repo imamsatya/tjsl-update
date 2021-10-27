@@ -81,10 +81,11 @@ class AdministrasiController extends Controller
             $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
         }
 
-        if($request->tahun){
-            $anggaran = $anggaran->where('anggaran_tpbs.tahun', $request->tahun);
-            $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.tahun', $request->tahun);
-            $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.tahun', $request->tahun);
+        $tahun = $request->tahun? $request->tahun : (int)date('Y'); 
+        if($tahun){
+            $anggaran = $anggaran->where('anggaran_tpbs.tahun', $tahun);
+            $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.tahun', $tahun);
+            $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.tahun', $tahun);
         }
 
         if($request->pilar_pembangunan_id){
@@ -99,14 +100,14 @@ class AdministrasiController extends Controller
             $anggaran_bumn = $anggaran_bumn->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
         }
         
-        $is_finish = Status::whereRaw("lower(replace(nama,' ','')) =?","finish")->pluck('id')->first();
+        //$is_finish = Status::whereRaw("lower(replace(nama,' ','')) =?","finish")->pluck('id')->first();
         
         $anggaran_pilar = $anggaran_pilar->select('anggaran_tpbs.perusahaan_id', 
                                                     'relasi_pilar_tpbs.pilar_pembangunan_id', 
                                                     DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'), 
                                                     'pilar_pembangunans.nama as pilar_nama', 
                                                     'pilar_pembangunans.id as pilar_id')
-                            ->where('anggaran_tpbs.status_id',$is_finish)
+                           // ->where('anggaran_tpbs.status_id',$is_finish)
                             ->groupBy('relasi_pilar_tpbs.pilar_pembangunan_id', 
                                         'anggaran_tpbs.perusahaan_id',
                                         'pilar_pembangunans.nama', 
@@ -117,7 +118,7 @@ class AdministrasiController extends Controller
                                                 'perusahaans.nama_lengkap',
                                                 'perusahaans.id',
                                                 DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'))
-                            ->where('anggaran_tpbs.status_id',$is_finish)
+                           // ->where('anggaran_tpbs.status_id',$is_finish)
                             ->groupBy('anggaran_tpbs.perusahaan_id')
                             ->groupBy('perusahaans.nama_lengkap')
                             ->groupBy('perusahaans.id')
