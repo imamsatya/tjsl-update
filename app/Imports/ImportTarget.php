@@ -167,7 +167,7 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                     if(!$anggaran){
                         DB::rollback();
                         $is_gagal = true;
-                        $keterangan .= 'Baris '.rtrim($ar['no']).' Data TPB tidak sesuai referensi<br>';
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Tidak tersedia anggaran pada TPB yang anda pilih.<br>';
                     }
                 }catch(\Exception $e){
                     DB::rollback();
