@@ -97,10 +97,9 @@
                             <label>Tahun</label>
                             <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun" data-allow-clear="true">
                                 @php
-                                    for($i = date("Y"); $i>=2020; $i--){ @endphp
-                                    <option value="{{$i}}">{{$i}}</option>
-                                    @php }
-                                    $select = (($i == date("Y")) ? 'selected="selected"' : '');
+                                for($i = date("Y")+1; $i>=2020; $i--){ @endphp
+                                <option value="{{$i}}" {{$i == date("Y")? 'selected="selected"' : ''}}>{{$i}}</option>
+                                @php }
                                 @endphp
                                 <option></option>
                             </select>
