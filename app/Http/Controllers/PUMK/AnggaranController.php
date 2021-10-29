@@ -61,7 +61,7 @@ class AnggaranController extends Controller
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => $this->breadcumb,
-            'perusahaan' => Perusahaan::where('is_active',true)->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('kepemilikan','Anak Perusahaan')-where('is_active',true)->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'admin_tjsl' => $admin_tjsl,
             'super_admin' => $super_admin,
@@ -263,7 +263,7 @@ class AnggaranController extends Controller
         return view($this->__route.'.create',[
             'pagetitle' => $this->pagetitle,
             'actionform' => 'insert',
-            'perusahaan' => Perusahaan::where('is_active',true)->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('kepemilikan','Anak Perusahaan')-where('is_active',true)->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
             'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
@@ -373,7 +373,7 @@ class AnggaranController extends Controller
          
         return view($this->__route.'.show',[
             'pagetitle' => $this->pagetitle,
-            'perusahaan' => Perusahaan::where('is_active',true)->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('kepemilikan','Anak Perusahaan')-where('is_active',true)->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
             'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
@@ -414,7 +414,7 @@ class AnggaranController extends Controller
                 return view($this->__route.'.edit',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
-                    'perusahaan' => Perusahaan::where('is_active',true)->orderBy('id', 'asc')->get(),
+                    'perusahaan' => Perusahaan::where('kepemilikan','Anak Perusahaan')-where('is_active',true)->orderBy('id', 'asc')->get(),
                     'admin_bumn' => $admin_bumn,
                     'perusahaan_id' => $perusahaan_id,
                     'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
