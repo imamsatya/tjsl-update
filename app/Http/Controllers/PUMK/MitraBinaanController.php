@@ -72,7 +72,7 @@ class MitraBinaanController extends Controller
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
-            'perusahaan' => Perusahaan::where('kepemilikan','Anak Perusahaan')->orWhere('induk',0)->where('is_active',true)->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active',true)->orderBy('id', 'asc')->get(),
             'provinsi' => Provinsi::where('is_luar_negeri',false)->get(),
             'kota' => Kota::where('is_luar_negeri',false)->get(),
             'sektor_usaha' => SektorUsaha::get(),
@@ -251,7 +251,7 @@ class MitraBinaanController extends Controller
                 return view($this->__route.'.edit',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
-                    'perusahaan' => Perusahaan::where('kepemilikan','Anak Perusahaan')->orWhere('induk',0)->where('is_active',true)->orderBy('id', 'asc')->get(),
+                    'perusahaan' => Perusahaan::where('is_active',true)->orderBy('id', 'asc')->get(),
                     'provinsi' => Provinsi::where('is_luar_negeri',false)->get(),
                     'kota' => Kota::where('is_luar_negeri',false)->get(),
                     'sektor_usaha' => SektorUsaha::get(),

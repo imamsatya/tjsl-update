@@ -49,7 +49,8 @@ class PerusahaanController extends Controller
     public function datatable(Request $request)
     {
         try{
-            $perusahaan = Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get();
+            $perusahaan = Perusahaan::orderBy('id', 'asc')->get();
+
             return datatables()->of($perusahaan)
             ->addColumn('action', function ($row){
                 $id = (int)$row->id;
@@ -261,6 +262,35 @@ class PerusahaanController extends Controller
             $result = [
                 'flag'  => 'warning',
                 'msg' => 'Gagal hapus data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function inactiveAll()
+    {
+        DB::beginTransaction();
+        try{
+            $data = Perusahaan::get();
+
+            foreach($data as $val){
+                $val->update([
+                    'is_active'=>false
+                ]);
+            }
+
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses Inactive Semua data',
+                'title' => 'Sukses'
+            ];
+        }catch(\Exception $e){
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal Inactive Semua data',
                 'title' => 'Gagal'
             ];
         }
