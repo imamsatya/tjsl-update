@@ -148,7 +148,7 @@ class AdministrasiController extends Controller
             'pilar' => PilarPembangunan::get(),
             'status' => Status::get(),
             'tpb' => Tpb::get(),
-            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),                    
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
             'tahun' => ($request->tahun?$request->tahun:date('Y')),
@@ -320,7 +320,7 @@ class AdministrasiController extends Controller
                     'kode_tujuan_tpb' => $kode_tujuan_tpb,
                     'satuan_ukur' => SatuanUkur::get(),
                     'cara_penyaluran' => CaraPenyaluran::get(),
-                    'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+                    'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),                    
                     'core_subject' => CoreSubject::get(),
                     'jenis_program' => JenisProgram::get(),
                     'mitra' => $mitra_bumn,
@@ -443,7 +443,7 @@ class AdministrasiController extends Controller
         return view('target.upload_target.upload',[
             'pagetitle' => $this->pagetitle,
             'actionform' => 'insert',
-            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),                    
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id
         ]);

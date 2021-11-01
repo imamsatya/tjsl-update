@@ -89,7 +89,7 @@ class AdministrasiController extends Controller
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Kegiatan - Administrasi',
             'perusahaan_id' => $perusahaan_id,
-            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),                    
             'admin_bumn' => $admin_bumn,
             'tahun' => $tahun,
             'pilar' => $pilar,
@@ -469,7 +469,7 @@ class AdministrasiController extends Controller
         return view('realisasi.upload_realisasi.upload',[
             'pagetitle' => $this->pagetitle,
             'actionform' => 'insert',
-            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),                    
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id
         ]);

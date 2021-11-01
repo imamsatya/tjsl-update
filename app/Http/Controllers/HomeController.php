@@ -77,7 +77,7 @@ class HomeController extends Controller
             'admin_bumn' => $admin_bumn,
             'tpb' => TPB::all(),
             'tpb_id' => $request->tpb_id,
-            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),                    
             'filter_bumn_id' => $perusahaan_id,
             'filter_periode_id' => $request->periode_id,
             'filter_status_id' => $request->status_id,
