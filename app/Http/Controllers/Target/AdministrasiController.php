@@ -54,6 +54,7 @@ class AdministrasiController extends Controller
     {
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
+       
         $perusahaan_id = $request->perusahaan_id;
         
         $admin_bumn = false;
@@ -65,7 +66,7 @@ class AdministrasiController extends Controller
                 }
             }
         }
-        
+
         $anggaran       = AnggaranTpb::select('relasi_pilar_tpbs.pilar_pembangunan_id','anggaran_tpbs.*','tpbs.nama as tpb_nama', 'tpbs.no_tpb as no_tpb')
                                         ->leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
                                         ->leftJoin('tpbs','tpbs.id','relasi_pilar_tpbs.tpb_id');
@@ -80,10 +81,11 @@ class AdministrasiController extends Controller
             $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
         }
 
-        if($request->tahun){
-            $anggaran = $anggaran->where('anggaran_tpbs.tahun', $request->tahun);
-            $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.tahun', $request->tahun);
-            $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.tahun', $request->tahun);
+        $tahun = $request->tahun? $request->tahun : (int)date('Y'); 
+        if($tahun){
+            $anggaran = $anggaran->where('anggaran_tpbs.tahun', $tahun);
+            $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.tahun', $tahun);
+            $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.tahun', $tahun);
         }
 
         if($request->pilar_pembangunan_id){
@@ -98,11 +100,14 @@ class AdministrasiController extends Controller
             $anggaran_bumn = $anggaran_bumn->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
         }
         
+        //$is_finish = Status::whereRaw("lower(replace(nama,' ','')) =?","finish")->pluck('id')->first();
+        
         $anggaran_pilar = $anggaran_pilar->select('anggaran_tpbs.perusahaan_id', 
                                                     'relasi_pilar_tpbs.pilar_pembangunan_id', 
                                                     DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'), 
                                                     'pilar_pembangunans.nama as pilar_nama', 
                                                     'pilar_pembangunans.id as pilar_id')
+                           // ->where('anggaran_tpbs.status_id',$is_finish)
                             ->groupBy('relasi_pilar_tpbs.pilar_pembangunan_id', 
                                         'anggaran_tpbs.perusahaan_id',
                                         'pilar_pembangunans.nama', 
@@ -113,6 +118,7 @@ class AdministrasiController extends Controller
                                                 'perusahaans.nama_lengkap',
                                                 'perusahaans.id',
                                                 DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'))
+                           // ->where('anggaran_tpbs.status_id',$is_finish)
                             ->groupBy('anggaran_tpbs.perusahaan_id')
                             ->groupBy('perusahaans.nama_lengkap')
                             ->groupBy('perusahaans.id')
@@ -126,13 +132,23 @@ class AdministrasiController extends Controller
                             ->orderBy('target_tpbs.tpb_id')->get();
         }
 
+        $can_download_template = true;
+        if($admin_bumn){
+            if($anggaran_bumn->count() > 0){
+                $can_download_template = $anggaran_bumn[0]->perusahaan_id == $perusahaan_id? true :false; 
+            }else{
+                $can_download_template = false;
+            }
+        }
+
+
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Program - Administrasi',
             'pilar' => PilarPembangunan::get(),
             'status' => Status::get(),
             'tpb' => Tpb::get(),
-            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),                    
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
             'tahun' => ($request->tahun?$request->tahun:date('Y')),
@@ -142,7 +158,8 @@ class AdministrasiController extends Controller
             'anggaran' => $anggaran,
             'anggaran_pilar' => $anggaran_pilar,
             'anggaran_bumn' => $anggaran_bumn,
-            'target' => $target
+            'target' => $target,
+            'can_download_template'  => $can_download_template 
         ]);
     }
 
@@ -303,7 +320,7 @@ class AdministrasiController extends Controller
                     'kode_tujuan_tpb' => $kode_tujuan_tpb,
                     'satuan_ukur' => SatuanUkur::get(),
                     'cara_penyaluran' => CaraPenyaluran::get(),
-                    'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+                    'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),                    
                     'core_subject' => CoreSubject::get(),
                     'jenis_program' => JenisProgram::get(),
                     'mitra' => $mitra_bumn,
@@ -426,7 +443,7 @@ class AdministrasiController extends Controller
         return view('target.upload_target.upload',[
             'pagetitle' => $this->pagetitle,
             'actionform' => 'insert',
-            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),                    
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id
         ]);

@@ -131,7 +131,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('store', 'App\Http\Controllers\Referensi\PerusahaanController@store')->name('referensi.perusahaan.store');
                 Route::post('delete', 'App\Http\Controllers\Referensi\PerusahaanController@delete')->name('referensi.perusahaan.delete');
                 Route::get('datatable', 'App\Http\Controllers\Referensi\PerusahaanController@datatable')->name('referensi.perusahaan.datatable');
-                
+                Route::get('inactive-all', 'App\Http\Controllers\Referensi\PerusahaanController@inactiveAll')->name('referensi.perusahaan.inactiveall');                
                 Route::get('silababumnsync', function () {
                     $exitCode = Artisan::call('silaba:bumnsync');
                     return redirect('referensi/perusahaan/index');

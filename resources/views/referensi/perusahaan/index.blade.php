@@ -21,10 +21,20 @@
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
                         
-                        <a class="btn btn-warning btn-sync btn-sm">
+                        <a class="btn btn-info btn-sync btn-sm">
                             <i class="la la-refresh"></i>
                             Sync Data
                         </a>
+                        &nbsp;
+                        <a class="btn btn-danger btn-inactive-all btn-sm" >
+                            <i class="la la-times"></i>
+                            Inactive All
+                        </a>
+                        {{-- &nbsp;
+                        <a class="btn btn-success btn-sync btn-sm">
+                            <i class="la la-refresh"></i>
+                            Active All
+                        </a> --}}
                     </div>
                     <!--end::Search-->
                     <!--end::Group actions-->
@@ -45,6 +55,7 @@
                                 <th>Jenis Perusahaan</th>
                                 <th>Kepemilikan</th>
                                 <th>Tgl Sinkronisasi</th>
+                                <th>Status</th>
                                 <th style="text-align:center;" >Aksi</th>
                             </tr>
                         </thead>
@@ -93,6 +104,10 @@
             sync();
         });
 
+        $('body').on('click','.btn-inactive-all',function(){
+            inactiveAll();
+        });
+
         setDatatable();
     });
 
@@ -100,6 +115,51 @@
         $.ajax({
             type: 'get',
             url: urlsilababumnsync,
+            beforeSend: function(){
+                $.blockUI({
+                    theme: true,
+                    baseZ: 2000
+                })   
+            },
+            success: function(data){
+                $.unblockUI();
+                datatable.ajax.reload( null, false );
+            },
+            error: function(jqXHR, exception){
+                $.unblockUI();
+                var msgerror = '';
+                if (jqXHR.status === 0) {
+                    msgerror = 'jaringan tidak terkoneksi.';
+                } else if (jqXHR.status == 404) {
+                    msgerror = 'Halaman tidak ditemukan. [404]';
+                } else if (jqXHR.status == 500) {
+                    msgerror = 'Internal Server Error [500].';
+                } else if (exception === 'parsererror') {
+                    msgerror = 'Requested JSON parse gagal.';
+                } else if (exception === 'timeout') {
+                    msgerror = 'RTO.';
+                } else if (exception === 'abort') {
+                    msgerror = 'Gagal request ajax.';
+                } else {
+                    msgerror = 'Error.\n' + jqXHR.responseText;
+                }
+                swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                });	                               
+            }
+        });
+    }
+
+    function inactiveAll(){
+        $.ajax({
+            type: 'get',
+            url: "{{ route('referensi.perusahaan.inactiveall') }}",
             beforeSend: function(){
                 $.blockUI({
                     theme: true,
@@ -153,6 +213,7 @@
                 { data: 'jenis_perusahaan', name: 'jenis_perusahaan' },
                 { data: 'kepemilikan', name: 'kepemilikan' },
                 { data: 'tgl_sinkronisasi', name: 'tgl_sinkronisasi' },
+                { data: 'is_active', name: 'is_active' },
                 { data: 'action', name: 'action' },
             ],
             drawCallback: function( settings ) {

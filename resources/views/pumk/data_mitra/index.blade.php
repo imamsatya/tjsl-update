@@ -168,13 +168,17 @@
 
                     </div>
                     <div class="form-group row  mb-5">
-                        <div class="col-lg-6">
+                        <div class="col-lg-5">
+                            <label>Nama Mitra Binaan</label>
+                            <input type="text" class="form-control " id="nama_mitra" name="nama_mitra" placeholder="masukan nama mitra binaan..." >
+                        </div>
+                        <div class="col-lg-4">
                             <label>No. Identitas</label>
                             <input type="text" class="form-control " id="identitas" name="identitas" placeholder="masukan nomor identitas..." >
                         </div>
-                        <div class="col-lg-6 mt-8">
-                            <button id="proses" class="btn-small btn-success me-3 text-white"><i class="fa fa-search text-white"></i> Cari</button>
-                            <button id="reset" class="btn-small btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
+                        <div class="col-lg-3 mt-6 text-center">
+                            <button id="proses" class="btn-small btn-success me-3 text-white" style="padding:10px 8px 10px 8px;"><i class="fa fa-search text-white"></i> Cari</button>
+                            <button id="reset" class="btn-small btn-danger me-3 text-white" style="padding:10px 8px 10px 8px;"><i class="fa fa-times text-white"></i> Batal</button>
                         </div>
                     </div>
                     <div class="form-group row  mb-5">
@@ -236,6 +240,7 @@
                     type: 'GET',
                     data: function (d) {
                         d.identitas = $('#identitas').val();
+                        d.nama_mitra = $('#nama_mitra').val();
                         d.perusahaan_id =  $("#perusahaan_id").val();
                         d.provinsi_id =  $("#provinsi_id").val();
                         d.kota_id =  $("#kota_id").val();

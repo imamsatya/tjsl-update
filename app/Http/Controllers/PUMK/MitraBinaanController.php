@@ -72,7 +72,7 @@ class MitraBinaanController extends Controller
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
-            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active',true)->orderBy('id', 'asc')->get(),
             'provinsi' => Provinsi::where('is_luar_negeri',false)->get(),
             'kota' => Kota::where('is_luar_negeri',false)->get(),
             'sektor_usaha' => SektorUsaha::get(),
@@ -92,7 +92,11 @@ class MitraBinaanController extends Controller
 
     public function datatable(Request $request)
     {
-
+        //fungsi handle limit memory
+        if((int)preg_replace('/[^0-9]/','',ini_get('memory_limit')) < 512){
+            ini_set('memory_limit','512M');
+            ini_set('max_execution_limit','0');
+        }
         try{
             $data = PumkMitraBinaan::select('pumk_mitra_binaans.*','provinsis.nama AS provinsi','kotas.nama AS kota','sektor_usaha.nama AS sektor_usaha','kolekbilitas_pendanaan.nama AS kolektibilitas')
                     ->leftjoin('provinsis','provinsis.id','=','pumk_mitra_binaans.provinsi_id')
@@ -145,6 +149,10 @@ class MitraBinaanController extends Controller
                 $data = $data->where('pumk_mitra_binaans.no_identitas',$request->identitas);
             }
 
+            if($request->nama_mitra){
+                $data = $data->where('pumk_mitra_binaans.nama_mitra','ilike','%'.$request->nama_mitra.'%');
+            }
+
             if($request->bulan_id){
                 $data = $data->where('pumk_mitra_binaans.bulan',(int)$request->bulan_id);
             }else{
@@ -155,7 +163,7 @@ class MitraBinaanController extends Controller
             if($request->tambahan_pendanaan_id){
                 $data = $data->where('pumk_mitra_binaans.id_tambahan_pendanaan',(int)$request->tambahan_pendanaan_id);
             }
-
+           
             return datatables()->of($data->get())
             ->editColumn('nominal_pendanaan', function ($row){
                 $nominal = 0;
@@ -243,7 +251,7 @@ class MitraBinaanController extends Controller
                 return view($this->__route.'.edit',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
-                    'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+                    'perusahaan' => Perusahaan::where('is_active',true)->orderBy('id', 'asc')->get(),
                     'provinsi' => Provinsi::where('is_luar_negeri',false)->get(),
                     'kota' => Kota::where('is_luar_negeri',false)->get(),
                     'sektor_usaha' => SektorUsaha::get(),
@@ -353,7 +361,11 @@ class MitraBinaanController extends Controller
 
     public function export(Request $request)
     {
-        
+        //fungsi handle limit memory
+        if((int)preg_replace('/[^0-9]/','',ini_get('memory_limit')) < 512){
+            ini_set('memory_limit','512M');
+            ini_set('max_execution_limit','0');
+        }
         $data = PumkMitraBinaan::select('pumk_mitra_binaans.*','provinsis.nama AS provinsi','kotas.nama AS kota','sektor_usaha.nama AS sektor_usaha','kolekbilitas_pendanaan.nama AS kolektibilitas',
         'cara_penyalurans.nama AS cara_penyaluran','skala_usahas.name AS skala_usaha','kondisi_pinjaman.nama AS kondisi_pinjaman','jenis_pembayaran.nama AS jenis_pembayaran','perusahaans.nama_lengkap AS bumn')
         ->leftjoin('provinsis','provinsis.id','=','pumk_mitra_binaans.provinsi_id')

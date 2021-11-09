@@ -107,7 +107,9 @@
                         </div>
                         <div class="col-lg-6 pt-7">
                             <button id="cari" class="btn btn-sm btn-success me-3">Cari</button>
+                            @if($can_download_template)
                             <button id="download" class="btn btn-sm btn-primary me-3"><i class="bi bi-download fs-3"></i>Download Template</button>
+                            @endif
                         </div>
                     </div>
                     <div class="separator border-gray-200 mb-10"></div>

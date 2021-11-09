@@ -100,7 +100,7 @@ class UserController extends Controller
         return view($this->__route.'.form',[
             'pagetitle' => $this->pagetitle,
             'actionform' => 'insert',
-            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),                    
             'role' => Role::get(),
             'User' => $user
         ]);
@@ -206,7 +206,8 @@ class UserController extends Controller
                     'actionform' => 'update',
                     'data' => $user,
                     'userRole' => $userRole,
-                    'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+                    // 'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+                    'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),                    
                     'role' => Role::get(),
 
                 ]);

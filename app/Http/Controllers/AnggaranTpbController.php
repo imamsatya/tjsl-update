@@ -70,11 +70,12 @@ class AnggaranTpbController extends Controller
             $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
         }
 
-        if($request->tahun){
-            $anggaran = $anggaran->where('anggaran_tpbs.tahun', $request->tahun);
-            $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.tahun', $request->tahun);
-            $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.tahun', $request->tahun);
-        }
+        $tahun = $request->tahun? $request->tahun : (int)date('Y'); 
+        if($tahun){
+            $anggaran = $anggaran->where('anggaran_tpbs.tahun', $tahun);
+            $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.tahun', $tahun);
+            $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.tahun', $tahun);
+        }        
 
         if($request->pilar_pembangunan_id){
             $anggaran = $anggaran->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
@@ -112,7 +113,7 @@ class AnggaranTpbController extends Controller
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
-            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),                    
             'anggaran' => $anggaran,
             'anggaran_pilar' => $anggaran_pilar,
             'anggaran_bumn' => $anggaran_bumn,
@@ -178,7 +179,7 @@ class AnggaranTpbController extends Controller
             'actionform' => 'insert',
             'pilar' => PilarPembangunan::get(),
             'versi_pilar_id' => $versi_pilar_id,
-            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),                    
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
             'data' => $anggaran_tpb
@@ -309,7 +310,7 @@ class AnggaranTpbController extends Controller
                     'actionform' => 'update',
                     'tpb' => Tpb::get(),
                     'pilar' => PilarPembangunan::get(),
-                    'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+                    'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),                    
                     'data' => $anggaran_tpb
                 ]);
         }catch(Exception $e){}
