@@ -406,6 +406,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::get('index', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@index')->name('laporan_manajemen.laporan_keuangan.index');
                 Route::get('create', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@create')->name('laporan_manajemen.laporan_keuangan.create');
                 Route::post('edit', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@edit')->name('laporan_manajemen.laporan_keuangan.edit');
+                Route::post('show', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@show')->name('laporan_manajemen.laporan_keuangan.show');
                 Route::post('store', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@store')->name('laporan_manajemen.laporan_keuangan.store');
                 Route::post('update', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@update')->name('laporan_manajemen.laporan_keuangan.update');
                 Route::post('delete', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@delete')->name('laporan_manajemen.laporan_keuangan.delete');

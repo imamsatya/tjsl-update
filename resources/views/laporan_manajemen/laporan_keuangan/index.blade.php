@@ -115,9 +115,9 @@
                                 <tr>
                                     <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No.</th>
                                     <th style="font-weight:bold;border-bottom: 1px solid #c8c7c7;">Laporan Manajemen</th>
-                                    <th style="text-align:right;font-weight:bold;width:160px;border-bottom: 1px solid #c8c7c7;">Nilai (Rp.)</th>
+                                    {{-- <th style="text-align:right;font-weight:bold;width:160px;border-bottom: 1px solid #c8c7c7;">Nilai (Rp.)</th> --}}
                                     <th style="text-align:center;font-weight:bold;border-bottom: 1px solid #c8c7c7;">Status</th>
-                                    <th style="text-align:center;width:90px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
+                                    <th style="text-align:center;width:150px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>    
@@ -134,7 +134,7 @@
                                         @endif
                                     </td>
                                     <td>{{$b->nama_lengkap}}</td>
-                                    <td></td>
+                                    {{-- <td></td> --}}
                                     <td style="text-align:center;">
                                         @php
                                         $class = 'primary';
@@ -169,7 +169,7 @@
                                         @endif
                                     </td>
                                     <td>{{$j->nama}}</td>
-                                    <td></td>
+                                    {{-- <td></td> --}}
                                     <td style="text-align:center;">
                                         @php
                                         $class = 'primary';
@@ -183,15 +183,16 @@
                                         <span class="btn cls-log badge badge-light-{{$class}} fw-bolder me-auto px-4 py-3" data-id="{{$j->laporan_manajemen_id}}" >{{$j->status_nama}}</span>
                                         @endif
                                     </td>
-                                    <td style="text-align:center;">
+                                    <td style="text-align:center;width:60px;">
                                         @if($j->status_id!=1)
+                                            <button type="button" class="btn btn-sm btn-light btn-icon btn-info cls-button-show" data-perusahaan_id="{{$b->perusahaan_id}}" data-laporan_keuangan_id="{{$j->laporan_keuangan_id}}" data-id="{{$p->id}}" data-toggle="tooltip" title="Detail {{$p->label}}"><i class="bi bi-info fs-3"></i></button>
                                             <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-perusahaan_id="{{$b->perusahaan_id}}" data-laporan_keuangan_id="{{$j->laporan_keuangan_id}}" data-id="{{$p->id}}" data-toggle="tooltip" title="Ubah data {{$p->label}}"><i class="bi bi-pencil fs-3"></i></button>
                                             <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-perusahaan_id="{{$b->perusahaan_id}}" data-laporan_keuangan_id="{{$j->laporan_keuangan_id}}" data-nama="{{ $j->nama }}" data-toggle="tooltip" title="Hapus data {{ $j->nama }}"><i class="bi bi-trash fs-3"></i></button>
                                         @endif
                                     </td>
                                 </tr>  
                                     
-                                    @php 
+                                    {{-- @php 
                                         $parent = $laporan_parent->where('perusahaan_id', $b->perusahaan_id)->where('laporan_keuangan_id', $j->laporan_keuangan_id);
                                     @endphp 
                                     @foreach ($parent as $p)   
@@ -251,12 +252,12 @@
                                             @endphp 
                                         </tr>  
                                         @endforeach 
-                                    @endforeach
+                                    @endforeach --}}
                                 @endforeach
                             @endforeach
-                            @if($total==0)
+                            {{-- @if($total==0)
                                 <td colspan="5" style="text-align:center;font-style:italic">Data Kosong</td>
-                            @endif
+                            @endif --}}
                             </tbody>
                         </table> 
                     </div>
@@ -305,6 +306,24 @@
             var periode_laporan_id = $('#periode_laporan_id').val();
 
             var url = window.location.origin + '/laporan_manajemen/laporan_keuangan/edit';
+            var form = $('<form action="' + url + '" method="post">' +
+            '@csrf <input type="hidden" name="perusahaan_id" value="' + perusahaan_id + '" />' +
+            '<input type="hidden" name="tahun" value="' + tahun + '" />' +
+            '<input type="hidden" name="laporan_keuangan_id" value="' + laporan_keuangan_id + '" />' +
+            '<input type="hidden" name="periode_laporan_id" value="' + periode_laporan_id + '" />' +
+            '</form>');
+            $('body').append(form);
+            form.submit();
+        });
+
+        $('body').on('click','.cls-button-show',function(){
+            var url = window.location.origin + '/laporan_manajemen/laporan_keuangan/show';
+            var perusahaan_id = $(this).data('perusahaan_id');
+            var tahun = $('#tahun').val();
+            var laporan_keuangan_id = $(this).data('laporan_keuangan_id');
+            var periode_laporan_id = $('#periode_laporan_id').val();
+
+            var url = window.location.origin + '/laporan_manajemen/laporan_keuangan/show';
             var form = $('<form action="' + url + '" method="post">' +
             '@csrf <input type="hidden" name="perusahaan_id" value="' + perusahaan_id + '" />' +
             '<input type="hidden" name="tahun" value="' + tahun + '" />' +

@@ -439,6 +439,84 @@ class LaporanKeuanganController extends Controller
 
     }
 
+    public function show(Request $request)
+    {
+        $id_users = \Auth::user()->id;
+        $users = User::where('id', $id_users)->first();
+        $perusahaan_id = $request->perusahaan_id;
+
+        $periode_laporan = PeriodeLaporan::find($request->periode_laporan_id);
+        $jenis_laporan = LaporanKeuangan::find($request->laporan_keuangan_id);
+        $perusahaan = Perusahaan::find($request->perusahaan_id);
+
+        $parent = LaporanKeuanganNilai::select('laporan_keuangans.nama',
+                                            'relasi_laporan_keuangan.id as relasi_laporan_keuangan_id',
+                                            'relasi_laporan_keuangan.versi_laporan_id',
+                                            'laporan_keuangans.id AS laporan_id',
+                                            'relasi_laporan_keuangan.parent_id',
+                                            'laporan_keuangan_nilais.id',
+                                            'laporan_keuangan_nilais.nilai',
+                                            'laporan_keuangan_parent.kode',
+                                            'laporan_keuangan_parent.label',
+                                            'laporan_keuangan_parent.is_pengurangan',
+                                            'laporan_keuangan_parent.formula',
+                                            'laporan_keuangan_parent.is_input')
+                                ->leftJoin('relasi_laporan_keuangan', 'relasi_laporan_keuangan.id', 'laporan_keuangan_nilais.relasi_laporan_keuangan_id')
+                                ->leftJoin('laporan_keuangans', 'laporan_keuangans.id', 'relasi_laporan_keuangan.laporan_keuangan_id')
+                                ->leftJoin('laporan_keuangan_parent', 'laporan_keuangan_parent.id', 'relasi_laporan_keuangan.parent_id')
+                                ->where('relasi_laporan_keuangan.parent_id','<>',null)
+                                ->where('relasi_laporan_keuangan.child_id',null)
+                                ->where('laporan_keuangans.id', $request->laporan_keuangan_id)
+                                ->where('laporan_keuangan_nilais.periode_laporan_id', $request->periode_laporan_id)
+                                ->where('laporan_keuangan_nilais.perusahaan_id', $request->perusahaan_id)
+                                ->where('laporan_keuangan_nilais.tahun', $request->tahun)
+                                ->distinct('relasi_laporan_keuangan.parent_id')->get();
+
+        $child = [];
+        foreach($parent as $p){
+            $data_child = LaporanKeuanganNilai::select('laporan_keuangans.nama',
+                                            'relasi_laporan_keuangan.id as relasi_laporan_keuangan_id',
+                                            'relasi_laporan_keuangan.versi_laporan_id',
+                                            'laporan_keuangans.id AS laporan_id',
+                                            'relasi_laporan_keuangan.parent_id',
+                                            'relasi_laporan_keuangan.child_id',
+                                            'laporan_keuangan_nilais.id',
+                                            'laporan_keuangan_nilais.nilai',
+                                            'laporan_keuangan_child.kode',
+                                            'laporan_keuangan_child.label',
+                                            'laporan_keuangan_child.is_pengurangan',
+                                            'laporan_keuangan_child.formula',
+                                            'laporan_keuangan_child.is_input')
+                                    ->leftJoin('relasi_laporan_keuangan', 'relasi_laporan_keuangan.id', 'laporan_keuangan_nilais.relasi_laporan_keuangan_id')
+                                    ->leftJoin('laporan_keuangans', 'laporan_keuangans.id', 'relasi_laporan_keuangan.laporan_keuangan_id')
+                                    ->leftJoin('laporan_keuangan_parent', 'laporan_keuangan_parent.id', 'relasi_laporan_keuangan.parent_id')
+                                    ->leftJoin('laporan_keuangan_child', 'laporan_keuangan_child.id', 'relasi_laporan_keuangan.child_id')
+                                    ->where('relasi_laporan_keuangan.child_id','<>',null)
+                                    ->where('laporan_keuangans.id', $request->laporan_keuangan_id)
+                                    ->where('laporan_keuangan_nilais.periode_laporan_id', $request->periode_laporan_id)
+                                    ->where('laporan_keuangan_nilais.perusahaan_id', $request->perusahaan_id)
+                                    ->where('laporan_keuangan_nilais.tahun', $request->tahun)
+                                    ->where('parent_id',$p->parent_id)
+                                    ->distinct('relasi_laporan_keuangan.child_id')->get();
+            $child[$p->parent_id] = $data_child;
+        }
+
+        return view($this->__route.'.show',[
+            'pagetitle' => 'Detail '.$this->pagetitle,
+            'breadcrumb' => 'Laporan Manajemen - Laporan Keuangan - Detail Data',
+            'actionform' => 'insert',
+            'perusahaan' => $perusahaan,
+            'perusahaan_id' => $perusahaan_id,
+            'periode_laporan' => $periode_laporan,
+            'jenis_laporan' => $jenis_laporan,
+            'parent' => $parent,
+            'child' => $child,
+            'tahun' => $request->tahun
+        ]);
+
+    }
+
+
     protected function validateform($request)
     {
         $required['perusahaan_id'] = 'required';
