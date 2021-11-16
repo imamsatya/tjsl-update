@@ -475,6 +475,10 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             });
         });
 
+        Route::prefix('userguide')->group(function(){
+            Route::get('index', 'App\Http\Controllers\UserGuideController@index')->name('userguide.index');
+        });
+
 }); // end login dengan cas
 
 Route::get('cc', function(){
