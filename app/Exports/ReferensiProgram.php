@@ -7,11 +7,14 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\FromView;
 use Illuminate\Contracts\View\View;
+use DB;
 
 class ReferensiProgram implements FromView , WithTitle
 {
-    public function __construct($perusahaan){
+    public function __construct($perusahaan,$bulan,$tahun){
         $this->perusahaan = $perusahaan;
+        $this->bulan = $bulan;
+        $this->tahun = $tahun;
     }
 
     public function view(): View
@@ -20,9 +23,15 @@ class ReferensiProgram implements FromView , WithTitle
         $target_tpb = TargetTpb::select('target_tpbs.*')
                                 ->leftJoin('anggaran_tpbs','anggaran_tpbs.id','target_tpbs.anggaran_tpb_id')
                                 ->where('anggaran_tpbs.perusahaan_id',$this->perusahaan->id)
-                                ->where('target_tpbs.status_id',$is_finish)
-                                ->get();
-                                
+                                ->where('target_tpbs.status_id',$is_finish);
+        if($this->bulan){
+            $target_tpb = $target_tpb->whereMonth('target_tpbs.created_at', '=',$this->bulan);
+        }                                
+        if($this->tahun){
+            $target_tpb = $target_tpb->whereYear('target_tpbs.created_at', '=',$this->tahun);
+        }
+        $target_tpb = $target_tpb->get();
+                          
         return view('realisasi.administrasi.referensi_program', [
             'target_tpb' => $target_tpb
         ]);
