@@ -476,6 +476,11 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
 
         Route::prefix('userguide')->group(function(){
             Route::get('index', 'App\Http\Controllers\UserGuideController@index')->name('userguide.index');
+            Route::post('create', 'App\Http\Controllers\UserGuideController@create')->name('userguide.create');
+            Route::post('edit', 'App\Http\Controllers\UserGuideController@edit')->name('userguide.edit');
+            Route::post('store', 'App\Http\Controllers\UserGuideController@store')->name('userguide.store');
+            Route::post('delete', 'App\Http\Controllers\UserGuideController@delete')->name('userguide.delete');
+            Route::get('datatable', 'App\Http\Controllers\UserGuideController@datatable')->name('userguide.datatable');
         });
 
 }); // end login dengan cas
