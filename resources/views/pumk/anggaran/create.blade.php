@@ -54,7 +54,7 @@
         <div class="col-lg-12">
             <div class="col-md-12">
                 <br>
-                <p style="color: red;"><strong>Belum dapat diproses! Status RKA belum Finish.</strong> </p>
+                <p style="color: red;"><strong id="notif-text"></strong> </p>
             </div>
         </div>	
     </div>	
@@ -294,16 +294,24 @@
             type: "POST",
             dataType: "json", 
             success: function(data){
-                if(data == 0){
+                if(data == 'belum_finish'){
                     $('.anggaran-header').hide();
                     $('.anggaran-footer').hide();
                     $('#notif').show();
-                }else if(data == 1){
+                    $('#notif-text').text('Status RKA belum Finish !');
+                }
+                else if(data == 'undefined'){
+                    $('.anggaran-header').hide();
+                    $('.anggaran-footer').hide();
+                    $('#notif').show();
+                    $('#notif-text').text('RKA belum diinput !');
+                }
+                else if(data == 1){
                     $('.anggaran-header').show();
                     $('.anggaran-footer').show();
                     $(".input-saldo-awal").val(0);
                     $('#notif').hide();
-                }else{
+                }else {
                     $('.anggaran-header').show();
                     $('.anggaran-footer').show();
                     $(".input-saldo-awal").val("");

@@ -24,7 +24,7 @@ class FetchController extends Controller
                                 ->where('relasi_pilar_tpbs.pilar_pembangunan_id',$pilar_pembangunan_id)
                                 ->where('relasi_pilar_tpbs.versi_pilar_id',$versi_pilar_id)
                                 ->get();
-        
+
         foreach($data as $item){
             $return[] = ['id' => $item->id, 'nama' => $item->no_tpb . ' - ' . $item->nama];
         }
@@ -32,19 +32,20 @@ class FetchController extends Controller
     }
 
     public function getPumkAnggaranByPeriode(Request $request)
-    {
+    { 
             $RKA_id = PeriodeLaporan::where('nama','RKA')->pluck('id')->first();
-
+      
             $data = PumkAnggaran::select('saldo_awal','status_id')
             ->where('bumn_id',$request->bumn_id)
             ->where('tahun',$request->tahun)
             ->where('periode_id',$RKA_id)
             ->orderby('id','desc')->first();
-
-            if($data !== null){
+    
+            if($data !== null){ 
                 $statusRKA = Status::where('id',$data->status_id)->first();
                 if($statusRKA->nama !== 'Finish'){
-                    $return = 0;                    
+
+                    $return = 'belum_finish';                    
                 }else{
                     $return = number_format($data->saldo_awal);
                 }
@@ -52,7 +53,7 @@ class FetchController extends Controller
                 if($request->periode_id == $RKA_id){
                     $return = 1;
                 }else{
-                    $return = 0;
+                    $return = 'undefined';
                 }
             }
 

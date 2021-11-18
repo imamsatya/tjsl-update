@@ -433,6 +433,21 @@ class AnggaranController extends Controller
             'title' => 'Error'
         ];
 
+        $cek_data = PumkAnggaran::select('saldo_awal','status_id')
+        ->where('bumn_id',$request->bumn_id)
+        ->where('tahun',$request->tahun)
+        ->where('periode_id',$request->periode_id)
+        ->count();
+
+        if($cek_data > 0 && $request->actionform == 'insert'){
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Data sudah ada.',
+                'title' => 'Gagal'
+            ];
+            return response()->json($result);
+        }
+
         switch ($request->input('actionform')) {
             case 'insert': DB::beginTransaction();
                             try{
