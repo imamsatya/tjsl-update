@@ -401,6 +401,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::get('datatable', 'App\Http\Controllers\LaporanManajemenController@datatable')->name('laporan_manajemen.datatable');
             Route::post('validasi', 'App\Http\Controllers\LaporanManajemenController@validasi')->name('laporan_manajemen.validasi');
             Route::post('log_status', 'App\Http\Controllers\LaporanManajemenController@log_status')->name('laporan_manajemen.log_status');
+            Route::get('addbumn/{id?}/{tahun?}', 'App\Http\Controllers\LaporanManajemenController@addbumnlaporanmanajemen')->name('laporan_manajemen.addbumnlaporanmanajemen');
             
             Route::prefix('laporan_keuangan')->group(function(){
                 Route::get('index', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@index')->name('laporan_manajemen.laporan_keuangan.index');

@@ -433,4 +433,53 @@ class LaporanManajemenController extends Controller
         $param['user_id'] = \Auth::user()->id;
         LogLaporanManajemen::create((array)$param);
     }
+
+    public function addbumnlaporanmanajemen($id,$tahun)
+    {  
+        $periode = PeriodeLaporan::select('id')->get();
+        $cek = LaporanManajemen::where('perusahaan_id',$id)->where('tahun',$tahun)->count();
+        $status = Status::where('nama','ilike','%unfilled%')->pluck('id')->first();
+        
+        if($cek == 0){
+            foreach($periode as $val){
+                LaporanManajemen::insert([
+                    'perusahaan_id'=>$id,
+                    'periode_laporan_id'=>$val->id,
+                    'status_id'=>$status,
+                    'tahun'=>$tahun
+                ]);
+            }
+            return response()->json('Berhasil generate data.');
+        }
+
+        if($cek > 0 && $cek < $periode->count()){
+            $cek_lap = LaporanManajemen::select('periode_laporan_id')->where('perusahaan_id',$id)->where('tahun',$tahun)->get();
+
+            $perr = [];
+            foreach($periode as $k=>$per){
+                $perr[] = $per->id;
+            }
+            $lapp = [];
+            foreach($cek_lap as $key=>$lap){
+                $lapp[] = $lap->periode_laporan_id;
+            }
+            
+            $result = array_diff($perr,$lapp);
+
+            foreach($result as $v){
+                LaporanManajemen::insert([
+                    'perusahaan_id'=>$id,
+                    'periode_laporan_id'=>$v,
+                    'status_id'=>$status,
+                    'tahun'=>$tahun
+                 ]);
+            }
+            return response()->json('Berhasil melengkapi data.');
+
+        }
+
+        if($cek > 0 && $cek == $periode->count()){
+            return response()->json('Data sudah ada.');
+        }
+    }
 }
