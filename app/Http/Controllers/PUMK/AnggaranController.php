@@ -471,11 +471,11 @@ class AnggaranController extends Controller
                                 $param['saldo_akhir'] = $request->saldo_akhir == null? 0 :preg_replace('/[^-0-9]/','',$request->saldo_akhir);
                                 $param['created_by'] = \Auth::user()->id;
                                 $param['created_at'] = now();
-                                if($param['saldo_awal'] == 0 || $param['saldo_awal'] == null || $param['saldo_awal'] == ""){
-                                    $param['status_id'] = DB::table('statuses')->where('nama','Unfilled')->pluck('id')->first();
-                                }else{
-                                    $param['status_id'] = DB::table('statuses')->where('nama','ilike','%In Progress%')->pluck('id')->first();
-                                } 
+                                // if($param['saldo_awal'] == 0 || $param['saldo_awal'] == null || $param['saldo_awal'] == ""){
+                                //     $param['status_id'] = DB::table('statuses')->where('nama','Unfilled')->pluck('id')->first();
+                                // }else{
+                                $param['status_id'] = DB::table('statuses')->where('nama','ilike','%In Progress%')->pluck('id')->first();
+                                // } 
 
                                 $data = PumkAnggaran::create($param);
 
@@ -526,7 +526,7 @@ class AnggaranController extends Controller
                                         $param['status_id'] = $data_status; 
                                     }
                                 }else{
-                                    $data_status = Status::where('nama','Unfilled')->pluck('id')->first();
+                                    $data_status = Status::where('nama','In Progress')->pluck('id')->first();
                                     $param['status_id'] = $data_status;
                                 }
                                 
