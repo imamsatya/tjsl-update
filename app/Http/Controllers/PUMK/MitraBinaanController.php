@@ -94,7 +94,7 @@ class MitraBinaanController extends Controller
     {
         //fungsi handle limit memory
         if((int)preg_replace('/[^0-9]/','',ini_get('memory_limit')) < 512){
-            ini_set('memory_limit','512M');
+            ini_set('memory_limit','-1');
             ini_set('max_execution_limit','0');
         }
         try{
@@ -363,7 +363,7 @@ class MitraBinaanController extends Controller
     {
         //fungsi handle limit memory
         if((int)preg_replace('/[^0-9]/','',ini_get('memory_limit')) < 512){
-            ini_set('memory_limit','2048M');
+            ini_set('memory_limit','-1');
             ini_set('max_execution_limit','0');
         }
         $data = PumkMitraBinaan::select('pumk_mitra_binaans.*','provinsis.nama AS provinsi','kotas.nama AS kota','sektor_usaha.nama AS sektor_usaha','kolekbilitas_pendanaan.nama AS kolektibilitas',

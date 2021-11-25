@@ -210,7 +210,7 @@ class UploadMitraBinaanController extends Controller
            
           //fungsi 
            if((int)preg_replace('/[^0-9]/','',ini_get('memory_limit')) < 512){
-                ini_set('memory_limit','512M');
+                ini_set('memory_limit','-1');
                 ini_set('max_execution_limit','0');
            }
            
