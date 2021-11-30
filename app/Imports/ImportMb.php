@@ -629,6 +629,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             'kode_upload' => $kode,
                             'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):2
                         ]);
+                        DB::commit();
                         $berhasil++;
                     }else{
                         // jika no ktp sudah ada
@@ -775,8 +776,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             'keterangan_gagal' => $keterangan,
                             'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):$ar['id_tambahan_pendanaan']
                         ]);
-                    $gagal++;
                     DB::commit();
+                    $gagal++;
                 }catch(\Exception $e){dd($e->getMessage());
                     DB::rollback();
                 }
