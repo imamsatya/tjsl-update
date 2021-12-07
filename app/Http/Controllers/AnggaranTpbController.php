@@ -89,17 +89,19 @@ class AnggaranTpbController extends Controller
             $anggaran_bumn = $anggaran_bumn->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
         }
         
-        $anggaran_pilar = $anggaran_pilar->select('anggaran_tpbs.perusahaan_id', 
+        $anggaran_pilar = $anggaran_pilar->select('anggaran_tpbs.perusahaan_id','anggaran_tpbs.tahun', 
                                                     'relasi_pilar_tpbs.pilar_pembangunan_id', 
                                                     DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'), 
                                                     'pilar_pembangunans.nama as pilar_nama', 
                                                     'pilar_pembangunans.id as pilar_id')
                                         ->groupBy('relasi_pilar_tpbs.pilar_pembangunan_id', 
                                                     'anggaran_tpbs.perusahaan_id',
+                                                    'anggaran_tpbs.tahun',
                                                     'pilar_pembangunans.nama', 
                                                     'pilar_pembangunans.id')
                                         ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
                                         ->get();
+
         $anggaran_bumn = $anggaran_bumn->select('anggaran_tpbs.perusahaan_id', 
                                                 'perusahaans.nama_lengkap',
                                                 'perusahaans.id',
@@ -358,6 +360,7 @@ class AnggaranTpbController extends Controller
         try{
             $data = AnggaranTpb::LeftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
                                     ->where('anggaran_tpbs.perusahaan_id', (int)$request->input('perusahaan_id'))
+                                    ->where('anggaran_tpbs.tahun', (int)$request->input('tahun'))
                                     ->where('relasi_pilar_tpbs.pilar_pembangunan_id', (int)$request->input('id'));
             foreach($data as $a){
                 $log = LogAnggaranTpb::where('anggaran_tpb_id', $a->id);
