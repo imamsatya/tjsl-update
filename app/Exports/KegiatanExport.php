@@ -46,7 +46,7 @@ class KegiatanExport implements FromView , WithTitle, WithColumnFormatting
     public function columnFormats(): array
     {
         return [
-            'E' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2,
+            //'E' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2,
         ];
     }
 }

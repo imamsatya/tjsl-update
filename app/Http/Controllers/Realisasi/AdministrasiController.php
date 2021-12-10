@@ -532,6 +532,7 @@ class AdministrasiController extends Controller
 
         $kegiatan = $kegiatan->get();
 
+
         $namaFile = "Data Kegiatan ".date('dmY').".xlsx";
         return Excel::download(new KegiatanExport($kegiatan,$request->tahun), $namaFile);
     }
