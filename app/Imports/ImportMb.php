@@ -595,8 +595,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     //buat data baru jika identitas & kolek belum ada
                     if(($cek_identitas && $cek_kolektibilitas) == 0 ){
                         $mitra = PumkMitraBinaan::create([
-                            'bulan' => (int)date('m')-1,
-                            'tahun' => (int)date('Y'),
+                            'bulan' => (int)date('m') == 1? 12 : (int)date('m')-1,
+                            'tahun' => (int)date('m') == 1? (int)date('Y')-1 : (int)date('Y'),
                             'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                             'no_identitas' => rtrim(preg_replace('/[^0-9]/','',$ar['no_identitas'])),
                             'provinsi_id' => rtrim($ar['id_provinsi']),
@@ -638,8 +638,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
 
                         if($ar['id_tambahan_pendanaan'] == $Tambah_ya){
                             $mitra = PumkMitraBinaan::create([
-                                'bulan' => (int)date('m')-1,
-                                'tahun' => (int)date('Y'),
+                                'bulan' => (int)date('m') == 1? 12 : (int)date('m')-1,
+                                'tahun' => (int)date('m') == 1? (int)date('Y')-1 : (int)date('Y'),
                                 'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                                 'no_identitas' => rtrim(preg_replace('/[^0-9]/','',$ar['no_identitas'])),
                                 'provinsi_id' => rtrim($ar['id_provinsi']),
@@ -689,8 +689,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                                     'is_arsip'=> true
                                 ]);
                             $mitra = PumkMitraBinaan::create([                             
-                            'bulan' => (int)date('m')-1,
-                            'tahun' => (int)date('Y'),
+                            'bulan' => (int)date('m') == 1? 12 : (int)date('m')-1,
+                            'tahun' => (int)date('m') == 1? (int)date('Y')-1 : (int)date('Y'),
                             'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                             'no_identitas' => rtrim(preg_replace('/[^0-9]/','',$ar['no_identitas'])),
                             'provinsi_id' => rtrim($ar['id_provinsi']),
@@ -740,42 +740,42 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                 try{
                         // record data invalid identitas ke gagal upload
                         //$keterangan_gagal = 'no.identitas tidak valid/lebih dari 16 angka';
-                        $mitra = UploadGagalPumkMitraBinaan::create([
-                            'bulan' => (int)date('m'),
-                            'tahun' => (int)date('Y'),
-                            'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
-                            'no_identitas' => rtrim(preg_replace('/[^0-9]/','',$ar['no_identitas'])),
-                            'provinsi_id' => rtrim($ar['id_provinsi']),
-                            'kota_id' => rtrim($ar['id_kota']),
-                            'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
-                            'skala_usaha_id' => rtrim($ar['id_skala_usaha']),
-                            'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']),
-                            'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
-                            'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
-                            'jenis_pembayaran_id' => rtrim($ar['id_jenis_pembayaran']),
-                            'bank_account_id' => rtrim($ar['id_bank_account']),
-                            'nilai_aset' => rtrim($ar['nilai_aset']),
-                            'nilai_omset' => rtrim($ar['nilai_omset']),
-                            'no_pinjaman' => rtrim($ar['no_pinjaman']),
-                            'sumber_dana' => str_replace('.',',',$ar['sumber_dana']),
-                            'tgl_awal' => is_numeric($ar['tgl_awal_pendanaan'])? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_awal_pendanaan'])->format('d-m-Y') : $ar['tgl_awal_pendanaan'],
-                            'tgl_jatuh_tempo' => is_numeric($ar['tgl_jatuh_tempo']) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_jatuh_tempo'])->format('d-m-Y') : $ar['tgl_jatuh_tempo'],
-                            'nominal_pendanaan' => rtrim($ar['nominal_pendanaan']),
-                            'saldo_pokok_pendanaan' => rtrim($ar['saldo_pokok_pendanaan']),
-                            'saldo_jasa_adm_pendanaan' => rtrim($ar['saldo_jasa_admin_pendanaan']),
-                            'penerimaan_pokok_bulan_berjalan' => rtrim($ar['penerimaan_pokok_bulan_berjalan']),
-                            'penerimaan_jasa_adm_bulan_berjalan' => rtrim($ar['penerimaan_jasa_admin_bulan_berjalan']),
-                            'tgl_penerimaan_terakhir' => is_numeric($ar['tgl_penerimaan_terakhir']) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_penerimaan_terakhir'])->format('d-m-Y') : $ar['tgl_penerimaan_terakhir'],
-                            'jumlah_sdm' => $ar['sdm_di_mb'] ? rtrim($ar['sdm_di_mb']):0,
-                            'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
-                            'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
-                            'hasil_produk_jasa' => $ar['produkjasa_yang_dihasilkan'] ? rtrim($ar['produkjasa_yang_dihasilkan']):0,
-                            'created_by_id' => \Auth::user()->id,
-                            'perusahaan_id' => $perusahaan->id,
-                            'kode_upload' => $kode,
-                            'keterangan_gagal' => $keterangan,
-                            'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):$ar['id_tambahan_pendanaan']
-                        ]);
+                        //$mitra = UploadGagalPumkMitraBinaan::create([
+                        //    'bulan' => (int)date('m') == 1? 12 : (int)date('m')-1,
+                        //    'tahun' => (int)date('m') == 1? (int)date('Y')-1 : (int)date('Y'),
+                        //    'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
+                        //    'no_identitas' => rtrim(preg_replace('/[^0-9]/','',$ar['no_identitas'])),
+                        //    'provinsi_id' => rtrim($ar['id_provinsi']),
+                        //    'kota_id' => rtrim($ar['id_kota']),
+                        //    'sektor_usaha_id' => rtrim($ar['id_sektor_usaha']),
+                        //    'skala_usaha_id' => rtrim($ar['id_skala_usaha']),
+                        //    'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']),
+                        //    'kolektibilitas_id' => rtrim($ar['id_kolektibilitas_pendanaan']),
+                        //    'kondisi_pinjaman_id' => rtrim($ar['id_kondisi_pinjaman']),
+                        //    'jenis_pembayaran_id' => rtrim($ar['id_jenis_pembayaran']),
+                        //    'bank_account_id' => rtrim($ar['id_bank_account']),
+                        //    'nilai_aset' => rtrim($ar['nilai_aset']),
+                        //    'nilai_omset' => rtrim($ar['nilai_omset']),
+                        //    'no_pinjaman' => rtrim($ar['no_pinjaman']),
+                        //    'sumber_dana' => str_replace('.',',',$ar['sumber_dana']),
+                        //    'tgl_awal' => is_numeric($ar['tgl_awal_pendanaan'])? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_awal_pendanaan'])->format('d-m-Y') : $ar['tgl_awal_pendanaan'],
+                        //    'tgl_jatuh_tempo' => is_numeric($ar['tgl_jatuh_tempo']) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_jatuh_tempo'])->format('d-m-Y') : $ar['tgl_jatuh_tempo'],
+                        //    'nominal_pendanaan' => rtrim($ar['nominal_pendanaan']),
+                        //    'saldo_pokok_pendanaan' => rtrim($ar['saldo_pokok_pendanaan']),
+                        //    'saldo_jasa_adm_pendanaan' => rtrim($ar['saldo_jasa_admin_pendanaan']),
+                        //    'penerimaan_pokok_bulan_berjalan' => rtrim($ar['penerimaan_pokok_bulan_berjalan']),
+                        //    'penerimaan_jasa_adm_bulan_berjalan' => rtrim($ar['penerimaan_jasa_admin_bulan_berjalan']),
+                        //    'tgl_penerimaan_terakhir' => is_numeric($ar['tgl_penerimaan_terakhir']) ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_penerimaan_terakhir'])->format('d-m-Y') : $ar['tgl_penerimaan_terakhir'],
+                        //    'jumlah_sdm' => $ar['sdm_di_mb'] ? rtrim($ar['sdm_di_mb']):0,
+                        //    'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
+                        //    'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
+                        //    'hasil_produk_jasa' => $ar['produkjasa_yang_dihasilkan'] ? rtrim($ar['produkjasa_yang_dihasilkan']):0,
+                        //    'created_by_id' => \Auth::user()->id,
+                        //    'perusahaan_id' => $perusahaan->id,
+                        //    'kode_upload' => $kode,
+                        //    'keterangan_gagal' => $keterangan,
+                        //    'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):$ar['id_tambahan_pendanaan']
+                        //]);
                     DB::commit();
                     $gagal++;
                 }catch(\Exception $e){dd($e->getMessage());
@@ -783,7 +783,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                 }
             } 
         }
-   //     dump($keterangan);
+
         $mb_upload = UploadPumkMitraBinaan::find((int)$this->mb_upload);
         $param['perusahaan_id'] = $perusahaan->id;
         $param['tahun'] = $this->tahun;
