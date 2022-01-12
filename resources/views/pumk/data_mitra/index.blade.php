@@ -582,82 +582,105 @@
 
     function exportExcel()
     {
-        $.ajax({
-            type: 'post',
-            data: {
-                perusahaan_id :  $("#perusahaan_id").val(),
-                provinsi_id :  $("#provinsi_id").val(),
-                kota_id :  $("#kota_id").val(),
-                sektor_usaha_id :  $("#sektor_usaha_id").val(),
-                cara_penyaluran_id :  $("#cp_id").val(),
-                skala_usaha_id :  $("#skala_usaha_id").val(),
-                kolektibilitas_id :  $("#kolekbilitas_id").val(),
-                kondisi_pinjaman_id :  $("#kondisi_id").val(),
-                jenis_pembayaran_id :  $("#jp_id").val(),
-                bank_account_id :  $("#bank_account_id").val(),
-                identitas : $('#identitas').val()
-            },
-            beforeSend: function () {
-                $.blockUI();
-            },
-            url: urlexportmitra,
-            xhrFields: {
-                responseType: 'blob',
-            },
-            success: function(data){
-                $.unblockUI();
+        bulan_export =  $("#bulan_id").val();
+        tahun_export =  $("#tahuns").val();
 
-                var today = new Date();
-                var dd = String(today.getDate()).padStart(2, '0');
-                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-                var yyyy = today.getFullYear();
-                
-                today = dd + '-' + mm + '-' + yyyy;
-                var filename = 'Data Mitra Binaan '+today+'.xlsx';
-
-                var blob = new Blob([data], {
-                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                });
-                var link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.download = filename;
-
-                document.body.appendChild(link);
-
-                link.click();
-                document.body.removeChild(link);
-            },
-            error: function(jqXHR, exception){
-                $.unblockUI();
-                    var msgerror = '';
-                    if (jqXHR.status === 0) {
-                        msgerror = 'jaringan tidak terkoneksi.';
-                    } else if (jqXHR.status == 404) {
-                        msgerror = 'Halaman tidak ditemukan. [404]';
-                    } else if (jqXHR.status == 500) {
-                        msgerror = 'Internal Server Error [500].';
-                    } else if (exception === 'parsererror') {
-                        msgerror = 'Requested JSON parse gagal.';
-                    } else if (exception === 'timeout') {
-                        msgerror = 'RTO.';
-                    } else if (exception === 'abort') {
-                        msgerror = 'Gagal request ajax.';
-                    } else {
-                        msgerror = 'Error.\n' + jqXHR.responseText;
-                    }
+        if(bulan_export == ''){
             swal.fire({
-                    title: "Error System",
-                    html: msgerror+', coba ulangi kembali !!!',
-                    icon: 'error',
-
-                    buttonsStyling: true,
-
-                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                 title: "Bulan belum dipilih !",
+                 html: '',
+                 icon: 'error',
+                 buttonsStyling: true,
+                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
             });      
-                
-            }
-        });
-        return false;
+        }else if(tahun_export == ''){
+            swal.fire({
+                 title: "Tahun belum dipilih !",
+                 html: '',
+                 icon: 'error',
+                 buttonsStyling: true,
+                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+            });      
+        }else{
+            $.ajax({
+                type: 'post',
+                data: {
+                    perusahaan_id :  $("#perusahaan_id").val(),
+                    provinsi_id :  $("#provinsi_id").val(),
+                    kota_id :  $("#kota_id").val(),
+                    sektor_usaha_id :  $("#sektor_usaha_id").val(),
+                    cara_penyaluran_id :  $("#cp_id").val(),
+                    skala_usaha_id :  $("#skala_usaha_id").val(),
+                    kolektibilitas_id :  $("#kolekbilitas_id").val(),
+                    kondisi_pinjaman_id :  $("#kondisi_id").val(),
+                    jenis_pembayaran_id :  $("#jp_id").val(),
+                    bank_account_id :  $("#bank_account_id").val(),
+                    identitas : $('#identitas').val(),
+                    bulan_export : bulan_export,
+                    tahun_export : tahun_export
+                },
+                beforeSend: function () {
+                    $.blockUI();
+                },
+                url: urlexportmitra,
+                xhrFields: {
+                    responseType: 'blob',
+                },
+                success: function(data){
+                    $.unblockUI();
+
+                    var today = new Date();
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                    var yyyy = today.getFullYear();
+                    
+                    today = dd + '-' + mm + '-' + yyyy;
+                    var filename = 'Data Mitra Binaan '+today+'.xlsx';
+
+                    var blob = new Blob([data], {
+                        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    });
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = filename;
+
+                    document.body.appendChild(link);
+
+                    link.click();
+                    document.body.removeChild(link);
+                },
+                error: function(jqXHR, exception){
+                    $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                });      
+                    
+                }
+            });
+            return false;
+        }
     }
     
 </script>

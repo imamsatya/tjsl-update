@@ -430,6 +430,14 @@ class MitraBinaanController extends Controller
         if($request->identitas){
             $data = $data->where('pumk_mitra_binaans.no_identitas',$request->identitas);
         }
+
+        if($request->bulan_export){
+            $data = $data->where('pumk_mitra_binaans.bulan',$request->bulan_export);
+        }
+
+        if($request->tahun_export){
+            $data = $data->where('pumk_mitra_binaans.tahun',$request->tahun_export);
+        }
      
         $mitra = $data->where('is_arsip',false)->get();
 
