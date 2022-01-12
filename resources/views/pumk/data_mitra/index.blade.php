@@ -130,7 +130,7 @@
                         </div>
                     </div>
                     <div class="form-group row  mb-5">
-                        <div class="col-lg-3">
+                        <div class="col-lg-2">
                             <label>Jenis Pembayaran</label>
                             <select id="jp_id" class="form-select form-select-solid form-select2" name="jp_id" data-kt-select2="true" data-placeholder="Pilih Jenis" data-allow-clear="true">
                                 <option></option>
@@ -149,6 +149,14 @@
                             </select>
                         </div>
                         <div class="col-lg-3">
+                            <label>Tambahan Pendanaan</label>
+                            <select class="form-select form-select-solid form-select2" id="tambahan_pendanaan_id" name="tambahan_pendanaan_id" data-kt-select2="true" data-placeholder="Pilih status Tambahan" data-allow-clear="true">
+                                <option></option>
+                                    <option value="1" >Ya</option>
+                                    <option value="2" >Tidak</option>
+                            </select>
+                        </div>                        
+                        <div class="col-lg-2">
                             <label>Bulan</label>
                             <select class="form-select form-select-solid form-select2" id="bulan_id" name="bulan_id" data-kt-select2="true" data-placeholder="Pilih Bulan" data-allow-clear="true">
                                 <option></option>
@@ -157,12 +165,15 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-lg-3">
-                            <label>Tambahan Pendanaan</label>
-                            <select class="form-select form-select-solid form-select2" id="tambahan_pendanaan_id" name="tambahan_pendanaan_id" data-kt-select2="true" data-placeholder="Pilih status Tambahan" data-allow-clear="true">
+                        <div class="col-lg-2">
+                            <label>Tahun</label>
+                            <select class="form-select form-select-solid form-select2" id="tahuns" name="tahuns" data-kt-select2="true" data-placeholder="Pilih Tahun" data-allow-clear="true">
                                 <option></option>
-                                    <option value="1" >Ya</option>
-                                    <option value="2" >Tidak</option>
+                                @php
+                                for($i = date("Y")+1; $i>=2020; $i--){ @endphp
+                                <option value="{{$i}}" {{$i == date("Y")? 'selected="selected"' : ''}}>{{$i}}</option>
+                                @php }
+                                @endphp
                             </select>
                         </div>
 
@@ -252,6 +263,7 @@
                         d.jenis_pembayaran_id =  $("#jp_id").val();
                         d.bank_account_id =  $("#bank_account_id").val();
                         d.bulan_id =  $("#bulan_id").val();
+                        d.tahuns =  $("#tahuns").val();
                         d.tambahan_pendanaan_id =  $("#tambahan_pendanaan_id").val();
                     }
             },
@@ -317,7 +329,16 @@
     });
 
     $('#proses').click(function(){
-        $('#datatable').DataTable().draw(true);
+        let bulan = $("#bulan_id").val();
+        let tahun = $("#tahuns").val();
+
+        if(tahun == ''){
+            alert('tahun wajib diisi!');          
+        }else if(bulan == ''){
+            alert('bulan wajib diisi!');          
+        }else{
+            $('#datatable').DataTable().draw(true);
+        }
     }); 
 
     $('#reset').click(function(){

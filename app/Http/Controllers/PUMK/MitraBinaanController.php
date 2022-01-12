@@ -160,10 +160,17 @@ class MitraBinaanController extends Controller
                 $data = $data->where('pumk_mitra_binaans.bulan',$static_bulan);
             }
 
+            if($request->tahuns){
+                $data = $data->where('pumk_mitra_binaans.tahun',(int)$request->tahuns);
+            }else{
+                $static_tahun = (int)date('Y');
+                $data = $data->where('pumk_mitra_binaans.tahun',$static_tahun);
+            }            
+
             if($request->tambahan_pendanaan_id){
                 $data = $data->where('pumk_mitra_binaans.id_tambahan_pendanaan',(int)$request->tambahan_pendanaan_id);
             }
-           
+
             return datatables()->of($data->get())
             ->editColumn('nominal_pendanaan', function ($row){
                 $nominal = 0;
