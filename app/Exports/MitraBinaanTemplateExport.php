@@ -29,11 +29,12 @@ class MitraBinaanTemplateExport implements FromView , WithTitle
     //   } 
       $perusahaan = empty($this->perusahaan)? 'PT/PERUM ... ' : $this->perusahaan->nama_lengkap; 
       
-      $bulan_static = (int)date('m')-1;
+      $bulan_static = (int)date('m') == 1? 12 : (int)date('m');
+      $tahun_static = (int)date('m') == 1? (int)date('Y')-1 : (int)date('Y');
       $bulan = Bulan::where('id',$bulan_static)->pluck('nama')->first();
 
       return view('pumk.upload_data_mitra.template', [
-          'periode' => "Periode : ".$bulan."-". date('Y'), 
+          'periode' => "Periode : ".$bulan."-".$tahun_static, 
           'perusahaan' => $perusahaan, 
           'data' => $data, 
       ]);
