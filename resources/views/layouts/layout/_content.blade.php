@@ -1,6 +1,6 @@
 							
 							<!--begin::Container-->
-							<div id="kt_content_container" class="container">
+							{{-- <div id="kt_content_container" class="container"> --}}
 								
 								<!--begin::Row-->
 								<div class="row gy-5 g-xl-8">
@@ -105,6 +105,6 @@
 								</div>
 								<!--end::Row-->
 								
-							</div>
+							{{-- </div> --}}
 							<!--end::Container-->
 							
