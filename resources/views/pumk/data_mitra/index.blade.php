@@ -584,6 +584,7 @@
     {
         bulan_export =  $("#bulan_id").val();
         tahun_export =  $("#tahuns").val();
+        bumn =  $("#perusahaan_id").val();
 
         if(bulan_export == ''){
             swal.fire({
@@ -601,6 +602,14 @@
                  buttonsStyling: true,
                  confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
             });      
+        }else if(bumn == ''){
+            swal.fire({
+                 title: "Perusahaan belum dipilih !",
+                 html: '',
+                 icon: 'error',
+                 buttonsStyling: true,
+                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+            });                  
         }else{
             $.ajax({
                 type: 'post',
