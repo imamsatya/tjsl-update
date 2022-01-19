@@ -26,3 +26,7 @@ Route::get('service-tpb-ref', 'App\Http\Controllers\ApiController@getreferensitp
 Route::get('service-pilar-ref', 'App\Http\Controllers\ApiController@getreferensipilar');
 Route::get('service-kodetujuan-ref', 'App\Http\Controllers\ApiController@getreferensikodetujuantpb');
 Route::get('service-kodeindikator-ref', 'App\Http\Controllers\ApiController@getreferensikodeindikator');
+Route::get('service-pelaksanaanprogram-ref', 'App\Http\Controllers\ApiController@getreferensipelaksanaanprogram');
+Route::get('service-satuanukur-ref', 'App\Http\Controllers\ApiController@getreferensisatuanukur');
+Route::get('service-coresubject-ref', 'App\Http\Controllers\ApiController@getreferensicoresubject');
+Route::get('service-users', 'App\Http\Controllers\ApiController@getuserbumn');

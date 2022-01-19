@@ -11,6 +11,10 @@ use App\Models\Tpb;
 use App\Models\PilarPembangunan;
 use App\Models\KodeTujuanTpb;
 use App\Models\KodeIndikator;
+use App\Models\SatuanUkur;
+use App\Models\CoreSubject;
+use App\Models\User;
+use App\Models\CaraPenyaluran; // pelaksanaan program
 
 
 class ApiController extends Controller
@@ -166,6 +170,95 @@ class ApiController extends Controller
             ];
     
             $result = KodeIndikator::select($select)->get();
+    
+            return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
+        }
+    }
+
+
+    public function getreferensipelaksanaanprogram(Request $request)
+    {
+        $ip = $request->getClientIp();
+        $param = '127.0.0.1';
+
+        if($ip !== $param){
+            $result = "Forbidden Access!";
+        
+            return response()->json(['message' => $result]);            
+        }else{
+            $select = [
+                "id",
+                "nama",
+            ];
+    
+            $result = CaraPenyaluran::select($select)->get();
+    
+            return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
+        }
+    }
+
+    public function getreferensisatuanukur(Request $request)
+    {
+        $ip = $request->getClientIp();
+        $param = '127.0.0.1';
+
+        if($ip !== $param){
+            $result = "Forbidden Access!";
+        
+            return response()->json(['message' => $result]);            
+        }else{
+            $select = [
+                "id",
+                "nama AS satuan_ukur",
+                "keterangan"
+            ];
+    
+            $result = SatuanUkur::select($select)->get();
+    
+            return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
+        }
+    }
+
+    public function getreferensicoresubject(Request $request)
+    {
+        $ip = $request->getClientIp();
+        $param = '127.0.0.1';
+
+        if($ip !== $param){
+            $result = "Forbidden Access!";
+        
+            return response()->json(['message' => $result]);            
+        }else{
+            $select = [
+                "id",
+                "nama AS core_subject",
+                "keterangan"
+            ];
+    
+            $result = CoreSubject::select($select)->get();
+    
+            return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
+        }
+    }
+
+    public function getuserbumn(Request $request)
+    {
+        $ip = $request->getClientIp();
+        $param = '127.0.0.1';
+
+        if($ip !== $param){
+            $result = "Forbidden Access!";
+        
+            return response()->json(['message' => $result]);            
+        }else{
+            $select = [
+                "users.*","perusahaans.nama_lengkap AS perusahaan"
+            ];
+    
+            $result = User::select($select)
+                    ->leftjoin('perusahaans','perusahaans.id','=','users.id_bumn')
+                    ->whereNotNull('id_bumn')
+                    ->get();
     
             return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
         }
