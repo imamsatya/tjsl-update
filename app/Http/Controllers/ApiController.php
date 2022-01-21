@@ -15,16 +15,16 @@ use App\Models\SatuanUkur;
 use App\Models\CoreSubject;
 use App\Models\User;
 use App\Models\CaraPenyaluran; // pelaksanaan program
-
+use App\Models\ApiWhitelist;
 
 class ApiController extends Controller
 {
     public function getprovinsi(Request $request)
     {
-        $ip = $request->getClientIp();
-        $param = '127.0.0.1';
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
 
-        if($ip !== $param){
+        if($whitelist == 0){
             $result = "Forbidden Access!";
         
             return response()->json(['message' => $result]);            
@@ -41,10 +41,10 @@ class ApiController extends Controller
 
     public function getkota(Request $request)
     {
-        $ip = $request->getClientIp();
-        $param = '127.0.0.1';
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
 
-        if($ip !== $param){
+        if($whitelist == 0){
             $result = "Forbidden Access!";
         
             return response()->json(['message' => $result]);            
@@ -63,10 +63,10 @@ class ApiController extends Controller
 
     public function getreferensibumnaktif(Request $request)
     {
-        $ip = $request->getClientIp();
-        $param = '127.0.0.1';
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
 
-        if($ip !== $param){
+        if($whitelist == 0){
             $result = "Forbidden Access!";
         
             return response()->json(['message' => $result]);            
@@ -84,10 +84,10 @@ class ApiController extends Controller
 
     public function getreferensitpb(Request $request)
     {
-        $ip = $request->getClientIp();
-        $param = '127.0.0.1';
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
 
-        if($ip !== $param){
+        if($whitelist == 0){
             $result = "Forbidden Access!";
         
             return response()->json(['message' => $result]);            
@@ -107,10 +107,10 @@ class ApiController extends Controller
 
     public function getreferensipilar(Request $request)
     {
-        $ip = $request->getClientIp();
-        $param = '127.0.0.1';
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
 
-        if($ip !== $param){
+        if($whitelist == 0){
             $result = "Forbidden Access!";
         
             return response()->json(['message' => $result]);            
@@ -129,10 +129,10 @@ class ApiController extends Controller
 
     public function getreferensikodetujuantpb(Request $request)
     {
-        $ip = $request->getClientIp();
-        $param = '127.0.0.1';
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
 
-        if($ip !== $param){
+        if($whitelist == 0){
             $result = "Forbidden Access!";
         
             return response()->json(['message' => $result]);            
@@ -152,10 +152,10 @@ class ApiController extends Controller
 
     public function getreferensikodeindikator(Request $request)
     {
-        $ip = $request->getClientIp();
-        $param = '127.0.0.1';
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
 
-        if($ip !== $param){
+        if($whitelist == 0){
             $result = "Forbidden Access!";
         
             return response()->json(['message' => $result]);            
@@ -178,10 +178,10 @@ class ApiController extends Controller
 
     public function getreferensipelaksanaanprogram(Request $request)
     {
-        $ip = $request->getClientIp();
-        $param = '127.0.0.1';
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
 
-        if($ip !== $param){
+        if($whitelist == 0){
             $result = "Forbidden Access!";
         
             return response()->json(['message' => $result]);            
@@ -199,10 +199,10 @@ class ApiController extends Controller
 
     public function getreferensisatuanukur(Request $request)
     {
-        $ip = $request->getClientIp();
-        $param = '127.0.0.1';
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
 
-        if($ip !== $param){
+        if($whitelist == 0){
             $result = "Forbidden Access!";
         
             return response()->json(['message' => $result]);            
@@ -221,10 +221,10 @@ class ApiController extends Controller
 
     public function getreferensicoresubject(Request $request)
     {
-        $ip = $request->getClientIp();
-        $param = '127.0.0.1';
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
 
-        if($ip !== $param){
+        if($whitelist == 0){
             $result = "Forbidden Access!";
         
             return response()->json(['message' => $result]);            
@@ -243,10 +243,10 @@ class ApiController extends Controller
 
     public function getuserbumn(Request $request)
     {
-        $ip = $request->getClientIp();
-        $param = '127.0.0.1';
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
 
-        if($ip !== $param){
+        if($whitelist == 0){
             $result = "Forbidden Access!";
         
             return response()->json(['message' => $result]);            

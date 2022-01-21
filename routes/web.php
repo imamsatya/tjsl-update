@@ -146,6 +146,16 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('delete', 'App\Http\Controllers\Referensi\PeriodeLaporanController@delete')->name('referensi.periode_laporan.delete');
                 Route::get('datatable', 'App\Http\Controllers\Referensi\PeriodeLaporanController@datatable')->name('referensi.periode_laporan.datatable');
             });
+
+            Route::prefix('api_whitelist')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\ApiWhitelistController@index')->name('referensi.api_whitelist.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\ApiWhitelistController@create')->name('referensi.api_whitelist.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\ApiWhitelistController@edit')->name('referensi.api_whitelist.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\ApiWhitelistController@store')->name('referensi.api_whitelist.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\ApiWhitelistController@delete')->name('referensi.api_whitelist.delete');
+                Route::post('status', 'App\Http\Controllers\Referensi\ApiWhitelistController@status')->name('referensi.api_whitelist.status');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\ApiWhitelistController@datatable')->name('referensi.api_whitelist.datatable');
+            });
             
             Route::prefix('provinsi')->group(function(){
                 Route::get('index', 'App\Http\Controllers\Referensi\ProvinsiController@index')->name('referensi.provinsi.index');
