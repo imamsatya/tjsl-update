@@ -30,3 +30,4 @@ Route::get('service-pelaksanaanprogram-ref', 'App\Http\Controllers\ApiController
 Route::get('service-satuanukur-ref', 'App\Http\Controllers\ApiController@getreferensisatuanukur');
 Route::get('service-coresubject-ref', 'App\Http\Controllers\ApiController@getreferensicoresubject');
 Route::get('service-users', 'App\Http\Controllers\ApiController@getuserbumn');
+Route::get('service-pilar-tpb', 'App\Http\Controllers\ApiController@getrelasipilartpb');

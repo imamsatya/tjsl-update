@@ -264,5 +264,65 @@ class ApiController extends Controller
         }
     }
 
+    public function getrelasipilartpb(Request $request)
+    {
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
+
+        if($whitelist == 0){
+            $result = "Forbidden Access!";
+        
+            return response()->json(['message' => $result]);            
+        }else{
+            $select = [
+                "users.*","perusahaans.nama_lengkap AS perusahaan"
+            ];
+    
+            $result = DB::select('select "relasi_pilar_tpbs".
+            "versi_pilar_id", "versi_pilars".
+            "versi", "versi_pilars".
+            "keterangan"
+            AS keterangan_versi, "pilar_pembangunans".
+            "id"
+            AS pilar_id, "pilar_pembangunans".
+            "nama"
+            AS pilar, "relasi_pilar_tpbs".
+            "tpb_id", "tpbs".
+            "no_tpb", "tpbs".
+            "nama"
+            AS tpb
+            from "relasi_pilar_tpbs"
+            left join "pilar_pembangunans"
+            on "pilar_pembangunans".
+            "id" = "relasi_pilar_tpbs".
+            "pilar_pembangunan_id"
+            left join "tpbs"
+            on "tpbs".
+            "id" = "relasi_pilar_tpbs".
+            "tpb_id"
+            left join "versi_pilars"
+            on "versi_pilars".
+            "id" = "relasi_pilar_tpbs".
+            "versi_pilar_id"
+            where "versi_pilars".
+            "versi"
+            NOTNULL
+            group by "pilar_pembangunans".
+            "id", "pilar_pembangunans".
+            "nama", "relasi_pilar_tpbs".
+            "versi_pilar_id", "tpbs".
+            "no_tpb", "tpbs".
+            "nama", "versi_pilars".
+            "versi", "versi_pilars".
+            "keterangan", "relasi_pilar_tpbs".
+            "tpb_id"
+            order by "relasi_pilar_tpbs".
+            "versi_pilar_id"
+            asc');
+    
+            return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
+        }
+    }
+
 
 }
