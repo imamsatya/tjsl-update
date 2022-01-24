@@ -22,7 +22,7 @@ class ApiController extends Controller
     public function getprovinsi(Request $request)
     {
         $ip = str_replace(' ', '', $request->getClientIp());
-        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
 
         if($whitelist == 0){
             $result = "Forbidden Access!";
@@ -42,7 +42,7 @@ class ApiController extends Controller
     public function getkota(Request $request)
     {
         $ip = str_replace(' ', '', $request->getClientIp());
-        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
 
         if($whitelist == 0){
             $result = "Forbidden Access!";
@@ -64,7 +64,7 @@ class ApiController extends Controller
     public function getreferensibumnaktif(Request $request)
     {
         $ip = str_replace(' ', '', $request->getClientIp());
-        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
 
         if($whitelist == 0){
             $result = "Forbidden Access!";
@@ -85,7 +85,7 @@ class ApiController extends Controller
     public function getreferensitpb(Request $request)
     {
         $ip = str_replace(' ', '', $request->getClientIp());
-        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
 
         if($whitelist == 0){
             $result = "Forbidden Access!";
@@ -108,7 +108,7 @@ class ApiController extends Controller
     public function getreferensipilar(Request $request)
     {
         $ip = str_replace(' ', '', $request->getClientIp());
-        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
 
         if($whitelist == 0){
             $result = "Forbidden Access!";
@@ -130,7 +130,7 @@ class ApiController extends Controller
     public function getreferensikodetujuantpb(Request $request)
     {
         $ip = str_replace(' ', '', $request->getClientIp());
-        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
 
         if($whitelist == 0){
             $result = "Forbidden Access!";
@@ -153,7 +153,7 @@ class ApiController extends Controller
     public function getreferensikodeindikator(Request $request)
     {
         $ip = str_replace(' ', '', $request->getClientIp());
-        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
 
         if($whitelist == 0){
             $result = "Forbidden Access!";
@@ -179,7 +179,7 @@ class ApiController extends Controller
     public function getreferensipelaksanaanprogram(Request $request)
     {
         $ip = str_replace(' ', '', $request->getClientIp());
-        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
 
         if($whitelist == 0){
             $result = "Forbidden Access!";
@@ -200,7 +200,7 @@ class ApiController extends Controller
     public function getreferensisatuanukur(Request $request)
     {
         $ip = str_replace(' ', '', $request->getClientIp());
-        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
 
         if($whitelist == 0){
             $result = "Forbidden Access!";
@@ -222,7 +222,7 @@ class ApiController extends Controller
     public function getreferensicoresubject(Request $request)
     {
         $ip = str_replace(' ', '', $request->getClientIp());
-        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
 
         if($whitelist == 0){
             $result = "Forbidden Access!";
@@ -244,7 +244,7 @@ class ApiController extends Controller
     public function getuserbumn(Request $request)
     {
         $ip = str_replace(' ', '', $request->getClientIp());
-        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
 
         if($whitelist == 0){
             $result = "Forbidden Access!";
@@ -267,17 +267,13 @@ class ApiController extends Controller
     public function getrelasipilartpb(Request $request)
     {
         $ip = str_replace(' ', '', $request->getClientIp());
-        $whitelist = ApiWhitelist::where('ip_user',$ip)->where('status','t')->count();
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
 
         if($whitelist == 0){
             $result = "Forbidden Access!";
         
             return response()->json(['message' => $result]);            
-        }else{
-            $select = [
-                "users.*","perusahaans.nama_lengkap AS perusahaan"
-            ];
-    
+        }else{   
             $result = DB::select('select "relasi_pilar_tpbs".
             "versi_pilar_id", "versi_pilars".
             "versi", "versi_pilars".
@@ -324,5 +320,51 @@ class ApiController extends Controller
         }
     }
 
+    public function getprogramapproved(Request $request)
+    {
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
+
+        if($whitelist == 0){
+            $result = "Forbidden Access!";
+        
+            return response()->json(['message' => $result]);            
+        }else{   
+            $result = DB::select('select "anggaran_tpbs"."perusahaan_id",
+            "perusahaans"."nama_lengkap" AS "perusahaan_text",
+            "anggaran_tpbs"."tahun" AS "tahun_anggaran",
+            "anggaran_tpbs"."anggaran" AS "nilai_anggaran",
+            "target_tpbs"."jenis_program_id",
+            "jenis_program"."nama" AS "jenis_program_text",
+            "target_tpbs"."core_subject_id",
+            "core_subject"."nama" AS "core_subject_text",
+            "target_tpbs"."tpb_id",
+            "tpbs"."nama" AS "tpb_text",
+            "target_tpbs"."kode_indikator_id",
+            "kode_indikators"."kode" AS "kode_indikator_text",
+            "kode_indikators"."kode_tujuan_tpb" AS "kode_tujuan_tpb",
+            "kode_indikators"."keterangan_tujuan_tpb" AS "keterangan_tujuan_tpb",
+            "target_tpbs"."cara_penyaluran_id" AS "pelaksanaan_program_id",
+            "cara_penyalurans"."nama" AS "pelaksanaan_program_text",
+            "target_tpbs"."program" AS "nama_program",
+            "target_tpbs"."jangka_waktu",
+            "target_tpbs"."unit_owner",
+            "target_tpbs"."anggaran_alokasi" AS "anggaran_alokasi_program",
+            "statuses"."nama" AS "status_program"
+            
+            from "target_tpbs" 
+            left join "anggaran_tpbs" on "anggaran_tpbs"."id" = "target_tpbs"."anggaran_tpb_id" 
+            left join "perusahaans" on "anggaran_tpbs"."perusahaan_id" = "perusahaans"."id" 
+            left join "jenis_program" on "target_tpbs"."jenis_program_id" = "jenis_program"."id" 
+            left join "core_subject" on "target_tpbs"."core_subject_id" = "core_subject"."id" 
+            left join "tpbs" on "target_tpbs"."tpb_id" = "tpbs"."id" 
+            left join "kode_indikators" on "target_tpbs"."kode_indikator_id" = "kode_indikators"."id" 
+            left join "cara_penyalurans" on "target_tpbs"."cara_penyaluran_id" = "cara_penyalurans"."id" 
+            left join "statuses" on "target_tpbs"."status_id" = "statuses"."id" 
+            where "target_tpbs"."status_id" = 1 AND "anggaran_tpbs"."status_id" = 1');
+    
+            return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
+        }
+    }    
 
 }
