@@ -84,7 +84,8 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
 
             //cek id owner
             if(!$is_gagal && rtrim($ar['id_owner'])!=''){
-                    if(rtrim($ar['id_owner']) >  1){
+                $own_ref = OwnerProgram::where('nama','TJSL')->orWhere('nama','tjsl')->pluck('id')->first();
+                    if(rtrim($ar['id_owner']) >  $own_ref){
                        $unit = rtrim($ar['unit_owner']) == ''? true : false;
                        if($unit){
                         DB::rollback();
