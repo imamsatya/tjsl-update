@@ -85,13 +85,15 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
             //cek id owner
             if(!$is_gagal && rtrim($ar['id_owner'])!=''){
                 $own_ref = OwnerProgram::where('nama','TJSL')->orWhere('nama','tjsl')->pluck('id')->first();
-                    if(rtrim($ar['id_owner']) >  $own_ref){
+                    if(rtrim($ar['id_owner']) > $own_ref){
                        $unit = rtrim($ar['unit_owner']) == ''? true : false;
                        if($unit){
                         DB::rollback();
                         $is_gagal = true;
                         $keterangan .= 'Baris '.rtrim($ar['no']).' Jika ID Owner Non-TJSL, maka Unit Owner Wajib Diisi.<br>';                        
                        }
+                    }else{
+                        $ar['unit_owner'] = 'TJSL';
                     }
             }
 
