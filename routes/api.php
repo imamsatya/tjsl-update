@@ -32,3 +32,4 @@ Route::get('service-coresubject-ref', 'App\Http\Controllers\ApiController@getref
 //Route::get('service-users', 'App\Http\Controllers\ApiController@getuserbumn');
 Route::get('service-pilar-tpb', 'App\Http\Controllers\ApiController@getrelasipilartpb');
 Route::get('service-program-approved', 'App\Http\Controllers\ApiController@getprogramapproved');
+Route::get('service-program-owner', 'App\Http\Controllers\ApiController@getprogramowner');
