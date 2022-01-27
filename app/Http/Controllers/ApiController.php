@@ -367,4 +367,44 @@ class ApiController extends Controller
         }
     }    
 
+    public function getprogramowner(Request $request)
+    {
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
+
+        if($whitelist == 0){
+            $result = "Forbidden Access!";
+        
+            return response()->json(['message' => $result]);            
+        }else{
+            $select = [
+                'target_tpbs.id AS program_id',
+                'target_tpbs.program',
+                'target_tpbs.id_owner AS owner_id',
+                'target_tpbs.unit_owner',
+                'target_tpbs.jenis_program_id',
+                'target_tpbs.core_subject_id',
+                'target_tpbs.tpb_id',
+                'target_tpbs.kode_indikator_id',
+                'target_tpbs.cara_penyaluran_id AS Pelaksanaan_program_id',
+                'target_tpbs.jangka_waktu',
+                'target_tpbs.anggaran_alokasi AS anggaran_alokasi_program',
+                'target_tpbs.status_id AS program_status_id',
+                'statuses.nama AS program_status',
+                'target_tpbs.kode_tujuan_tpb_id',
+                'anggaran_tpbs.perusahaan_id',
+                'anggaran_tpbs.anggaran',
+                'anggaran_tpbs.status_id AS anggaran_status_id',
+                'anggaran_tpbs.tahun AS anggaran_tahun'
+            ];   
+            $result = TargetTpb::select($select)
+             ->leftjoin('anggaran_tpbs','anggaran_tpbs.id','=','target_tpbs.anggaran_tpb_id')
+             ->leftjoin('statuses','statuses.id','=','target_tpbs.status_id')
+             ->whereNotNull('anggaran_tpbs.anggaran')
+             ->where('anggaran_tpbs.status_id',1) //status anggaran sudah approved
+            ->get();
+    
+            return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
+        }
+    }        
 }
