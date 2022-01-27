@@ -8,6 +8,7 @@ use App\Models\Perusahaan;
 use App\Models\Provinsi;
 use App\Models\Kota;
 use App\Models\Tpb;
+use App\Models\TargetTpb;
 use App\Models\PilarPembangunan;
 use App\Models\KodeTujuanTpb;
 use App\Models\KodeIndikator;
