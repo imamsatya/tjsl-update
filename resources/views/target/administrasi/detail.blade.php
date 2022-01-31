@@ -7,7 +7,6 @@ td{
 </style>
 @endsection
 
-
 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
 	@csrf
 	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
@@ -24,8 +23,19 @@ td{
             <tr>
                 <td><b>Program</b></td>
                 <td>{{@$data->program}}</td>
-                <td><b>Unit Owner</b></td>
-                <td>{{@$data->unit_owner}}</td>
+                <td><b>Owner</b></td>
+                @if(!empty($mainOwner))
+                <td>
+                    @if($mainOwner->nama == "TJSL" || $mainOwner->id == 1)
+                    {{ $mainOwner->nama }}
+                    @else
+                    {{ $mainOwner->nama." - ".@$data->unit_owner}}
+                    @endif
+                </td>
+                @else
+                <td>{{ @$data->unit_owner}}</td>
+                @endif
+
             </tr>
             <tr>
                 <td><b>Kriteria Program</b></td>
