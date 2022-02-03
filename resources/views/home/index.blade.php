@@ -369,6 +369,7 @@
         let s_lancar = data.saldo_lancar? parseInt(data.saldo_lancar) : 0;
         let s_kurang_lancar = data.saldo_kurang_lancar? parseInt(data.saldo_kurang_lancar) : 0;
         let s_diragukan = data.saldo_diragukan? parseInt(data.saldo_diragukan) : 0;
+        let s_bermasalah = data.saldo_bermasalah? parseInt(data.saldo_bermasalah) : 0;
         let s_macet = data.saldo_macet? parseInt(data.saldo_macet) : 0;
      
         Highcharts.setOptions({
@@ -385,7 +386,7 @@
                 text: ''
             },
             xAxis: [{
-                categories: ["Lancar","Kurang Lancar","Diragukan","Macet"],
+                categories: ["Lancar","Kurang Lancar","Diragukan","Bermasalah","Macet"],
                 crosshair: true
             }],
             yAxis: [{
@@ -441,6 +442,7 @@
                         s_lancar,
                         s_kurang_lancar,
                         s_diragukan,
+                        s_bermasalah,
                         s_macet
                        ],
                 tooltip: {
@@ -459,6 +461,7 @@
                         data.mitra_lancar, 
                         data.mitra_kurang_lancar, 
                         data.mitra_diragukan, 
+                        data.mitra_bermasalah, 
                         data.mitra_macet
                       ],
                 tooltip: {
