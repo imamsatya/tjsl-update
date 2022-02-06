@@ -98,8 +98,9 @@ class HomeController extends Controller
             $id_lancar = KolekbilitasPendanaan::where('nama','ilike','%lancar%')->pluck('id')->first();
             $id_kurang_lancar = KolekbilitasPendanaan::where('nama','ilike','%kurang% %lancar%')->pluck('id')->first();
             $id_diragukan = KolekbilitasPendanaan::where('nama','ilike','%diragukan%')->pluck('id')->first();
+            $id_bermasalah = KolekbilitasPendanaan::where('nama','ilike','%bermasalah%')->pluck('id')->first();
             $id_macet = KolekbilitasPendanaan::where('nama','ilike','%macet%')->pluck('id')->first();
-
+            
             $json['mitra_lancar'] =  PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
                             ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
                             ->where('kolekbilitas_pendanaan.id', $id_lancar)
@@ -201,7 +202,8 @@ class HomeController extends Controller
                                 }
                             })
                             ->pluck('total')->first();
-    
+
+
             $json['mitra_macet'] = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
                             ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
                             ->where('kolekbilitas_pendanaan.id', $id_macet)
@@ -235,7 +237,43 @@ class HomeController extends Controller
                                 }
                             })
                             ->pluck('total')->first();
-            
+
+                            
+             $json['mitra_bermasalah'] = PumkMitraBinaan::select('pumk_mitra_binaans.*','kolekbilitas_pendanaan.nama')
+                            ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                            ->where('kolekbilitas_pendanaan.id', $id_bermasalah)
+                            ->where('pumk_mitra_binaans.is_arsip',false)
+                            ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
+                                if($perusahaan){
+                                    $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
+                                }
+                                if($bulan){
+                                    $query->where('pumk_mitra_binaans.bulan', '=', $bulan);
+                                }
+                                if($tahun){
+                                    $query->where('pumk_mitra_binaans.tahun', '=', $tahun);
+                                }
+                            })
+                            ->count();                          
+    
+            $json['saldo_bermasalah'] = PumkMitraBinaan::select(DB::raw('SUM(saldo_pokok_pendanaan) AS total','kolekbilitas_pendanaan.nama'))
+                            ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','pumk_mitra_binaans.kolektibilitas_id')
+                            ->where('kolekbilitas_pendanaan.id', $id_bermasalah)
+                            ->where('pumk_mitra_binaans.is_arsip',false)
+                            ->where(function ($query) use ($perusahaan,$bulan,$tahun) {
+                                if($perusahaan){
+                                    $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
+                                }
+                                if($bulan){
+                                    $query->where('pumk_mitra_binaans.bulan', '=', $bulan);
+                                }
+                                if($tahun){
+                                    $query->where('pumk_mitra_binaans.tahun', '=', $tahun);
+                                }
+                            })
+                            ->pluck('total')->first();
+                            
+
             $json['bumn'] = '';
             $json['bulan'] = '';
             $json['tahun'] = '';

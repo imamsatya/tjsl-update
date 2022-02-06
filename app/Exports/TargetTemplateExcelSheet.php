@@ -27,6 +27,7 @@ class TargetTemplateExcelSheet implements WithMultipleSheets
         $sheets[] = new ReferensiKodeIndikator();
         $sheets[] = new ReferensiCaraPenyaluran();
         $sheets[] = new ReferensiPerusahaan();
+        $sheets[] = new ReferensiOwner();
         // $sheets[] = new ReferensiSatuanUkur();
         return $sheets;
     }

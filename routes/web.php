@@ -156,6 +156,16 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('status', 'App\Http\Controllers\Referensi\ApiWhitelistController@status')->name('referensi.api_whitelist.status');
                 Route::get('datatable', 'App\Http\Controllers\Referensi\ApiWhitelistController@datatable')->name('referensi.api_whitelist.datatable');
             });
+
+            Route::prefix('owner_program')->group(function(){
+                Route::get('index', 'App\Http\Controllers\Referensi\OwnerController@index')->name('referensi.owner_program.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\OwnerController@create')->name('referensi.owner_program.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\OwnerController@edit')->name('referensi.owner_program.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\OwnerController@store')->name('referensi.owner_program.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\OwnerController@delete')->name('referensi.owner_program.delete');
+                Route::post('status', 'App\Http\Controllers\Referensi\OwnerController@status')->name('referensi.owner_program.status');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\OwnerController@datatable')->name('referensi.owner_program.datatable');
+            });
             
             Route::prefix('provinsi')->group(function(){
                 Route::get('index', 'App\Http\Controllers\Referensi\ProvinsiController@index')->name('referensi.provinsi.index');

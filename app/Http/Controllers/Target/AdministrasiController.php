@@ -27,10 +27,12 @@ use App\Models\Perusahaan;
 use App\Models\PilarPembangunan;
 use App\Models\Tpb;
 use App\Models\Status;
+use App\Models\OwnerProgram;
 use App\Models\LogTargetTpb;
 use App\Exports\TargetTemplateExport;
 use App\Exports\TargetTemplateExcelSheet;
 use App\Exports\TargetTpbExport;
+
 
 class AdministrasiController extends Controller
 {
@@ -342,12 +344,19 @@ class AdministrasiController extends Controller
 
         try{
             $target = TargetTpb::find((int)$request->input('id'));
+            $mainOwner = [];
+            if($target->id_owner){
+                $mainOwner = OwnerProgram::find((int)$target->id_owner);  
+            }
+
+            //OwnerProgram
             $mitra_bumn = TargetMitra::where('target_mitras.target_tpb_id',$target->id)->get();
 
                 return view($this->__route.'.detail',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',
                     'data' => $target,
+                    'mainOwner' => $mainOwner?$mainOwner : [],
                     'mitra_bumn' => $mitra_bumn,
                 ]);
         }catch(Exception $e){}

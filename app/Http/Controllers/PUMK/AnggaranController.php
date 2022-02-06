@@ -273,7 +273,7 @@ class AnggaranController extends Controller
 
     public function show(Request $request)
     {
-
+        
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
         $perusahaan_id = \Auth::user()->id_bumn;
@@ -293,12 +293,13 @@ class AnggaranController extends Controller
                         ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id')
                         ->where('pumk_anggarans.id',$request->id)
                         ->first();
-        
+                        
         $data_rka = PumkAnggaran::select('pumk_anggarans.*','perusahaans.nama_lengkap AS bumn_lengkap','periode_laporans.nama AS periode','statuses.nama AS status')
                         ->leftJoin('perusahaans','perusahaans.id','pumk_anggarans.bumn_id')
                         ->leftJoin('periode_laporans', 'periode_laporans.id', 'pumk_anggarans.periode_id')
                         ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id')
                         ->where('pumk_anggarans.bumn_id',$data->bumn_id)
+                        ->where('pumk_anggarans.tahun',$data->tahun)
                         ->where('periode_laporans.nama','ilike','%RKA%')
                         //->where('statuses.nama','ilike','%Finish%')
                         ->first();

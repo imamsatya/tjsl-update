@@ -25,6 +25,7 @@ use App\Models\CoreSubject;
 use App\Models\KodeIndikator;
 use App\Models\KodeTujuanTpb;
 use App\Models\CaraPenyaluran;
+use App\Models\OwnerProgram;
 use App\Http\Controllers\Target\AdministrasiController;
 
 class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets 
@@ -79,6 +80,21 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Data Alokasi Anggaran harus angka<br>';
                 }
+            }
+
+            //cek id owner
+            if(!$is_gagal && rtrim($ar['id_owner'])!=''){
+                $own_ref = OwnerProgram::where('nama','TJSL')->orWhere('nama','tjsl')->pluck('id')->first();
+                    if(rtrim($ar['id_owner']) > $own_ref){
+                       $unit = rtrim($ar['unit_owner']) == ''? true : false;
+                       if($unit){
+                        DB::rollback();
+                        $is_gagal = true;
+                        $keterangan .= 'Baris '.rtrim($ar['no']).' Jika ID Owner Non-TJSL, maka Unit Owner Wajib Diisi.<br>';                        
+                       }
+                    }else{
+                        $ar['unit_owner'] = 'TJSL';
+                    }
             }
 
             //cek core subject 
@@ -183,6 +199,7 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                         'anggaran_tpb_id' => $anggaran->id ,
                         'status_id' => 2,
                         'program' => rtrim($ar['program']) ,
+                        'id_owner' => rtrim($ar['id_owner']) ,
                         'unit_owner' => rtrim($ar['unit_owner']) ,
                         'file_name' => $this->nama_file,
                         'jenis_program_id' => rtrim($ar['id_kriteria_program']) ,
@@ -235,6 +252,7 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                     $target = TargetUploadGagal::create([
                         'target_upload_id' => $this->target_upload,
                         'program' => rtrim($ar['program']) ,
+                        'id_owner' => rtrim($ar['id_owner']),
                         'unit_owner' => rtrim($ar['unit_owner']),
                         'jenis_program_id' => rtrim($ar['id_kriteria_program']) ,
                         'core_subject_id'   => rtrim($ar['id_core_subject_iso_26000']) ,

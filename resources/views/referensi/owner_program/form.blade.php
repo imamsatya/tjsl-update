@@ -1,107 +1,38 @@
-
-@section('addbeforecss')
-<style>
-td{
-    border-bottom: 1px solid #c8c7c7;
-}
-</style>
-@endsection
-
 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
 	@csrf
 	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
 
-    <table class="table table-striped- table-bordered table-hover table-checkable" id="datatable_log">
-        <tbody>
-            <tr>
-                <td><b>Pilar Pembangunan</b></td>
-                <td>{{@$data->anggaran_tpb->relasi->pilar->nama}}</td>
-                <td><b>TPB</b></td>
-                <td>{{@$data->anggaran_tpb->relasi->tpb->no_tpb}} -  {{@$data->anggaran_tpb->relasi->tpb->nama}}</td>
-            </tr>
-            <tr>
-                <td><b>Program</b></td>
-                <td>{{@$data->program}}</td>
-                <td><b>Owner</b></td>
-                @if(!empty($mainOwner))
-                <td>
-                    @if($mainOwner->nama == "TJSL" || $mainOwner->id == 1)
-                    {{ $mainOwner->nama }}
-                    @else
-                    {{ $mainOwner->nama." - ".@$data->unit_owner}}
-                    @endif
-                </td>
-                @else
-                <td>{{ @$data->unit_owner}}</td>
-                @endif
-
-            </tr>
-            <tr>
-                <td><b>Kriteria Program</b></td>
-                <td>{{@$data->jenis_program->nama}}</td>
-                <td><b>Core Subject</b></td>
-                <td>{{@$data->core_subject->nama}}</td>
-            </tr>
-            <tr>
-                <td><b>Kode Tujuan TPB</b></td>
-                <td>{{@$data->kode_tujuan_tpb->kode}}</td>
-                <td><b>Kode Indikator</b></td>
-                <td>{{@$data->kode_indikator->kode}}</td>
-            </tr>
-            <tr>
-                <td><b>Keterangan Tujuan TPB</b></td>
-                <td>{{@$data->kode_tujuan_tpb->keterangan}}</td>
-                <td><b>Keterangan Indikator</b></td>
-                <td>{{@$data->kode_indikator->keterangan}}</td>
-            </tr>
-            <tr>
-                <td><b>Pelaksanaan Program</b></td>
-                <td>{{@$data->cara_penyaluran->nama}}</td>
-                <td><b>Mitra BUMN</b></td>
-                <td>
-                    @foreach($mitra_bumn as $mitra)
-                        {{$mitra->perusahaan->nama_lengkap}} <br>
-                    @endforeach
-                </td>
-            </tr>
-            <tr>
-                <td><b>Jangka Waktu</b></td>
-                <td>{{@$data->jangka_waktu}} tahun</td>
-                <td><b>Alokasi Anggaran</b></td>
-                <td>Rp. {{number_format($data->anggaran_alokasi,0,',',',')}}</td>
-            </tr>
-        </tbody>
-    </table>
-    
+    <div class="form-group row">
+        <div class="col-lg-6">
+            <label>Nama</label>
+            <input type="text" class="form-control" name="nama" id="nama" value="{{!empty(old('nama'))? old('nama') : ($actionform == 'update' && $data->nama != ''? $data->nama : old('nama'))}}" required/>
+        </div>
+        <div class="col-lg-6">
+            <label>Keterangan</label>
+            <input type="text" class="form-control" name="keterangan" id="keterangan" value="{{!empty(old('keterangan'))? old('keterangan') : ($actionform == 'update' && $data->keterangan != ''? $data->keterangan : old('keterangan'))}}" />
+        </div>
+    </div>
+    <div class="text-center pt-15">
+        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" data-kt-roles-modal-action="cancel">Discard</button>
+        <button id="submit" type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">
+            <span class="indicator-label">Submit</span>
+            <span class="indicator-progress">Please wait...
+            <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+        </button>
+    </div>
 </form>
 
 <script type="text/javascript">
-    var title = "Detail Target TPB";
+    var title = "{{$actionform == 'update'? 'Update' : 'Tambah'}}" + " {{ $pagetitle }}";
 
     $(document).ready(function(){
         $('.modal-title').html(title);
-        $('.form-select2').select2();
-
         $('.modal').on('shown.bs.modal', function () {
             setFormValidate();
         });  
-        
-        $('#anggaran_alokasi').keyup(function(event) {
-
-            // skip for arrow keys
-            if(event.which >= 37 && event.which <= 40) return;
-
-            // format number
-            $(this).val(function(index, value) {
-            return value
-            .replace(/\D/g, "")
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-            ;
-            });
-        });
     });
-    
+
     function setFormValidate(){
         $('#form-edit').validate({
             rules: {
@@ -194,5 +125,4 @@ td{
         }
         });		
     }
-
 </script>
