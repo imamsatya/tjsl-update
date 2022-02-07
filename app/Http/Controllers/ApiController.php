@@ -62,6 +62,30 @@ class ApiController extends Controller
         }
     }
 
+    public function getkota_filter(Request $request, $id_provinsi)
+    {
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
+
+        if($whitelist == 0){
+            $result = "Forbidden Access!";
+        
+            return response()->json(['message' => $result]);            
+        }else{
+            $select = [
+                'kotas.id AS kota_id','kotas.nama AS kota', 'kotas.provinsi_id','provinsis.nama AS provinsi','kotas.tgl_sinkronisasi'
+            ];
+    
+            $result = Kota::select($select)
+                    ->leftjoin('provinsis','provinsis.id','=','kotas.provinsi_id')
+                    ->where('kotas.is_luar_negeri','f')
+                    ->where('provinsis.id',$id_provinsi)
+                    ->get();
+    
+            return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
+        }
+    }    
+
     public function getreferensibumnaktif(Request $request)
     {
         $ip = str_replace(' ', '', $request->getClientIp());
@@ -176,6 +200,30 @@ class ApiController extends Controller
         }
     }
 
+    public function getreferensikodeindikator_filter(Request $request, $id_tpb)
+    {
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
+
+        if($whitelist == 0){
+            $result = "Forbidden Access!";
+        
+            return response()->json(['message' => $result]);            
+        }else{
+            $select = [
+                "id",
+                "tpb_id",
+                "kode_tujuan_tpb",
+                "kode AS kode_indikator",
+                "keterangan_tujuan_tpb",
+                "keterangan AS keterangan_kode_indikator"
+            ];
+    
+            $result = KodeIndikator::select($select)->where('tpb_id',$id_tpb)->get();
+    
+            return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
+        }
+    }
 
     public function getreferensipelaksanaanprogram(Request $request)
     {
@@ -321,6 +369,63 @@ class ApiController extends Controller
         }
     }
 
+    public function getrelasipilartpb_filter(Request $request, $id_pilar)
+    {
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
+
+        if($whitelist == 0){
+            $result = "Forbidden Access!";
+        
+            return response()->json(['message' => $result]);            
+        }else{   
+            $result = DB::select('select "relasi_pilar_tpbs".
+            "versi_pilar_id", "versi_pilars".
+            "versi", "versi_pilars".
+            "keterangan"
+            AS keterangan_versi, "pilar_pembangunans".
+            "id"
+            AS pilar_id, "pilar_pembangunans".
+            "nama"
+            AS pilar, "relasi_pilar_tpbs".
+            "tpb_id", "tpbs".
+            "no_tpb", "tpbs".
+            "nama"
+            AS tpb
+            from "relasi_pilar_tpbs"
+            left join "pilar_pembangunans"
+            on "pilar_pembangunans".
+            "id" = "relasi_pilar_tpbs".
+            "pilar_pembangunan_id"
+            left join "tpbs"
+            on "tpbs".
+            "id" = "relasi_pilar_tpbs".
+            "tpb_id"
+            left join "versi_pilars"
+            on "versi_pilars".
+            "id" = "relasi_pilar_tpbs".
+            "versi_pilar_id"
+            where "versi_pilars".
+            "versi"
+            NOTNULL AND "pilar_pembangunans".
+            "id" = '.$id_pilar.' 
+            group by "pilar_pembangunans".
+            "id", "pilar_pembangunans".
+            "nama", "relasi_pilar_tpbs".
+            "versi_pilar_id", "tpbs".
+            "no_tpb", "tpbs".
+            "nama", "versi_pilars".
+            "versi", "versi_pilars".
+            "keterangan", "relasi_pilar_tpbs".
+            "tpb_id"
+            order by "relasi_pilar_tpbs".
+            "versi_pilar_id"
+            asc');
+    
+            return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
+        }
+    }
+
     public function getprogramapproved(Request $request)
     {
         $ip = str_replace(' ', '', $request->getClientIp());
@@ -382,18 +487,29 @@ class ApiController extends Controller
                 'target_tpbs.id AS program_id',
                 'target_tpbs.program',
                 'target_tpbs.id_owner AS owner_id',
+                'referensi_owners.nama AS owner_name',
                 'target_tpbs.unit_owner',
                 'target_tpbs.jenis_program_id',
+                'jenis_program.nama AS jenis_program_text',
                 'target_tpbs.core_subject_id',
+                'core_subject.nama AS core_subject_text',
                 'target_tpbs.tpb_id',
+                'tpbs.no_tpb',
+                'tpbs.nama AS tpb_text',
                 'target_tpbs.kode_indikator_id',
-                'target_tpbs.cara_penyaluran_id AS Pelaksanaan_program_id',
+                'kode_indikators.kode AS kode_indikator',
+                'kode_indikators.keterangan AS keterangan_kode_indikator',
+                'target_tpbs.cara_penyaluran_id AS pelaksanaan_program_id',
+                'cara_penyalurans.nama AS pelaksanaan_program_text',
                 'target_tpbs.jangka_waktu',
                 'target_tpbs.anggaran_alokasi AS anggaran_alokasi_program',
                 'target_tpbs.status_id AS program_status_id',
-                'statuses.nama AS program_status',
+                'statuses.nama AS program_status_text',
                 'target_tpbs.kode_tujuan_tpb_id',
+                'kode_indikators.kode_tujuan_tpb',
+                'kode_indikators.keterangan_tujuan_tpb',
                 'anggaran_tpbs.perusahaan_id',
+                'perusahaans.nama_lengkap AS perusahaan_text',
                 'anggaran_tpbs.anggaran',
                 'anggaran_tpbs.status_id AS anggaran_status_id',
                 'anggaran_tpbs.tahun AS anggaran_tahun'
@@ -401,6 +517,13 @@ class ApiController extends Controller
             $result = TargetTpb::select($select)
              ->leftjoin('anggaran_tpbs','anggaran_tpbs.id','=','target_tpbs.anggaran_tpb_id')
              ->leftjoin('statuses','statuses.id','=','target_tpbs.status_id')
+             ->leftjoin('jenis_program','target_tpbs.jenis_program_id','=','jenis_program.id')
+             ->leftjoin('core_subject','target_tpbs.core_subject_id','=','core_subject.id')
+             ->leftjoin('tpbs','tpbs.id','=','target_tpbs.tpb_id')
+             ->leftjoin('referensi_owners','referensi_owners.id','=','target_tpbs.id_owner')
+             ->leftjoin('perusahaans','perusahaans.id','=','anggaran_tpbs.perusahaan_id')
+             ->leftjoin('cara_penyalurans','cara_penyalurans.id','=','target_tpbs.cara_penyaluran_id')
+             ->leftjoin('kode_indikators','kode_indikators.id','=','target_tpbs.kode_indikator_id')
              ->whereNotNull('anggaran_tpbs.anggaran')
              ->where('anggaran_tpbs.status_id',1) //status anggaran sudah approved
             ->get();
@@ -408,4 +531,125 @@ class ApiController extends Controller
             return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
         }
     }        
+
+    public function getprogramowner_filter(Request $request, $id_owner)
+    {
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
+
+        if($whitelist == 0){
+            $result = "Forbidden Access!";
+        
+            return response()->json(['message' => $result]);            
+        }else{
+            $select = [
+                'target_tpbs.id AS program_id',
+                'target_tpbs.program',
+                'target_tpbs.id_owner AS owner_id',
+                'referensi_owners.nama AS owner_name',
+                'target_tpbs.unit_owner',
+                'target_tpbs.jenis_program_id',
+                'jenis_program.nama AS jenis_program_text',
+                'target_tpbs.core_subject_id',
+                'core_subject.nama AS core_subject_text',
+                'target_tpbs.tpb_id',
+                'tpbs.no_tpb',
+                'tpbs.nama AS tpb_text',
+                'target_tpbs.kode_indikator_id',
+                'kode_indikators.kode AS kode_indikator',
+                'kode_indikators.keterangan AS keterangan_kode_indikator',
+                'target_tpbs.cara_penyaluran_id AS pelaksanaan_program_id',
+                'cara_penyalurans.nama AS pelaksanaan_program_text',
+                'target_tpbs.jangka_waktu',
+                'target_tpbs.anggaran_alokasi AS anggaran_alokasi_program',
+                'target_tpbs.status_id AS program_status_id',
+                'statuses.nama AS program_status_text',
+                'target_tpbs.kode_tujuan_tpb_id',
+                'kode_indikators.kode_tujuan_tpb',
+                'kode_indikators.keterangan_tujuan_tpb',
+                'anggaran_tpbs.perusahaan_id',
+                'perusahaans.nama_lengkap AS perusahaan_text',
+                'anggaran_tpbs.anggaran',
+                'anggaran_tpbs.status_id AS anggaran_status_id',
+                'anggaran_tpbs.tahun AS anggaran_tahun'
+            ];   
+            $result = TargetTpb::select($select)
+             ->leftjoin('anggaran_tpbs','anggaran_tpbs.id','=','target_tpbs.anggaran_tpb_id')
+             ->leftjoin('statuses','statuses.id','=','target_tpbs.status_id')
+             ->leftjoin('jenis_program','target_tpbs.jenis_program_id','=','jenis_program.id')
+             ->leftjoin('core_subject','target_tpbs.core_subject_id','=','core_subject.id')
+             ->leftjoin('tpbs','tpbs.id','=','target_tpbs.tpb_id')
+             ->leftjoin('referensi_owners','referensi_owners.id','=','target_tpbs.id_owner')
+             ->leftjoin('perusahaans','perusahaans.id','=','anggaran_tpbs.perusahaan_id')
+             ->leftjoin('cara_penyalurans','cara_penyalurans.id','=','target_tpbs.cara_penyaluran_id')
+             ->leftjoin('kode_indikators','kode_indikators.id','=','target_tpbs.kode_indikator_id')
+             ->whereNotNull('anggaran_tpbs.anggaran')
+             ->where('anggaran_tpbs.status_id',1) //status anggaran sudah approved
+             ->where('target_tpbs.id_owner',$id_owner) 
+            ->get();
+    
+            return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
+        }
+    }        
+
+    public function getprogramowner_filter_bumn(Request $request, $id_bumn, $tahun)
+    {
+        $ip = str_replace(' ', '', $request->getClientIp());
+        $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
+
+        if($whitelist == 0){
+            $result = "Forbidden Access!";
+        
+            return response()->json(['message' => $result]);            
+        }else{
+            $select = [
+                'target_tpbs.id AS program_id',
+                'target_tpbs.program',
+                'target_tpbs.id_owner AS owner_id',
+                'referensi_owners.nama AS owner_name',
+                'target_tpbs.unit_owner',
+                'target_tpbs.jenis_program_id',
+                'jenis_program.nama AS jenis_program_text',
+                'target_tpbs.core_subject_id',
+                'core_subject.nama AS core_subject_text',
+                'target_tpbs.tpb_id',
+                'tpbs.no_tpb',
+                'tpbs.nama AS tpb_text',
+                'target_tpbs.kode_indikator_id',
+                'kode_indikators.kode AS kode_indikator',
+                'kode_indikators.keterangan AS keterangan_kode_indikator',
+                'target_tpbs.cara_penyaluran_id AS pelaksanaan_program_id',
+                'cara_penyalurans.nama AS pelaksanaan_program_text',
+                'target_tpbs.jangka_waktu',
+                'target_tpbs.anggaran_alokasi AS anggaran_alokasi_program',
+                'target_tpbs.status_id AS program_status_id',
+                'statuses.nama AS program_status_text',
+                'target_tpbs.kode_tujuan_tpb_id',
+                'kode_indikators.kode_tujuan_tpb',
+                'kode_indikators.keterangan_tujuan_tpb',
+                'anggaran_tpbs.perusahaan_id',
+                'perusahaans.nama_lengkap AS perusahaan_text',
+                'anggaran_tpbs.anggaran',
+                'anggaran_tpbs.status_id AS anggaran_status_id',
+                'anggaran_tpbs.tahun AS anggaran_tahun'
+            ];   
+            $result = TargetTpb::select($select)
+             ->leftjoin('anggaran_tpbs','anggaran_tpbs.id','=','target_tpbs.anggaran_tpb_id')
+             ->leftjoin('statuses','statuses.id','=','target_tpbs.status_id')
+             ->leftjoin('jenis_program','target_tpbs.jenis_program_id','=','jenis_program.id')
+             ->leftjoin('core_subject','target_tpbs.core_subject_id','=','core_subject.id')
+             ->leftjoin('tpbs','tpbs.id','=','target_tpbs.tpb_id')
+             ->leftjoin('referensi_owners','referensi_owners.id','=','target_tpbs.id_owner')
+             ->leftjoin('perusahaans','perusahaans.id','=','anggaran_tpbs.perusahaan_id')
+             ->leftjoin('cara_penyalurans','cara_penyalurans.id','=','target_tpbs.cara_penyaluran_id')
+             ->leftjoin('kode_indikators','kode_indikators.id','=','target_tpbs.kode_indikator_id')
+             ->whereNotNull('anggaran_tpbs.anggaran')
+             ->where('anggaran_tpbs.status_id',1) //status anggaran sudah approved
+             ->where('anggaran_tpbs.perusahaan_id',$id_bumn) 
+             ->where('anggaran_tpbs.tahun',$tahun) 
+            ->get();
+    
+            return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
+        }
+    }   
 }
