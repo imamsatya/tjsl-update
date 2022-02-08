@@ -15,18 +15,17 @@ use App\Http\Middleware\CasAuth;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+Route::get('/', function () {
+    return view('landing_page.index');
+});
 
 Route::view('forbidden', 'errors.login');
 // login dengan cas
 Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
    Route::get('logout', 'App\Http\Controllers\AuthController@logout')->name('logout');
 
-    // login tanpa cas
     //    Route::get('/', 'App\Http\Controllers\HomeController@index')->name('home');
-        Route::get('/', 'App\Http\Controllers\HomeController@index')->name('dashboard.index');
+        Route::get('/admin', 'App\Http\Controllers\HomeController@index')->name('dashboard.index');
         Route::post('/chartrealisasi', 'App\Http\Controllers\HomeController@chartrealisasi')->name('home.chartrealisasi');
         Route::post('/charttpb', 'App\Http\Controllers\HomeController@charttpb')->name('home.charttpb');
         Route::post('/chartmb', 'App\Http\Controllers\HomeController@chartmb')->name('home.chartmb');
