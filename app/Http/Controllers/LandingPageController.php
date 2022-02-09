@@ -26,8 +26,8 @@ class LandingPageController extends Controller
         $client = self::getClient();
         $response = $client->get($this->publik_api_host.$this->publik_sso.'/service-to-tjsl');
         $data = json_decode($response->getBody(), true);
-
-        return view('landing_page.index-dynamic',['data'=>$data['data'], 'publik_host'=>$this->publik_host]);
+        // return view('landing_page.index-dynamic',['data'=>$data['data'], 'publik_host'=>$this->publik_host]);
+        return view('landing_page.index-default');
     }
 
 }
