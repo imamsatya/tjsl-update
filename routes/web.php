@@ -15,10 +15,7 @@ use App\Http\Middleware\CasAuth;
 |
 */
 
-Route::get('/', function () {
-    return view('landing_page.index');
-});
-
+Route::get('/', 'App\Http\Controllers\LandingPageController@index')->name('landing_page');
 Route::view('forbidden', 'errors.login');
 // login dengan cas
 Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
