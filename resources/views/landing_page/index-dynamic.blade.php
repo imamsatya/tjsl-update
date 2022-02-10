@@ -74,7 +74,9 @@
     
     <!--====== Responsive css ======-->
     <link rel="stylesheet" href="{{ asset('assets/landing_page/css/responsive.css')}}">
-  
+
+    <link rel="stylesheet" href="{{ asset('assets/landing_page/font-awesome-4.7.0/css/font-awesome.min.css')}}">
+    
 </head>
 
 <body>
@@ -84,23 +86,9 @@
             <div class="row">
                 <div class="col-lg-12">
                     <nav class="navbar navbar-expand-lg">
-                        <a class="navbar-brand">
+                        <a class="navbar-brand" href="https://bumn.go.id" target="_blank">
                             <img src="{{ asset('assets/landing_page/images/logo1.png')}}" alt="Logo" width="200px;">
                         </a> <!-- Logo -->
-                        {{-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                            <span class="bar-icon"></span>
-                            <span class="bar-icon"></span>
-                            <span class="bar-icon"></span>
-                        </button> --}}
-
-                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <ul id="nav" class="navbar-nav ml-auto">
-                               <!--  <li class="nav-item active">
-                                    <a data-scroll-nav="0" href="#home">Home</a>
-                                </li> -->
-                           
-                            </ul> <!-- navbar nav -->
-                        </div>
                     </nav> <!-- navbar -->
                 </div>
             </div> <!-- row -->
@@ -125,7 +113,7 @@
                 @foreach($data['info_portal'] as $val)                
                 <div class="col-lg-6">
                     <div class="single-portal mt-30">
-                        <a href="{{$val['link']}}">
+                        <a onclick='window.location.href = "{{$val['link']}}"' style="cursor:pointer;">
                             <div class="portal-image">
                                 <img src="{{ $publik_host.'storage/'.$val['button_image_path'] }}" alt="Product" style="border-radius: 20px;">
                             </div> <!--  image -->
@@ -173,47 +161,6 @@
                     </div> <!-- container -->
                 </div> <!-- single slider -->
                 @endforeach
-                {{-- <div class="single-slider">
-                        <div class="slider-bg">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col-lg-4 col-md-5">
-                                    <div class="slider-product-image d-none d-md-block">
-                                        <img src="{{ asset('assets/landing_page/images/slider/3.jpg')}}" alt="Slider">
-                                        <div class="slider-discount-tag">
-                                            <p>Orientasi</p>
-                                        </div>
-                                    </div> <!-- slider product image -->
-                                </div>
-                                <div class="col-lg-8 col-md-7">
-                                    <div class="slider-product-content">
-                                        <h1 class="slider-title mb-10" data-animation="fadeInUp" data-delay="0.3s"><span>Empat</span><br> Pilar <span>Dasar</span></h1>
-                                        <p class="mb-25" data-animation="fadeInUp" data-delay="0.9s">One day however a small line of blind text by the name of Lorem Ipsum <br> decided to leave for the far World of Grammar.</p>
-                                    </div> <!-- slider product content -->
-                                </div>
-                            </div> <!-- row -->
-                        </div> <!-- container -->
-                </div> <!-- single slider -->
-
-                <div class="single-slider">
-                        <div class="slider-bg">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col-lg-4 col-md-5">
-                                    <div class="slider-product-image d-none d-md-block">
-                                        <img src="{{ asset('assets/landing_page/images/slider/2.jpg')}}" alt="Slider">
-                                        <div class="slider-discount-tag">
-                                            <p>Pengelolaan</p>
-                                        </div>
-                                    </div> <!-- slider product image -->
-                                </div>
-                                <div class="col-lg-8 col-md-7">
-                                    <div class="slider-product-content">
-                                        <h1 class="slider-title mb-10" data-animation="fadeInUp" data-delay="0.3s"><span>Pengelolaan</span> Program <br><span>TJSL</span> BUMN</h1>
-                                        <p class="mb-25" data-animation="fadeInUp" data-delay="0.9s">Program TJSL BUMN dilakukan secara Sistematis dan Terpadu untuk menjamin pelaksanaan dan pencapaian keberhasilan Program TJSL BUMN sesuai dengan prioritas dan/atau pencapaian dari tujuan Program TJSL BUMN yang berpedoman pada rencana kerja.</p>
-                                    </div> <!-- slider product content -->
-                                </div>
-                            </div> <!-- row -->
-                        </div> <!-- container -->
-                </div> <!-- single slider --> --}}
             </div> <!-- slider active -->
             
         </div> <!-- container fluid -->
@@ -265,48 +212,72 @@
         <div class="container">
             <div class="footer-widget pt-25 pb-50">
                 <div class="row">
-                    <div class="col-lg-3 col-md-5 col-sm-7">
+                    <div class="col-lg-5 col-md-9 col-sm-10">
                         <div class="footer-logo mt-40">
                             <a href="#">
                                 <img src="{{ asset('assets/landing_page/images/logo-foot.png')}}" alt="Logo">
                             </a>
                         </div> <!-- footer logo -->
                     </div>
+                    <div class="col-lg-3 col-md-4 col-sm-4">
+                        <div class="footer-link mt-50">
+                            <h5 class="f-title wcolor">Sosial Media</h5>
+                            <ul>
+                                @foreach($data['socmed'] as $val)
+                                <li>
+                                    <i class="fa fa-{{$val['title']}} wcolor" ></i>
+                                    <a href="{{ $val['link']}}">&nbsp;&nbsp;{{ ucwords($val['title'])}}</a>
+                                </li>
+                                @endforeach
+                            </ul>
+                        </div> <!-- footer link -->
+                    </div>
+
                     <div class="col-lg-4 col-md-5 col-sm-7">
                         <div class="footer-info mt-50">
+                        @if(count($data['contact']) > 0)
                             <h5 class="f-title wcolor">Kontak Kami</h5>
-                            <p class="mt-15 text_foot">Kementerian Badan Usaha Milik negara Jalan Medan Merdeka Selatan No. 13 Jakarta Pusat, Indonesia.</p>
+                            @php
+                                foreach($data['contact'] as $k=>$v){
+                                    if($v['title'] == "alamat"){
+                                        echo '<p class="wcolor">'.$v['detail'].'</p><br>';                                        
+                                    }
+                                }
+                            @endphp
                             <ul>
                                 <li>
                                     <div class="single-footer-info mt-20">
                                         <span class="text_foot">Phone :</span>
                                         <div class="footer-info-content text_foot">
-                                            <p class="text_foot">(021) 2993 5678</p>
+                                            @php
+                                            foreach($data['contact'] as $k=>$v){
+                                                if($v['title'] == "telepon"){
+                                                    echo '<p class="text_foot wcolor">'.$v['detail'].'</p><br>';                                        
+                                                }
+                                            }
+                                            @endphp                                            
                                         </div>
                                     </div> <!-- single footer info -->
                                 </li>
                                 <li>
                                     <div class="single-footer-info mt-20">
-                                        <span class="text_foot">Email</span>
+                                        <span class="text_foot">Email :</span>
                                         <div class="footer-info-content">
-                                            <p class="text_foot">kbumn.ri@bumn.go.id</p>
-                                            <p class="text_foot">pendok.kbumn@bumn.go.id</p>
+                                            @php
+                                            foreach($data['contact'] as $k=>$v){
+                                                if($v['title'] == "email"){
+                                                    echo '<p class="text_foot wcolor">'.$v['detail'].'</p><br>';                                        
+                                                }
+                                            }
+                                            @endphp                                                
                                         </div>
                                     </div> <!-- single footer info -->
                                 </li>
                             </ul>
+                        @endif
                         </div> <!-- footer link -->
                     </div>
-                    <div class="col-lg-3 col-md-4 col-sm-5">
-                        <div class="footer-link mt-50">
-                            <h5 class="f-title wcolor">Situs Penting</h5>
-                            <ul>
-                                @foreach($data['sitemap'] as $val)
-                                <li><a href="{{ $val['link']}}">{{ $val['title']}}</a></li>
-                                @endforeach
-                            </ul>
-                        </div> <!-- footer link -->
-                    </div>
+
                     
                 </div> <!-- row -->
             </div> <!-- footer widget -->

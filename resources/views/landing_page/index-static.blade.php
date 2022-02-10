@@ -86,7 +86,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <nav class="navbar navbar-expand-lg">
-                        <a class="navbar-brand">
+                        <a class="navbar-brand" href="https://bumn.go.id" target="_blank">
                             <img src="{{ asset('assets/landing_page/images/logo1.png')}}" alt="Logo" width="200px;">
                         </a> <!-- Logo -->
                         {{-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -128,7 +128,7 @@
             <div class="row">                 
                 <div class="col-lg-6">
                     <div class="single-portal mt-30">
-                        <a href="{{ route('dashboard.index') }}">
+                        <a onclick='window.location.href = "{{ route('dashboard.index') }}"' style="cursor:pointer;" >
                             <div class="portal-image">
                                 <img src="{{ asset('assets/landing_page/images/portal/product-1.jpg')}}" alt="Product" style="border-radius: 20px;">
                             </div> <!--  image -->
@@ -141,7 +141,7 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="single-portal mt-30">
-                        <a href="http://aplikasitjsl.bumn.go.id">
+                        <a onclick='window.location.href = "http://aplikasitjsl.bumn.go.id"' style="cursor:pointer;" >
                         <div class="portal-image">
                             <img src="{{ asset('assets/landing_page/images/portal/product-2.jpg')}}" alt="Product" style="border-radius: 20px;">
                         </div> <!--  image -->
@@ -254,13 +254,13 @@
                             </div>
                             <div class="blog_details">
                                 <div class="blog_title">
-                                    <h5><a href="#">Kesejahteraan yang Baik, untuk Pelayanan yang Terbaik.</a></h5>
+                                    <h5><a href="#">Pertamina Bantu Alat Permainan Edukatif.</a></h5>
                                 </div>
                                 <ul>
-                                    <li><i class="icon ion-md-person"></i>Alex</li>
-                                    <li><i class="icon ion-md-calendar"></i>August 1, 2018</li>
+                                    <li><i class="icon ion-md-person"></i>Published</li>
+                                    <li><i class="icon ion-md-calendar"></i></li>
                                 </ul>
-                                <p class="cblue">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem...</p>
+                                <p class="cblue">Serah terima bantuan alat permainan edukatif dari pertamina kepada PAUD di Balikpapan.</p>
                                 <!-- <a href="#">Read More<i class="icofont-long-arrow-right"></i></a> -->
                             </div>
                         </div>                        
@@ -273,10 +273,10 @@
                                     <h5><a href="#">“Klaster Usaha Bunga Krisan Tomohon”, BRI Bantu Petani Bunga.</a></h5>
                                 </div>
                                 <ul>
-                                    <li><i class="icon ion-md-person"></i>Alex</li>
-                                    <li><i class="icon ion-md-calendar"></i>August 1, 2018</li>
+                                    <li><i class="icon ion-md-person"></i>Published</li>
+                                    <li><i class="icon ion-md-calendar"></i></li>
                                 </ul>
-                                <p class="cblue">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem...</p>
+                                <p class="cblue">Menteri BUMN meninjau Klaster Tanaman Hias binaan BRI.</p>
                                 <!-- <a href="#">Read More<i class="icofont-long-arrow-right"></i></a> -->
                             </div>
                         </div>                        
@@ -286,13 +286,13 @@
                             </div>
                             <div class="blog_details">
                                 <div class="blog_title">
-                                    <h5><a href="#">SUCOFINDO Lakukan Studi Amdal Smelter Nikel.</a></h5>
+                                    <h5><a href="#">SUCOFINDO berikan literasi digital marketing untuk mitra binaan - UMKM.</a></h5>
                                 </div>
                                 <ul>
-                                    <li><i class="icon ion-md-person"></i>Alex</li>
-                                    <li><i class="icon ion-md-calendar"></i>August 1, 2018</li>
+                                    <li><i class="icon ion-md-person"></i>Published</li>
+                                    <li><i class="icon ion-md-calendar"></i></li>
                                 </ul>
-                                <p class="cblue">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem...</p>
+                                <p class="cblue">PT SUCOFINDO (Persero) melalui unit Tanggung Jawab Sosial dan Lingkungan (TJSL) mengadakan pelatihan Digital Marketing untuk Usaha Mikro Kecil dan Menengah.</p>
                                 <!-- <a href="#">Read More<i class="icofont-long-arrow-right"></i></a> -->
                             </div>
                         </div>
@@ -315,6 +315,15 @@
                             </a>
                         </div> <!-- footer logo -->
                     </div>
+                    <div class="col-lg-3 col-md-4 col-sm-5">
+                        <div class="footer-link mt-50">
+                            {{-- <h5 class="f-title wcolor">Situs Penting</h5>
+                            <ul>
+                                <li><a href="#">Web KBUMN</a></li>
+                                <li><a href="#">TJSL Program</a></li>
+                            </ul> --}}
+                        </div> <!-- footer link -->
+                    </div>
                     <div class="col-lg-4 col-md-5 col-sm-7">
                         <div class="footer-info mt-50">
                             <h5 class="f-title wcolor">Kontak Kami</h5>
@@ -332,20 +341,10 @@
                                     <div class="single-footer-info mt-20">
                                         <span class="text_foot">Email</span>
                                         <div class="footer-info-content">
-                                            <p class="text_foot">kbumn.ri@bumn.go.id</p>
-                                            <p class="text_foot">pendok.kbumn@bumn.go.id</p>
+                                            <p class="text_foot">tjsl.kbumn@bumn.go.id</p>
                                         </div>
                                     </div> <!-- single footer info -->
                                 </li>
-                            </ul>
-                        </div> <!-- footer link -->
-                    </div>
-                    <div class="col-lg-3 col-md-4 col-sm-5">
-                        <div class="footer-link mt-50">
-                            <h5 class="f-title wcolor">Situs Penting</h5>
-                            <ul>
-                                <li><a href="#">Web KBUMN</a></li>
-                                <li><a href="#">TJSL Program</a></li>
                             </ul>
                         </div> <!-- footer link -->
                     </div>
