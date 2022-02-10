@@ -26,11 +26,13 @@
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
                         <button type="button" class="btn btn-active btn-info btn-sm btn-icon btn-search cls-search btn-search-active" style="margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
                         <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-search cls-search btn-search-unactive" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
+                        @if(!$view_only)
                         <button type="button" class="btn btn-primary btn-sm btn-icon btn-validasi cls-validasi" style="display:none;margin-right:3px;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
                         <button type="button" class="btn btn-danger btn-sm btn-icon btn-cancel-validasi cls-validasi" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Batalkan Validasi"><i class="bi bi-check fs-3"></i></button> 
                         <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi" style="display:none;margin-right:3px;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
                         <button type="button" class="btn btn-success btn-sm btn-icon cls-upload" style="margin-right:3px;" data-toggle="tooltip" title="Upload Data Program"><i class="bi bi-upload fs-3"></i></button>
                         <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-excel fs-3"></i></button>
+                        @endif
                     </div>
                     <!--end::Search-->
                     <!--end::Group actions-->
@@ -111,10 +113,12 @@
                         </div>
                         <div class="col-lg-6 pt-7">
                             <button id="cari" class="btn btn-sm btn-success me-3">Cari</button>
+                            @if(!$view_only)
                             @if($can_download_template)
                             <button id="download" class="btn btn-sm btn-primary me-3"><i class="bi bi-download fs-3"></i>Download Template</button>
                             @else
                             <button id="download" class="btn btn-sm btn-secondary me-3" disabled><i class="bi bi-download fs-3"></i>Download Template</button>
+                            @endif
                             @endif
                         </div>
                     </div>
@@ -217,12 +221,16 @@
                                                     <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$t->id}}">{{@$t->status->nama}}</span>
                                                 </td>
                                                 <td style="text-align:center;">
+                                                    @if(!$view_only)
                                                     @if($t->status_id != 1)
                                                     <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$t->id}}" data-toggle="tooltip" title="Ubah data {{@$t->program}}"><i class="bi bi-pencil fs-3"></i></button>
                                                     @endif
+                                                    @endif
                                                     <button type="button" class="btn btn-sm btn-light btn-icon btn-info cls-button-detail" data-id="{{$t->id}}" data-toggle="tooltip" title="Detail data {{@$t->program}}"><i class="bi bi-info fs-3"></i></button>
+                                                    @if(!$view_only)
                                                     @if($t->status_id != 1)
                                                     <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="{{$t->id}}" data-nama="{{@$t->program}}" data-toggle="tooltip" title="Hapus data {{@$t->program}}"><i class="bi bi-trash fs-3"></i></button>
+                                                    @endif
                                                     @endif
                                                 </td>
                                             </tr>

@@ -47,12 +47,17 @@ class LaporanKeuanganController extends Controller
         $periode_laporan_id = $request->periode_laporan_id;
         
         $admin_bumn = false;
+        $view_only = false; 
+
         if(!empty($users->getRoleNames())){
             foreach ($users->getRoleNames() as $v) {
                 if($v == 'Admin BUMN') {
                     $admin_bumn = true;
                     $perusahaan_id = \Auth::user()->id_bumn;
                 }
+                if($v == 'Admin Stakeholder') {
+                    $view_only = true;
+                }    
             }
         }
 
@@ -212,7 +217,8 @@ class LaporanKeuanganController extends Controller
             'jenis_laporan_id' => $request->jenis_laporan_id,
             'periode_laporan_id' => $periode_laporan_id,
             'tahun' => ($request->tahun?$request->tahun:date('Y')),
-            'breadcrumb' => 'Laporan Manajemen - Laporan Keuangan'
+            'breadcrumb' => 'Laporan Manajemen - Laporan Keuangan',
+            'view_only' => $view_only  
         ]);
     }
 
@@ -223,13 +229,13 @@ class LaporanKeuanganController extends Controller
             ->addColumn('action', function ($row){
                 $id = (int)$row->id;
                 $button = '<div align="center">';
-
+                if(!\Auth::user()->getRoleNames()->first() == 'Admin Stakeholder'){
                 $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data '.$row->nama.'"><i class="bi bi-pencil fs-3"></i></button>';
 
                 $button .= '&nbsp;';
 
                 $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->nama.'" data-toggle="tooltip" title="Hapus data '.$row->nama.'"><i class="bi bi-trash fs-3"></i></button>';
-
+                }
                 $button .= '</div>';
                 return $button;
             })

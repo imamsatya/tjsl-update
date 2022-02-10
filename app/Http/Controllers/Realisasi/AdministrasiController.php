@@ -55,12 +55,16 @@ class AdministrasiController extends Controller
         $target_tpb_id = $request->target_tpb_id;
 
         $admin_bumn = false;
+        $view_only = false;        
         if(!empty($users->getRoleNames())){
             foreach ($users->getRoleNames() as $v) {
                 if($v == 'Admin BUMN') {
                     $admin_bumn = true;
                     $perusahaan_id = \Auth::user()->id_bumn;
                 }
+                if($v == 'Admin Stakeholder') {
+                    $view_only = true;
+                }                
             }
         }
 
@@ -97,7 +101,8 @@ class AdministrasiController extends Controller
             'target_tpb_id' => $target_tpb_id,
             'bulans' => Bulan::get(),
             'tpb' => $tpb,
-            'can_download_template'  => $can_download_template 
+            'can_download_template'  => $can_download_template,
+            'view_only' => $view_only              
         ]);
     }
 
@@ -180,25 +185,39 @@ class AdministrasiController extends Controller
         }
 
         $kegiatan = $kegiatan->get();
-
+       
         try{
             return datatables()->of($kegiatan)
             ->addColumn('action', function ($row){                
                 $button = '<div align="center">';
                 $id = (int)$row->kegiatan_realisasi_id;
 
+                $id_users = \Auth::user()->id;
+                $users = User::where('id', $id_users)->first();
+                $view_only = false;        
+                if(!empty($users->getRoleNames())){
+                    foreach ($users->getRoleNames() as $v) {
+                        if($v == 'Admin Stakeholder') {
+                            $view_only = true;
+                        }                
+                    }
+                }
+
+            if(!$view_only){
                 if($row->status_id!=1){
                 $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data '.$row->kegiatan.'"><i class="bi bi-pencil fs-3"></i></button>';
                 }
+            }
 
                 $button .= '&nbsp;';
                 $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-info cls-button-detail" data-id="'.$id.'" data-toggle="tooltip" title="Detail data '.$row->kegiatan.'"><i class="bi bi-info fs-3"></i></button>';
 
+            if(!$view_only){                
                 if($row->status_id!=1){
                 $button .= '&nbsp;';
                 $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->kegiatan.'" data-toggle="tooltip" title="Hapus data '.$row->kegiatan.'"><i class="bi bi-trash fs-3"></i></button>';
                 }
-
+            }
                 $button .= '</div>';
                 return $button;
             })

@@ -60,11 +60,15 @@ class AdministrasiController extends Controller
         $perusahaan_id = $request->perusahaan_id;
         
         $admin_bumn = false;
+        $view_only = false;
         if(!empty($users->getRoleNames())){
             foreach ($users->getRoleNames() as $v) {
                 if($v == 'Admin BUMN') {
                     $admin_bumn = true;
                     $perusahaan_id = \Auth::user()->id_bumn;
+                }
+                if($v == 'Admin Stakeholder') {
+                    $view_only = true;
                 }
             }
         }
@@ -161,7 +165,8 @@ class AdministrasiController extends Controller
             'anggaran_pilar' => $anggaran_pilar,
             'anggaran_bumn' => $anggaran_bumn,
             'target' => $target,
-            'can_download_template'  => $can_download_template 
+            'can_download_template'  => $can_download_template,
+            'view_only' => $view_only 
         ]);
     }
 

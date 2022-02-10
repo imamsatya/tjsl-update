@@ -51,6 +51,7 @@ class MitraBinaanController extends Controller
         $admin_bumn = false;
         $super_admin = false;
         $admin_tjsl = false;
+        $view_only = false;         
 
         if(!empty($users->getRoleNames())){
             foreach ($users->getRoleNames() as $v) {
@@ -66,6 +67,9 @@ class MitraBinaanController extends Controller
                     $admin_tjsl = true;
                     $perusahaan_id = $request->perusahaan_id;
                 }
+                if($v == 'Admin Stakeholder') {
+                    $view_only = true;
+                }                  
             }
         }
 
@@ -86,7 +90,8 @@ class MitraBinaanController extends Controller
             'admin_tjsl' => $admin_tjsl,
             'super_admin' => $super_admin,
             'filter_bumn_id' => $perusahaan_id,
-            'bulan' => Bulan::get()
+            'bulan' => Bulan::get(),
+            'view_only' => $view_only  
         ]);
     }
 
@@ -192,12 +197,19 @@ class MitraBinaanController extends Controller
             })
             ->addColumn('action', function ($row){
                 $id = (int)$row->id;
+                if(!\Auth::user()->getRoleNames()->first() == 'Admin Stakeholder'){
                 $button = 
                             '<div style="width:120px;text-align:center;"><span><button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Edit data"><i class="bi bi-pencil fs-3"></i></button>&nbsp;
                             <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show-mitra" data-id="'.$id.'"  data-toggle="tooltip" title="Lihat detail"><i class="bi bi-info fs-3"></i></button>&nbsp;
                             <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-mitra" data-id="'.$id.'" data-nama="'.$row->nama.'" data-toggle="tooltip" title="Hapus data '.$row->nama.'"><i class="bi bi-trash fs-3"></i></button></span><div>
                             ';
                 return $button;
+                }else{
+                    $button = 
+                    '<button type="button" class="btn btn-sm btn-info btn-icon cls-button-show-mitra" data-id="'.$id.'"  data-toggle="tooltip" title="Lihat detail"><i class="bi bi-info fs-3"></i></button>
+                    ';
+                    return $button;                    
+                }
             })
             ->rawColumns(['action'])
             ->toJson();

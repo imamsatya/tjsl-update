@@ -47,11 +47,15 @@ class AnggaranTpbController extends Controller
         $perusahaan_id = $request->perusahaan_id;
         
         $admin_bumn = false;
+        $view_only = false;
         if(!empty($users->getRoleNames())){
             foreach ($users->getRoleNames() as $v) {
                 if($v == 'Admin BUMN') {
                     $admin_bumn = true;
                     $perusahaan_id = \Auth::user()->id_bumn;
+                }
+                if($v == 'Admin Stakeholder') {
+                    $view_only = true;
                 }
             }
         }
@@ -126,6 +130,7 @@ class AnggaranTpbController extends Controller
             'tahun' => ($request->tahun?$request->tahun:date('Y')),
             'pilar_pembangunan_id' => $request->pilar_pembangunan_id,
             'tpb_id' => $request->tpb_id,
+            'view_only' => $view_only
         ]);
     }
 

@@ -40,6 +40,7 @@ class AnggaranController extends Controller
         $admin_bumn = false;
         $super_admin = false;
         $admin_tjsl = false;
+        $view_only = false; 
 
         if(!empty($users->getRoleNames())){
             foreach ($users->getRoleNames() as $v) {
@@ -55,6 +56,9 @@ class AnggaranController extends Controller
                     $admin_tjsl = true;
                     $perusahaan_id = $request->perusahaan_id;
                 }
+                if($v == 'Admin Stakeholder') {
+                    $view_only = true;
+                }                 
             }
         }
 
@@ -70,7 +74,8 @@ class AnggaranController extends Controller
             'filter_status_id' => $request->status_id,
             'filter_tahun' => $request->tahun,
             'periode' => PeriodeLaporan::orderby('urutan','asc')->get(),
-            'status' => Status::get()
+            'status' => Status::get(),
+            'view_only' => $view_only   
         ]);
     }
 
@@ -160,6 +165,7 @@ class AnggaranController extends Controller
             })
             ->addColumn('action', function ($p){
                 $id = (int)$p->id;
+            if(!\Auth::user()->getRoleNames()->first() == 'Admin Stakeholder'){
                 if($p->status !== 'Finish'){
                     if($p->periode !== 'RKA'){
                         //jika status belum finish dan peride bukan RKA
@@ -231,6 +237,13 @@ class AnggaranController extends Controller
                     }
                 }
                 return $btn;
+            }else{
+                //khusus admin stakeholder
+                $btn = '
+                <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show" data-id="'.$id.'" data-nama="'.$p->bumn_singkat.' periode '.$p->periode.' Tahun '.$p->tahun.'" data-toggle="tooltip" title="Lihat detail data '.$p->bumn_singkat.' Tahun '.$p->tahun.'" Periode '.$p->periode.'"><i class="bi bi-info fs-3"></i></button>
+                ';
+                return $btn;         
+            }
 
             })
             ->rawColumns(['status','action'])
