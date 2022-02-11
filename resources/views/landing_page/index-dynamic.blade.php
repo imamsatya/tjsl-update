@@ -30,12 +30,22 @@
         header{
             box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px, rgba(0, 0, 0, 0.1) 0px 2px 4px 0px, rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset;
             }
+        .title-info-mobile{
+            display: none;
+        }
         @media only screen and (max-width: 600px) {
             #discount-product{
                 margin-top: 100px;
             }
             header{
                 box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px, rgba(0, 0, 0, 0.1) 0px 2px 4px 0px, rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset;
+            }
+
+            .title-info-mobile{
+                display: block;
+            }
+            #title-info-web{
+                display: none;
             }
         }
         @media only screen and (max-width: 864px) {
@@ -44,6 +54,12 @@
             }
             header{
                 box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 28px 0px, rgba(0, 0, 0, 0.1) 0px 2px 4px 0px, rgba(255, 255, 255, 0.05) 0px 0px 0px 1px inset;
+            }
+            .title-info-mobile{
+                display: block;
+            }
+            #title-info-web{
+                display: none;
             }
         }
     </style>
@@ -101,7 +117,7 @@
     
     <section id="discount-product" class="discount-product pt-150 bghead-area">
         <div class="container">
-            <div class="row">
+            <div class="row" id="title-info-web">
                 @foreach($data['info_portal'] as $val)
                 <div class="col-lg-6">
                     <h6 class="text-center">{{ $val['title'] }} :</h6>
@@ -112,6 +128,10 @@
             <div class="row"> 
                 @foreach($data['info_portal'] as $val)                
                 <div class="col-lg-6">
+                    <div class="title-info-mobile mt-20">
+                        <h6 class="text-center">{{ $val['title'] }} :</h6>
+                        <p class="text-center">{{ $val['description'] }}</p>
+                    </div>
                     <div class="single-portal mt-30">
                         <a onclick='window.location.href = "{{$val['link']}}"' style="cursor:pointer;">
                             <div class="portal-image">
@@ -221,61 +241,58 @@
                     </div>
                     <div class="col-lg-3 col-md-4 col-sm-4">
                         <div class="footer-link mt-50">
-                            <h5 class="f-title wcolor">Sosial Media</h5>
+                        @if(count($data['socmed']))
+                            <h5 class="f-title" style="color: transparent;">Sosial Media</h5>
                             <ul>
                                 @foreach($data['socmed'] as $val)
                                 <li>
-                                    <i class="fa fa-{{$val['title']}} wcolor" ></i>
+                                    <i class="lni lni-{{$val['title']}} wcolor" ></i>
                                     <a href="{{ $val['link']}}">&nbsp;&nbsp;{{ ucwords($val['title'])}}</a>
                                 </li>
                                 @endforeach
                             </ul>
                         </div> <!-- footer link -->
+                        @endif
                     </div>
 
                     <div class="col-lg-4 col-md-5 col-sm-7">
                         <div class="footer-info mt-50">
                         @if(count($data['contact']) > 0)
-                            <h5 class="f-title wcolor">Kontak Kami</h5>
-                            @php
-                                foreach($data['contact'] as $k=>$v){
-                                    if($v['title'] == "alamat"){
-                                        echo '<p class="wcolor">'.$v['detail'].'</p><br>';                                        
-                                    }
-                                }
-                            @endphp
-                            <ul>
+                            <h5 class="f-title wcolor mb-3">Kontak Kami</h5>
+                            <ul class="contact">
                                 <li>
-                                    <div class="single-footer-info mt-20">
-                                        <span class="text_foot">Phone :</span>
-                                        <div class="footer-info-content text_foot">
-                                            @php
-                                            foreach($data['contact'] as $k=>$v){
-                                                if($v['title'] == "telepon"){
-                                                    echo '<p class="text_foot wcolor">'.$v['detail'].'</p><br>';                                        
-                                                }
-                                            }
-                                            @endphp                                            
-                                        </div>
-                                    </div> <!-- single footer info -->
+                                    <span class="lni lni-map-marker"></span> 
+                                    @php
+                                    foreach($data['contact'] as $k=>$v){
+                                        if($v['title'] == "alamat"){
+                                            echo '<a class="wcolor">'.$v['detail'].'</a><br>';                                        
+                                        }
+                                    }
+                                    @endphp
                                 </li>
                                 <li>
-                                    <div class="single-footer-info mt-20">
-                                        <span class="text_foot">Email :</span>
-                                        <div class="footer-info-content">
-                                            @php
-                                            foreach($data['contact'] as $k=>$v){
-                                                if($v['title'] == "email"){
-                                                    echo '<p class="text_foot wcolor">'.$v['detail'].'</p><br>';                                        
-                                                }
-                                            }
-                                            @endphp                                                
-                                        </div>
-                                    </div> <!-- single footer info -->
+                                    <span class="lni lni-phone"></span>
+                                    @php
+                                    foreach($data['contact'] as $k=>$v){
+                                        if($v['title'] == "telepon"){
+                                            echo '<a class="text_foot wcolor">'.$v['detail'].'</a><br>';                                        
+                                        }
+                                    }
+                                    @endphp   
+                                </li>
+                                <li>
+                                    <span class="lni lni-envelope"></span>
+                                    @php
+                                    foreach($data['contact'] as $k=>$v){
+                                        if($v['title'] == "email"){
+                                            echo '<a class="text_foot wcolor">'.$v['detail'].'</a><br>';                                        
+                                        }
+                                    }
+                                    @endphp 
                                 </li>
                             </ul>
                         @endif
-                        </div> <!-- footer link -->
+                        </div>
                     </div>
 
                     
