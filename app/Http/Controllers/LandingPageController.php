@@ -28,7 +28,7 @@ class LandingPageController extends Controller
         $data = null;
         if($this->publik_api_host && $this->publik_sso && $this->publik_host){
             $client = self::getClient();
-            $response = $client->get($this->publik_api_host.$this->publik_sso.'/service-to-tjsl');
+            $response = $client->get($this->publik_api_host.$this->publik_sso.'/service-to-tjsl', ['verify' => false]);
             $data = json_decode($response->getBody(), true);
         }
 
