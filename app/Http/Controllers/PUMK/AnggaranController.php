@@ -165,7 +165,7 @@ class AnggaranController extends Controller
             })
             ->addColumn('action', function ($p){
                 $id = (int)$p->id;
-            if(!\Auth::user()->getRoleNames()->first() == 'Admin Stakeholder'){
+            if(\Auth::user()->getRoleNames()->first() !== 'Admin Stakeholder'){
                 if($p->status !== 'Finish'){
                     if($p->periode !== 'RKA'){
                         //jika status belum finish dan peride bukan RKA

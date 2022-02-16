@@ -197,7 +197,7 @@ class MitraBinaanController extends Controller
             })
             ->addColumn('action', function ($row){
                 $id = (int)$row->id;
-                if(!\Auth::user()->getRoleNames()->first() == 'Admin Stakeholder'){
+                if(\Auth::user()->getRoleNames()->first() !== 'Admin Stakeholder'){
                 $button = 
                             '<div style="width:120px;text-align:center;"><span><button type="button" class="btn btn-sm btn-success btn-icon cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Edit data"><i class="bi bi-pencil fs-3"></i></button>&nbsp;
                             <button type="button" class="btn btn-sm btn-info btn-icon cls-button-show-mitra" data-id="'.$id.'"  data-toggle="tooltip" title="Lihat detail"><i class="bi bi-info fs-3"></i></button>&nbsp;

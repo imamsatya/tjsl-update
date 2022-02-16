@@ -229,7 +229,7 @@ class LaporanKeuanganController extends Controller
             ->addColumn('action', function ($row){
                 $id = (int)$row->id;
                 $button = '<div align="center">';
-                if(!\Auth::user()->getRoleNames()->first() == 'Admin Stakeholder'){
+                if(\Auth::user()->getRoleNames()->first() !== 'Admin Stakeholder'){
                 $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data '.$row->nama.'"><i class="bi bi-pencil fs-3"></i></button>';
 
                 $button .= '&nbsp;';
