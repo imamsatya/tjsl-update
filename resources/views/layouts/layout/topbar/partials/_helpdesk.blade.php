@@ -11,7 +11,7 @@
 															</a>
 														</li>
 														<li>
-															<a href="https://wa.me/6287884110762/?text=Hallo+Helpdesk+Portal+TJSL.+Saya+Membutuhkan+bantuan." class="menu-link px-4">
+															<a href="https://wa.me/6287884110762/?text=Hallo+Helpdesk+Portal+TJSL.+Saya+Membutuhkan+bantuan." target="_blank"  class="menu-link px-4">
 																<strong>
 																<i class="bi bi-whatsapp" style="color: green;"></i> 
 																&nbsp;Helpdesk TJSL 1
@@ -19,7 +19,7 @@
 															</a>
 														</li>
 														<li>
-															<a href="https://wa.me/6281213236906/?text=Hallo+Helpdesk+Portal+TJSL.+Saya+Membutuhkan+bantuan." class="menu-link px-5">
+															<a href="https://wa.me/6281213236906/?text=Hallo+Helpdesk+Portal+TJSL.+Saya+Membutuhkan+bantuan."  target="_blank"  class="menu-link px-5">
 																<strong>
 																<i class="bi bi-whatsapp" style="color: green;"></i> 
 																&nbsp;Helpdesk TJSL 2
@@ -27,7 +27,7 @@
 															</a>
 														</li>
 														<li>
-															<a href="mailto:asdep.tjsl@bumn.go.id" class="menu-link px-5">
+															<a href="mailto:asdep.tjsl@bumn.go.id"  target="_blank"  class="menu-link px-5">
 																<strong>
 																<i class="bi bi-envelope" style="color: green;"></i> 
 																&nbsp;asdep.tjsl@bumn.go.id
