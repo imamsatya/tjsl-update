@@ -508,3 +508,8 @@ Route::get('cc', function(){
     \Artisan::call('config:clear');
     dd('cache & config clear successfully');
 });
+
+Route::get('act-sync', function(){
+    \Artisan::call('apptjsl:kegiatansync');
+    dd('successfully');
+});
