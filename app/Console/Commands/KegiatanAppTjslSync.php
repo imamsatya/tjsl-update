@@ -22,7 +22,7 @@ class KegiatanAppTjslSync extends Command
      *
      * @var string
      */
-    protected $description = 'Command untuk get api kegiatan aplikasi TJSL';
+    protected $description = 'Command untuk cek api kegiatan aplikasi TJSL';
 
     /**
      * Create a new command instance.
@@ -43,7 +43,6 @@ class KegiatanAppTjslSync extends Command
     {
         $client = new \GuzzleHttp\Client();
 
-        // sync provinsi
         $response = $client->request('GET', 'http://aplikasitjsl.bumn.go.id/api/get-kegiatan');
         $body = json_decode($response->getBody());
 

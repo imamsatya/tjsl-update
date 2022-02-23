@@ -626,4 +626,23 @@ class AdministrasiController extends Controller
         $param['user_id'] = \Auth::user()->id;
         LogKegiatan::create((array)$param);
     }
+
+    public function api_sync()
+    {  
+        try{
+            $call = \Artisan::call('portalApp:KegiatanSync');          
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses Sinkronisasi data',
+                'title' => 'Sukses'
+            ];
+        }catch(\Exception $e){
+            $result = [
+                'flag'  => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }    
 }

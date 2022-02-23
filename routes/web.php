@@ -360,6 +360,8 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('log_status', 'App\Http\Controllers\Realisasi\AdministrasiController@log_status')->name('realisasi.administrasi.log_status');
                 Route::post('validasi', 'App\Http\Controllers\Realisasi\AdministrasiController@validasi')->name('realisasi.administrasi.validasi');
                 Route::post('get_status', 'App\Http\Controllers\Realisasi\AdministrasiController@get_status')->name('realisasi.administrasi.get_status');
+                
+                Route::post('api_sync', 'App\Http\Controllers\Realisasi\AdministrasiController@api_sync')->name('realisasi.administrasi.api_sync');
             });
 
             Route::prefix('upload_realisasi')->group(function(){
@@ -509,7 +511,8 @@ Route::get('cc', function(){
     dd('cache & config clear successfully');
 });
 
-Route::get('act-sync', function(){
+// untuk melakukan penarikan data api kegiatan dari app tjsl (cek data api update)
+Route::get('kegiatan-sync', function(){
     \Artisan::call('apptjsl:kegiatansync');
     dd('successfully');
 });

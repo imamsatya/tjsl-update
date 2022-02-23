@@ -27,7 +27,10 @@
                         <button type="button" class="btn btn-danger btn-sm btn-icon btn-cancel-validasi cls-validasi" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Batalkan Validasi"><i class="bi bi-check fs-3"></i></button> 
                         <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi" style="display:none;margin-right:3px;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
                         <button type="button" class="btn btn-success btn-sm btn-icon cls-upload" style="margin-right:3px;" data-toggle="tooltip" title="Upload Data Program"><i class="bi bi-upload fs-3"></i></button>
-                        <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-excel fs-3"></i></button>
+                        <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel" style="margin-right:3px;"><i class="bi bi-file-excel fs-3"></i></button>
+                            @if(auth()->user()->getRoleNames()[0] == "Admin TJSL" || auth()->user()->getRoleNames()[0] == "Super Admin")
+                            <button type="button" class="btn btn-sm  btn-primary cls-sync"  data-toggle="tooltip" title="Sync Kegiatan Aplikasi Tjsl"><i class="bi bi-bootstrap-reboot"></i> Sync App TJSL</button>
+                            @endif
                         @endif
                     </div>
                     <!--end::Search-->
@@ -159,6 +162,7 @@
     var urluploadstore = "{{route('realisasi.upload_realisasi.store')}}";
     var urlvalidasi = "{{route('realisasi.administrasi.validasi')}}";
     var urlgetstatus = "{{route('realisasi.administrasi.get_status')}}";
+    var urlapisync = "{{route('realisasi.administrasi.api_sync')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
@@ -178,6 +182,10 @@
 
         $('body').on('click','.cls-export',function(){
             exportExcel();
+        });
+
+        $('body').on('click','.cls-sync',function(){
+            syncKegiatan();
         });
 
         $('body').on('click','.cls-button-edit',function(){
@@ -432,6 +440,77 @@
             }
         });	
     }
+
+    function syncKegiatan()
+    {
+        swal.fire({
+            title: "Pemberitahuan",
+            text: " Yakin ingin Sinkronisasi Kegiatan dari Aplikasi TJSL  ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, Sinkronisasi",
+            cancelButtonText: "Tidak"
+        }).then(function(result) {
+            if (result.value) {
+                $.ajax({
+                url: urlapisync,
+                type:'post',
+                dataType:'json',
+                beforeSend: function(){
+                    $.blockUI();
+                },
+                success: function(data){
+                    $.unblockUI();
+
+                    swal.fire({
+                            title: data.title,
+                            html: 'Sukses Sinkronisasi Data',
+                            icon: data.flag,
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                    });
+
+                    if(data.flag == 'success') {
+                        datatable.ajax.reload( null, false );
+                        // location.reload(); 
+                    }
+                    
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                    });  
+                    }
+                });
+            }
+        });	
+    }
+
 
     function exportExcel()
     {
