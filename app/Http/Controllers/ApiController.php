@@ -526,13 +526,14 @@ class ApiController extends Controller
              ->leftjoin('kode_indikators','kode_indikators.id','=','target_tpbs.kode_indikator_id')
              ->whereNotNull('anggaran_tpbs.anggaran')
              ->where('anggaran_tpbs.status_id',1) //status anggaran sudah approved
+             ->where('target_tpbs.id_owner',1) // hanya program owner TJSL 
             ->get();
     
             return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
         }
     }        
 
-    public function getprogramowner_filter(Request $request, $id_owner)
+    public function getprogramowner_filter(Request $request, $id_bumn)
     {
         $ip = str_replace(' ', '', $request->getClientIp());
         $whitelist = ApiWhitelist::whereIn('ip_user',['*',$ip])->where('status','t')->count();
@@ -585,7 +586,8 @@ class ApiController extends Controller
              ->leftjoin('kode_indikators','kode_indikators.id','=','target_tpbs.kode_indikator_id')
              ->whereNotNull('anggaran_tpbs.anggaran')
              ->where('anggaran_tpbs.status_id',1) //status anggaran sudah approved
-             ->where('target_tpbs.id_owner',$id_owner) 
+             ->where('anggaran_tpbs.perusahaan_id',$id_bumn) 
+             ->where('target_tpbs.id_owner',1) // hanya program owner TJSL 
             ->get();
     
             return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);
@@ -646,7 +648,8 @@ class ApiController extends Controller
              ->whereNotNull('anggaran_tpbs.anggaran')
              ->where('anggaran_tpbs.status_id',1) //status anggaran sudah approved
              ->where('anggaran_tpbs.perusahaan_id',$id_bumn) 
-             ->where('anggaran_tpbs.tahun',$tahun) 
+             ->where('anggaran_tpbs.tahun',$tahun)
+             ->where('target_tpbs.id_owner',1) // hanya program owner TJSL 
             ->get();
     
             return response()->json(['status' => 1, 'message' => 'OK', 'data' => $result]);

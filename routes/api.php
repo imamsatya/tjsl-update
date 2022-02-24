@@ -36,5 +36,5 @@ Route::get('service-pilar-tpb', 'App\Http\Controllers\ApiController@getrelasipil
 Route::get('service-pilar-tpb-by-pilar/{id_pilar?}', 'App\Http\Controllers\ApiController@getrelasipilartpb_filter');
 Route::get('service-program-approved', 'App\Http\Controllers\ApiController@getprogramapproved');
 Route::get('service-program-owner', 'App\Http\Controllers\ApiController@getprogramowner');
-Route::get('service-program-owner-by-owner/{id_owner?}', 'App\Http\Controllers\ApiController@getprogramowner_filter');
+Route::get('service-program-owner-by-bumn/{id_bumn?}', 'App\Http\Controllers\ApiController@getprogramowner_filter');
 Route::get('service-program-owner-by-bumn-tahun/{id_bumn?}/{tahun?}', 'App\Http\Controllers\ApiController@getprogramowner_filter_bumn');
