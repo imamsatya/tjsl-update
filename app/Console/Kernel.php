@@ -5,6 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Console\SilabaBumnSync;
+use App\Console\Commands\PortalAppKegiatanSync;
 
 class Kernel extends ConsoleKernel
 {
@@ -18,6 +19,7 @@ class Kernel extends ConsoleKernel
         ProvinsiKotaSync::class,
         BankAccountSync::class,
         ValidasiKegiatan::class,
+        PortalAppKegiatanSync::class,
     ];
 
     /**
@@ -30,6 +32,10 @@ class Kernel extends ConsoleKernel
     {
         //service validasi data kegiatan dilakukan setiap tanggal 15 jam 2:00
         $schedule->command('validasi:kegiatan')->monthlyOn(15, '02:00');
+
+        //service sync kegiatan app tjsl dilakukan setiap hari jam 1:00 
+        $schedule->command('portalApp:KegiatanSync')->dailyAt('01:00');
+        
     }
 
     /**
