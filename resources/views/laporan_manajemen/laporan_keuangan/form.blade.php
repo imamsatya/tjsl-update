@@ -244,7 +244,7 @@
                         } else if (jqXHR.status == 500) {
                             msgerror = 'Internal Server Error [500].';
                         } else if (exception === 'parsererror') {
-                            msgerror = 'Requested JSON parse gagal.';
+                            msgerror = '';
                         } else if (exception === 'timeout') {
                             msgerror = 'RTO.';
                         } else if (exception === 'abort') {
@@ -253,8 +253,8 @@
                             msgerror = 'Error.\n' + jqXHR.responseText;
                         }
                         swal.fire({
-                                title: "Error System",
-                                html: msgerror+', coba ulangi kembali !!!',
+                                title: "Gagal Simpan",
+                                html: msgerror+'Hubungi admin untuk konfirmasi penginputan laporan !!!',
                                 icon: 'error',
 
                                 buttonsStyling: true,

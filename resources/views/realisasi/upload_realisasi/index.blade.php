@@ -294,7 +294,7 @@
                         } else if (jqXHR.status == 500) {
                             msgerror = 'Internal Server Error [500].';
                         } else if (exception === 'parsererror') {
-                            msgerror = 'Requested JSON parse gagal.';
+                            msgerror = '';
                         } else if (exception === 'timeout') {
                             msgerror = 'RTO.';
                         } else if (exception === 'abort') {
@@ -303,14 +303,14 @@
                             msgerror = 'Error.\n' + jqXHR.responseText;
                         }
                         swal.fire({
-                                title: "Error System",
-                                html: msgerror+', coba ulangi kembali !!!',
+                                title: "Gagal Upload",
+                                html: msgerror+'Pastikan file excel tidak mengandung formula(rumus) dan format telah sesuai template dari portal TJSL !!!',
                                 icon: 'error',
 
                                 buttonsStyling: true,
 
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                        });	                               
+                        });                               
                     }
                 });
                 return false;
