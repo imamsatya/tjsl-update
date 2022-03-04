@@ -23,6 +23,7 @@ use App\Models\PeriodeLaporan;
 use App\Models\RelasiLaporanKeuangan;
 use App\Models\LaporanKeuanganParent;
 use App\Models\LaporanKeuanganChild;
+use App\Models\Status;
 
 use PDF;
 
@@ -309,9 +310,66 @@ class LaporanKeuanganController extends Controller
             $laporan_manajemen = LaporanManajemen::where('perusahaan_id',$request->perusahaan_id)
                                                     ->where('periode_laporan_id',$request->periode_laporan_id)
                                                     ->where('tahun',$request->tahun)->first();
-            $param2['status_id']  = 2;
-            $laporan_manajemen->update((array)$param2);
-            LaporanManajemenController::store_log($laporan_manajemen->id,$param2['status_id']);
+
+            if($laporan_manajemen){
+                $param2['status_id']  = 2;
+                $laporan_manajemen->update((array)$param2);
+                LaporanManajemenController::store_log($laporan_manajemen->id,$param2['status_id']);
+
+            }else{
+                $periode = PeriodeLaporan::select('id')->get();
+                $cek = LaporanManajemen::where('perusahaan_id',$request->perusahaan_id)
+                       ->where('tahun',$request->tahun)->count();
+                $status = Status::where('nama','ilike','%Unfilled%')->pluck('id')->first();
+
+                if($cek == 0){
+                    foreach($periode as $val){
+                        LaporanManajemen::insert([
+                            'perusahaan_id'=>$request->perusahaan_id,
+                            'periode_laporan_id'=>$val->id,
+                            'status_id'=>$status,
+                            'user_id'=>auth()->user()->id,
+                            'tahun'=>$request->tahun,
+                            'created_at'=>now()
+                        ]);
+                    }
+                }
+        
+                if($cek > 0 && $cek < $periode->count()){
+                    $cek_lap = LaporanManajemen::select('periode_laporan_id')->where('perusahaan_id',$request->perusahaan_id)->where('tahun',$request->tahun)->get();
+        
+                    $perr = [];
+                    foreach($periode as $k=>$per){
+                        $perr[] = $per->id;
+                    }
+                    $lapp = [];
+                    foreach($cek_lap as $key=>$lap){
+                        $lapp[] = $lap->periode_laporan_id;
+                    }
+                    
+                    $result = array_diff($perr,$lapp);
+        
+                    foreach($result as $v){
+                        LaporanManajemen::insert([
+                            'perusahaan_id'=>$request->perusahaan_id,
+                            'periode_laporan_id'=>$v,
+                            'status_id'=>$status,
+                            'user_id'=>auth()->user()->id,
+                            'tahun'=>$request->tahun,
+                            'created_at'=>now()
+                         ]);
+                    }
+                }
+
+                $laporan_manajemen_new = LaporanManajemen::where('perusahaan_id',$request->perusahaan_id)
+                ->where('periode_laporan_id',$request->periode_laporan_id)
+                ->where('tahun',$request->tahun)->first();
+
+                $param2_new['status_id']  = 2;
+                $laporan_manajemen_new->update((array)$param2_new);
+                LaporanManajemenController::store_log($laporan_manajemen_new->id,$param2_new['status_id']);
+            }
+
 
             DB::commit();
             $result = [
