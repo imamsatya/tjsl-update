@@ -464,7 +464,7 @@
 
                     swal.fire({
                             title: data.title,
-                            html: 'Sukses Sinkronisasi Data',
+                            html: '',
                             icon: data.flag,
 
                             buttonsStyling: true,
