@@ -633,7 +633,7 @@ class AdministrasiController extends Controller
             $call = \Artisan::call('portalApp:KegiatanSync'); 
             $jumlah_data = $call;
 
-            if($jumlah_data > 0){
+            if($jumlah_data == 0){
                 $result = [
                     'flag'  => 'warning',
                     'msg' => 'Belum ada data kegiatan terbaru dari Aplikasi TJSL',
