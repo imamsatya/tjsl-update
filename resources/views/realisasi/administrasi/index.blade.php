@@ -464,7 +464,7 @@
 
                     swal.fire({
                             title: data.title,
-                            html: '',
+                            html: data.msg,
                             icon: data.flag,
 
                             buttonsStyling: true,

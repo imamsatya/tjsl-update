@@ -52,7 +52,7 @@ class PortalAppKegiatanSync extends Command
             $activity_exists = Kegiatan::get();
             $realisasi_exists = KegiatanRealisasi::get();
             $sumber_data = 'http://aplikasitjsl.bumn.go.id/api/get-kegiatan';
-            $jumlah_data = [];
+            $banyak_data = [];
 
             $data = $body->data; 
             foreach($data as $k=>$value){
