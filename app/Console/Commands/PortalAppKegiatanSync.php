@@ -57,7 +57,7 @@ class PortalAppKegiatanSync extends Command
             $data = $body->data; 
             foreach($data as $k=>$value){
                 //Lakukan filter hanya jika id_program,tahun dan bulan tidak kosong
-                if($value->id_program && $value->bulan && $value->tahun){
+                if($value->id_program && $value->bulan && $value->tahun && $value->id_bumn && $value->id_bumn > 0){
                     Kegiatan::updateOrCreate(
                         ['id_kegiatan_aplikasitjsl' => $value->id_kegiatan],
                         [
@@ -71,9 +71,10 @@ class PortalAppKegiatanSync extends Command
                             'realisasi' => $value->realisasi_anggaran_bulan? (int)preg_replace('/\D/', '',$value->realisasi_anggaran_bulan) : 0,
                             'created_at' => $now,
                             'updated_at' => $now,
-                            'sumber_data' => $sumber_data,//custom
-                            'tgl_sinkronisasi_api' => $now, //custom
-                            'id_kegiatan_aplikasitjsl' => $value->id_kegiatan //custom
+                            'sumber_data' => $sumber_data,//custom audit trail
+                            'tgl_sinkronisasi_api' => $now, //custom audit trail
+                            'id_kegiatan_aplikasitjsl' => $value->id_kegiatan, //custom audit trail
+                            'id_bumn_aplikasitjsl' => $value->id_bumn //custom audit trail
                        ]);
 
                        //get id terakhir kegiatan
@@ -92,8 +93,9 @@ class PortalAppKegiatanSync extends Command
                                 'status_id' => 2,
                                 'created_at' => $now,
                                 'updated_at' => $now,
-                                'sumber_data' => $sumber_data,
-                                'tgl_sinkronisasi_api' => $now
+                                'sumber_data' => $sumber_data, //custom audit trail
+                                'tgl_sinkronisasi_api' => $now, //custom audit trail
+                                'id_bumn_aplikasitjsl' => $value->id_bumn //custom audit trail
                            ]);
                        }else{
                             KegiatanRealisasi::insert(
@@ -109,8 +111,9 @@ class PortalAppKegiatanSync extends Command
                                 'created_at' => $now,
                                 'updated_at' => $now,
                                 'sumber_data' => $sumber_data,
-                                'tgl_sinkronisasi_api' => $now,
-                                'id_kegiatan_aplikasitjsl' => $value->id_kegiatan                     
+                                'tgl_sinkronisasi_api' => $now, //custom audit trail
+                                'id_kegiatan_aplikasitjsl' => $value->id_kegiatan, //custom audit trail
+                                'id_bumn_aplikasitjsl' => $value->id_bumn //custom audit trail                     
                            ]);
                        }
 

@@ -630,19 +630,20 @@ class AdministrasiController extends Controller
     public function api_sync()
     {  
         try{
-            $call = \Artisan::call('portalApp:KegiatanSync'); 
-            $jumlah_data = $call;
-
-            if($jumlah_data == 0){
+            $call = \Artisan::call('portalApp:KegiatanSync');
+            $cek_log = DB::table('log_sinkronisasi_kegiatan')->orderby('id','desc')->first();
+          
+            if(count($cek_log) == 0 || $cek_log->jumlah_data == 0){
                 $result = [
                     'flag'  => 'warning',
                     'msg' => 'Belum ada data kegiatan terbaru dari Aplikasi TJSL',
                     'title' => 'Warning'
                 ];
             }else{
+                $jumlah =  $cek_log->jumlah_data? (string)$cek_log->jumlah_data : "";
                 $result = [
                     'flag'  => 'success',
-                    'msg' => 'Sukses Sinkronisasi '.$jumlah_data.' data',
+                    'msg' => 'Sukses Sinkronisasi '.$jumlah.' data',
                     'title' => 'Sukses'
                 ];
             }
