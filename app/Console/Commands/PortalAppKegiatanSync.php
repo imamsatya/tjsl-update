@@ -44,14 +44,14 @@ class PortalAppKegiatanSync extends Command
     {
         $client = new \GuzzleHttp\Client();
 
-        $response = $client->request('GET', 'http://aplikasitjsl.bumn.go.id/api/get-kegiatan');
+        $response = $client->request('GET', env('APP_TJSL_HOST').'api/get-kegiatan');
         $body = json_decode($response->getBody());
 
         if($body){
             $now = Carbon::now()->format('Y-m-d H:i:s');
             $activity_exists = Kegiatan::get();
             $realisasi_exists = KegiatanRealisasi::get();
-            $sumber_data = 'http://aplikasitjsl.bumn.go.id/api/get-kegiatan';
+            $sumber_data = env('APP_TJSL_HOST').'api/get-kegiatan';
             $banyak_data = [];
 
             $data = $body->data; 
@@ -65,7 +65,7 @@ class PortalAppKegiatanSync extends Command
                             'kegiatan' => $value->kegiatan?$value->kegiatan : null,
                             'provinsi_id' => $value->id_provinsi_portal?$value->id_provinsi_portal : null,
                             'kota_id' => $value->id_kab_kota_portal?$value->id_kab_kota_portal : null,
-                            'indikator' => $value->id_indikator_portal?$value->id_indikator_portal : null,
+                            'indikator' => $value->indikator_capaian_kegiatan?$value->indikator_capaian_kegiatan : null,
                             'satuan_ukur_id' => $value->id_satuan_ukur?$value->id_satuan_ukur : null,
                             'anggaran_alokasi' => $value->alokasi_anggaran_tahun? (int)preg_replace('/\D/', '',$value->alokasi_anggaran_tahun) : 0,
                             'realisasi' => $value->realisasi_anggaran_bulan? (int)preg_replace('/\D/', '',$value->realisasi_anggaran_bulan) : 0,

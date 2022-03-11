@@ -43,7 +43,7 @@ class KegiatanAppTjslSync extends Command
     {
         $client = new \GuzzleHttp\Client();
 
-        $response = $client->request('GET', 'http://aplikasitjsl.bumn.go.id/api/get-kegiatan');
+        $response = $client->request('GET', env('APP_TJSL_HOST').'api/get-kegiatan');
         $body = json_decode($response->getBody());
 
         if($body){
