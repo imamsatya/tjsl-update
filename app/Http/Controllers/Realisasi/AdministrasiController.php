@@ -633,7 +633,7 @@ class AdministrasiController extends Controller
             $call = \Artisan::call('portalApp:KegiatanSync');
             $cek_log = DB::table('log_sinkronisasi_kegiatan')->orderby('id','desc')->first();
           
-            if(count($cek_log) == 0 || $cek_log->jumlah_data == 0){
+            if(!$cek_log || $cek_log->jumlah_data == 0){
                 $result = [
                     'flag'  => 'warning',
                     'msg' => 'Belum ada data kegiatan terbaru dari Aplikasi TJSL',
