@@ -7,7 +7,6 @@ td{
 </style>
 @endsection
 
-
 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
 	@csrf
 	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
@@ -38,6 +37,12 @@ td{
                 <td>Rp. {{number_format($data->anggaran_alokasi,0,',',',')}}</td>
                 <td><b>Realisasi Anggaran</b></td>
                 <td>Rp. {{number_format($anggaran_total,0,',',',')}}</td>
+            </tr>
+            <tr>
+                <td><b>Sumber Data</b></td>
+                <td>{{@$data->sumber_data? 'Sinkronisasi Aplikasi TJSL' : 'Portal TJSL' }}</td>
+                <td></td>
+                <td></td>
             </tr>
         </tbody>
     </table>
