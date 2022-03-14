@@ -57,7 +57,8 @@ class AdministrasiController extends Controller
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
        
-        $perusahaan_id = $request->perusahaan_id;
+        $default_perusahaan = Perusahaan::orderby('id','ASC')->pluck('id')->first();
+        $perusahaan_id = $request->perusahaan_id? $request->perusahaan_id : $default_perusahaan;
         
         $admin_bumn = false;
         $view_only = false;
@@ -178,6 +179,7 @@ class AdministrasiController extends Controller
      */
     public function datatable(Request $request)
     {
+
         $kode = TargetTpb::orderBy('tpb_id')->get();
         try{
             return datatables()->of($kode)
