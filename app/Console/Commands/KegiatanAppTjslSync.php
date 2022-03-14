@@ -66,7 +66,7 @@ class KegiatanAppTjslSync extends Command
                     "id_kegiatan"	=>$param->id_kegiatan,
                     "id_bumn"	=>$param->id_bumn,
                     "id_program"	=>$param->id_program,
-                    "sektor"	=>$param->sektor,
+                    // "sektor"	=>$param->sektor,
                     "kegiatan"	=>$param->kegiatan,
                     "id_provinsi_portal"	=>$param->id_provinsi_portal,
                     "id_kab_kota_portal"	=>$param->id_kab_kota_portal,
