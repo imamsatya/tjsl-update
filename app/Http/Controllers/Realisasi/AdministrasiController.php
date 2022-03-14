@@ -26,6 +26,7 @@ use App\Models\Tpb;
 use App\Models\Provinsi;
 use App\Models\Kota;
 use App\Models\PilarPembangunan;
+use App\Models\OwnerProgram;
 use App\Exports\KegiatanTemplateExcelSheet;
 use App\Exports\KegiatanExport;
 
@@ -88,6 +89,9 @@ class AdministrasiController extends Controller
         $pilar = PilarPembangunan::get();
         $tpb = Tpb::get();
         $target_tpb = TargetTpb::get();
+        $owner = OwnerProgram::get();
+
+        $this->api_sync();
 
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
@@ -102,6 +106,7 @@ class AdministrasiController extends Controller
             'bulans' => Bulan::get(),
             'tpb' => $tpb,
             'can_download_template'  => $can_download_template,
+            'owner' => $owner,
             'view_only' => $view_only              
         ]);
     }
@@ -148,6 +153,7 @@ class AdministrasiController extends Controller
                                     'kegiatan_realisasis.id as kegiatan_realisasi_id',
                                     'satuan_ukur.nama as satuan_ukur',
                                     'target_tpbs.program',
+                                    'target_tpbs.id_owner',
                                     'provinsis.nama as provinsi',
                                     'kotas.nama as kota',
                                     'bulans.nama as bulan')
@@ -184,6 +190,10 @@ class AdministrasiController extends Controller
             $kegiatan = $kegiatan->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
         }
 
+        if($request->owner){
+            $kegiatan = $kegiatan->where('target_tpbs.id_owner', (int)$request->owner);
+        }
+
         $kegiatan = $kegiatan->get();
        
         try{
@@ -205,7 +215,10 @@ class AdministrasiController extends Controller
 
             if(!$view_only){
                 if($row->status_id!=1){
-                $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data '.$row->kegiatan.'"><i class="bi bi-pencil fs-3"></i></button>';
+                    if($row->id_owner > 1){
+                        //jika id owner non tjsl
+                        $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data '.$row->kegiatan.'"><i class="bi bi-pencil fs-3"></i></button>';
+                    }
                 }
             }
 
@@ -214,8 +227,11 @@ class AdministrasiController extends Controller
 
             if(!$view_only){                
                 if($row->status_id!=1){
-                $button .= '&nbsp;';
-                $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->kegiatan.'" data-toggle="tooltip" title="Hapus data '.$row->kegiatan.'"><i class="bi bi-trash fs-3"></i></button>';
+                    if($row->id_owner > 1){
+                        //jika id owner non tjsl
+                        $button .= '&nbsp;';
+                        $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->kegiatan.'" data-toggle="tooltip" title="Hapus data '.$row->kegiatan.'"><i class="bi bi-trash fs-3"></i></button>';
+                    }
                 }
             }
                 $button .= '</div>';

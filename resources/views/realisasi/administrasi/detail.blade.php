@@ -41,8 +41,8 @@ td{
             <tr>
                 <td><b>Sumber Data</b></td>
                 <td>{{@$data->sumber_data? 'Sinkronisasi Aplikasi TJSL' : 'Portal TJSL' }}</td>
-                <td></td>
-                <td></td>
+                <td><b>Owner Program</b></td>
+                <td>{{@$data->target_tpb->owner_id == 1? 'TJSL' : 'Non-TJSL' }}</td>
             </tr>
         </tbody>
     </table>

@@ -90,6 +90,15 @@
                         </div>
                     </div>
                     <div class="form-group row  mb-5">
+                        <div class="col-lg-6">
+                            <label>Owner Program</label>
+                            <select class="form-select form-select-solid form-select2" id="filter_owner" name="filter_owner" data-kt-select2="true" data-placeholder="Pilih Owner Program" data-allow-clear="true">
+                                <option></option>
+                                @foreach($owner as $op)  
+                                    <option value="{{ $op->id }}">{{ $op->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="col-lg-3">
                             <label>Bulan</label>
                             <select class="form-select form-select-solid form-select2" id="filter_bulan" name="filter_bulan" data-kt-select2="true" data-placeholder="Pilih Bulan" data-allow-clear="true">
@@ -677,6 +686,7 @@
                     d.pilar_pembangunan_id = $("select[name='filter_pilar_pembangunan_id']").val();
                     d.tpb_id = $("select[name='filter_tpb_id']").val();
                     d.bulan = $("select[name='filter_bulan']").val();
+                    d.owner = $("select[name='filter_owner']").val();
                 }
             },
             columns: [

@@ -7,6 +7,7 @@ use App\Models\KegiatanByAppTjsl;
 use GuzzleHttp\Client;
 use Carbon\Carbon;
 use DB;
+use App\Models\TargetTpb;
 
 class KegiatanAppTjslSync extends Command
 {
@@ -43,7 +44,7 @@ class KegiatanAppTjslSync extends Command
     {
         $client = new \GuzzleHttp\Client();
 
-        $response = $client->request('GET', env('APP_TJSL_HOST').'api/get-kegiatan');
+        $response = $client->request('GET', env('APP_TJSL_HOST').'api/get-kegiatan',['verify'=>false]);
         $body = json_decode($response->getBody());
 
         if($body){
@@ -57,6 +58,10 @@ class KegiatanAppTjslSync extends Command
             $datas = $body->data; 
             $data = [];
             foreach($datas as $param){
+                $cek_program = TargetTpb::find((int)$param->id_program);
+                //keterangan hasil cek ketersediaan id program di portal
+                $status_program = $cek_program? 'available' : 'undefined';
+
                 $data[] = [
                     "id_kegiatan"	=>$param->id_kegiatan,
                     "id_bumn"	=>$param->id_bumn,
@@ -87,7 +92,8 @@ class KegiatanAppTjslSync extends Command
                     "alokasi_anggaran_tahun"	=>$param->alokasi_anggaran_tahun,
                     "realisasi_anggaran_bulan"	=>$param->realisasi_anggaran_bulan,
                     "target_bulan"	=>$param->target_bulan,
-                    "realisasi_bulan"	=>$param->realisasi_bulan
+                    "realisasi_bulan"	=>$param->realisasi_bulan,
+                    "status_id_program_diportal" =>$status_program
                 ];
             }
 
