@@ -42,7 +42,7 @@ td{
                 <td><b>Sumber Data</b></td>
                 <td>{{@$data->sumber_data? 'Sinkronisasi Aplikasi TJSL' : 'Portal TJSL' }}</td>
                 <td><b>Owner Program</b></td>
-                <td>{{@$data->target_tpb->owner_id == 1? 'TJSL' : 'Non-TJSL' }}</td>
+                <td>{{@$data->target_tpb->id_owner == 1? 'TJSL' : 'Non-TJSL' }}</td>
             </tr>
         </tbody>
     </table>
