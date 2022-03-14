@@ -95,7 +95,7 @@ class PortalAppKegiatanSync extends Command
                                 'realisasi' => $value->realisasi_bulan? $value->realisasi_bulan : 0,            
                                 'anggaran' => $value->anggaran_permintaan? (int) $value->anggaran_permintaan : 0,                     
                                 'anggaran_total' => $value->realisasi_bulan? (int) $value->realisasi_bulan : 0,
-                                'status_id' => 2,
+                                'status_id' => 1,
                                 'created_at' => $now,
                                 'updated_at' => $now,
                                 'sumber_data' => $sumber_data, //custom audit trail
@@ -113,7 +113,7 @@ class PortalAppKegiatanSync extends Command
                                 'realisasi' => $value->realisasi_bulan? $value->realisasi_bulan : 0,            
                                 'anggaran' => $value->anggaran_permintaan? (int) $value->anggaran_permintaan : 0,                     
                                 'anggaran_total' => $value->realisasi_bulan? (int) $value->realisasi_bulan : 0,
-                                'status_id' => 2, //default 
+                                'status_id' => 1, //default 
                                 'created_at' => $now,
                                 'updated_at' => $now,
                                 'sumber_data' => $sumber_data,
