@@ -676,6 +676,9 @@
             processing: true,
             bFilter: true,
             serverSide: true,
+            beforeSend: function(){
+                $.blockUI();
+            },
             ajax: {
                 url: urldatatable,
                 type: 'GET',
