@@ -139,6 +139,11 @@ class AdministrasiController extends Controller
                             ->orderBy('target_tpbs.tpb_id')->get();
         }
 
+        if($request->owner_id){
+            $target = TargetTpb::where('target_tpbs.id_owner', $request->owner_id)
+                            ->orderBy('target_tpbs.tpb_id')->get();
+        }
+
         $can_download_template = true;
         if($admin_bumn){
             if($anggaran_bumn->count() > 0){
@@ -166,6 +171,8 @@ class AdministrasiController extends Controller
             'anggaran_pilar' => $anggaran_pilar,
             'anggaran_bumn' => $anggaran_bumn,
             'target' => $target,
+            'owner' => OwnerProgram::get(),
+            'owner_id' => $request->owner_id,
             'can_download_template'  => $can_download_template,
             'view_only' => $view_only 
         ]);

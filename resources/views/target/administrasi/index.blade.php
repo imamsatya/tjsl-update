@@ -99,7 +99,19 @@
                         </div>
                     </div>
                     <div class="form-group row mb-5">
-                        <div class="col-lg-6">
+                        <div class="col-lg-3">
+                            <label>Owner Program</label>
+                            <select id="owner_id" class="form-select form-select-solid form-select2" name="owner_id" data-kt-select2="true" data-placeholder="Pilih Owner" data-allow-clear="true">
+                                <option></option>
+                                @foreach($owner as $p)  
+                                    @php
+                                        $select = (($p->id == $owner_id) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-3">
                             <label>Status</label>
                             <select id="status_id" class="form-select form-select-solid form-select2" name="status_id" data-kt-select2="true" data-placeholder="Pilih Status" data-allow-clear="true">
                                 <option></option>
@@ -110,7 +122,7 @@
                                     <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
                                 @endforeach
                             </select>
-                        </div>
+                        </div>                        
                         <div class="col-lg-6 pt-7">
                             <button id="cari" class="btn btn-sm btn-success me-3">Cari</button>
                             @if(!$view_only)
@@ -363,8 +375,9 @@
             var pilar_pembangunan_id = $('#pilar_pembangunan_id').val();
             var tpb_id = $('#tpb_id').val();
             var status_id = $('#status_id').val();
+            var owner_id = $('#owner_id').val();
 
-            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&pilar_pembangunan_id=' + pilar_pembangunan_id + '&tpb_id=' + tpb_id + '&status_id=' + status_id;
+            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&pilar_pembangunan_id=' + pilar_pembangunan_id + '&tpb_id=' + tpb_id + '&status_id=' + status_id + '&owner_id=' + owner_id;
         });
 
         if(!"{{ $admin_bumn }}"){
