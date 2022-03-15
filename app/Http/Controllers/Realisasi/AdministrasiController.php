@@ -94,8 +94,6 @@ class AdministrasiController extends Controller
         $target_tpb = TargetTpb::get();
         $owner = OwnerProgram::get();
 
-        $this->api_sync();
-
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Kegiatan - Administrasi',
