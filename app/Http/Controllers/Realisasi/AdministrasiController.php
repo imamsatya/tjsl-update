@@ -54,7 +54,10 @@ class AdministrasiController extends Controller
         $users = User::where('id', $id_users)->first();
         $perusahaan_id = ($request->perusahaan_id?$request->perusahaan_id:1);
         $target_tpb_id = $request->target_tpb_id;
-
+       
+        $default_perusahaan = Perusahaan::orderby('id','ASC')->pluck('id')->first();
+        $perusahaan_id = $request->perusahaan_id? $request->perusahaan_id : $default_perusahaan;
+        
         $admin_bumn = false;
         $view_only = false;        
         if(!empty($users->getRoleNames())){
