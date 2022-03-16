@@ -382,7 +382,7 @@ class HomeController extends Controller
                                     ->leftJoin('anggaran_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
                                     ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
                                     ->leftJoin('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id');
-                                    
+                                                    
             $anggaran = AnggaranTpb::Select(DB::Raw('sum(anggaran_tpbs.anggaran) as anggaran'))
                                     ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id');
 
@@ -399,9 +399,9 @@ class HomeController extends Controller
                 $anggaran = $anggaran->where('anggaran_tpbs.tahun',$request->tahun);
             }
             if($request->owner_id && $request->owner_id!='all'){
-                $kegiatan[$i] = $kegiatan[$i]->where('target_tpbs.id_owner',$request->owner_id);
+                $kegiatan = $kegiatan->where('target_tpbs.id_owner',(int)$request->owner_id);
             }
-            
+
             $kegiatan = $kegiatan->first();
             $anggaran = $anggaran->first();
 
