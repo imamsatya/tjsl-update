@@ -56,6 +56,12 @@ class PortalAppKegiatanSync extends Command
             $banyak_data = [];
 
             $data = $body->data; 
+
+            //clear data log setiap 1 jam (untuk antisipasi explosive log data sync)
+            if(\DB::table('log_sinkronisasi_kegiatan')->count() > 60){
+                DB::table('log_sinkronisasi_kegiatan')->truncate();
+            }
+
             foreach($data as $k=>$value){
                 //Lakukan filter hanya jika id_program,tahun dan bulan tidak kosong
                 if($value->id_program && $value->bulan && $value->tahun && $value->id_bumn && $value->id_bumn > 0){
@@ -128,7 +134,8 @@ class PortalAppKegiatanSync extends Command
                     }
                 }
             }
-
+       
+            //catat data log
             \DB::table('log_sinkronisasi_kegiatan')->insert([
                 'jumlah_data' => count($banyak_data),
                 'user_id' => auth()->user()->id,

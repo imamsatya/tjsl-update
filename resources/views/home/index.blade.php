@@ -97,7 +97,7 @@
                 <div class="card-px py-10">
                     <!--begin: Datatable -->
                     <div class="form-group row  mb-5">
-                        <div class="col-lg-5">
+                        <div class="col-lg-4">
                             <label>TPB</label>
                             <select class="form-select form-select-solid form-select2" id="tpb_id" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB">
                                 <option></option>
@@ -110,7 +110,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-lg-5">
+                        <div class="col-lg-4">
                             <label>BUMN</label>
                             @php
                                 $disabled = (($admin_bumn) ? 'disabled="true"' : '');
@@ -123,6 +123,19 @@
                                         $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
                                     @endphp
                                     <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-2">
+                            <label>Owner Program</label>
+                            <select class="form-select form-select-solid form-select2" id="owner_id" name="owner_id" data-kt-select2="true" data-placeholder="Pilih">
+                                <option></option>
+                                <option value="all">Semua Owner</option>
+                                @foreach($owner as $p)  
+                                    {{-- @php
+                                        $select = (($p->id == $owner_id) ? 'selected="selected"' : '');
+                                    @endphp --}}
+                                    <option value="{{ $p->id }}" >{{ $p->nama }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -316,6 +329,10 @@
         $('#tpb_id').on('change', function(event){
             updatecharttpb();
         });
+        $('#owner_id').on('change', function(event){
+            updatechartrealisasi();
+            updatecharttpb();
+        });
 
         initchartrealisasi();
         initcharttpb();
@@ -478,12 +495,27 @@
         $.ajax({
             url: urlchartrealisasi,
             data: {
+                'tpb_id' : $("#tpb_id").val(),
                 'perusahaan_id' : $("#perusahaan_id").val(),
-                'tahun' : $("#tahun").val()
+                'tahun' : $("#tahun").val(),
+                'owner_id' : $("#owner_id").val()
             },
             type: "POST",
             dataType: "json", 
             success: function(data){
+                var detail1 = "<i>Target :</i> Rp. "+data.target1+"<br><i>Realisasi :</i> Rp. "+data.realisasi1+"<br><i>Sisa :</i> Rp. "+data.sisa1;
+                var detail2 = "<i>Target :</i> Rp. "+data.target2+"<br><i>Realisasi :</i> Rp. "+data.realisasi2+"<br><i>Sisa :</i> Rp. "+data.sisa2;
+                var detail3 = "<i>Target :</i> Rp. "+data.target3+"<br><i>Realisasi :</i> Rp. "+data.realisasi3+"<br><i>Sisa :</i> Rp. "+data.sisa3;
+                var detail4 = "<i>Target :</i> Rp. "+data.target4+"<br><i>Realisasi :</i> Rp. "+data.realisasi4+"<br><i>Sisa :</i> Rp. "+data.sisa4;
+                $('#chart_detail1').html(detail1);
+                $('#chart_detail2').html(detail2);
+                $('#chart_detail3').html(detail3);
+                $('#chart_detail4').html(detail4);
+
+                $('#chart_pilar1').attr('data-percent', data.pilar1);
+                $('#chart_pilar2').attr('data-percent', data.pilar2);
+                $('#chart_pilar3').attr('data-percent', data.pilar3);
+                $('#chart_pilar4').attr('data-percent', data.pilar4);
                 $('#chart_pilar1').data('easyPieChart').update(
                     Math.round(data.pilar1)
                 )
@@ -505,7 +537,8 @@
             url: urlchartrealisasi,
             data: {
                 'perusahaan_id' : $("#perusahaan_id").val(),
-                'tahun' : $("#tahun").val()
+                'tahun' : $("#tahun").val(),
+                'owner_id' : $("#owner_id").val()
             },
             type: "POST",
             dataType: "json", 
@@ -587,49 +620,14 @@
         });
     }
     
-    function updatechartrealisasi(){
-        $.ajax({
-            url: urlchartrealisasi,
-            data: {
-                'perusahaan_id' : $("#perusahaan_id").val(),
-                'tahun' : $("#tahun").val()
-            },
-            type: "POST",
-            dataType: "json", 
-            success: function(data){
-                $('#chart_pilar1').data('easyPieChart').update(
-                    Math.round(data.pilar1)
-                )
-                $('#chart_pilar2').data('easyPieChart').update(
-                    Math.round(data.pilar2)
-                )
-                $('#chart_pilar3').data('easyPieChart').update(
-                    Math.round(data.pilar3)
-                )
-                $('#chart_pilar4').data('easyPieChart').update(
-                    Math.round(data.pilar4)
-                )
-
-                var detail1 = "<i>Target :</i> Rp. "+data.target1+"<br><i>Realisasi :</i> Rp. "+data.realisasi1+"<br><i>Sisa :</i> Rp. "+data.sisa1;
-                var detail2 = "<i>Target :</i> Rp. "+data.target2+"<br><i>Realisasi :</i> Rp. "+data.realisasi2+"<br><i>Sisa :</i> Rp. "+data.sisa2;
-                var detail3 = "<i>Target :</i> Rp. "+data.target3+"<br><i>Realisasi :</i> Rp. "+data.realisasi3+"<br><i>Sisa :</i> Rp. "+data.sisa3;
-                var detail4 = "<i>Target :</i> Rp. "+data.target4+"<br><i>Realisasi :</i> Rp. "+data.realisasi4+"<br><i>Sisa :</i> Rp. "+data.sisa4;
-                $('#chart_detail1').html(detail1);
-                $('#chart_detail2').html(detail2);
-                $('#chart_detail3').html(detail3);
-                $('#chart_detail4').html(detail4);
-
-            }                       
-        });
-    }
-
     function initcharttpb(){
         $.ajax({
             url: urlcharttpb,
             data: {
                 'tpb_id' : $("#tpb_id").val(),
                 'perusahaan_id' : $("#perusahaan_id").val(),
-                'tahun' : $("#tahun").val()
+                'tahun' : $("#tahun").val(),
+                'owner_id' : $("#owner_id").val()
             },
             type: "POST",
             dataType: "json", 
@@ -662,7 +660,8 @@
             data: {
                 'tpb_id' : $("#tpb_id").val(),
                 'perusahaan_id' : $("#perusahaan_id").val(),
-                'tahun' : $("#tahun").val()
+                'tahun' : $("#tahun").val(),
+                'owner_id' : $("#owner_id").val()
             },
             type: "POST",
             dataType: "json", 

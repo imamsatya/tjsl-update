@@ -21,6 +21,7 @@ use App\Models\PeriodeLaporan;
 use App\Models\Status;
 use App\Models\Bulan;
 use App\Models\PilarPembangunan;
+use App\Models\OwnerProgram;
 
 class HomeController extends Controller
 {
@@ -83,6 +84,7 @@ class HomeController extends Controller
             'filter_status_id' => $request->status_id,
             'filter_tahun' => $request->tahun,
             'bulan' => Bulan::get(),
+            'owner' => OwnerProgram::get()
         ]);
     }
 
@@ -327,6 +329,9 @@ class HomeController extends Controller
                     $kegiatan[$i] = $kegiatan[$i]->where('anggaran_tpbs.tahun',$request->tahun);
                     $anggaran[$i] = $anggaran[$i]->where('anggaran_tpbs.tahun',$request->tahun);
                 }
+                if($request->owner_id && $request->owner_id!='all'){
+                    $kegiatan[$i] = $kegiatan[$i]->where('target_tpbs.id_owner',(int)$request->owner_id);
+                }
 
                 $kegiatan[$i] = $kegiatan[$i]->first();
                 $anggaran[$i] = $anggaran[$i]->first();
@@ -361,6 +366,7 @@ class HomeController extends Controller
             $json['pilar3'] = $arr['pilar'][2];
             $json['pilar4'] = $arr['pilar'][3];
 
+            // dd($json);
             return response()->json($json);
         }catch(\Exception $e){
             $json = [];
@@ -392,7 +398,10 @@ class HomeController extends Controller
                 $kegiatan = $kegiatan->where('anggaran_tpbs.tahun',$request->tahun);
                 $anggaran = $anggaran->where('anggaran_tpbs.tahun',$request->tahun);
             }
-
+            if($request->owner_id && $request->owner_id!='all'){
+                $kegiatan[$i] = $kegiatan[$i]->where('target_tpbs.id_owner',$request->owner_id);
+            }
+            
             $kegiatan = $kegiatan->first();
             $anggaran = $anggaran->first();
 
