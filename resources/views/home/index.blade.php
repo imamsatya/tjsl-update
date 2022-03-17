@@ -97,20 +97,7 @@
                 <div class="card-px py-10">
                     <!--begin: Datatable -->
                     <div class="form-group row  mb-5">
-                        <div class="col-lg-4">
-                            <label>TPB</label>
-                            <select class="form-select form-select-solid form-select2" id="tpb_id" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB">
-                                <option></option>
-                                <option value="all">Semua TPB</option>
-                                @foreach($tpb as $p)  
-                                    @php
-                                        $select = (($p->id == $tpb_id) ? 'selected="selected"' : '');
-                                    @endphp
-                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->no_tpb }} - {{ $p->nama }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-lg-4">
+                        <div class="col-lg-6">
                             <label>BUMN</label>
                             @php
                                 $disabled = (($admin_bumn) ? 'disabled="true"' : '');
@@ -126,7 +113,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-lg-2">
+                        <div class="col-lg-3">
                             <label>Owner Program</label>
                             <select class="form-select form-select-solid form-select2" id="owner_id" name="owner_id" data-kt-select2="true" data-placeholder="Pilih">
                                 <option></option>
@@ -139,7 +126,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-lg-2">
+                        <div class="col-lg-3">
                             <label>Tahun</label>
                             <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true" >
                                 @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
@@ -185,6 +172,53 @@
                             <span id="chart_detail4" style="font-size:12px;"></span>
                         </div>
                     </div>
+                </div>
+            </div>
+            <!--end::Card body-->
+        </div>
+    </div>
+</div>
+
+<div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
+    <!--begin::Container-->
+    <div id="kt_content_container" class="container">
+        <!--begin::Card-->
+        <div class="card">
+
+            <!--begin::Card header-->
+            <div class="card-header pt-5">
+                <!--begin::Card title-->
+                <div class="card-title">
+                    <h3 class="d-flex align-items-center">Grafik TPB
+                    <span class="text-gray-600 fs-6 ms-1"></span></h3>
+                </div>
+                <!--end::Card title-->
+                <!--begin::Card toolbar-->
+                <div class="card-toolbar">
+                </div>
+                <!--end::Card toolbar-->
+            </div>
+            <!--begin::Card body-->
+            <div class="card-body p-0">
+                <!--begin::Heading-->
+                <div class="card-px py-10">
+                    <!--begin: Datatable -->
+                    <div class="form-group row  mb-5">
+                        <div class="col-lg-4">
+                            <label>TPB</label>
+                            <select class="form-select form-select-solid form-select2" id="tpb_id" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB">
+                                <option></option>
+                                <option value="all">Semua TPB</option>
+                                @foreach($tpb as $p)  
+                                    @php
+                                        $select = (($p->id == $tpb_id) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->no_tpb }} - {{ $p->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                        
                     <div class="form-group row mb-5">
                         <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 center" style="text-align: center;">
                         </div>
@@ -202,8 +236,6 @@
         </div>
     </div>
 </div>
-
-
 
 <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
     <!--begin::Container-->
