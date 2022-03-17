@@ -104,7 +104,7 @@
                             <select class="form-select form-select-solid form-select2" id="filter_bulan" name="filter_bulan" data-kt-select2="true" data-placeholder="Pilih Bulan" data-allow-clear="true">
                                 <option></option>
                                 @foreach($bulans as $p)  
-                                    <option value="{{ $p->id }}">{{ $p->nama }}</option>
+                                    <option value="{{ $p->id }}" {{ date('m') == $p->id? 'selected' : '' }}>{{ $p->nama }}</option>
                                 @endforeach
                             </select>
                         </div>
