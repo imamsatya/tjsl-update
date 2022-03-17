@@ -475,6 +475,7 @@ class AdministrasiController extends Controller
     
     public function export(Request $request)
     {
+
         $target = TargetTpb::select('target_tpbs.*')
                             ->leftJoin('anggaran_tpbs', 'anggaran_tpbs.id', 'target_tpbs.anggaran_tpb_id');
         
@@ -484,6 +485,10 @@ class AdministrasiController extends Controller
 
         if($request->tahun){
             $target = $target->where('anggaran_tpbs.tahun', $request->tahun);
+        }
+
+        if($request->owner_id){
+            $target = $target->where('target_tpbs.id_owner', (int)$request->owner_id);
         }
 
         $target = $target->get();

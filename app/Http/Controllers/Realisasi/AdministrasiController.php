@@ -566,6 +566,10 @@ class AdministrasiController extends Controller
             $kegiatan = $kegiatan->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
         }
 
+        if($request->owner_id){
+            $kegiatan = $kegiatan->where('target_tpbs.id_owner', (int)$request->owner_id);
+        }
+
         $kegiatan = $kegiatan->get();
 
 

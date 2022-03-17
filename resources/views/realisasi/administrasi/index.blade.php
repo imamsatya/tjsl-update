@@ -530,7 +530,8 @@
                 'bulan' : $("select[name='filter_bulan']").val(),
                 'tahun' : $("select[name='filter_tahun']").val(),
                 'pilar_pembangunan_id' : $("select[name='filter_pilar_pembangunan_id']").val(),
-                'tpb_id' : $("select[name='filter_tpb_id']").val()
+                'tpb_id' : $("select[name='filter_tpb_id']").val(),
+                'owner_id' : $("select[name='filter_owner']").val(),
             },
             beforeSend: function () {
                 $.blockUI();

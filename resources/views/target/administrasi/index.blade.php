@@ -554,7 +554,8 @@
                 'tahun' : $("select[name='tahun']").val(),
                 'pilar_pembangunan_id' : $("select[name='pilar_pembangunan_id']").val(),
                 'status_id' : $("select[name='status_id']").val(),
-                'tpb_id' : $("select[name='tpb_id']").val()
+                'tpb_id' : $("select[name='tpb_id']").val(),
+                'owner_id' : $("select[name='owner_id']").val()
             },
             beforeSend: function () {
                 $.blockUI();
