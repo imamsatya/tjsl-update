@@ -56,9 +56,13 @@ class AdministrasiController extends Controller
     {
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
-       
+
         $default_perusahaan = Perusahaan::orderby('id','ASC')->pluck('id')->first();
-        $perusahaan_id = $request->perusahaan_id? $request->perusahaan_id : $default_perusahaan;
+        if($request->is_cari){
+            $perusahaan_id = $request->perusahaan_id;
+        }else{
+            $perusahaan_id = $request->perusahaan_id? $request->perusahaan_id : $default_perusahaan;
+        }
         
         $admin_bumn = false;
         $view_only = false;

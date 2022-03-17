@@ -376,8 +376,9 @@
             var tpb_id = $('#tpb_id').val();
             var status_id = $('#status_id').val();
             var owner_id = $('#owner_id').val();
+            var is_cari = true;
 
-            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&pilar_pembangunan_id=' + pilar_pembangunan_id + '&tpb_id=' + tpb_id + '&status_id=' + status_id + '&owner_id=' + owner_id;
+            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&pilar_pembangunan_id=' + pilar_pembangunan_id + '&tpb_id=' + tpb_id + '&status_id=' + status_id + '&owner_id=' + owner_id + '&is_cari=' + is_cari;
         });
 
         if(!"{{ $admin_bumn }}"){
