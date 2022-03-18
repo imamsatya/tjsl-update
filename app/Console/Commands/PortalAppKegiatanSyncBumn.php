@@ -56,7 +56,7 @@ class PortalAppKegiatanSyncBumn extends Command
             $sumber_data = env('APP_TJSL_HOST').'api/get-kegiatan-by-bumn/'.$id_bumn;
             $banyak_data = [];
 
-            $data = $body->data; 
+            $data = $body->data->data; 
 
             foreach($data as $k=>$value){
                 //Lakukan filter hanya jika id_program,tahun dan bulan tidak kosong
