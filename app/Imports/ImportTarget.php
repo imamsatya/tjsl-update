@@ -84,7 +84,9 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
 
             //cek id owner
             if(!$is_gagal && rtrim($ar['id_owner'])!=''){
-                $own_ref = OwnerProgram::where('nama','TJSL')->orWhere('nama','tjsl')->pluck('id')->first();
+                $cek_id = OwnerProgram::where('id',(int)rtrim($ar['id_owner']))->count();
+                if($cek_id > 0){
+                    $own_ref = OwnerProgram::where('nama','TJSL')->orWhere('nama','tjsl')->pluck('id')->first();
                     if(rtrim($ar['id_owner']) > $own_ref){
                        $unit = rtrim($ar['unit_owner']) == ''? true : false;
                        if($unit){
@@ -95,6 +97,12 @@ class ImportTarget implements ToCollection, WithHeadingRow, WithMultipleSheets
                     }else{
                         $ar['unit_owner'] = 'TJSL';
                     }
+                }else{
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' isian ID Owner tidak sesuai referensi.<br>';                      
+                }
+
             }
 
             //cek core subject 
