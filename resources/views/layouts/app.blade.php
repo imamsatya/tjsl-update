@@ -44,6 +44,11 @@ License: For each use you must have a valid license purchased only from above li
 		<link href="{{ asset('/assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
 		<link href="{{ asset('/assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
 		<!--end::Global Stylesheets Bundle-->
+		<style>
+			body{
+				zoom: 90% !important;
+			}
+		</style>
 	</head>
 	<!--end::Head-->
 	<!--begin::Body-->

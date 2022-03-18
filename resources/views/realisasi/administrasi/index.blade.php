@@ -28,9 +28,9 @@
                         <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi" style="display:none;margin-right:3px;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
                         <button type="button" class="btn btn-success btn-sm btn-icon cls-upload" style="margin-right:3px;" data-toggle="tooltip" title="Upload Data Program"><i class="bi bi-upload fs-3"></i></button>
                         <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel" style="margin-right:3px;"><i class="bi bi-file-excel fs-3"></i></button>
-                            @if(auth()->user()->getRoleNames()[0] == "Admin TJSL" || auth()->user()->getRoleNames()[0] == "Super Admin")
+                            {{-- @if(auth()->user()->getRoleNames()[0] == "Admin TJSL" || auth()->user()->getRoleNames()[0] == "Super Admin")
                             <button type="button" class="btn btn-sm  btn-primary cls-sync"  data-toggle="tooltip" title="Sync Kegiatan Aplikasi Tjsl"><i class="bi bi-bootstrap-reboot"></i> Sync App TJSL</button>
-                            @endif
+                            @endif --}}
                         @endif
                     </div>
                     <!--end::Search-->

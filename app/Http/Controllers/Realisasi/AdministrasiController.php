@@ -50,6 +50,7 @@ class AdministrasiController extends Controller
      */
     public function index(Request $request)
     {
+        $this->api_sync_by_bumn();
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
         $perusahaan_id = ($request->perusahaan_id?$request->perusahaan_id:1);
@@ -677,5 +678,42 @@ class AdministrasiController extends Controller
             ];
         }
         return response()->json($result);
-    }    
+    }   
+    
+    public function api_sync_by_bumn()
+    {  
+        try{
+            $id_bumn = auth()->user()->id_bumn;
+            if($id_bumn){
+                $call = \Artisan::call('portalApp:KegiatanBumnSync');    
+            }
+
+
+            // $cek_log = DB::table('log_sinkronisasi_kegiatan')->orderby('id','desc')->first();
+          
+            if(!$cek_log || $cek_log->jumlah_data == 0){
+                $result = [
+                    'flag'  => 'warning',
+                    'msg' => 'Belum ada data kegiatan terbaru dari Aplikasi TJSL',
+                    'title' => 'Warning'
+                ];
+            }else{
+                $jumlah =  $cek_log->jumlah_data? (string)$cek_log->jumlah_data : "";
+                $result = [
+                    'flag'  => 'success',
+                    'msg' => 'Sukses Sinkronisasi '.$jumlah.' data',
+                    'title' => 'Sukses'
+                ];
+            }
+
+        }catch(\Exception $e){
+            $result = [
+                'flag'  => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }       
+
 }

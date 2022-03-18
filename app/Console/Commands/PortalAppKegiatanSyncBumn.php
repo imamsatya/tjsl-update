@@ -10,21 +10,21 @@ use App\Models\Kegiatan;
 use App\Models\KegiatanRealisasi;
 use DB;
 
-class PortalAppKegiatanSync extends Command
+class PortalAppKegiatanSyncBumn extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'portalApp:KegiatanSync';
+    protected $signature = 'portalApp:KegiatanBumnSync';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Untuk get data kegiatan dari api App TJSL kedalam Portal';
+    protected $description = 'Untuk get data kegiatan dari api App TJSL kedalam Portal by BUMN';
 
     /**
      * Create a new command instance.
@@ -43,24 +43,20 @@ class PortalAppKegiatanSync extends Command
      */
     public function handle()
     {
-        $client = new \GuzzleHttp\Client();
+        $id_bumn = auth()->user()->id_bumn;
 
-        $response = $client->request('GET', env('APP_TJSL_HOST').'api/get-kegiatan',['verify'=>false]);
+        $client = new \GuzzleHttp\Client();
+        $response = $client->request('GET', env('APP_TJSL_HOST').'api/get-kegiatan-by-bumn/'.$id_bumn,['verify'=>false]);
         $body = json_decode($response->getBody());
 
         if($body){
             $now = Carbon::now()->format('Y-m-d H:i:s');
             $activity_exists = Kegiatan::get();
             $realisasi_exists = KegiatanRealisasi::get();
-            $sumber_data = env('APP_TJSL_HOST').'api/get-kegiatan';
+            $sumber_data = env('APP_TJSL_HOST').'api/get-kegiatan-by-bumn/'.$id_bumn;
             $banyak_data = [];
 
             $data = $body->data; 
-
-            //clear data log setiap 24 jam (untuk antisipasi explosive log data sync)
-            if(\DB::table('log_sinkronisasi_kegiatan')->count() > 24){
-                DB::table('log_sinkronisasi_kegiatan')->truncate();
-            }
 
             foreach($data as $k=>$value){
                 //Lakukan filter hanya jika id_program,tahun dan bulan tidak kosong
@@ -129,21 +125,9 @@ class PortalAppKegiatanSync extends Command
                                 'status_id_program_aplikasitjsl' => $status_program //custom audit trail                 
                            ]);
                        }
-                    if($cek_program){
-                        $banyak_data[] = count([$value]);
-                    }
                 }
             }
-       
-            //catat data log
-            \DB::table('log_sinkronisasi_kegiatan')->insert([
-                'jumlah_data' => count($banyak_data),
-                'user_id' => auth()->user()->id,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ]);
 
         }
-
     }
 }
