@@ -1,7 +1,7 @@
 "use strict";
 
 // Class definition
-var KTIntro = function () {
+var KTIntro = function() {
     // Private functions
     var handleIntro = function(id, calback, timeout) {
         var date = new Date();
@@ -18,21 +18,21 @@ var KTIntro = function () {
             // Initial display
             if (!KTCookie.get(id + '_counter')) {
                 setTimeout(calback, timeout); // Display intro in 5 seconds
-                
-                KTCookie.set(id + '_show_1', '1', {expires: new Date(date.getTime() + time2days)});
 
-                KTCookie.set(id + '_counter', '1', {expires: new Date(date.getTime() + time30days)});
+                KTCookie.set(id + '_show_1', '1', { expires: new Date(date.getTime() + time2days) });
+
+                KTCookie.set(id + '_counter', '1', { expires: new Date(date.getTime() + time30days) });
 
                 return true;
-            } 
+            }
 
             // 2 display
             if (KTCookie.get(id + '_counter') == '1' && !KTCookie.get(id + '_show_1')) {
                 setTimeout(calback, timeout); // Display intro in 5 seconds
-                
-                KTCookie.set(id + '_show_2', '1', {expires: new Date(date.getTime() + time7days)});
-                
-                KTCookie.set(id + '_counter', '2', {expires: new Date(date.getTime() + time21days)});
+
+                KTCookie.set(id + '_show_2', '1', { expires: new Date(date.getTime() + time7days) });
+
+                KTCookie.set(id + '_counter', '2', { expires: new Date(date.getTime() + time21days) });
 
                 return true;
             }
@@ -40,10 +40,10 @@ var KTIntro = function () {
             // 3 display
             if (KTCookie.get(id + '_counter') == '2' && !KTCookie.get(id + '_show_2')) {
                 setTimeout(calback, timeout); // Display intro in 5 seconds
-                
-                KTCookie.set(id + '_show_3', '1', {expires: new Date(date.getTime() + time15days)});
-                
-                KTCookie.set(id + '_counter', '3', {expires: new Date(date.getTime() + time15days)});
+
+                KTCookie.set(id + '_show_3', '1', { expires: new Date(date.getTime() + time15days) });
+
+                KTCookie.set(id + '_counter', '3', { expires: new Date(date.getTime() + time15days) });
 
                 return true;
             }
@@ -79,7 +79,7 @@ var KTIntro = function () {
         setTimeout(function() {
             if (popover) {
                 popover.dispose();
-            } 
+            }
         }, 1000 * 10); // 10 seconds
 
         // Hide popover on element click
@@ -115,7 +115,7 @@ var KTIntro = function () {
         setTimeout(function() {
             if (popover) {
                 popover.dispose();
-            } 
+            }
         }, 1000 * 10); // 10 seconds
 
         // Hide popover on element click
@@ -132,15 +132,15 @@ var KTIntro = function () {
         }
 
         var options = {
-            customClass: 'popover-dark',
-            container: 'body',
-            boundary: 'window',
-            placement: 'left',
-            trigger: 'manual',
-            dismiss: true,
-            html: true,
-            title: 'Advanced User Menu',
-            content: 'With quick links to user profile and account settings pages'
+            // customClass: 'popover-dark',
+            // container: 'body',
+            // boundary: 'window',
+            // placement: 'left',
+            // trigger: 'manual',
+            // dismiss: true,
+            // html: true,
+            // title: 'Advanced User Menu',
+            // content: 'With quick links to user profile and account settings pages'
         }
 
         // Initialize popover
@@ -151,7 +151,7 @@ var KTIntro = function () {
         setTimeout(function() {
             if (popover) {
                 popover.dispose();
-            } 
+            }
         }, 1000 * 10); // 10 seconds
 
         // Hide popover on element click
@@ -162,19 +162,16 @@ var KTIntro = function () {
 
     var initIntro = function(product) {
         // Handle intro popovers displays
-        if (KTUtil.inIframe() === false) {                
-            if (handleIntro('kt_' + product + '_intro_1', showtIntro1, 1000 * 5)) {
-            } else if (handleIntro('kt_' + product + '_intro_2', showtIntro2, 1000 * 5)) {
-            } else if (handleIntro('kt_' + product + '_intro_3', showtIntro3, 1000 * 5)) {
-            }
-        } 
+        if (KTUtil.inIframe() === false) {
+            if (handleIntro('kt_' + product + '_intro_1', showtIntro1, 1000 * 5)) {} else if (handleIntro('kt_' + product + '_intro_2', showtIntro2, 1000 * 5)) {} else if (handleIntro('kt_' + product + '_intro_3', showtIntro3, 1000 * 5)) {}
+        }
     }
 
     // Public methods
     return {
-        init: function () {
+        init: function() {
             initIntro('metronic');
-        }   
+        }
     }
 }();
 
