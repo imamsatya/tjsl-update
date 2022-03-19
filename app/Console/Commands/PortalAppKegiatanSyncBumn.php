@@ -44,7 +44,7 @@ class PortalAppKegiatanSyncBumn extends Command
     public function handle()
     {
         $id_bumn = auth()->user()->id_bumn;
-
+        
         $client = new \GuzzleHttp\Client();
         $response = $client->request('GET', env('APP_TJSL_HOST').'api/get-kegiatan-by-bumn/'.$id_bumn,['verify'=>false]);
         $body = json_decode($response->getBody());
@@ -57,8 +57,9 @@ class PortalAppKegiatanSyncBumn extends Command
             $banyak_data = [];
 
             $data = $body->data->data; 
-
+            
             foreach($data as $k=>$value){
+
                 //Lakukan filter hanya jika id_program,tahun dan bulan tidak kosong
                 if($value->id_program && $value->bulan && $value->tahun && $value->id_bumn && $value->id_bumn > 0){
                     $cek_program = TargetTpb::find((int)$value->id_program);

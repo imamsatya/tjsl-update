@@ -688,23 +688,11 @@ class AdministrasiController extends Controller
                 $call = \Artisan::call('portalApp:KegiatanBumnSync');    
             }
 
-
-            // $cek_log = DB::table('log_sinkronisasi_kegiatan')->orderby('id','desc')->first();
-          
-            if(!$cek_log || $cek_log->jumlah_data == 0){
-                $result = [
-                    'flag'  => 'warning',
-                    'msg' => 'Belum ada data kegiatan terbaru dari Aplikasi TJSL',
-                    'title' => 'Warning'
-                ];
-            }else{
-                $jumlah =  $cek_log->jumlah_data? (string)$cek_log->jumlah_data : "";
                 $result = [
                     'flag'  => 'success',
-                    'msg' => 'Sukses Sinkronisasi '.$jumlah.' data',
+                    'msg' => 'Sukses Sinkronisasi data by bumn',
                     'title' => 'Sukses'
                 ];
-            }
 
         }catch(\Exception $e){
             $result = [

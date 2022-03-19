@@ -68,7 +68,14 @@ class HomeController extends Controller
             }
         }
 
-       
+        //sinkronisasi data kegiatan by id bumn
+        try{
+            $id_bumn = auth()->user()->id_bumn;
+            if($id_bumn){
+                $call = \Artisan::call('portalApp:KegiatanBumnSync');    
+            }
+        }catch(\Exception $e){}            
+
         return view($this->__route.'.index',[
             'users' =>$users,
             'pagetitle' => $this->pagetitle,
