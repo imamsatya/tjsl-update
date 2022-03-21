@@ -51,8 +51,14 @@ class PortalAppKegiatanSyncBumn extends Command
 
         if($body){
             $now = Carbon::now()->format('Y-m-d H:i:s');
-            $activity_exists = Kegiatan::where('id_bumn_aplikasitjsl',$id_bumn)->whereNotNull('sumber_data')->delete();
-            $realisasi_exists = KegiatanRealisasi::where('id_bumn_aplikasitjsl',$id_bumn)->whereNotNull('sumber_data')->delete();
+            $activity_exists = Kegiatan::where('id_bumn_aplikasitjsl',$id_bumn)->whereNotNull('sumber_data');
+            $realisasi_exists = KegiatanRealisasi::where('id_bumn_aplikasitjsl',$id_bumn)->whereNotNull('sumber_data');
+            if(count($activity_exists->get()) > 0){
+                $activity_exists->delete();
+            }
+            if(count($realisasi_exists->get()) > 0){
+                $realisasi_exists->delete();
+            }
             $sumber_data = env('APP_TJSL_HOST').'api/get-kegiatan-by-bumn/'.$id_bumn;
             $banyak_data = [];
 
