@@ -50,8 +50,8 @@ class PortalAppKegiatanSync extends Command
 
         if($body){
             $now = Carbon::now()->format('Y-m-d H:i:s');
-            $activity_exists = Kegiatan::get();
-            $realisasi_exists = KegiatanRealisasi::get();
+            $activity_exists = Kegiatan::whereNotNull('sumber_data')->delete();
+            $realisasi_exists = KegiatanRealisasi::whereNotNull('sumber_data')->delete();
             $sumber_data = env('APP_TJSL_HOST').'api/get-kegiatan';
             $banyak_data = [];
 
