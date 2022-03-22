@@ -322,7 +322,9 @@ class HomeController extends Controller
                                         ->leftJoin('anggaran_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
                                         ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
                                         ->leftJoin('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
-                                        ->where('relasi_pilar_tpbs.pilar_pembangunan_id',$pilar[$i]->id);
+                                        ->where('relasi_pilar_tpbs.pilar_pembangunan_id',$pilar[$i]->id)
+                                        ->where('kegiatans.is_invalid_aplikasitjsl',false)
+                                        ->where('kegiatan_realisasis.is_invalid_aplikasitjsl',false);
                                         
                 $anggaran[$i] = AnggaranTpb::Select(DB::Raw('sum(anggaran_tpbs.anggaran) as anggaran'))
                                         ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
@@ -373,7 +375,6 @@ class HomeController extends Controller
             $json['pilar3'] = $arr['pilar'][2];
             $json['pilar4'] = $arr['pilar'][3];
 
-            // dd($json);
             return response()->json($json);
         }catch(\Exception $e){
             $json = [];
@@ -388,7 +389,11 @@ class HomeController extends Controller
                                     ->leftJoin('target_tpbs', 'target_tpbs.id', '=', 'kegiatans.target_tpb_id')
                                     ->leftJoin('anggaran_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
                                     ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
-                                    ->leftJoin('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id');
+                                    ->leftJoin('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
+                                    ->where('kegiatans.is_invalid_aplikasitjsl',false)
+                                    ->where('kegiatan_realisasis.is_invalid_aplikasitjsl',false);
+            
+  
                                                     
             $anggaran = AnggaranTpb::Select(DB::Raw('sum(anggaran_tpbs.anggaran) as anggaran'))
                                     ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id');
