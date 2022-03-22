@@ -163,10 +163,10 @@ class PortalAppKegiatanSyncBumn extends Command
             if(count($result) > 0){
                 //beri flag jika data dari api tidak ditemukan di portal
                 Kegiatan::whereIn('id_kegiatan_aplikasitjsl',$result)->update([
-                    'is_invalid_aplikasitjsl' => 'true'
+                    'is_invalid_aplikasitjsl' => true
                 ]);
                 KegiatanRealisasi::whereIn('id_kegiatan_aplikasitjsl',$result)->update([
-                    'is_invalid_aplikasitjsl' => 'true'
+                    'is_invalid_aplikasitjsl' => true
                 ]);
             }
 

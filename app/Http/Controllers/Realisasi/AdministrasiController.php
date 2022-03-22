@@ -195,9 +195,10 @@ class AdministrasiController extends Controller
         if($request->owner){
             $kegiatan = $kegiatan->where('target_tpbs.id_owner', (int)$request->owner);
         }
-
-        $kegiatan = $kegiatan->where('kegiatans.is_invalid_aplikasitjsl','<>','true')
-                    ->where('kegiatan_realisasis.is_invalid_aplikasitjsl','<>','true')->get();
+        //hanya menampilkan kegiatan valid
+        $kegiatan = $kegiatan->where('kegiatans.is_invalid_aplikasitjsl',false)
+                    ->where('kegiatan_realisasis.is_invalid_aplikasitjsl',false)
+                    ->get();
 
         try{
             return datatables()->of($kegiatan)

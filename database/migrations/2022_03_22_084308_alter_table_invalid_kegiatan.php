@@ -14,11 +14,11 @@ class AlterTableInvalidKegiatan extends Migration
     public function up()
     {
         Schema::table('kegiatans', function (Blueprint $table) {
-            $table->string('is_invalid_aplikasitjsl')->nullable();
+            $table->boolean('is_invalid_aplikasitjsl')->default(false);
         });
 
         Schema::table('kegiatan_realisasis', function (Blueprint $table) {
-            $table->string('is_invalid_aplikasitjsl')->nullable();
+            $table->boolean('is_invalid_aplikasitjsl')->default(false);
         });
     }
 
@@ -30,11 +30,11 @@ class AlterTableInvalidKegiatan extends Migration
     public function down()
     {
         Schema::table('kegiatans', function (Blueprint $table) {
-            $table->dropColumn('is_invalid_aplikasitjsl')->nullable();
+            $table->dropColumn('is_invalid_aplikasitjsl')->default(false);
         });
 
         Schema::table('kegiatan_realisasis', function (Blueprint $table) {
-            $table->dropColumn('is_invalid_aplikasitjsl')->nullable();
+            $table->dropColumn('is_invalid_aplikasitjsl')->default(false);
         });
     }
 }
