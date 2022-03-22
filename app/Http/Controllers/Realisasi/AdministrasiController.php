@@ -573,7 +573,8 @@ class AdministrasiController extends Controller
             $kegiatan = $kegiatan->where('target_tpbs.id_owner', (int)$request->owner_id);
         }
 
-        $kegiatan = $kegiatan->get();
+        $kegiatan = $kegiatan->where('kegiatans.is_invalid_aplikasitjsl',false)
+        ->where('kegiatan_realisasis.is_invalid_aplikasitjsl',false)->get();
 
 
         $namaFile = "Data Kegiatan ".date('dmY').".xlsx";
