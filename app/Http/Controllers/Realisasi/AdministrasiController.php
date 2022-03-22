@@ -196,8 +196,9 @@ class AdministrasiController extends Controller
             $kegiatan = $kegiatan->where('target_tpbs.id_owner', (int)$request->owner);
         }
 
-        $kegiatan = $kegiatan->get();
-       
+        $kegiatan = $kegiatan->whereNull('kegiatans.is_invalid_aplikasitjsl')
+                    ->whereNull('kegiatan_realisasis.is_invalid_aplikasitjsl')->get();
+
         try{
             return datatables()->of($kegiatan)
             ->addColumn('action', function ($row){                

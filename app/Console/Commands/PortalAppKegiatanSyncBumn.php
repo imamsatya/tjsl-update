@@ -51,14 +51,14 @@ class PortalAppKegiatanSyncBumn extends Command
 
         if($body){
             $now = Carbon::now()->format('Y-m-d H:i:s');
-            $activity_exists = Kegiatan::where('id_bumn_aplikasitjsl',$id_bumn)->whereNotNull('sumber_data');
-            $realisasi_exists = KegiatanRealisasi::where('id_bumn_aplikasitjsl',$id_bumn)->whereNotNull('sumber_data');
-            if(count($activity_exists->get()) > 0){
-                $activity_exists->delete();
-            }
-            if(count($realisasi_exists->get()) > 0){
-                $realisasi_exists->delete();
-            }
+            // $activity_exists = Kegiatan::where('id_bumn_aplikasitjsl',$id_bumn)->whereNotNull('sumber_data');
+            // $realisasi_exists = KegiatanRealisasi::where('id_bumn_aplikasitjsl',$id_bumn)->whereNotNull('sumber_data');
+            // if(count($activity_exists->get()) > 0){
+            //     $activity_exists->delete();
+            // }
+            // if(count($realisasi_exists->get()) > 0){
+            //     $realisasi_exists->delete();
+            // }
             $sumber_data = env('APP_TJSL_HOST').'api/get-kegiatan-by-bumn/'.$id_bumn;
             $banyak_data = [];
 
@@ -134,6 +134,42 @@ class PortalAppKegiatanSyncBumn extends Command
                        }
                 }
             }
+
+
+            //identifikasi data yang sudah dihapus
+            //ambil data kegiatan hasil sinkronisasi sebelumnya 
+            $cek_activity = Kegiatan::whereNotNull('sumber_data')->get();
+            //buat variabel baru penampung data dari api
+            $cek_data_api = $data;
+            //deklarasi variabel penampung data baru
+            $act = []; $api = [];
+
+            foreach($cek_activity as $val){
+                $act[] = $val->id_kegiatan_aplikasitjsl;
+            }
+
+            foreach($cek_data_api as $v){
+                //hanya data yang tersedia programnya di portal yang diambil dari api
+                if($v->id_program && $v->bulan && $v->tahun && $v->id_bumn && $v->id_bumn > 0){
+                    $cek_programs = TargetTpb::find((int)$v->id_program);
+                    if($cek_programs){
+                        $api[] = $v->id_kegiatan;
+                    }
+                }
+            }
+
+            //pencocokan data dari portal dan api
+            $result = array_diff($act,$api);
+            if(count($result) > 0){
+                //beri flag jika data dari api tidak ditemukan di portal
+                Kegiatan::whereIn('id_kegiatan_aplikasitjsl',$result)->update([
+                    'is_invalid_aplikasitjsl' => 'true'
+                ]);
+                KegiatanRealisasi::whereIn('id_kegiatan_aplikasitjsl',$result)->update([
+                    'is_invalid_aplikasitjsl' => 'true'
+                ]);
+            }
+
 
         }
     }
