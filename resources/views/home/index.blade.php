@@ -116,12 +116,11 @@
                         <div class="col-lg-3">
                             <label>Owner Program</label>
                             <select class="form-select form-select-solid form-select2" id="owner_id" name="owner_id" data-kt-select2="true" data-placeholder="Pilih">
-                                <option></option>
-                                <option value="all">Semua Owner</option>
+                                   @php
+                                        $select = ($filter_owner_id ? 'selected="selected"' : '');
+                                    @endphp
+                                <option value="all" {!! $select !!}>Semua Owner</option>
                                 @foreach($owner as $p)  
-                                    {{-- @php
-                                        $select = (($p->id == $owner_id) ? 'selected="selected"' : '');
-                                    @endphp --}}
                                     <option value="{{ $p->id }}" >{{ $p->nama }}</option>
                                 @endforeach
                             </select>
