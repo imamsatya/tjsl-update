@@ -329,7 +329,7 @@ class HomeController extends Controller
                                         
                 $anggaran[$i] = AnggaranTpb::Select(DB::Raw('sum(anggaran_tpbs.anggaran) as anggaran'))
                                         ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
-                                        ->leftJoin('target_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                                        // ->leftJoin('target_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
                                         ->where('relasi_pilar_tpbs.pilar_pembangunan_id',$pilar[$i]->id);
 
                 if($request->perusahaan_id && $request->perusahaan_id!='all'){
@@ -342,7 +342,7 @@ class HomeController extends Controller
                 }
                 if($request->owner_id && $request->owner_id!='all'){
                     $kegiatan[$i] = $kegiatan[$i]->where('target_tpbs.id_owner',(int)$request->owner_id);
-                    $anggaran[$i] = $anggaran[$i]->where('target_tpbs.id_owner',(int)$request->owner_id);
+                    // $anggaran[$i] = $anggaran[$i]->where('target_tpbs.id_owner',(int)$request->owner_id);
                 }
 
                 $kegiatan[$i] = $kegiatan[$i]->first();
@@ -399,8 +399,8 @@ class HomeController extends Controller
   
                                                     
             $anggaran = AnggaranTpb::Select(DB::Raw('sum(anggaran_tpbs.anggaran) as anggaran'))
-                                    ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
-                                    ->leftJoin('target_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id');
+                                    ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id');
+                                    //->leftJoin('target_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id');
 
             if($request->tpb_id && $request->tpb_id!='all'){
                 $kegiatan = $kegiatan->where('relasi_pilar_tpbs.tpb_id',$request->tpb_id);
@@ -416,7 +416,7 @@ class HomeController extends Controller
             }
             if($request->owner_id && $request->owner_id!='all'){
                 $kegiatan = $kegiatan->where('target_tpbs.id_owner',(int)$request->owner_id);
-                $anggaran = $anggaran->where('target_tpbs.id_owner',(int)$request->owner_id);
+                //$anggaran = $anggaran->where('target_tpbs.id_owner',(int)$request->owner_id);
             }
 
             $kegiatan = $kegiatan->first();
