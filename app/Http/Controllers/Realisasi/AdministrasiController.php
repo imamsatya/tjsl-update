@@ -97,11 +97,9 @@ class AdministrasiController extends Controller
                     ->leftjoin('anggaran_tpbs','anggaran_tpbs.id','target_tpbs.anggaran_tpb_id')
                     ->leftjoin('perusahaans','perusahaans.id','anggaran_tpbs.perusahaan_id')
                     ->where('anggaran_tpbs.perusahaan_id',$perusahaan_id)
-                    ->where('anggaran_tpbs.tahun',$tahun)
                     ->get() : TargetTpb::select('anggaran_tpbs.perusahaan_id','anggaran_tpbs.tahun','perusahaans.nama_lengkap AS bumn','target_tpbs.*')
                     ->leftjoin('anggaran_tpbs','anggaran_tpbs.id','target_tpbs.anggaran_tpb_id')
                     ->leftjoin('perusahaans','perusahaans.id','anggaran_tpbs.perusahaan_id')
-                    ->where('anggaran_tpbs.tahun',$tahun)
                     ->get();
 
         $owner = OwnerProgram::get();
