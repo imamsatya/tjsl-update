@@ -88,11 +88,22 @@ class AdministrasiController extends Controller
                 $can_download_template = false;
             }
         }
+        
 
         $tahun = ($request->tahun?$request->tahun:date('Y'));
         $pilar = PilarPembangunan::get();
         $tpb = Tpb::get();
-        $target_tpb = TargetTpb::get();
+        $target_tpb = $admin_bumn && $perusahaan_id? TargetTpb::select('anggaran_tpbs.perusahaan_id','anggaran_tpbs.tahun','perusahaans.nama_lengkap AS bumn','target_tpbs.*')
+                    ->leftjoin('anggaran_tpbs','anggaran_tpbs.id','target_tpbs.anggaran_tpb_id')
+                    ->leftjoin('perusahaans','perusahaans.id','anggaran_tpbs.perusahaan_id')
+                    ->where('anggaran_tpbs.perusahaan_id',$perusahaan_id)
+                    ->where('anggaran_tpbs.tahun',$tahun)
+                    ->get() : TargetTpb::select('anggaran_tpbs.perusahaan_id','anggaran_tpbs.tahun','perusahaans.nama_lengkap AS bumn','target_tpbs.*')
+                    ->leftjoin('anggaran_tpbs','anggaran_tpbs.id','target_tpbs.anggaran_tpb_id')
+                    ->leftjoin('perusahaans','perusahaans.id','anggaran_tpbs.perusahaan_id')
+                    ->where('anggaran_tpbs.tahun',$tahun)
+                    ->get();
+
         $owner = OwnerProgram::get();
 
         return view($this->__route.'.index',[

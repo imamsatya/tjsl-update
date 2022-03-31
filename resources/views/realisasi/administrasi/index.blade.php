@@ -64,7 +64,7 @@
                             <select class="form-select form-select-solid form-select2" id="filter_target_tpb_id" name="filter_target_tpb_id" data-kt-select2="true" data-placeholder="Pilih Program" data-allow-clear="true">
                                 <option></option>
                                 @foreach($target_tpb as $p)  
-                                    <option value="{{ $p->id }}">{{ $p->program }}</option>
+                                    <option value="{{ $p->id }}">{{ $p->program.' ['.$p->bumn.'-'.$p->tahun.']' }}</option>
                                 @endforeach
                             </select>
                         </div>
