@@ -228,7 +228,7 @@ class AdministrasiController extends Controller
 
             if(!$view_only){
                 if($row->status_id!=1){
-                    if($row->id_owner > 1){
+                    if(auth()->user()->can('edit-kegiatan')){
                         //jika id owner non tjsl
                         $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data '.$row->kegiatan.'"><i class="bi bi-pencil fs-3"></i></button>';
                     }
@@ -236,11 +236,11 @@ class AdministrasiController extends Controller
             }
 
                 $button .= '&nbsp;';
-                $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-info cls-button-detail" data-id="'.$id.'" data-toggle="tooltip" title="Detail data '.$row->kegiatan.'"><i class="bi bi-info fs-3"></i></button>';
+                $button .= auth()->user()->can('view-kegiatan')?'<button type="button" class="btn btn-sm btn-light btn-icon btn-info cls-button-detail" data-id="'.$id.'" data-toggle="tooltip" title="Detail data '.$row->kegiatan.'"><i class="bi bi-info fs-3"></i></button>':'';
 
             if(!$view_only){                
-                if($row->status_id!=1){
-                    if($row->id_owner > 1){
+                if($row->status_id!=1){ // jika status in progress
+                    if(auth()->user()->can('delete-kegiatan')){
                         //jika id owner non tjsl
                         $button .= '&nbsp;';
                         $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->kegiatan.'" data-toggle="tooltip" title="Hapus data '.$row->kegiatan.'"><i class="bi bi-trash fs-3"></i></button>';

@@ -22,16 +22,24 @@
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
                         <button type="button" class="btn btn-active btn-info btn-sm btn-icon btn-search cls-search btn-search-active" style="margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
                         <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-search cls-search btn-search-unactive" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
-                        @if(!$view_only)
-                        <button type="button" class="btn btn-primary btn-sm btn-icon btn-validasi cls-validasi" style="display:none;margin-right:3px;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
-                        <button type="button" class="btn btn-danger btn-sm btn-icon btn-cancel-validasi cls-validasi" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Batalkan Validasi"><i class="bi bi-check fs-3"></i></button> 
-                        <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi" style="display:none;margin-right:3px;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
+
+                        @if(auth()->user()->can('validasi-kegiatan'))
+                            <button type="button" class="btn btn-primary btn-sm btn-icon btn-validasi cls-validasi" style="display:none;margin-right:3px;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
+                            <button type="button" class="btn btn-danger btn-sm btn-icon btn-cancel-validasi cls-validasi" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Batalkan Validasi"><i class="bi bi-check fs-3"></i></button> 
+                            <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-disable-validasi cls-validasi" style="display:none;margin-right:3px;"  data-toggle="tooltip" title="Validasi"><i class="bi bi-check fs-3"></i></button>
+                        @endif
+
+                        @if(auth()->user()->can('upload-kegiatan'))    
                         <button type="button" class="btn btn-success btn-sm btn-icon cls-upload" style="margin-right:3px;" data-toggle="tooltip" title="Upload Data Program"><i class="bi bi-upload fs-3"></i></button>
+                        @endif
+
+                        @if(auth()->user()->can('export-kegiatan'))    
                         <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel" style="margin-right:3px;"><i class="bi bi-file-excel fs-3"></i></button>
-                            {{-- @if(auth()->user()->getRoleNames()[0] == "Admin TJSL" || auth()->user()->getRoleNames()[0] == "Super Admin")
+                        @endif
+                        
+                        {{-- @if(auth()->user()->getRoleNames()[0] == "Admin TJSL" || auth()->user()->getRoleNames()[0] == "Super Admin")
                             <button type="button" class="btn btn-sm  btn-primary cls-sync"  data-toggle="tooltip" title="Sync Kegiatan Aplikasi Tjsl"><i class="bi bi-bootstrap-reboot"></i> Sync App TJSL</button>
                             @endif --}}
-                        @endif
                     </div>
                     <!--end::Search-->
                     <!--end::Group actions-->
@@ -121,8 +129,8 @@
                         </div>
                         <div class="col-lg-6 pt-7">
                             <button id="cari" class="btn btn-sm btn-success me-3">Cari</button>
-                            @if(!$view_only)
                             @if($can_download_template)
+                            @if(auth()->user()->can('download-template-kegiatan'))
                             <button id="download" class="btn btn-sm btn-primary me-3"><i class="bi bi-download fs-3"></i>Download Template</button>
                             @endif
                             @endif

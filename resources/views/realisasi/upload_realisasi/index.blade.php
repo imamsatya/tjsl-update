@@ -30,6 +30,7 @@
                 <div class="card-px py-10">
                 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
 	                @csrf
+                    @if(auth()->user()->can('upload-kegiatan'))   
                     <div class="form-group row  mb-5">
                         <div class="col-lg-6 ">
                             <label>File (*.xlsx)</label>
@@ -40,6 +41,7 @@
                         </div>
                     </div>
                     <div class="separator border-gray-200 mb-10"></div>
+                    @endif
                     <table class="table table-striped- table-bordered table-hover table-checkable" id="datatable">
                         <thead>
                             <tr>
