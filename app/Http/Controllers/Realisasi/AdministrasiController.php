@@ -218,11 +218,15 @@ class AdministrasiController extends Controller
                 $id_users = \Auth::user()->id;
                 $users = User::where('id', $id_users)->first();
                 $view_only = false;        
+                $admin_bumn = false;
                 if(!empty($users->getRoleNames())){
                     foreach ($users->getRoleNames() as $v) {
                         if($v == 'Admin Stakeholder') {
                             $view_only = true;
                         }                
+                        if($v == 'Admin BUMN') {
+                            $admin_bumn = true;
+                        }                                        
                     }
                 }
 
@@ -230,7 +234,11 @@ class AdministrasiController extends Controller
                 if($row->status_id!=1){
                     if(auth()->user()->can('edit-kegiatan')){
                         //jika id owner non tjsl
-                        $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data '.$row->kegiatan.'"><i class="bi bi-pencil fs-3"></i></button>';
+                        if($admin_bumn && $row->id_owner == 1){
+                            $button .= '';
+                        }else{
+                            $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data '.$row->kegiatan.'"><i class="bi bi-pencil fs-3"></i></button>';
+                        }
                     }
                 }
             }
@@ -242,8 +250,12 @@ class AdministrasiController extends Controller
                 if($row->status_id!=1){ // jika status in progress
                     if(auth()->user()->can('delete-kegiatan')){
                         //jika id owner non tjsl
-                        $button .= '&nbsp;';
-                        $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->kegiatan.'" data-toggle="tooltip" title="Hapus data '.$row->kegiatan.'"><i class="bi bi-trash fs-3"></i></button>';
+                        if($admin_bumn && $row->id_owner == 1){
+                            $button .= '';
+                        }else{                        
+                            $button .= '&nbsp;';
+                            $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->kegiatan.'" data-toggle="tooltip" title="Hapus data '.$row->kegiatan.'"><i class="bi bi-trash fs-3"></i></button>';
+                        }
                     }
                 }
             }
