@@ -22,7 +22,7 @@ class KegiatanTemplateExcelSheet implements WithMultipleSheets
     {
         $sheets = [];
         $sheets[] = new KegiatanTemplateExport($this->perusahaan,$this->bulan,$this->tahun);
-        $sheets[] = new ReferensiKegiatan($this->perusahaan);
+        $sheets[] = new ReferensiKegiatan($this->perusahaan,$this->tahun);
         $sheets[] = new ReferensiProgram($this->perusahaan,$this->bulan,$this->tahun);
         $sheets[] = new ReferensiProvinsi();
         $sheets[] = new ReferensiKota();

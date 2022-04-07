@@ -500,7 +500,7 @@ class AdministrasiController extends Controller
         $tahun = ($request->tahun?$request->tahun:date('Y'));
         $perusahaan = Perusahaan::where('id', $perusahaan_id)->first();
         $namaFile = "Template Kegiatan.xlsx";
-        
+
         return Excel::download(new KegiatanTemplateExcelSheet($perusahaan,$bulan,$tahun), $namaFile);
     }
 

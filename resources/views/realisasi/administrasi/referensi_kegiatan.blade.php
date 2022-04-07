@@ -42,9 +42,9 @@
     <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle><font face="Arial"  color="#000000">{{$a->indikator}}</font></td>
     <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle><font face="Arial"  color="#000000">{{$a->satuan_ukur_id}}</font></td>
     <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle><font face="Arial"  color="#000000">{{$a->anggaran_alokasi}}</font></td>
-    <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle><font face="Arial"  color="#000000">{{$a->provinsi->nama}}</font></td>
-    <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle><font face="Arial"  color="#000000">{{$a->kota->nama}}</font></td>
-    <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle><font face="Arial"  color="#000000">{{$a->satuan_ukur->nama}}</font></td>
+    <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle><font face="Arial"  color="#000000">{{$a->provinsi?$a->provinsi->nama : ''}}</font></td>
+    <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle><font face="Arial"  color="#000000">{{$a->kota?$a->kota->nama : ''}}</font></td>
+    <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle><font face="Arial"  color="#000000">{{$a->satuan_ukur?$a->satuan_ukur->nama : ''}}</font></td>
 </tr>
 @endforeach
 
