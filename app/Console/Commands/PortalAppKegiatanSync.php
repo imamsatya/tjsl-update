@@ -69,6 +69,20 @@ class PortalAppKegiatanSync extends Command
                 DB::table('log_sinkronisasi_kegiatan')->truncate();
             }
 
+            //clean invalid
+            $cek_activity = Kegiatan::whereNotNull('sumber_data')->count();
+            if($cek_activity > 0){
+                Kegiatan::whereNotNull('sumber_data')->update([
+                    'is_invalid_aplikasitjsl'=>false
+                ]);            
+            }
+            $cek_real = KegiatanRealisasi::whereNotNull('sumber_data')->count();
+            if($cek_real > 0){
+                KegiatanRealisasi::whereNotNull('sumber_data')->update([
+                    'is_invalid_aplikasitjsl'=>false
+                ]);            
+            }
+
             foreach($data as $k=>$value){
                 //Lakukan filter hanya jika id_program,tahun dan bulan tidak kosong
                 if($value->id_program && $value->bulan && $value->tahun && $value->id_bumn && $value->id_bumn > 0){
@@ -145,6 +159,7 @@ class PortalAppKegiatanSync extends Command
             //identifikasi data yang sudah dihapus
             //ambil data kegiatan hasil sinkronisasi sebelumnya 
             $cek_activity = Kegiatan::whereNotNull('sumber_data')->get();
+            dd($cek_activity);
             //buat variabel baru penampung data dari api
             $cek_data_api = $data;
             //deklarasi variabel penampung data baru

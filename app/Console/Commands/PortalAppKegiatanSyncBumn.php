@@ -63,6 +63,21 @@ class PortalAppKegiatanSyncBumn extends Command
             $banyak_data = [];
 
             $data = $body->data->data; 
+
+            //clean invalid
+            $cek_activity = Kegiatan::whereNotNull('sumber_data')->where('id_bumn_aplikasitjsl',$id_bumn)->count();
+            if($cek_activity > 0){
+                Kegiatan::whereNotNull('sumber_data')->where('id_bumn_aplikasitjsl',$id_bumn)->update([
+                    'is_invalid_aplikasitjsl'=>false
+                ]);            
+            }
+            $cek_real = KegiatanRealisasi::whereNotNull('sumber_data')->where('id_bumn_aplikasitjsl',$id_bumn)->count();
+            if($cek_real > 0){
+                KegiatanRealisasi::whereNotNull('sumber_data')->where('id_bumn_aplikasitjsl',$id_bumn)->update([
+                    'is_invalid_aplikasitjsl'=>false
+                ]);            
+            }
+
             
             foreach($data as $k=>$value){
 
