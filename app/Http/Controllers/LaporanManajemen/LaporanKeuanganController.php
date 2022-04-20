@@ -68,6 +68,7 @@ class LaporanKeuanganController extends Controller
             $periode_laporan_id = $periode_first->id;
         }
 
+
         $laporan_bumn = LaporanKeuanganNilai::select('perusahaans.nama_lengkap',
                                                 'perusahaans.id as perusahaan_id',
                                                 'laporan_manajemens.id as laporan_manajemen_id',
@@ -176,7 +177,7 @@ class LaporanKeuanganController extends Controller
             $laporan_child = $laporan_child->where('laporan_keuangan_nilais.perusahaan_id', $perusahaan_id);
         }   
 
-        if($request->tahun){
+        if($request->tahun = $request->tahun ? $request->tahun : (int)date('Y')){
             $laporan_bumn = $laporan_bumn->where('laporan_keuangan_nilais.tahun', (int)$request->tahun);
             $laporan_jenis = $laporan_jenis->where('laporan_keuangan_nilais.tahun', (int)$request->tahun);
             $laporan_parent = $laporan_parent->where('laporan_keuangan_nilais.tahun', (int)$request->tahun);
@@ -203,7 +204,7 @@ class LaporanKeuanganController extends Controller
             $laporan_parent = $laporan_parent->where('laporan_keuangan_nilais.laporan_keuangan_id', (int)$request->jenis_laporan_id);
             $laporan_child = $laporan_child->where('laporan_keuangan_nilais.laporan_keuangan_id', (int)$request->jenis_laporan_id);
         }
-        
+
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'laporan_bumn' => $laporan_bumn->get(),
