@@ -286,7 +286,6 @@ class AnggaranController extends Controller
 
     public function show(Request $request)
     {
-        
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
         $perusahaan_id = \Auth::user()->id_bumn;
@@ -710,7 +709,8 @@ class AnggaranController extends Controller
 
     }
 
-    public function exportPDF($id) {
+    public function exportPDF($id,$tahun) {
+
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
         $perusahaan_id = \Auth::user()->id_bumn;
@@ -729,6 +729,7 @@ class AnggaranController extends Controller
                         ->leftJoin('periode_laporans', 'periode_laporans.id', 'pumk_anggarans.periode_id')
                         ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id')
                         ->where('pumk_anggarans.id',$id)
+                        ->where('pumk_anggarans.tahun',$tahun)
                         ->first();
 
         $data_rka = PumkAnggaran::select('pumk_anggarans.*','perusahaans.nama_lengkap AS bumn_lengkap','periode_laporans.nama AS periode','statuses.nama AS status')
@@ -737,8 +738,10 @@ class AnggaranController extends Controller
                         ->leftJoin('statuses', 'statuses.id', 'pumk_anggarans.status_id')
                         ->where('pumk_anggarans.bumn_id',$data->bumn_id)
                         ->where('periode_laporans.nama','ilike','%RKA%')
+                        ->where('pumk_anggarans.tahun',$tahun)
                         //->where('statuses.nama','ilike','%Finish%')
                         ->first();
+  
         //hitung persentase
         $const = 100;
             //dana tersedia

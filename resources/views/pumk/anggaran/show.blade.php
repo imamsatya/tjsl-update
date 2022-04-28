@@ -171,6 +171,6 @@
 
 <script type="text/javascript">
     $("#btn-pdf").on('click',function () {
-       window.location.href = "{{ route('pumk.anggaran.create-pdf',$data->id) }}";
+       window.location.href = "{{ route('pumk.anggaran.create-pdf',[$data->id,$data->tahun]) }}";
     });
 </script>
