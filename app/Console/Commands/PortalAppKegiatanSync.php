@@ -118,8 +118,8 @@ class PortalAppKegiatanSync extends Command
                             [
                                 'bulan' => (int)$value->bulan,
                                 'tahun' => (int)$value->tahun,
-                                'target' => is_numeric($value->target_bulan)? $value->target_bulan : 0,               
-                                'realisasi' => is_numeric($value->realisasi_bulan)? $value->realisasi_bulan : 0,            
+                                'target' => $value->target_bulan? $value->target_bulan : 0,               
+                                'realisasi' => $value->realisasi_bulan? $value->realisasi_bulan : 0,            
                                 'anggaran' => $value->alokasi_anggaran_tahun? (int) $value->alokasi_anggaran_tahun : 0,                     
                                 'anggaran_total' => $value->realisasi_anggaran_bulan? (int) $value->realisasi_anggaran_bulan : 0,
                                 'status_id' => 1,
@@ -136,8 +136,8 @@ class PortalAppKegiatanSync extends Command
                                 'kegiatan_id' => (int)$last_id,               
                                 'bulan' => (int)$value->bulan,
                                 'tahun' => (int)$value->tahun,
-                                'target' => is_numeric($value->target_bulan)? $value->target_bulan : 0,               
-                                'realisasi' => is_numeric($value->realisasi_bulan)? $value->realisasi_bulan : 0,            
+                                'target' => $value->target_bulan? $value->target_bulan : 0,               
+                                'realisasi' => $value->realisasi_bulan? $value->realisasi_bulan : 0,            
                                 'anggaran' => $value->alokasi_anggaran_tahun? (int) $value->alokasi_anggaran_tahun : 0,                     
                                 'anggaran_total' => $value->realisasi_anggaran_bulan? (int) $value->realisasi_anggaran_bulan : 0,
                                 'status_id' => 1, //default 
