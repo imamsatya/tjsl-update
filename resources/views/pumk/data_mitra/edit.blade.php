@@ -17,6 +17,16 @@
     <hr>
     <div class="form-group row  mb-5" >
         <div class="col-lg-6">
+            <label>Nomor Pinjaman</label>
+            <input type="text" class="form-control " id="no_pinjaman" name="no_pinjaman" value="{{$data->no_pinjaman? $data->no_pinjaman : ""}}" disabled>
+        </div>
+        <div class="col-lg-6">
+            <label>Nominal Pendanaan</label>
+            <input type="text" class="form-control number-separator" id="nominal_pendanaan" name="nominal_pendanaan" value="{{$data->nominal_pendanaan? number_format($data->nominal_pendanaan,0,',',',') : 0}}">
+        </div>
+    </div>
+    <div class="form-group row  mb-5" >
+        <div class="col-lg-6">
             <label>Nilai Aset</label>
             <input type="text" class="form-control number-separator" id="nilai_aset" name="nilai_aset" value="{{$data->nilai_aset? number_format($data->nilai_aset,0,',',',') : 0}}">
         </div>

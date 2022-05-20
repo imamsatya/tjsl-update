@@ -350,6 +350,7 @@ class MitraBinaanController extends Controller
       try{
            $param = $request->all();
            $param = $request->except(['actionform','_token']);
+           $param['nominal_pendanaan'] = (int)preg_replace('/[^0-9]/','',$request->nominal_pendanaan);
            $param['nilai_aset'] = (int)preg_replace('/[^0-9]/','',$request->nilai_aset);
            $param['nilai_omset'] = (int)preg_replace('/[^0-9]/','',$request->nilai_omset);
            $param['saldo_pokok_pendanaan'] = (int)preg_replace('/[^0-9]/','',$request->saldo_pokok_pendanaan);
