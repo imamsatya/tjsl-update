@@ -80,7 +80,7 @@ class KegiatanAppTjslSync extends Command
                     // "id_pilar_origin"	=>$param->id_pilar_origin,
                     // "id_tpb_origin"	=>$param->id_tpb_origin,
                     // "id_indikator_origin"	=>$param->id_indikator_origin,
-                    "map_marker"	=>$param->map_marker,
+                    //"map_marker"	=>$param->map_marker,
                     "pemohon"	=>$param->pemohon,
                     "alamat"	=>$param->alamat,
                     "anggaran_permintaan"	=>$param->anggaran_permintaan,
@@ -93,7 +93,8 @@ class KegiatanAppTjslSync extends Command
                     "realisasi_anggaran_bulan"	=>$param->realisasi_anggaran_bulan,
                     "target_bulan"	=>$param->target_bulan,
                     "realisasi_bulan"	=>$param->realisasi_bulan,
-                    "status_id_program_diportal" =>$status_program
+                    "status_id_program_diportal" =>$status_program,
+                    "is_delete" =>$param->is_delete
                 ];
             }
 

@@ -50,15 +50,6 @@ class PortalAppKegiatanSync extends Command
 
         if($body){
             $now = Carbon::now()->format('Y-m-d H:i:s');
-            // $activity_exists = Kegiatan::whereNotNull('sumber_data');
-            // $realisasi_exists = KegiatanRealisasi::whereNotNull('sumber_data');
-            // if(count($activity_exists->get()) > 0){
-            //     $activity_exists->delete();
-            // }
-            // if(count($realisasi_exists->get()) > 0){
-            //     $realisasi_exists->delete();
-            // }
-
             $sumber_data = env('APP_TJSL_HOST').'api/get-kegiatan';
             $banyak_data = [];
 
@@ -92,21 +83,22 @@ class PortalAppKegiatanSync extends Command
                     Kegiatan::updateOrCreate(
                         ['id_kegiatan_aplikasitjsl' => $value->id_kegiatan],
                         [
-                            'target_tpb_id' => $value->id_program, //primary
+                            'target_tpb_id' => is_numeric($value->id_program)? $value->id_program : 0, //primary
                             'kegiatan' => $value->kegiatan?$value->kegiatan : null,
-                            'provinsi_id' => $value->id_provinsi_portal?$value->id_provinsi_portal : null,
-                            'kota_id' => $value->id_kab_kota_portal?$value->id_kab_kota_portal : null,
+                            'provinsi_id' => is_numeric($value->id_provinsi_portal)?$value->id_provinsi_portal : null,
+                            'kota_id' => is_numeric($value->id_kab_kota_portal)?$value->id_kab_kota_portal : null,
                             'indikator' => $value->indikator_capaian_kegiatan?$value->indikator_capaian_kegiatan : null,
-                            'satuan_ukur_id' => $value->id_satuan_ukur?$value->id_satuan_ukur : null,
-                            'anggaran_alokasi' => $value->alokasi_anggaran_tahun? (int)preg_replace('/\D/', '',$value->alokasi_anggaran_tahun) : 0,
+                            'satuan_ukur_id' => is_numeric($value->id_satuan_ukur)?$value->id_satuan_ukur : null,
+                            'anggaran_alokasi' => is_numeric($value->alokasi_anggaran_tahun)? (int)preg_replace('/\D/', '',$value->alokasi_anggaran_tahun) : 0,
                             'realisasi' => $value->realisasi_anggaran_bulan? (int)preg_replace('/\D/', '',$value->realisasi_anggaran_bulan) : 0,
                             'created_at' => $now,
                             'updated_at' => $now,
                             'sumber_data' => $sumber_data,//custom audit trail
                             'tgl_sinkronisasi_api' => $now, //custom audit trail
-                            'id_kegiatan_aplikasitjsl' => $value->id_kegiatan, //custom audit trail
-                            'id_bumn_aplikasitjsl' => $value->id_bumn, //custom audit trail
-                            'status_id_program_aplikasitjsl' => $status_program //custom audit trail
+                            'id_kegiatan_aplikasitjsl' => is_numeric($value->id_kegiatan)? $value->id_kegiatan : 0, //custom audit trail
+                            'id_bumn_aplikasitjsl' => is_numeric($value->id_bumn)? $value->id_bumn : 0, //custom audit trail
+                            'status_id_program_aplikasitjsl' => $status_program, //custom audit trail
+                            'is_invalid_aplikasitjsl' =>$value->is_delete > 0? true : false
                        ]);
 
                        //get id terakhir kegiatan
@@ -116,38 +108,39 @@ class PortalAppKegiatanSync extends Command
                        if($id_kegiatan_apptjsl){
                             $id_kegiatan_apptjsl->update(
                             [
-                                'bulan' => (int)$value->bulan,
-                                'tahun' => (int)$value->tahun,
-                                'target' => $value->target_bulan? $value->target_bulan : 0,               
-                                'realisasi' => $value->realisasi_bulan? $value->realisasi_bulan : 0,            
-                                'anggaran' => $value->alokasi_anggaran_tahun? (int) $value->alokasi_anggaran_tahun : 0,                     
-                                'anggaran_total' => $value->realisasi_anggaran_bulan? (int) $value->realisasi_anggaran_bulan : 0,
+                                'bulan' => is_numeric($value->bulan)?(int)$value->bulan : 0,
+                                'tahun' => is_numeric($value->tahun)?(int)$value->tahun : 0,
+                                'target' => is_numeric($value->target_bulan)? $value->target_bulan : 0,               
+                                'realisasi' => is_numeric($value->realisasi_bulan)? $value->realisasi_bulan : 0,            
+                                'anggaran' => is_numeric($value->alokasi_anggaran_tahun)? (int) $value->alokasi_anggaran_tahun : 0,                     
+                                'anggaran_total' => is_numeric($value->realisasi_anggaran_bulan)? (int) $value->realisasi_anggaran_bulan : 0,
                                 'status_id' => 1,
                                 'created_at' => $now,
                                 'updated_at' => $now,
                                 'sumber_data' => $sumber_data, //custom audit trail
                                 'tgl_sinkronisasi_api' => $now, //custom audit trail
-                                'id_bumn_aplikasitjsl' => $value->id_bumn, //custom audit trail
-                                'status_id_program_aplikasitjsl' => $status_program //custom audit trail
+                                'id_bumn_aplikasitjsl' => is_numeric($value->id_bumn)?$value->id_bumn : 0, //custom audit trail
+                                'status_id_program_aplikasitjsl' => $status_program, //custom audit trail
+                                'is_invalid_aplikasitjsl' =>$value->is_delete > 0? true : false
                            ]);
                        }else{
                             KegiatanRealisasi::insert(
                             [
                                 'kegiatan_id' => (int)$last_id,               
-                                'bulan' => (int)$value->bulan,
-                                'tahun' => (int)$value->tahun,
-                                'target' => $value->target_bulan? $value->target_bulan : 0,               
-                                'realisasi' => $value->realisasi_bulan? $value->realisasi_bulan : 0,            
-                                'anggaran' => $value->alokasi_anggaran_tahun? (int) $value->alokasi_anggaran_tahun : 0,                     
-                                'anggaran_total' => $value->realisasi_anggaran_bulan? (int) $value->realisasi_anggaran_bulan : 0,
-                                'status_id' => 1, //default 
+                                'bulan' => is_numeric($value->bulan)?(int)$value->bulan : 0,
+                                'tahun' => is_numeric($value->tahun)?(int)$value->tahun : 0,
+                                'target' => is_numeric($value->target_bulan)? $value->target_bulan : 0,               
+                                'realisasi' => is_numeric($value->realisasi_bulan)? $value->realisasi_bulan : 0,            
+                                'anggaran' => is_numeric($value->alokasi_anggaran_tahun)? (int) $value->alokasi_anggaran_tahun : 0,                     
+                                'anggaran_total' => is_numeric($value->realisasi_anggaran_bulan)? (int) $value->realisasi_anggaran_bulan : 0,
+                                'status_id' => 1,
                                 'created_at' => $now,
                                 'updated_at' => $now,
-                                'sumber_data' => $sumber_data,
+                                'sumber_data' => $sumber_data, //custom audit trail
                                 'tgl_sinkronisasi_api' => $now, //custom audit trail
-                                'id_kegiatan_aplikasitjsl' => $value->id_kegiatan, //custom audit trail
-                                'id_bumn_aplikasitjsl' => $value->id_bumn, //custom audit trail    
-                                'status_id_program_aplikasitjsl' => $status_program //custom audit trail                 
+                                'id_bumn_aplikasitjsl' => is_numeric($value->id_bumn)?$value->id_bumn : 0, //custom audit trail
+                                'status_id_program_aplikasitjsl' => $status_program, //custom audit trail
+                                'is_invalid_aplikasitjsl' =>$value->is_delete > 0? true : false
                            ]);
                        }
                     if($cek_program){
@@ -156,40 +149,6 @@ class PortalAppKegiatanSync extends Command
                 }
             }
 
-            //identifikasi data yang sudah dihapus
-            //ambil data kegiatan hasil sinkronisasi sebelumnya 
-            $cek_activity = Kegiatan::whereNotNull('sumber_data')->get();
-
-            //buat variabel baru penampung data dari api
-            $cek_data_api = $data;
-            //deklarasi variabel penampung data baru
-            $act = []; $api = [];
-
-            foreach($cek_activity as $val){
-                $act[] = $val->id_kegiatan_aplikasitjsl;
-            }
-
-            foreach($cek_data_api as $v){
-                //hanya data yang tersedia programnya di portal yang diambil dari api
-                if($v->id_program && $v->bulan && $v->tahun && $v->id_bumn && $v->id_bumn > 0){
-                    $cek_programs = TargetTpb::find((int)$v->id_program);
-                    if($cek_programs){
-                        $api[] = $v->id_kegiatan;
-                    }
-                }
-            }
-
-            //pencocokan data dari portal dan api
-            $result = array_diff($act,$api);
-            if(count($result) > 0){
-                //beri flag deleted jika data dari api tidak ditemukan di portal
-                Kegiatan::whereIn('id_kegiatan_aplikasitjsl',$result)->update([
-                    'is_invalid_aplikasitjsl' => true
-                ]);
-                KegiatanRealisasi::whereIn('id_kegiatan_aplikasitjsl',$result)->update([
-                    'is_invalid_aplikasitjsl' => true
-                ]);
-            }
        
             //catat data log
             \DB::table('log_sinkronisasi_kegiatan')->insert([

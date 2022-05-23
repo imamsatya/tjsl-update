@@ -159,6 +159,7 @@ class AdministrasiController extends Controller
      */
     public function datatable(Request $request)
     {
+
         $kegiatan = KegiatanRealisasi::select('kegiatans.*',
                                     'kegiatan_realisasis.*',
                                     'kegiatan_realisasis.id as kegiatan_realisasi_id',
@@ -178,7 +179,7 @@ class AdministrasiController extends Controller
                                 ->leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id');
 
         if($request->bulan){
-            $kegiatan = $kegiatan->where('kegiatan_realisasis.bulan', $request->bulan);
+            $kegiatan = $kegiatan->where('kegiatan_realisasis.bulan', (int)$request->bulan);
         }
 
         if($request->tahun){
