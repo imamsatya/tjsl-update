@@ -337,7 +337,7 @@ class HomeController extends Controller
                     $anggaran[$i] = $anggaran[$i]->where('anggaran_tpbs.perusahaan_id',$request->perusahaan_id);
                 }
                 if($request->tahun && $request->tahun!='all'){
-                    $kegiatan[$i] = $kegiatan[$i]->where('anggaran_tpbs.tahun',$request->tahun);
+                    $kegiatan[$i] = $kegiatan[$i]->where('kegiatan_realisasis.tahun',$request->tahun);
                     $anggaran[$i] = $anggaran[$i]->where('anggaran_tpbs.tahun',$request->tahun);
                 }
                 if($request->owner_id && $request->owner_id!='all'){
