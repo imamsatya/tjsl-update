@@ -6,6 +6,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Console\SilabaBumnSync;
 use App\Console\Commands\PortalAppKegiatanSync;
+use App\Console\Commands\SinkronisasiKegiatanByBumn;
 
 class Kernel extends ConsoleKernel
 {
@@ -20,6 +21,7 @@ class Kernel extends ConsoleKernel
         BankAccountSync::class,
         ValidasiKegiatan::class,
         PortalAppKegiatanSync::class,
+        SinkronisasiKegiatanByBumn::class,
     ];
 
     /**

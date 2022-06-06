@@ -709,8 +709,14 @@ class AdministrasiController extends Controller
     {  
         try{
             $id_bumn = auth()->user()->id_bumn;
+
             if($id_bumn){
-                $call = \Artisan::call('portalApp:KegiatanBumnSync');    
+                $call = \Artisan::call('apptjsl:kegiatansync');
+                $respons = \Artisan::output();
+                
+                if(!$respons){
+                    $callsync = \Artisan::call('syncbumn:activity');    
+                }    
             }
 
                 $result = [
