@@ -7,6 +7,7 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Console\SilabaBumnSync;
 use App\Console\Commands\PortalAppKegiatanSync;
 use App\Console\Commands\SinkronisasiKegiatanByBumn;
+use App\Console\Commands\SinkronisasiKegiatanGlobal;
 
 class Kernel extends ConsoleKernel
 {
@@ -22,6 +23,7 @@ class Kernel extends ConsoleKernel
         ValidasiKegiatan::class,
         PortalAppKegiatanSync::class,
         SinkronisasiKegiatanByBumn::class,
+        SinkronisasiKegiatanGlobal::class,
     ];
 
     /**
@@ -36,7 +38,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('validasi:kegiatan')->monthlyOn(15, '02:00');
 
         //service sync kegiatan app tjsl dilakukan setiap jam
-        $schedule->command('portalApp:KegiatanSync')->hourly();
+        $schedule->command('syncglobal:activity')->hourly();
 
         //service sync kegiatan app tjsl dilakukan setiap jam 
         $schedule->command('apptjsl:kegiatansync')->hourly();        

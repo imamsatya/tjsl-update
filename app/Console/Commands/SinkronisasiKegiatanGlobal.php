@@ -9,21 +9,21 @@ use App\Models\KegiatanRealisasi;
 use Carbon\Carbon;
 use DB;
 
-class SinkronisasiKegiatanByBumn extends Command
+class SinkronisasiKegiatanGlobal extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'syncbumn:activity';
+    protected $signature = 'syncglobal:activity';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Sinkronisasi data kegiatan masing2 bumn dari app tjsl update 20220606';
+    protected $description = 'Sinkronisasi data kegiatan global dari app tjsl update 20220606';
 
     /**
      * Create a new command instance.
@@ -42,14 +42,10 @@ class SinkronisasiKegiatanByBumn extends Command
      */
     public function handle()
     {
-        $id_bumns = auth()->user()->id_bumn;
         $data = [];
-        $sumber_data = '';
-        if($id_bumns){
-            $data = DB::table('kegiatan_app_tjsl')->where('id_bumn',(int)$id_bumns)->get();
-            $sumber_data = env('APP_TJSL_HOST').'api/get-kegiatan-by-bumn/'.$id_bumns;
-        }
         $now = Carbon::now()->format('Y-m-d H:i:s');
+        $sumber_data = env('APP_TJSL_HOST').'api/get-kegiatan';
+        $data = DB::table('kegiatan_app_tjsl')->get();
 
         if(!empty($data)){
             foreach($data as $k=>$value){
@@ -106,6 +102,5 @@ class SinkronisasiKegiatanByBumn extends Command
                 }
             }
         }
-
     }
 }
