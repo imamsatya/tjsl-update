@@ -79,6 +79,7 @@ class SinkronisasiKegiatanByBumn extends Command
                             'is_invalid_aplikasitjsl' => (int)$value->is_delete > 0? true : false
                     ]);
 
+                    if($data_keg->kegiatan_realisasi()){
                        //create or update kegiatan realisasis
                             KegiatanRealisasi::updateOrCreate([
                                 'kegiatan_id' => (int)$data_keg->id
@@ -100,7 +101,7 @@ class SinkronisasiKegiatanByBumn extends Command
                                 'status_id_program_aplikasitjsl' => $status_program, //custom audit trail
                                 'is_invalid_aplikasitjsl' =>$value->is_delete > 0? true : false
                         ]);
-
+                    }
                 }
             }
         }

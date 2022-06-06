@@ -32,4 +32,9 @@ class Kegiatan extends Model
     {
     	return $this->belongsTo('App\Models\Bulan', 'bulan');
     }
+
+    public function kegiatan_realisasi()
+    {
+    	return $this->belongsTo('App\Models\KegiatanRealisasi', 'kegiatan_id');
+    }
 }
