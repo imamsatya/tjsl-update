@@ -35,6 +35,6 @@ class Kegiatan extends Model
 
     public function kegiatan_realisasi()
     {
-    	return $this->belongsTo('App\Models\KegiatanRealisasi', 'kegiatan_id');
+    	return $this->hasOne('App\Models\KegiatanRealisasi', 'kegiatan_id', 'id');
     }
 }
