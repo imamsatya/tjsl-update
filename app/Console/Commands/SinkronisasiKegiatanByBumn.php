@@ -108,9 +108,9 @@ class SinkronisasiKegiatanByBumn extends Command
             }
         }
 
-        //clear log tiap seminggu sekali
+        //clear log tiap 1000x sync
         $cek_log = DB::table('log_sinkronisasi_kegiatan')->where('user_id',(int)auth()->user()->id);
-        if($cek_log->count() >= 168){ //24 jam x 7 = 168 jam (7 hari)
+        if($cek_log->count() >= 1000){ 
             $cek_log->delete();
         }
         
