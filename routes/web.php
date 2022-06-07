@@ -513,6 +513,6 @@ Route::get('cc', function(){
 
 // untuk melakukan penarikan data api kegiatan dari app tjsl (cek data api update)
 Route::get('kegiatan-sync', function(){
-    \Artisan::call('syncglobal:activity');
+    \Artisan::call('apptjsl:kegiatansync');
     dd('successfully');
 });

@@ -104,5 +104,20 @@ class SinkronisasiKegiatanGlobal extends Command
                 }
             }
         }
+        //clear log tiap seminggu sekali
+        $cek_log = DB::table('log_sinkronisasi_kegiatan')->where('user_id',0);
+        if($cek_log->count() >= 168){ //24 jam x 7 = 168 jam (7 hari)
+            $cek_log->delete();
+        }
+        
+        //simpan log
+        $jumlah = count($data);
+        $log = [
+                'jumlah_data' => (int)$jumlah,
+                'user_id' => 0,
+                'created_at' => $now,
+                'updated_at' => $now
+        ];
+        DB::table('log_sinkronisasi_kegiatan')->insert($log);
     }
 }
