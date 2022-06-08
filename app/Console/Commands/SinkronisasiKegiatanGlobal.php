@@ -42,8 +42,8 @@ class SinkronisasiKegiatanGlobal extends Command
      */
     public function handle()
     {
-        $call = \Artisan::call('apptjsl:kegiatansync');
-        
+        \Artisan::call('apptjsl:kegiatansync');
+
         $data = [];
         $now = Carbon::now()->format('Y-m-d H:i:s');
         $sumber_data = env('APP_TJSL_HOST').'api/get-kegiatan';

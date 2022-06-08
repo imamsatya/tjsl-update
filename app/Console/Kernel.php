@@ -5,9 +5,10 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Console\SilabaBumnSync;
-use App\Console\Commands\PortalAppKegiatanSync;
+// use App\Console\Commands\PortalAppKegiatanSync;
 use App\Console\Commands\SinkronisasiKegiatanByBumn;
 use App\Console\Commands\SinkronisasiKegiatanGlobal;
+use App\Console\Commands\KegiatanAppTjslSync;
 
 class Kernel extends ConsoleKernel
 {
@@ -21,9 +22,10 @@ class Kernel extends ConsoleKernel
         ProvinsiKotaSync::class,
         BankAccountSync::class,
         ValidasiKegiatan::class,
-        PortalAppKegiatanSync::class,
+        // PortalAppKegiatanSync::class,
         SinkronisasiKegiatanByBumn::class,
         SinkronisasiKegiatanGlobal::class,
+        KegiatanAppTjslSync::class
     ];
 
     /**
@@ -38,10 +40,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('validasi:kegiatan')->monthlyOn(15, '02:00');
 
         //service sync kegiatan app tjsl dilakukan setiap jam 
-        $schedule->command('apptjsl:kegiatansync')->everyTwoMinutes();        
+        //$schedule->command('apptjsl:kegiatansync')->everyMinute();        
 
         //service sync kegiatan app tjsl dilakukan setiap jam
-        $schedule->command('syncglobal:activity')->everyFiveMinutes();
+        $schedule->command('syncglobal:activity')->everyMinute();
         
     }
 

@@ -72,8 +72,8 @@ class KegiatanAppTjslSync extends Command
                     "id_kab_kota_portal"	=>$param->id_kab_kota_portal,
                     // "id_provinsi_origin"	=>$param->id_provinsi_origin,
                     // "id_kab_kota_origin"	=>$param->id_kab_kota_origin,
-                    "kecamatan"	=>$param->kecamatan,
-                    "id_kelurahan_desa"	=>$param->id_kelurahan_desa,
+                    // "kecamatan"	=>$param->kecamatan,
+                    // "id_kelurahan_desa"	=>$param->id_kelurahan_desa,
                     "id_pilar_portal"	=>$param->id_pilar_portal,
                     "id_tpb_portal"	=>$param->id_tpb_portal,
                     "id_indikator_portal"	=>$param->id_indikator_portal,
@@ -81,8 +81,8 @@ class KegiatanAppTjslSync extends Command
                     // "id_tpb_origin"	=>$param->id_tpb_origin,
                     // "id_indikator_origin"	=>$param->id_indikator_origin,
                     //"map_marker"	=>$param->map_marker,
-                    "pemohon"	=>$param->pemohon,
-                    "alamat"	=>$param->alamat,
+                    // "pemohon"	=>$param->pemohon,
+                    // "alamat"	=>$param->alamat,
                     "anggaran_permintaan"	=>$param->anggaran_permintaan,
                     "realisasi_total"	=>$param->realisasi_total,
                     "indikator_capaian_kegiatan"	=>$param->indikator_capaian_kegiatan,
@@ -94,7 +94,8 @@ class KegiatanAppTjslSync extends Command
                     "target_bulan"	=>$param->target_bulan,
                     "realisasi_bulan"	=>$param->realisasi_bulan,
                     "status_id_program_diportal" =>$status_program,
-                    "is_delete" =>$param->is_delete
+                    "is_delete" =>$param->is_delete,
+                    "created_at" => $now
                 ];
             }
 
