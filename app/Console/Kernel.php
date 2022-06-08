@@ -38,10 +38,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('validasi:kegiatan')->monthlyOn(15, '02:00');
 
         //service sync kegiatan app tjsl dilakukan setiap jam 
-        $schedule->command('apptjsl:kegiatansync')->hourly();        
+        $schedule->command('apptjsl:kegiatansync')->everyTwoMinutes();        
 
         //service sync kegiatan app tjsl dilakukan setiap jam
-        $schedule->command('syncglobal:activity')->hourly();
+        $schedule->command('syncglobal:activity')->everyFiveMinutes();
         
     }
 
