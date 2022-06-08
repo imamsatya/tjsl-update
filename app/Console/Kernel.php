@@ -41,7 +41,7 @@ class Kernel extends ConsoleKernel
         //$schedule->command('apptjsl:kegiatansync')->everyMinute();        
 
         //service sync kegiatan app tjsl dilakukan setiap jam
-        $schedule->command('syncglobal:activity')->everyMinute();    
+        $schedule->command('syncglobal:activity')->hourly(); 
         
     }
 
