@@ -711,6 +711,7 @@ class AdministrasiController extends Controller
             $id_bumn = auth()->user()->id_bumn;
 
             if($id_bumn){
+                //update data master kegiatan dari api
                 $call = \Artisan::call('apptjsl:kegiatansync');
                 $respons = \Artisan::output();
                 

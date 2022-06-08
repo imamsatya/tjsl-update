@@ -42,6 +42,7 @@ class SinkronisasiKegiatanGlobal extends Command
      */
     public function handle()
     {
+        //update data master kegiatan dari api
         \Artisan::call('apptjsl:kegiatansync');
 
         $data = [];
@@ -117,6 +118,7 @@ class SinkronisasiKegiatanGlobal extends Command
         $log = [
                 'jumlah_data' => (int)$jumlah,
                 'user_id' => 0,
+                'tipe_api' => 'all',
                 'created_at' => $now,
                 'updated_at' => $now
         ];

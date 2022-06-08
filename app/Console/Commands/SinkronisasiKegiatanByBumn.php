@@ -119,6 +119,7 @@ class SinkronisasiKegiatanByBumn extends Command
         $log = [
                 'jumlah_data' => (int)$jumlah,
                 'user_id' => (int)auth()->user()->id,
+                'tipe_api' => 'bumn',
                 'created_at' => $now,
                 'updated_at' => $now
         ];

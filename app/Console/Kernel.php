@@ -5,7 +5,6 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Console\SilabaBumnSync;
-// use App\Console\Commands\PortalAppKegiatanSync;
 use App\Console\Commands\SinkronisasiKegiatanByBumn;
 use App\Console\Commands\SinkronisasiKegiatanGlobal;
 use App\Console\Commands\KegiatanAppTjslSync;
@@ -22,7 +21,6 @@ class Kernel extends ConsoleKernel
         ProvinsiKotaSync::class,
         BankAccountSync::class,
         ValidasiKegiatan::class,
-        // PortalAppKegiatanSync::class,
         SinkronisasiKegiatanByBumn::class,
         SinkronisasiKegiatanGlobal::class,
         KegiatanAppTjslSync::class
@@ -43,7 +41,7 @@ class Kernel extends ConsoleKernel
         //$schedule->command('apptjsl:kegiatansync')->everyMinute();        
 
         //service sync kegiatan app tjsl dilakukan setiap jam
-        $schedule->command('syncglobal:activity')->everyMinute();
+        $schedule->command('syncglobal:activity')->everyMinute();    
         
     }
 
