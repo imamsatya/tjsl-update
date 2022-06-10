@@ -677,7 +677,7 @@ class AdministrasiController extends Controller
     public function api_sync()
     {  
         try{
-            $call = \Artisan::call('apptjsl:kegiatansync');
+            $call = \Artisan::call('syncbumn:activity');
             $cek_log = DB::table('log_sinkronisasi_kegiatan')->orderby('id','desc')->first();
           
             if(!$cek_log || $cek_log->jumlah_data == 0){

@@ -503,6 +503,12 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::get('datatable', 'App\Http\Controllers\UserGuideController@datatable')->name('userguide.datatable');
         });
 
+        // untuk melakukan penarikan data api kegiatan dari app tjsl (cek data api update)
+        Route::get('kegiatan-sync', function(){
+            \Artisan::call('apptjsl:kegiatansync');
+            dd('successfully');
+        });
+
 }); // end login dengan cas
 
 Route::get('cc', function(){
@@ -511,8 +517,4 @@ Route::get('cc', function(){
     dd('cache & config clear successfully');
 });
 
-// untuk melakukan penarikan data api kegiatan dari app tjsl (cek data api update)
-Route::get('kegiatan-sync', function(){
-    \Artisan::call('apptjsl:kegiatansync');
-    dd('successfully');
-});
+
