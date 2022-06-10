@@ -504,8 +504,13 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
         });
 
         // untuk melakukan penarikan data api kegiatan dari app tjsl (cek data api update)
-        Route::get('kegiatan-sync', function(){
+        Route::get('kegiatan-master-sync', function(){
             \Artisan::call('apptjsl:kegiatansync');
+            dd('successfully');
+        });
+
+        Route::get('kegiatan-all-sync', function(){
+            \Artisan::call('syncglobal:activity');
             dd('successfully');
         });
 
