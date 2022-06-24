@@ -292,8 +292,8 @@ class AdministrasiController extends Controller
             })
             ->editColumn('realisasi', function ($row){
                 $realisasi = '<i>Target : </i>'.number_format($row->target,0,',',',').' '.$row->satuan_ukur.'<br>';
-                $realisasi .= '<i>Realisasi : </i>'.number_format($row->realisasi,0,',',',').' '.$row->satuan_ukur.'<br>';
-                $realisasi .= '<i>Anggaran Realisasi : </i>'.' Rp. '.number_format($row->anggaran,0,',',',').'<br>';
+                $realisasi .= '<i>Realisasi Target: </i>'.number_format($row->realisasi,0,',',',').' '.$row->satuan_ukur.'<br>';
+                $realisasi .= '<i>Realisasi Anggaran: </i>'.' Rp. '.number_format($row->anggaran,0,',',',').'<br>';
                 return $realisasi;
             })
             ->rawColumns(['nama','keterangan','action','anggaran','realisasi','bulan','status'])
