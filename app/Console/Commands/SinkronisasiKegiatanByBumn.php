@@ -80,7 +80,13 @@ class SinkronisasiKegiatanByBumn extends Command
                     //keterangan hasil cek ketersediaan id program di portal
                     $status_program = $cek_program? 'available' : 'undefined';
                     $data_keg = Kegiatan::updateOrCreate(
-                        ['id_kegiatan_aplikasitjsl' => $value->id_kegiatan],
+                        [
+                            //'id_kegiatan_aplikasitjsl' => $value->id_kegiatan
+                            'target_tpb_id' => is_numeric($value->id_program)? $value->id_program : 0, //primary
+                            'kegiatan' => $value->kegiatan?$value->kegiatan : null,
+                            'provinsi_id' => is_numeric($value->id_provinsi_portal)?(int)$value->id_provinsi_portal : null,
+                            'kota_id' => is_numeric($value->id_kab_kota_portal)?(int)$value->id_kab_kota_portal : null,
+                        ],
                         [
                             'target_tpb_id' => is_numeric($value->id_program)? $value->id_program : 0, //primary
                             'kegiatan' => $value->kegiatan?$value->kegiatan : null,
@@ -100,12 +106,14 @@ class SinkronisasiKegiatanByBumn extends Command
                             'is_invalid_aplikasitjsl' => (int)$value->is_delete > 0? true : false
                     ]);
 
-                    if($data_keg->kegiatan_realisasi()){
-                       //create or update kegiatan realisasis
-                            KegiatanRealisasi::updateOrCreate([
-                                'kegiatan_id' => (int)$data_keg->id
-                            ],
-                            [
+
+                    $realisasi = KegiatanRealisasi::where('kegiatan_id',(int)$data_keg->id)
+                                            ->where('bulan', $value->bulan)
+                                            ->where('tahun', $value->tahun)
+                                            ->get();
+
+                    if($realisasi->count()==0){
+                        $realisasi = KegiatanRealisasi::create([
                                 'kegiatan_id' => (int)$data_keg->id,               
                                 'bulan' => is_numeric($value->bulan)?(int)$value->bulan : 0,
                                 'tahun' => is_numeric($value->tahun)?(int)$value->tahun : 0,
@@ -123,7 +131,17 @@ class SinkronisasiKegiatanByBumn extends Command
                                 'status_id_program_aplikasitjsl' => $status_program, //custom audit trail
                                 'is_invalid_aplikasitjsl' =>$value->is_delete > 0? true : false
                         ]);
+
+                        $realisasi_total = KegiatanRealisasi::select(DB::Raw('sum(kegiatan_realisasis.anggaran) as total'))
+                                                            ->where('kegiatan_id',(int)$data_keg->id)
+                                                            ->where('bulan','<',$value->bulan)
+                                                            ->where('tahun',$value->tahun)
+                                                            ->first();
+      
+                        $paramr['anggaran_total'] = (int)$realisasi_total->total + $realisasi->anggaran;
+                        $realisasi->update((array)$paramr);
                     }
+
                 }
             }
         }
