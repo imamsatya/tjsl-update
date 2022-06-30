@@ -72,7 +72,7 @@ class HomeController extends Controller
         try{
             $id_bumn = auth()->user()->id_bumn;
             if($id_bumn){
-                $call = \Artisan::call('portalApp:KegiatanBumnSync');    
+                $call = \Artisan::call('syncbumn:activity');    
             }
         }catch(\Exception $e){}            
 
