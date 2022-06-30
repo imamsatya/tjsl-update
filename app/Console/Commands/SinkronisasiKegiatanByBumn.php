@@ -58,14 +58,14 @@ class SinkronisasiKegiatanByBumn extends Command
                 }
             }
     
-            $kegiatan_realisasi_last = KegiatanRealisasi::whereNotNull('sumber_data')->where('id_bumn_aplikasitjsl',$id_bumns)->get();
-            if(!empty($kegiatan_realisasi_last)){
-                foreach($kegiatan_realisasi_last as $v){
-                    $val = $v->update([
-                        'is_invalid_aplikasitjsl'=>true
-                    ]);
-                }
-            }
+            // $kegiatan_realisasi_last = KegiatanRealisasi::whereNotNull('sumber_data')->where('id_bumn_aplikasitjsl',$id_bumns)->get();
+            // if(!empty($kegiatan_realisasi_last)){
+            //     foreach($kegiatan_realisasi_last as $v){
+            //         $val = $v->update([
+            //             'is_invalid_aplikasitjsl'=>true
+            //         ]);
+            //     }
+            // }
 
         }
         $now = Carbon::now()->format('Y-m-d H:i:s');

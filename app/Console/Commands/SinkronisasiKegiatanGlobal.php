@@ -59,14 +59,14 @@ class SinkronisasiKegiatanGlobal extends Command
             }
         }
 
-        $kegiatan_realisasi_last = KegiatanRealisasi::whereNotNull('sumber_data')->get();
-        if(!empty($kegiatan_realisasi_last)){
-            foreach($kegiatan_realisasi_last as $v){
-                $val = $v->update([
-                    'is_invalid_aplikasitjsl'=>true
-                ]);
-            }
-        }
+        // $kegiatan_realisasi_last = KegiatanRealisasi::whereNotNull('sumber_data')->get();
+        // if(!empty($kegiatan_realisasi_last)){
+        //     foreach($kegiatan_realisasi_last as $v){
+        //         $val = $v->update([
+        //             'is_invalid_aplikasitjsl'=>true
+        //         ]);
+        //     }
+        // }
 
         if(!empty($data)){
             foreach($data as $k=>$value){
