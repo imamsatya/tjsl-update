@@ -324,7 +324,7 @@ class HomeController extends Controller
                                         ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
                                         ->leftJoin('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
                                         ->where('relasi_pilar_tpbs.pilar_pembangunan_id',$pilar[$i]->id)
-                                        ->where('kegiatans.is_invalid_aplikasitjsl',false)
+                                       // ->where('kegiatans.is_invalid_aplikasitjsl',false)
                                         ->where('kegiatan_realisasis.is_invalid_aplikasitjsl',false);
                                         
                 $anggaran[$i] = AnggaranTpb::Select(DB::Raw('sum(anggaran_tpbs.anggaran) as anggaran'))

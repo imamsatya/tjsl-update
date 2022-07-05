@@ -46,27 +46,8 @@ class SinkronisasiKegiatanByBumn extends Command
         $data = [];
         $sumber_data = '';
         if($id_bumns){
-            $data = DB::table('kegiatan_app_tjsl')->where('id_bumn',(int)$id_bumns)->get();
+            $data = DB::table('kegiatan_app_tjsl')->where('id_bumn',(int)$id_bumns)->orderby('bulan','ASC')->orderby('tahun','ASC')->get();
             $sumber_data = env('APP_TJSL_HOST').'api/get-kegiatan-by-bumn/'.$id_bumns;
-
-            $kegiatan_last = Kegiatan::whereNotNull('sumber_data')->where('id_bumn_aplikasitjsl',$id_bumns)->get();
-            if(!empty($kegiatan_last)){
-                foreach($kegiatan_last as $v){
-                    $val = $v->update([
-                        'is_invalid_aplikasitjsl'=>true
-                    ]);
-                }
-            }
-    
-            // $kegiatan_realisasi_last = KegiatanRealisasi::whereNotNull('sumber_data')->where('id_bumn_aplikasitjsl',$id_bumns)->get();
-            // if(!empty($kegiatan_realisasi_last)){
-            //     foreach($kegiatan_realisasi_last as $v){
-            //         $val = $v->update([
-            //             'is_invalid_aplikasitjsl'=>true
-            //         ]);
-            //     }
-            // }
-
         }
         $now = Carbon::now()->format('Y-m-d H:i:s');
 
@@ -113,7 +94,7 @@ class SinkronisasiKegiatanByBumn extends Command
                                             ->get();
 
                     if($realisasi->count()==0){
-                        $realisasi = KegiatanRealisasi::create([
+                        $realisasi_keg = KegiatanRealisasi::create([
                                 'kegiatan_id' => (int)$data_keg->id,               
                                 'bulan' => is_numeric($value->bulan)?(int)$value->bulan : 0,
                                 'tahun' => is_numeric($value->tahun)?(int)$value->tahun : 0,
@@ -134,12 +115,12 @@ class SinkronisasiKegiatanByBumn extends Command
 
                         $realisasi_total = KegiatanRealisasi::select(DB::Raw('sum(kegiatan_realisasis.anggaran) as total'))
                                                             ->where('kegiatan_id',(int)$data_keg->id)
-                                                            ->where('bulan','<',$value->bulan)
-                                                            ->where('tahun',$value->tahun)
+                                                            ->where('bulan','<',(int)$value->bulan)
+                                                            ->where('tahun',(int)$value->tahun)
                                                             ->first();
       
-                        $paramr['anggaran_total'] = (int)$realisasi_total->total + $realisasi->anggaran;
-                        $realisasi->update((array)$paramr);
+                        $paramr['anggaran_total'] = (int)$realisasi_total->total + $realisasi_keg->anggaran;
+                        $realisasi_keg->update((array)$paramr);
                     }
 
                 }
