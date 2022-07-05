@@ -98,7 +98,6 @@ class SinkronisasiKegiatanGlobal extends Command
                             'sumber_data' => $sumber_data,//custom audit trail
                             'tgl_sinkronisasi_api' => $now, //custom audit trail
                             'id_kegiatan_aplikasitjsl' => is_numeric($value->id_kegiatan)? $value->id_kegiatan : 0, //custom audit trail
-                            'id_kegiatan_aplikasitjsl' => is_numeric($value->id_kegiatan)? $value->id_kegiatan : 0, //custom audit trail
                             'id_bumn_aplikasitjsl' => is_numeric($value->id_bumn)? $value->id_bumn : 0, //custom audit trail
                             'status_id_program_aplikasitjsl' => $status_program, //custom audit trail
                             'is_invalid_aplikasitjsl' => (int)$value->is_delete > 0? true : false
