@@ -62,11 +62,11 @@ class SinkronisasiKegiatanByBumn extends Command
                     $status_program = $cek_program? 'available' : 'undefined';
                     $data_keg = Kegiatan::updateOrCreate(
                         [
-                            //'id_kegiatan_aplikasitjsl' => $value->id_kegiatan
-                            'target_tpb_id' => is_numeric($value->id_program)? $value->id_program : 0, //primary
-                            'kegiatan' => $value->kegiatan?$value->kegiatan : null,
-                            'provinsi_id' => is_numeric($value->id_provinsi_portal)?(int)$value->id_provinsi_portal : null,
-                            'kota_id' => is_numeric($value->id_kab_kota_portal)?(int)$value->id_kab_kota_portal : null,
+                            'id_kegiatan_aplikasitjsl' => $value->id_kegiatan
+                            // 'target_tpb_id' => is_numeric($value->id_program)? $value->id_program : 0, //primary
+                            // 'kegiatan' => $value->kegiatan?$value->kegiatan : null,
+                            // 'provinsi_id' => is_numeric($value->id_provinsi_portal)?(int)$value->id_provinsi_portal : null,
+                            // 'kota_id' => is_numeric($value->id_kab_kota_portal)?(int)$value->id_kab_kota_portal : null,
                         ],
                         [
                             'target_tpb_id' => is_numeric($value->id_program)? $value->id_program : 0, //primary
