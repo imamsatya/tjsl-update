@@ -490,7 +490,7 @@ class AdministrasiController extends Controller
                     $realisasi_by_api = Kegiatan::leftjoin('kegiatan_realisasis','kegiatan_realisasis.kegiatan_id','kegiatans.id')
                                     ->where('kegiatans.kegiatan',$realisasi[0]->kegiatan)
                                     ->where('kegiatans.target_tpb_id',$realisasi[0]->target_tpb_id)
-                                    ->where('kegiatan_realisasis.bulan','<',(int)$realisasi[0]->bulan)
+                                    ->where('kegiatan_realisasis.bulan','<=',(int)$realisasi[0]->bulan)
                                     ->where('kegiatan_realisasis.tahun',(int)$realisasi[0]->tahun)
                                     ->where('kegiatan_realisasis.is_invalid_aplikasitjsl',false);  
 
