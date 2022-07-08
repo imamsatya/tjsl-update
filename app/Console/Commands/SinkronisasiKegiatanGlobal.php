@@ -61,10 +61,6 @@ class SinkronisasiKegiatanGlobal extends Command
                     $data_keg = Kegiatan::updateOrCreate(
                         [
                             'id_kegiatan_aplikasitjsl' => $value->id_kegiatan
-                            // 'target_tpb_id' => is_numeric($value->id_program)? $value->id_program : 0, //primary
-                            // 'kegiatan' => $value->kegiatan?$value->kegiatan : null,
-                            // 'provinsi_id' => is_numeric($value->id_provinsi_portal)?(int)$value->id_provinsi_portal : null,
-                            // 'kota_id' => is_numeric($value->id_kab_kota_portal)?(int)$value->id_kab_kota_portal : null,
                         ],
                         [
                             'target_tpb_id' => is_numeric($value->id_program)? $value->id_program : 0, //primary
@@ -110,13 +106,16 @@ class SinkronisasiKegiatanGlobal extends Command
                                 'is_invalid_aplikasitjsl' =>$value->is_delete > 0? true : false
                         ]);
 
-                        $realisasi_total = KegiatanRealisasi::select(DB::Raw('sum(kegiatan_realisasis.anggaran) as total'))
-                                                            ->where('kegiatan_id',(int)$data_keg->id)
-                                                            ->where('bulan','<',(int)$value->bulan)
-                                                            ->where('tahun',(int)$value->tahun) 
-                                                            ->first();
+                        //akumulasi nilai realisasi sebelumnya
+                        $realisasi_total = Kegiatan::leftjoin('kegiatan_realisasis','kegiatan_realisasis.kegiatan_id','kegiatans.id')
+                                    ->where('kegiatans.kegiatan',$value->kegiatan)
+                                    ->where('kegiatans.target_tpb_id',$value->id_program)
+                                    ->where('kegiatan_realisasis.bulan','<',(int)$value->bulan)
+                                    ->where('kegiatan_realisasis.tahun',(int)$value->tahun)
+                                    ->where('kegiatan_realisasis.is_invalid_aplikasitjsl',false)
+                                    ->sum('kegiatan_realisasis.anggaran');                                                            
       
-                        $paramr['anggaran_total'] = (int)$realisasi_total->total + $realisasi_keg->anggaran;
+                        $paramr['anggaran_total'] = (int)$realisasi_total + $realisasi_keg->anggaran;
                         $realisasi_keg->update((array)$paramr);
                     }
 

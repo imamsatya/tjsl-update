@@ -474,13 +474,31 @@ class AdministrasiController extends Controller
 
     public function detail(Request $request)
     {
-
-        try{
+        
+        // try{
             $realisasi_detail = KegiatanRealisasi::where('id', (int)$request->input('id'))->first();
             $kegiatan  = Kegiatan::find($realisasi_detail->kegiatan_id);
             $tahun     = KegiatanRealisasi::select('tahun')->where('kegiatan_id', $kegiatan->id)->groupBy('tahun')->orderBy('tahun')->get();
-            $realisasi = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->get();
+            $realisasi = KegiatanRealisasi::select('kegiatan_realisasis.*','kegiatans.target_tpb_id','kegiatans.kegiatan')->leftjoin('kegiatans','kegiatans.id','kegiatan_realisasis.kegiatan_id')->where('kegiatan_realisasis.kegiatan_id', $kegiatan->id)->get();
             $realisasi_total = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->select(DB::Raw('sum(anggaran) as total'))->first();
+
+
+            $realisasi_by_api = [];
+            if($realisasi){
+                if($realisasi[0]->sumber_data !== null){
+                    //akumulasi nilai realisasi sebelumnya
+                    $realisasi_by_api = Kegiatan::leftjoin('kegiatan_realisasis','kegiatan_realisasis.kegiatan_id','kegiatans.id')
+                                    ->where('kegiatans.kegiatan',$realisasi[0]->kegiatan)
+                                    ->where('kegiatans.target_tpb_id',$realisasi[0]->target_tpb_id)
+                                    ->where('kegiatan_realisasis.bulan','<',(int)$realisasi[0]->bulan)
+                                    ->where('kegiatan_realisasis.tahun',(int)$realisasi[0]->tahun)
+                                    ->where('kegiatan_realisasis.is_invalid_aplikasitjsl',false);  
+
+                     $realisasi = $realisasi_by_api->get();
+                     $realisasi_total['total'] = $realisasi_by_api->sum('kegiatan_realisasis.anggaran');
+                }
+
+            }
 
                 return view($this->__route.'.detail',[
                     'pagetitle' => $this->pagetitle,
@@ -490,7 +508,7 @@ class AdministrasiController extends Controller
                     'anggaran_total' => $realisasi_total->total,
                     'realisasi' => $realisasi,
                 ]);
-        }catch(Exception $e){}
+        // }catch(Exception $e){}
 
     }
     
