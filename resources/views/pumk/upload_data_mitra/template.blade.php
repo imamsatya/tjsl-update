@@ -17,7 +17,7 @@
     <body>
     <table cellspacing="0" border="0">
     <tr>
-        <td colspan="29" style="background-color : #e3e3e3 ;width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">LAPORAN PENDANAAN UMK</font></b></td>
+        <td colspan="30" style="background-color : #e3e3e3 ;width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">LAPORAN PENDANAAN UMK</font></b></td>
     </tr>
     @php
         if(!empty($bumn)){
@@ -25,10 +25,10 @@
         }
     @endphp
     <tr>
-        <td colspan="29" style="background-color : #e3e3e3 ;width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">{{ $perusahaan }}</font></b></td>
+        <td colspan="30" style="background-color : #e3e3e3 ;width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">{{ $perusahaan }}</font></b></td>
     </tr>
     <tr>
-        <td colspan="29" style="background-color : #e3e3e3 ;width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000"></font></b>{{$periode}}</td>
+        <td colspan="30" style="background-color : #e3e3e3 ;width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000"></font></b>{{$periode}}</td>
     </tr>
     <tr>
         <td colspan="12"></td>
@@ -66,6 +66,7 @@
         <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Kelebihan Angsuran*</font></b></td>
         <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">SubSektor*</font></b></td>
         <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Produk/Jasa yang dihasilkan*</font></b></td>
+        <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Produk/Jasa unggulan*</font></b></td>
         <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">ID Tambahan Pendanaan*</font></b></td>
     </tr>
 
@@ -104,6 +105,7 @@
             <td>{{$val->kelebihan_angsuran?$val->kelebihan_angsuran:""}}</td>
             <td>{{$val->subsektor?$val->subsektor:""}}</td>
             <td>{{$val->hasil_produk_jasa?$val->hasil_produk_jasa:""}}</td>
+            <td>{{$val->produk_jasa_unggulan?$val->produk_jasa_unggulan:""}}</td>
             <td>{{$val->id_tambahan_pendanaan?$val->id_tambahan_pendanaan:""}}</td>
             {{-- @if($val->keterangan_gagal)
             <td style="color:red;"><b>{{$val->keterangan_gagal?$val->keterangan_gagal:""}}</b></td>

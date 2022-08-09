@@ -94,17 +94,23 @@
         </div>
     </div>
     <div class="form-group row  mb-5" >
-        <div class="col-lg-4">
+        <div class="col-lg-6">
             <label>Jumlah SDM</label>
             <input type="text" class="form-control number-separator" id="jumlah_sdm" name="jumlah_sdm" value="{{$data->jumlah_sdm?$data->jumlah_sdm : 0}}">
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-6">
             <label>Subsektor</label>
             <input type="text" class="form-control " id="subsektor" name="subsektor" value="{{$data->subsektor?$data->subsektor : ''}}">
         </div>
-        <div class="col-lg-4">
+    </div>
+    <div class="form-group row  mb-5" >        
+        <div class="col-lg-6">
             <label>Produk/Jasa yang dihasilkan</label>
             <input type="text" class="form-control " id="hasil_produk_jasa" name="hasil_produk_jasa" value="{{$data->hasil_produk_jasa?$data->hasil_produk_jasa : ''}}">
+        </div>
+        <div class="col-lg-6">
+            <label>Produk/Jasa unggulan</label>
+            <input type="text" class="form-control " id="produk_jasa_unggulan" name="produk_jasa_unggulan" value="{{$data->produk_jasa_unggulan?$data->produk_jasa_unggulan : ''}}">
         </div>
     </div>
     <div class="form-group row  mb-5" >

@@ -526,6 +526,20 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
 
             }
 
+            // cek produk jasa unggulan
+            try{
+                $produk = $ar['produkjasa_unggulan'] !== null? true : false;
+                if(!$produk){
+                    DB::rollback();
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.rtrim($ar['no']).' Produk/Jasa Unggulan Kosong.<br>';
+                }
+            }catch(\Exception $e){
+                DB::rollback();
+                $is_gagal = true;
+                $keterangan .= 'Baris '.rtrim($ar['no']).' Produk/Jasa Unggulan Kosong.<br>';
+            }
+
             // cek tambah pendanaan
                 $params = is_numeric(rtrim($ar['id_tambahan_pendanaan']))? true : false;
                 if($params){
@@ -624,6 +638,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
                             'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
                             'hasil_produk_jasa' => $ar['produkjasa_yang_dihasilkan'] ? rtrim($ar['produkjasa_yang_dihasilkan']):0,
+                            'produk_jasa_unggulan' => $ar['produkjasa_unggulan'] ? rtrim($ar['produkjasa_unggulan']):0,
                             'created_by_id' => \Auth::user()->id,
                             'perusahaan_id' => $perusahaan->id,
                             'kode_upload' => $kode,
@@ -667,6 +682,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                                 'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
                                 'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
                                 'hasil_produk_jasa' => $ar['produkjasa_yang_dihasilkan'] ? rtrim($ar['produkjasa_yang_dihasilkan']):0,
+                                'produk_jasa_unggulan' => $ar['produkjasa_unggulan'] ? rtrim($ar['produkjasa_unggulan']):0,
                                 'created_by_id' => \Auth::user()->id,
                                 'perusahaan_id' => $perusahaan->id,
                                 'kode_upload' => $kode,
@@ -718,6 +734,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
                             'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
                             'hasil_produk_jasa' => $ar['produkjasa_yang_dihasilkan'] ? rtrim($ar['produkjasa_yang_dihasilkan']):0,
+                            'produk_jasa_unggulan' => $ar['produkjasa_unggulan'] ? rtrim($ar['produkjasa_unggulan']):0,
                             'updated_by_id' => \Auth::user()->id,
                             'perusahaan_id' => $perusahaan->id,
                             'kode_upload' => $kode,

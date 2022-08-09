@@ -17,10 +17,10 @@
     <body>
     <table cellspacing="0" border="0">
     <tr>
-        <td colspan="30" style="background-color : #e3e3e3 ;width:5px; border-top: 1px sol#000000; border-bottom: 1px sol#000000; border-left: 2px sol#000000; border-right: 1px sol#000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">LAPORAN PENDANAAN UMK</font></b></td>
+        <td colspan="31" style="background-color : #e3e3e3 ;width:5px; border-top: 1px sol#000000; border-bottom: 1px sol#000000; border-left: 2px sol#000000; border-right: 1px sol#000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">LAPORAN PENDANAAN UMK</font></b></td>
     </tr>
     <tr>
-        <td colspan="30" style="background-color : #e3e3e3 ;width:5px; border-top: 1px sol#000000; border-bottom: 1px sol#000000; border-left: 2px sol#000000; border-right: 1px sol#000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">Tanggal Cetak : {{date('d-F-Y')}}</font></b></td>
+        <td colspan="31" style="background-color : #e3e3e3 ;width:5px; border-top: 1px sol#000000; border-bottom: 1px sol#000000; border-left: 2px sol#000000; border-right: 1px sol#000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">Tanggal Cetak : {{date('d-F-Y')}}</font></b></td>
     </tr>
     {{-- <tr>
         <td colspan="29" style="background-color : #e3e3e3 ;width:5px; border-top: 1px sol#000000; border-bottom: 1px sol#000000; border-left: 2px sol#000000; border-right: 1px sol#000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000"></font></b></td>
@@ -62,6 +62,7 @@
         <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px sol#000000; border-bottom: 1px sol#000000; border-left: 1px sol#000000; border-right: 2px sol#000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Kelebihan Angsuran</font></b></td>
         <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px sol#000000; border-bottom: 1px sol#000000; border-left: 1px sol#000000; border-right: 2px sol#000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">SubSektor</font></b></td>
         <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px sol#000000; border-bottom: 1px sol#000000; border-left: 1px sol#000000; border-right: 2px sol#000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Produk/Jasa yang dihasilkan</font></b></td>
+        <td style="background-color : #e3e3e3 ;width:30px; border-top: 1px sol#000000; border-bottom: 1px sol#000000; border-left: 1px sol#000000; border-right: 2px sol#000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Produk/Jasa unggulan</font></b></td>
         <td style="background-color : #e3e3e3 ;width:20px; border-top: 1px sol#000000; border-bottom: 1px sol#000000; border-left: 1px sol#000000; border-right: 2px sol#000000" align="center" valign=middle ><b><font face="Arial" size=4 color="#000000">Tambahan Pendanaan</font></b></td>
     </tr>
 
@@ -109,6 +110,7 @@
             <td style="text-align: right;vertical-align: top;">{{$val->kelebihan_angsuran? number_format($val->kelebihan_angsuran,0,',',','):""}}</td>
             <td style="text-align: center;vertical-align: top;">{{$val->subsektor?$val->subsektor:""}}</td>
             <td style="text-align: center;vertical-align: top;">{{$val->hasil_produk_jasa?$val->hasil_produk_jasa:""}}</td>
+            <td style="text-align: center;vertical-align: top;">{{$val->produk_jasa_unggulan?$val->produk_jasa_unggulan:""}}</td>
             <td style="text-align: center;vertical-align: top;">{{$val->id_tambahan_pendanaan? ($val->id_tambahan_pendanaan == 1? "Ya":""):""}}</td>
         </tr>
         @endforeach

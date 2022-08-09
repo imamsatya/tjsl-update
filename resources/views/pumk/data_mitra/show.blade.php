@@ -125,6 +125,10 @@
                                     <td>{{$data->hasil_produk_jasa?$data->hasil_produk_jasa:"-"}}</td>
                                 </tr>
                                 <tr>
+                                    <td>Produk/Jasa unggulan</td>
+                                    <td>{{$data->produk_jasa_unggulan?$data->produk_jasa_unggulan:"-"}}</td>
+                                </tr>
+                                <tr>
                                     <td>Kolektibilitas Pendanaan</td>
                                     <td>{{$data->kolektibilitas_text?$data->kolektibilitas_text:"-"}}</td>
                                 </tr>
