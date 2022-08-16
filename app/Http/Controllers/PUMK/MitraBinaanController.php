@@ -341,6 +341,7 @@ class MitraBinaanController extends Controller
 
     public function store(Request $request)
     {
+
         $result = [
             'flag' => 'error',
             'msg' => 'Error System',
@@ -356,7 +357,7 @@ class MitraBinaanController extends Controller
            $param['saldo_pokok_pendanaan'] = (int)preg_replace('/[^0-9]/','',$request->saldo_pokok_pendanaan);
            $param['saldo_jasa_adm_pendanaan'] =(int) preg_replace('/[^0-9]/','',$request->saldo_jasa_adm_pendanaan);
            $param['penerimaan_pokok_bulan_berjalan'] = (int)preg_replace('/[^0-9]/','',$request->penerimaan_pokok_bulan_berjalan);
-           $param['penerimaan_jasa_bulan_berjalan'] = (int)preg_replace('/[^0-9]/','',$request->penerimaan_jasa_bulan_berjalan);
+           $param['penerimaan_jasa_adm_bulan_berjalan'] = (int)preg_replace('/[^0-9]/','',$request->penerimaan_jasa_adm_bulan_berjalan);
            $param['kelebihan_angsuran'] = (int)preg_replace('/[^0-9]/','',$request->kelebihan_angsuran);
            $data = PumkMitraBinaan::find((int)$param['id']);
            $data->update($param);
