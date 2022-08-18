@@ -527,32 +527,32 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
             }
 
             // cek produk jasa yg dihasilkan
-            try{
-                $produk = $ar['produkjasa_yang_dihasilkan'] !== null? true : false;
-                if(!$produk){
-                    DB::rollback();
-                    $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Produk/Jasa Yang Dihasilkan Kosong.<br>';
-                }
-            }catch(\Exception $e){
-                DB::rollback();
-                $is_gagal = true;
-                $keterangan .= 'Baris '.rtrim($ar['no']).' Produk/Jasa Yang Dihasilkan Kosong.<br>';
-            }
+            // try{
+            //     $produk = $ar['produkjasa_yang_dihasilkan'] !== null? true : false;
+            //     if(!$produk){
+            //         DB::rollback();
+            //         $is_gagal = true;
+            //         $keterangan .= 'Baris '.rtrim($ar['no']).' Produk/Jasa Yang Dihasilkan Kosong.<br>';
+            //     }
+            // }catch(\Exception $e){
+            //     DB::rollback();
+            //     $is_gagal = true;
+            //     $keterangan .= 'Baris '.rtrim($ar['no']).' Produk/Jasa Yang Dihasilkan Kosong.<br>';
+            // }
 
             // cek produk jasa unggulan
-            try{
-                $produk = $ar['produkjasa_unggulan'] !== null? true : false;
-                if(!$produk){
-                    DB::rollback();
-                    $is_gagal = true;
-                    $keterangan .= 'Baris '.rtrim($ar['no']).' Produk/Jasa Unggulan Kosong.<br>';
-                }
-            }catch(\Exception $e){
-                DB::rollback();
-                $is_gagal = true;
-                $keterangan .= 'Baris '.rtrim($ar['no']).' Produk/Jasa Unggulan Kosong.<br>';
-            }
+            // try{
+            //     $produk = $ar['produkjasa_unggulan'] !== null? true : false;
+            //     if(!$produk){
+            //         DB::rollback();
+            //         $is_gagal = true;
+            //         $keterangan .= 'Baris '.rtrim($ar['no']).' Produk/Jasa Unggulan Kosong.<br>';
+            //     }
+            // }catch(\Exception $e){
+            //     DB::rollback();
+            //     $is_gagal = true;
+            //     $keterangan .= 'Baris '.rtrim($ar['no']).' Produk/Jasa Unggulan Kosong.<br>';
+            // }
 
             // cek tambah pendanaan
                 $params = is_numeric(rtrim($ar['id_tambahan_pendanaan']))? true : false;
