@@ -96,6 +96,75 @@ class HomeController extends Controller
         ]);
     }
 
+    public function chartpumk(Request $request)
+    {
+        $perusahaan = $request->perusahaan_id_danapumk;
+        // jika filter tahun kosong maka default tahun berjalan saat ini
+        $tahun = $request->tahun_danapumk? $request->tahun_danapumk : (int)date('Y');
+
+
+        $mitra = DB::table('bulans')
+                ->selectRaw('bulans.nama as bulan_text')
+                ->selectRaw('bulans.id as bulan_angka')
+                ->whereIn('bulans.id', [1,2,3,4,5,6,7,8,9,10,11,12])
+                ->leftjoin('pumk_mitra_binaans','bulans.id','=', 'pumk_mitra_binaans.bulan' )
+                ->selectRaw("count(pumk_mitra_binaans.*) as count_mitra")
+                ->where('pumk_mitra_binaans.is_arsip', false)
+                ->where(function ($query) use ($perusahaan,$tahun) {
+                    if($perusahaan){
+                        $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
+                    }
+                    if($tahun){
+                        $query->where('pumk_mitra_binaans.tahun', '=', $tahun);
+                    }
+                })
+                ->groupby('bulans.nama','bulan_angka')
+                ->orderby('bulans.id','ASC')
+                ->get();
+
+        $nominal = DB::table('bulans')
+                ->selectRaw('bulans.nama as bulan_text')
+                ->selectRaw('bulans.id as bulan_angka')
+                ->whereIn('bulans.id', [1,2,3,4,5,6,7,8,9,10,11,12])
+                ->leftjoin('pumk_mitra_binaans','bulans.id','=', 'pumk_mitra_binaans.bulan' )
+                ->selectRaw("sum(pumk_mitra_binaans.nominal_pendanaan) as sum_nominal")
+                ->where('pumk_mitra_binaans.is_arsip', false)
+                ->where(function ($query) use ($perusahaan,$tahun) {
+                    if($perusahaan){
+                        $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
+                    }
+                    if($tahun){
+                        $query->where('pumk_mitra_binaans.tahun', '=', $tahun);
+                    }
+                })
+                ->groupby('bulans.nama','bulan_angka')
+                ->orderby('bulans.id','ASC')
+                ->get();      
+
+                
+        $result_bln = [];
+        foreach($mitra as $bln){
+            $result_bln[] = $bln->bulan_text;
+        }
+
+        $result_mitra = [];
+        foreach($mitra as $v){
+            $result_mitra[] = $v->count_mitra;
+        }
+
+        $result_nom = [];
+        foreach($nominal as $v){
+            $result_nom[] = (float)number_format((float)$v->sum_nominal, 2, '.', '');
+        }
+        $json['bulan'] = $result_bln;
+        $json['mitra'] =$result_mitra;
+        $json['nominal'] =$result_nom;
+        $json['tahun'] =$tahun? 'Tahun '.$tahun : '';
+ 
+        return response()->json($json); 
+
+    }
+
     public function chartmb(Request $request)
     {
         try{

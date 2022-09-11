@@ -246,6 +246,90 @@
             <div class="card-header pt-5">
                 <!--begin::Card title-->
                 <div class="card-title">
+                    <h2 class="d-flex align-items-center">Pendanaan PUMK
+                    <span class="text-gray-600 fs-6 ms-1"></span></h2>
+                </div>
+                <!--end::Card title-->
+                <!--begin::Card toolbar-->
+                <div class="card-toolbar">
+                    <!--begin::Search-->
+                    <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
+
+                        <button type="button" class="btn btn-active btn-info btn-sm btn-icon btn-search-pumk cls-search-pumk btn-search-pumk-active" style="margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
+                        <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-search-pumk cls-search-pumk btn-search-pumk-unactive" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
+
+                    </div>
+                    <!--end::Search-->
+                    <!--end::Group actions-->
+                </div>
+                <!--end::Card toolbar-->
+            </div>
+            <!--begin::Card body-->
+            <div class="card-body p-0">
+                <!--begin::Heading-->
+                <div class="card-px py-10" >
+                  <div class="row" id="form-cari-pumk">
+                    <div class="form-group row  mb-5" >
+                        <div class="col-lg-6">
+                            <label>BUMN</label>
+                            @php
+                                $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
+                            @endphp
+                            <select class="form-select form-select-solid form-select2" id="perusahaan_id_danapumk" name="perusahaan_id_danapumk" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
+                                <option></option>
+                                @foreach($perusahaan as $bumn)  
+                                    @php
+                                        $select = (($bumn->id == $filter_bumn_id) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{ $bumn->id }}" {!! $select !!}>{{ $bumn->nama_lengkap }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-lg-2">
+                            <label>Tahun</label>
+                            <select class="form-select form-select-solid form-select2" id="tahun_danapumk" name="tahun_danapumk" data-kt-select2="true" data-placeholder="Pilih Tahun" data-allow-clear="true">
+                                @php
+                                    for($i = date("Y"); $i>=2020; $i--){ @endphp
+                                    <option value="{{$i}}">{{$i}}</option>
+                                    @php }
+                                    $select = (($i == date("Y")) ? 'selected="selected"' : '');
+                                @endphp
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- <div class="form-group row  mb-5">
+                        <div class="col-lg-6">
+                            <button id="proses" class="btn-small btn-success me-3 text-white"><i class="fa fa-search text-white"></i> Filter</button>
+                            <button  onclick="window.location.href='{{route('dashboard.index')}}'" class="btn-small btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
+                        </div>
+                    </div> --}}
+                    <div class="separator border-gray-200 mb-10"></div>
+                </div>
+                    <!--begin: Datatable -->
+                    <div>
+                        <div class="portlet-body" id="pumk_chart">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end::Card body-->
+        </div>
+    </div>
+</div>
+
+<div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
+    <!--begin::Container-->
+    <div id="kt_content_container" class="container">
+        <!--begin::Card-->
+        <div class="card">
+
+            <!--begin::Card header-->
+            <div class="card-header pt-5">
+                <!--begin::Card title-->
+                <div class="card-title">
                     <h2 class="d-flex align-items-center">Realisasi PUMK
                     <span class="text-gray-600 fs-6 ms-1"></span></h2>
                 </div>
@@ -344,6 +428,7 @@
     var urlchartrealisasi = "{{route('home.chartrealisasi')}}";
     var urlcharttpb = "{{route('home.charttpb')}}";
     var urlchartmb = "{{route('home.chartmb')}}";
+    var urlchartpumk = "{{route('home.chartpumk')}}";
 
     $(document).ready(function(){
         $('#page-title').html("{{ $pagetitle }}");
@@ -368,7 +453,7 @@
         initchartrealisasi();
         initcharttpb();
 
-        //pumk
+        //pumk mitra binaan
         $('#perusahaan_id_pumk').on('change', function(event){
             updatechartmb();
         });
@@ -380,7 +465,8 @@
         });
 
         updatechartmb();
-        
+
+       
         $('#form-cari').hide();
         $('body').on('click','.btn-search-active',function(){
             $('.btn-search-active').hide();
@@ -394,6 +480,30 @@
             $('#form-cari').toggle(600);
         }); 
 
+
+        //pendanaan pumk
+        $('#perusahaan_id_danapumk').on('change', function(event){
+            updatechartpumk();
+        });
+        $('#tahun_danapumk').on('change', function(event){
+            updatechartpumk();
+        });
+
+        updatechartpumk();
+
+        $('#form-cari-pumk').hide();
+        $('body').on('click','.btn-search-pumk-active',function(){
+            $('.btn-search-pumk-active').hide();
+            $('.btn-search-pumk-unactive').show();
+            $('#form-cari-pumk').toggle(600);
+        });
+
+        $('body').on('click','.btn-search-pumk-unactive',function(){
+            $('.btn-search-pumk-active').show();
+            $('.btn-search-pumk-unactive').hide();
+            $('#form-cari-pumk').toggle(600);
+        }); 
+        
 
     });
 
@@ -521,6 +631,117 @@
             }]
         });
     }
+
+    function updatechartpumk(){
+        $.ajax({
+            url: urlchartpumk,
+            data: {
+                'perusahaan_id_danapumk' : $("#perusahaan_id_danapumk").val(),
+                'tahun_danapumk' : $("#tahun_danapumk").val()
+            },
+            type: "POST",
+            dataType: "json", 
+            success: function(data){
+                initpumk(data);
+            }                       
+        });
+    }
+
+    function initpumk(data) {
+        let bln = data.bulan;
+        let mitra = data.mitra;
+        let nominal = data.nominal;
+        let tahun = data.tahun;
+
+        Highcharts.setOptions({
+            colors: ['#24E500','#0093AD']
+        });
+        Highcharts.chart('pumk_chart', {
+            chart: {
+                zoomType: 'xy'
+            },
+            title: {
+                text: 'Statistik Penyaluran Dana PUMK '+tahun
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: [{
+                categories: bln,
+                crosshair: true
+            }],
+            yAxis: [{
+                labels: {
+                    format: '{value}',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                title: {
+                    text: 'Mitra Binaan',
+                    style: {
+                        color: Highcharts.getOptions().colors[2]
+                    }
+                }
+            }, { 
+                title: {
+                    text: 'Nominal Pendanaan (Rp)',
+                    style: {
+                        color: Highcharts.getOptions().colors[2]
+                    }
+                },
+                labels: {
+                    formatter: function(){
+                        return this.value.toLocaleString("fi-FI");
+                    },
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                opposite: true
+            }],
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                layout: 'horizontal',
+                align: 'center',
+                x: 0,
+                verticalAlign: 'top',
+                y: 15,
+                floating: true,
+                backgroundColor:
+                    Highcharts.defaultOptions.legend.backgroundColor || 
+                    'rgba(255,255,255,0.25)'
+            },
+            series: [{
+                name: 'Nominal Pendanaan (Rp)',
+                type: 'spline',
+                yAxis: 1,
+                zIndex: 1,
+                data: nominal,
+                tooltip: {
+                    valueSuffix: '{value}'
+
+                },
+                style: {
+                        color: Highcharts.getOptions().colors[0]
+                },
+
+            }, {
+                name: 'Mitra Binaan',
+                type: 'column',
+                zIndex: 0,
+                data: mitra,
+                tooltip: {
+                    valueSuffix: ''
+                },
+                style: {
+                        color: Highcharts.getOptions().colors[1]
+                }
+            }]
+        });
+    }    
 
     function updatechartrealisasi(){
         $.ajax({
