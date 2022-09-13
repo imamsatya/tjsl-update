@@ -685,7 +685,7 @@
                 }
             }, { 
                 title: {
-                    text: 'Nominal Pendanaan (Rp)',
+                    text: 'Nominal Pendanaan (Rp) dalam Miliar',
                     style: {
                         color: Highcharts.getOptions().colors[2]
                     }
@@ -721,8 +721,7 @@
                 zIndex: 1,
                 data: nominal,
                 tooltip: {
-                    valueSuffix: '{value}'
-
+                    valueSuffix: '{value} Miliar'
                 },
                 style: {
                         color: Highcharts.getOptions().colors[0]
@@ -734,7 +733,7 @@
                 zIndex: 0,
                 data: mitra,
                 tooltip: {
-                    valueSuffix: ''
+                    valueSuffix: '{value} Mitra'
                 },
                 style: {
                         color: Highcharts.getOptions().colors[1]
