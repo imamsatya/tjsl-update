@@ -128,8 +128,7 @@ class HomeController extends Controller
                         $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
                     }
                     if($tahun){
-                        $query->where('pumk_mitra_binaans.tahun', '=', $tahun);
-                    }
+                        $query->whereRaw("EXTRACT(YEAR from to_date(pumk_mitra_binaans.tgl_awal, 'DD/MM/YYYY'))  = ".$tahun."");                    }
                 })
                 ->groupby('bulans.nama','bulan_angka')
                 ->orderby('bulans.id','ASC')
@@ -147,7 +146,7 @@ class HomeController extends Controller
                         $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
                     }
                     if($tahun){
-                        $query->where('pumk_mitra_binaans.tahun', '=', $tahun);
+                        $query->whereRaw("EXTRACT(YEAR from to_date(pumk_mitra_binaans.tgl_awal, 'DD/MM/YYYY'))  = ".$tahun."");
                     }
                 })
                 ->groupby('bulans.nama','bulan_angka')
