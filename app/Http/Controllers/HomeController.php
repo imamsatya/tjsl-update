@@ -102,33 +102,21 @@ class HomeController extends Controller
         // jika filter tahun kosong maka default tahun berjalan saat ini
         $tahun = $request->tahun_danapumk? $request->tahun_danapumk : (int)date('Y');
 
-        // select * from (
-        //     select EXTRACT(MONTH from to_date(tgl_awal, 'DD/MM/YYYY')) AS bulantgl_awal,bulan 
-        //     ,
-        //     case
-        //     when EXTRACT(MONTH from to_date(tgl_awal, 'DD/MM/YYYY'))  = bulan then true
-        //     else 
-        //     FALSE
-        //     END results
-        //     from pumk_mitra_binaans
-        //     where tahun = 2022)
-        //     hasil 
-        //     where hasil.results = true
-
-        
         $mitra = DB::table('bulans')
                 ->selectRaw('bulans.nama as bulan_text')
                 ->selectRaw('bulans.id as bulan_angka')
-                ->leftjoin('pumk_mitra_binaans','bulans.id','=', 'pumk_mitra_binaans.bulan' )
                 ->selectRaw("count(pumk_mitra_binaans.*) as count_mitra")
+                ->leftjoin('pumk_mitra_binaans','bulans.id','=', 'pumk_mitra_binaans.bulan' )
                 ->where('pumk_mitra_binaans.is_arsip', false)
                 ->whereRaw("EXTRACT(MONTH from to_date(pumk_mitra_binaans.tgl_awal, 'DD/MM/YYYY'))  = pumk_mitra_binaans.bulan")
+                ->whereRaw("EXTRACT(YEAR from to_date(pumk_mitra_binaans.tgl_awal, 'DD/MM/YYYY'))  = pumk_mitra_binaans.tahun")
                 ->where(function ($query) use ($perusahaan,$tahun) {
                     if($perusahaan){
                         $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
                     }
                     if($tahun){
-                        $query->whereRaw("EXTRACT(YEAR from to_date(pumk_mitra_binaans.tgl_awal, 'DD/MM/YYYY'))  = ".$tahun."");                    }
+                        $query->whereRaw("EXTRACT(YEAR from to_date(pumk_mitra_binaans.tgl_awal, 'DD/MM/YYYY'))  = ".$tahun."");                    
+                    }
                 })
                 ->groupby('bulans.nama','bulan_angka')
                 ->orderby('bulans.id','ASC')
@@ -141,6 +129,7 @@ class HomeController extends Controller
                 ->selectRaw("sum(pumk_mitra_binaans.nominal_pendanaan) as sum_nominal")
                 ->where('pumk_mitra_binaans.is_arsip', false)
                 ->whereRaw("EXTRACT(MONTH from to_date(pumk_mitra_binaans.tgl_awal, 'DD/MM/YYYY'))  = pumk_mitra_binaans.bulan")
+                ->whereRaw("EXTRACT(YEAR from to_date(pumk_mitra_binaans.tgl_awal, 'DD/MM/YYYY'))  = pumk_mitra_binaans.tahun")
                 ->where(function ($query) use ($perusahaan,$tahun) {
                     if($perusahaan){
                         $query->where('pumk_mitra_binaans.perusahaan_id', '=', $perusahaan);
