@@ -46,14 +46,16 @@
                 <!--begin::Heading-->
                 <div class="card-px py-10">
                     <!--begin: Datatable -->
-                    <table class="table table-striped- table-bordered table-hover table-checkable" id="datatable">
+                    <table class="table table-striped table-responsive table-bordered table-hover table-checkable" id="datatable">
                         <thead>
                             <tr>
                                 <th>No.</th>
                                 <th>Nama</th>
                                 <th>Nama Singkat</th>
                                 <th>Jenis Perusahaan</th>
-                                <th>Kepemilikan</th>
+                                <th>Kepemilikan Pemerintah</th>
+                                <th>Kepemilikan BUMN</th>
+                                <th>Status Operasi</th>
                                 <th>Tgl Sinkronisasi</th>
                                 <th>Status</th>
                                 <th style="text-align:center;" >Aksi</th>
@@ -203,6 +205,7 @@
 
     function setDatatable(){
         datatable = $('#datatable').DataTable({
+            responsive : true,
             processing: true,
             serverSide: true,
             ajax: urldatatable,
@@ -211,7 +214,9 @@
                 { data: 'nama_lengkap', name: 'nama_lengkap' },
                 { data: 'nama_singkat', name: 'nama_singkat' },
                 { data: 'jenis_perusahaan', name: 'jenis_perusahaan' },
-                { data: 'kepemilikan', name: 'kepemilikan' },
+                { data: 'kepemilikan_pemerintah', name: 'kepemilikan_pemerintah' },
+                { data: 'kepemilikan_bumn', name: 'kepemilikan_bumn' },
+                { data: 'status_operasi', name: 'status_operasi' },
                 { data: 'tgl_sinkronisasi', name: 'tgl_sinkronisasi' },
                 { data: 'is_active', name: 'is_active' },
                 { data: 'action', name: 'action' },

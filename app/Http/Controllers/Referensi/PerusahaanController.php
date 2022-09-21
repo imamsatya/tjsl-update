@@ -100,7 +100,7 @@ class PerusahaanController extends Controller
 
     public function create()
     {
-        $perusahaan = Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get();
+        $perusahaan = Perusahaan::orderBy('id', 'asc')->get();
 
         return view($this->__route.'.form',[
             'pagetitle' => $this->pagetitle,
