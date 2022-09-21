@@ -9,6 +9,8 @@ use DB;
 
 class SilabaBumnSync extends Command
 {
+    // Sumber data bumn diubah ke portal https://satudata.bumn.go.id
+
     /**
      * The name and signature of the console command.
      *
