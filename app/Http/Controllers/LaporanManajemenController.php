@@ -383,7 +383,7 @@ class LaporanManajemenController extends Controller
     {
         $fileName = $file->getClientOriginalName();
         $ext = substr($file->getClientOriginalName(),strripos($file->getClientOriginalName(),'.'));
-        $fileRaw  = $fileName = 'Laporan_'.$perusahaan.'_'.$periode.$ext;
+        $fileRaw  = $fileName = 'Laporan_'.$perusahaan.'_'.$periode.'_'.time().$ext;
         $filePath = 'file_upload'.DIRECTORY_SEPARATOR.'laporan_manajemen'.DIRECTORY_SEPARATOR.$fileName;
         $destinationPath = public_path().DIRECTORY_SEPARATOR.'file_upload'.DIRECTORY_SEPARATOR.'laporan_manajemen'.DIRECTORY_SEPARATOR;
         $fileUpload      = $file->move($destinationPath, $fileName);
