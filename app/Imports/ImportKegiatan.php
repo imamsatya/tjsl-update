@@ -189,7 +189,7 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
             }
 
             // cek kegiatan
-            if(!$is_gagal){
+            if(!$is_gagal && is_numeric($ar['indikator_capaian_kegiatan'])){
                 try{
                     $kegiatan = Kegiatan::where('target_tpb_id',rtrim($ar['id_program']))
                                         ->where('kegiatan',rtrim($ar['kegiatan']))
@@ -254,6 +254,10 @@ class ImportKegiatan implements ToCollection, WithHeadingRow, WithMultipleSheets
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' isian tidak sesuai Referensi<br>';
                 }
+            }else{
+                DB::rollback();
+                $is_gagal = true;
+                $keterangan .= 'Baris '.rtrim($ar['no']).' isian Indikator Capaian Kegiatan Harus Angka <br>';                
             }
 
             // simpan data gagal
