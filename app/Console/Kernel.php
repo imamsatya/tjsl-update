@@ -35,13 +35,13 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         //service validasi data kegiatan dilakukan setiap tanggal 15 jam 2:00
-        $schedule->command('validasi:kegiatan')->monthlyOn(15, '02:00');
+        //$schedule->command('validasi:kegiatan')->monthlyOn(15, '02:00');
 
         //service sync kegiatan app tjsl dilakukan setiap 10 menit (data kegiatan master)
-        $schedule->command('apptjsl:kegiatansync')->everyTenMinutes();     
+       // $schedule->command('apptjsl:kegiatansync')->everyTenMinutes();     
 
         //service sync kegiatan app tjsl dilakukan setiap jam
-        $schedule->command('syncglobal:activity')->hourly(); 
+        //$schedule->command('syncglobal:activity')->hourly(); 
         
     }
 
