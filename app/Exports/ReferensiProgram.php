@@ -23,8 +23,8 @@ class ReferensiProgram implements FromView , WithTitle
         $target_tpb = TargetTpb::select('target_tpbs.*','anggaran_tpbs.tahun')
                                 ->leftJoin('anggaran_tpbs','anggaran_tpbs.id','target_tpbs.anggaran_tpb_id')
                                 ->where('anggaran_tpbs.perusahaan_id',$this->perusahaan->id)
-                                ->where('target_tpbs.status_id',$is_finish)
-                                ->where('target_tpbs.id_owner',2);
+                                ->where('target_tpbs.status_id',$is_finish);
+                                // ->where('target_tpbs.id_owner',2);
 
         // if($this->bulan){
         //     $target_tpb = $target_tpb->where('extract(month from created_at)', '=',$this->bulan);
