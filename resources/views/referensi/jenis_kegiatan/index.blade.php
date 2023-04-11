@@ -129,57 +129,32 @@
                             <!--end::Alert-->
                         @endif
                         <!--begin: Datatable -->
-                        <form action="{{ route('referensi.pilar_pembangunan.store') }}" method="POST">
+                        <form action="{{ route('referensi.jenis_kegiatan.store') }}" method="POST">
                             @csrf
                             <!--begin::Input group-->
                             <div class="row">
                                 <div class="col-md-6">
+
                                     <div class="row mb-6">
                                         <!--begin::Label-->
-                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Nama Pilar</label>
+                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Nama
+                                            Kegiatan</label>
                                         <!--end::Label-->
                                         <!--begin::Col-->
                                         <div class="col-lg-8 fv-row">
-                                            <input type="text" name="nama_pilar"
+                                            <input type="text" name="nama_kegiatan"
                                                 class="form-control form-control-lg form-control-solid"
-                                                placeholder="Nama Pilar" value="" />
+                                                placeholder="Nama Kegiatan" value="" />
 
                                         </div>
                                         <!--end::Col-->
                                     </div>
 
-                                    <div class="row mb-6">
-                                        <!--begin::Label-->
-                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Jenis
-                                            Anggaran</label>
-                                        <!--end::Label-->
-                                        <!--begin::Col-->
-                                        <div class="col-lg-8 fv-row">
-                                            <div class="col">
-                                                <label
-                                                    class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                                    <input class="form-check-input addCheck" type="checkbox" value="CID"
-                                                        name="jenis_anggaran[]" />
-                                                    <span class="form-check-label">CID</span>
-                                                </label>
-                                            </div>
-                                            <div class="col">
-                                                <label
-                                                    class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                                    <input class="form-check-input addCheck" type="checkbox"
-                                                        value="non CID" name="jenis_anggaran[]" />
-                                                    <span class="form-check-label">non CID</span>
-                                                </label>
-                                            </div>
-
-                                        </div>
-                                        <!--end::Col-->
-                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row mb-6">
                                         <!--begin::Label-->
-                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Keterangan</label>
+                                        <label class="col-lg-4 col-form-label  fw-semibold fs-6">Keterangan</label>
                                         <!--end::Label-->
                                         <!--begin::Col-->
                                         <div class="col-lg-8 fv-row">
@@ -218,7 +193,9 @@
                         <!--begin::Search-->
                         <div class="d-flex align-items-center position-relative my-1"
                             data-kt-view-roles-table-toolbar="base">
-                            {{-- <button type="button" class="btn btn-danger btn-sm cls-add "
+                            {{-- <button type="button" class="btn btn-success me-2 btn-sm cls-add"
+                                data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
+                            {{-- <button type="button" class="btn btn-danger btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Hapus Data</button> --}}
                             <button type="button" class="btn btn-danger btn-sm delete-selected-data">Hapus Data
                             </button>
@@ -238,7 +215,8 @@
                                 <tr>
                                     <th>No.</th>
                                     <th>Nama</th>
-                                    <th>Jenis Anggaran</th>
+                                    <th>Keterangan</th>
+
 
                                     <th>Aktif</th>
                                     <th style="text-align:center;">Aksi</th>
@@ -262,12 +240,12 @@
 @section('addafterjs')
     <script>
         var datatable;
-        var urlcreate = "{{ route('referensi.pilar_pembangunan.create') }}";
-        var urledit = "{{ route('referensi.pilar_pembangunan.edit') }}";
-        var urlstore = "{{ route('referensi.pilar_pembangunan.store') }}";
-        var urlupdate = "{{ route('referensi.pilar_pembangunan.update') }}";
-        var urldatatable = "{{ route('referensi.pilar_pembangunan.datatable') }}";
-        var urldelete = "{{ route('referensi.pilar_pembangunan.delete') }}";
+        var urlcreate = "{{ route('referensi.jenis_kegiatan.create') }}";
+        var urledit = "{{ route('referensi.jenis_kegiatan.edit') }}";
+        var urlstore = "{{ route('referensi.jenis_kegiatan.store') }}";
+        var urlupdate = "{{ route('referensi.jenis_kegiatan.update') }}";
+        var urldatatable = "{{ route('referensi.jenis_kegiatan.datatable') }}";
+        var urldelete = "{{ route('referensi.jenis_kegiatan.delete') }}";
 
         $(document).ready(function() {
             $('#page-title').html("{{ $pagetitle }}");
@@ -312,16 +290,15 @@
                 // Uncheck the "select all" checkbox
                 $('#select-all').prop('checked', false);
             });
+
             $('tbody').on('click', '.is_active-check', function() {
                 var id = $(this).val();
                 var finalStatus = $(this).prop('checked') ? true : false;
-                var rowData = $(this).data('row')
-                var nama_pilar = $(this).data('nama');
-                var jenis_anggaran = $(this).data('jenis_anggaran');
+                var nama = $(this).data('nama');
 
                 // Send an AJAX request to set the "selected" attribute in the database
                 $.ajax({
-                    url: '/referensi/pilar_pembangunan/update_status',
+                    url: '/referensi/jenis_kegiatan/update_status',
                     type: 'POST',
                     data: {
                         id: id,
@@ -329,7 +306,7 @@
                     },
                     success: function(response) {
                         toastr.success(
-                            `Status data <strong>${nama_pilar}</strong> dengan dan jenis anggaran <strong>${jenis_anggaran}</strong> berhasil diubah menjadi <strong>${finalStatus}</strong>!`
+                            `Status data kegiatan <strong>${nama}</strong>  berhasil diubah menjadi <strong>${finalStatus}</strong>!`
                         );
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
@@ -358,7 +335,7 @@
                         console.log('User confirmed deletion');
                         // Send an AJAX request to set the "selected" attribute in the database
                         $.ajax({
-                            url: '/referensi/pilar_pembangunan/delete',
+                            url: '/referensi/jenis_kegiatan/delete',
                             type: 'POST',
                             data: {
                                 "_token": "{{ csrf_token() }}",
@@ -384,6 +361,7 @@
 
 
             });
+
         });
 
         function setDatatable() {
@@ -396,13 +374,19 @@
                         orderable: false,
                         searchable: false
                     },
+                    // {
+                    //     data: 'no_tpb',
+                    //     name: 'no_tpb',
+                    //     orderable: true,
+                    // },
                     {
                         data: 'nama',
                         name: 'nama'
                     },
+
                     {
-                        data: 'jenis_anggaran',
-                        name: 'jenis_anggaran'
+                        data: 'keterangan',
+                        name: 'keterangan'
                     },
 
                     {
@@ -412,7 +396,7 @@
                         render: function(data, type, row) {
                             const isChecked = data ? 'checked' : '';
                             return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                    <input class="form-check-input is_active-check" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
+                                    <input class="form-check-input is_active-check" type="checkbox"  data-nama="${row.nama}"   ${isChecked} name="selected-is_active[]" value="${row.id}">
                                     </label>`;
                         }
                     },
@@ -420,6 +404,7 @@
                         data: 'action',
                         name: 'action'
                     },
+
                     {
                         data: null,
                         orderable: false,
@@ -430,8 +415,8 @@
                     }
                 ],
                 order: [
-                    [1, 'asc'],
-                    [2, 'asc']
+                    [0, 'asc'],
+
                 ],
                 drawCallback: function(settings) {
                     var info = datatable.page.info();
@@ -509,7 +494,7 @@
 
                                 buttonsStyling: true,
 
-                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
                             });
                         }
                     });

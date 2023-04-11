@@ -139,6 +139,22 @@ return [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
+        'id_tpb' => [
+            'required' => 'ID TPB harus terisi',
+        ],
+        'nama_tpb' => [
+            'required' => 'Nama TPB harus terisi',
+        ],
+        'jenis_anggaran' => [
+            'required' => 'Jenis Anggaran harus terisi',
+        ],
+
+        'nama_kegiatan'  => [
+            'required' => 'Nama Kegiatan harus terisi',
+        ],
+        'nama_pilar'  => [
+            'required' => 'Nama Pilar harus terisi',
+        ],
     ],
 
     /*

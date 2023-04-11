@@ -41,20 +41,20 @@ class VersiPilarController extends Controller
      */
     public function index()
     {
-        $versi = VersiPilar::orderBy('status')->orderBy('tanggal_akhir','desc')->get();
-        $pilars = RelasiPilarTPB::select('pilar_pembangunans.nama','relasi_pilar_tpbs.versi_pilar_id','pilar_pembangunans.id')
-                                ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
-                                ->GroupBy('pilar_pembangunans.id')
-                                ->GroupBy('pilar_pembangunans.nama')
-                                ->GroupBy('relasi_pilar_tpbs.versi_pilar_id')
-                                ->orderBy('pilar_pembangunans.id')
-                                ->get();
-        $tpbs = RelasiPilarTPB::select('tpbs.nama','tpbs.no_tpb', 'relasi_pilar_tpbs.*')
-                                ->leftJoin('tpbs', 'tpbs.id', 'relasi_pilar_tpbs.tpb_id')
-                                ->orderBy('tpbs.id')
-                                ->get();
+        $versi = VersiPilar::orderBy('status')->orderBy('tanggal_akhir', 'desc')->get();
+        $pilars = RelasiPilarTPB::select('pilar_pembangunans.nama', 'pilar_pembangunans.jenis_anggaran', 'relasi_pilar_tpbs.versi_pilar_id', 'pilar_pembangunans.id')
+            ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
+            ->GroupBy('pilar_pembangunans.id')
+            ->GroupBy('pilar_pembangunans.nama')
+            ->GroupBy('relasi_pilar_tpbs.versi_pilar_id')
+            ->orderBy('pilar_pembangunans.id')
+            ->get();
+        $tpbs = RelasiPilarTPB::select('tpbs.nama', 'tpbs.no_tpb', 'relasi_pilar_tpbs.*')
+            ->leftJoin('tpbs', 'tpbs.id', 'relasi_pilar_tpbs.tpb_id')
+            ->orderBy('tpbs.id')
+            ->get();
 
-        return view($this->__route.'.index',[
+        return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'versi' => $versi,
             'pilars' => $pilars,
@@ -63,7 +63,7 @@ class VersiPilarController extends Controller
         ]);
     }
 
-    
+
     /**
      * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
@@ -71,24 +71,24 @@ class VersiPilarController extends Controller
      */
     public function datatable(Request $request)
     {
-        try{
+        try {
             return datatables()->of(VersiPilar::query())
-            ->addColumn('action', function ($row){
-                $id = (int)$row->id;
-                $button = '<div align="center">';
+                ->addColumn('action', function ($row) {
+                    $id = (int)$row->id;
+                    $button = '<div align="center">';
 
-                $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="'.$id.'" data-toggle="tooltip" title="Ubah data '.$row->nama.'"><i class="bi bi-pencil fs-3"></i></button>';
+                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="' . $id . '" data-toggle="tooltip" title="Ubah data ' . $row->nama . '"><i class="bi bi-pencil fs-3"></i></button>';
 
-                $button .= '&nbsp;';
+                    $button .= '&nbsp;';
 
-                $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="'.$id.'" data-nama="'.$row->nama.'" data-toggle="tooltip" title="Hapus data '.$row->nama.'"><i class="bi bi-trash fs-3"></i></button>';
+                    $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="' . $id . '" data-nama="' . $row->nama . '" data-toggle="tooltip" title="Hapus data ' . $row->nama . '"><i class="bi bi-trash fs-3"></i></button>';
 
-                $button .= '</div>';
-                return $button;
-            })
-            ->rawColumns(['nama','keterangan','action'])
-            ->toJson();
-        }catch(Exception $e){
+                    $button .= '</div>';
+                    return $button;
+                })
+                ->rawColumns(['nama', 'keterangan', 'action'])
+                ->toJson();
+        } catch (Exception $e) {
             return response([
                 'draw'            => 0,
                 'recordsTotal'    => 0,
@@ -108,12 +108,11 @@ class VersiPilarController extends Controller
     {
         $versi = VersiPilar::get();
 
-        return view($this->__route.'.form',[
+        return view($this->__route . '.form', [
             'pagetitle' => $this->pagetitle,
             'actionform' => 'insert',
             'data' => $versi
         ]);
-
     }
 
     /**
@@ -130,78 +129,80 @@ class VersiPilarController extends Controller
 
         $validator = $this->validateform($request);
         if (!$validator->fails()) {
-            $param = $request->except('actionform','id','tanggal_awal','tanggal_akhir','status');
-            
+            $param = $request->except('actionform', 'id', 'tanggal_awal', 'tanggal_akhir', 'status');
+
             $param['tanggal_awal'] = null;
             $param['tanggal_akhir'] = null;
-            if($request->tanggal_awal){
-                $param['tanggal_awal'] = date_format(date_create($request->tanggal_awal),"Y-m-d");
+            if ($request->tanggal_awal) {
+                $param['tanggal_awal'] = date_format(date_create($request->tanggal_awal), "Y-m-d");
             }
-            if($request->tanggal_akhir){
-                $param['tanggal_akhir'] = date_format(date_create($request->tanggal_akhir),"Y-m-d");
+            if ($request->tanggal_akhir) {
+                $param['tanggal_akhir'] = date_format(date_create($request->tanggal_akhir), "Y-m-d");
             }
-            
+
             $param['status'] = false;
-            if($request->status){
+            if ($request->status) {
                 $param['status'] = true;
             }
 
             switch ($request->input('actionform')) {
-                case 'insert': DB::beginTransaction();
-                               try{
-                                  $versi = VersiPilar::create((array)$param);
+                case 'insert':
+                    DB::beginTransaction();
+                    try {
+                        $versi = VersiPilar::create((array)$param);
 
-                                  DB::commit();
-                                  $result = [
-                                    'flag'  => 'success',
-                                    'msg' => 'Sukses tambah data',
-                                    'title' => 'Sukses'
-                                  ];
-                               }catch(\Exception $e){
-                                  DB::rollback();
-                                  $result = [
-                                    'flag'  => 'warning',
-                                    'msg' => $e->getMessage(),
-                                    'title' => 'Gagal'
-                                  ];
-                               }
+                        DB::commit();
+                        $result = [
+                            'flag'  => 'success',
+                            'msg' => 'Sukses tambah data',
+                            'title' => 'Sukses'
+                        ];
+                    } catch (\Exception $e) {
+                        DB::rollback();
+                        $result = [
+                            'flag'  => 'warning',
+                            'msg' => $e->getMessage(),
+                            'title' => 'Gagal'
+                        ];
+                    }
 
-                break;
+                    break;
 
-                case 'update': DB::beginTransaction();
-                               try{
-                                  $versi = VersiPilar::find((int)$request->input('id'));
-                                  $versi->update((array)$param);
+                case 'update':
+                    DB::beginTransaction();
+                    try {
+                        $versi = VersiPilar::find((int)$request->input('id'));
+                        $versi->update((array)$param);
 
-                                  DB::commit();
-                                  $result = [
-                                    'flag'  => 'success',
-                                    'msg' => 'Sukses ubah data',
-                                    'title' => 'Sukses'
-                                  ];
-                               }catch(\Exception $e){
-                                  DB::rollback();
-                                  $result = [
-                                    'flag'  => 'warning',
-                                    'msg' => $e->getMessage(),
-                                    'title' => 'Gagal'
-                                  ];
-                               }
+                        DB::commit();
+                        $result = [
+                            'flag'  => 'success',
+                            'msg' => 'Sukses ubah data',
+                            'title' => 'Sukses'
+                        ];
+                    } catch (\Exception $e) {
+                        DB::rollback();
+                        $result = [
+                            'flag'  => 'warning',
+                            'msg' => $e->getMessage(),
+                            'title' => 'Gagal'
+                        ];
+                    }
 
-                break;
+                    break;
             }
-        }else{
+        } else {
             $messages = $validator->errors()->all('<li>:message</li>');
             $result = [
                 'flag'  => 'warning',
-                'msg' => '<ul>'.implode('', $messages).'</ul>',
+                'msg' => '<ul>' . implode('', $messages) . '</ul>',
                 'title' => 'Gagal proses data'
             ];
         }
 
         return response()->json($result);
     }
-    
+
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -219,57 +220,59 @@ class VersiPilarController extends Controller
         $tpb = $request->input('tpb');
 
         switch ($request->input('actionform')) {
-            case 'insert': DB::beginTransaction();
-                            try{
-                                foreach($tpb as $p){
-                                    $param['tpb_id'] = $p;
-                                    RelasiPilarTpb::create((array)$param);
-                                }
+            case 'insert':
+                DB::beginTransaction();
+                try {
+                    foreach ($tpb as $p) {
+                        $param['tpb_id'] = $p;
+                        RelasiPilarTpb::create((array)$param);
+                    }
 
-                                DB::commit();
-                                $result = [
-                                'flag'  => 'success',
-                                'msg' => 'Sukses tambah data',
-                                'title' => 'Sukses'
-                                ];
-                            }catch(\Exception $e){
-                                DB::rollback();
-                                $result = [
-                                'flag'  => 'warning',
-                                'msg' => $e->getMessage(),
-                                'title' => 'Gagal'
-                                ];
-                            }
+                    DB::commit();
+                    $result = [
+                        'flag'  => 'success',
+                        'msg' => 'Sukses tambah data',
+                        'title' => 'Sukses'
+                    ];
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    $result = [
+                        'flag'  => 'warning',
+                        'msg' => $e->getMessage(),
+                        'title' => 'Gagal'
+                    ];
+                }
 
-            break;
+                break;
 
-            case 'update': DB::beginTransaction();
-                            try{
-                                $data = RelasiPilarTpb::where('versi_pilar_id',(int)$request->input('id'))
-                                                        ->where('pilar_pembangunan_id',(int)$request->input('pilar_pembangunan_id'));
-                                $data->delete();
-                                
-                                foreach($tpb as $p){
-                                    $param['tpb_id'] = $p;
-                                    RelasiPilarTpb::create((array)$param);
-                                }
+            case 'update':
+                DB::beginTransaction();
+                try {
+                    $data = RelasiPilarTpb::where('versi_pilar_id', (int)$request->input('id'))
+                        ->where('pilar_pembangunan_id', (int)$request->input('pilar_pembangunan_id'));
+                    $data->delete();
 
-                                DB::commit();
-                                $result = [
-                                'flag'  => 'success',
-                                'msg' => 'Sukses ubah data',
-                                'title' => 'Sukses'
-                                ];
-                            }catch(\Exception $e){
-                                DB::rollback();
-                                $result = [
-                                'flag'  => 'warning',
-                                'msg' => $e->getMessage(),
-                                'title' => 'Gagal'
-                                ];
-                            }
+                    foreach ($tpb as $p) {
+                        $param['tpb_id'] = $p;
+                        RelasiPilarTpb::create((array)$param);
+                    }
 
-            break;
+                    DB::commit();
+                    $result = [
+                        'flag'  => 'success',
+                        'msg' => 'Sukses ubah data',
+                        'title' => 'Sukses'
+                    ];
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    $result = [
+                        'flag'  => 'warning',
+                        'msg' => $e->getMessage(),
+                        'title' => 'Gagal'
+                    ];
+                }
+
+                break;
         }
         return $result;
     }
@@ -290,23 +293,23 @@ class VersiPilarController extends Controller
         $kode_tujuan_tpb = $request->input('kode_tujuan_tpb');
 
         DB::beginTransaction();
-        try{
+        try {
             $relasi = RelasiPilarTpb::find($request->input('id'));
             $relasi->indikator()->sync($kode_indikator);
             $relasi->tujuan_tpb()->sync($kode_tujuan_tpb);
 
             DB::commit();
             $result = [
-            'flag'  => 'success',
-            'msg' => 'Sukses ubah data',
-            'title' => 'Sukses'
+                'flag'  => 'success',
+                'msg' => 'Sukses ubah data',
+                'title' => 'Sukses'
             ];
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             DB::rollback();
             $result = [
-            'flag'  => 'warning',
-            'msg' => $e->getMessage(),
-            'title' => 'Gagal'
+                'flag'  => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
             ];
         }
 
@@ -323,20 +326,20 @@ class VersiPilarController extends Controller
     public function edit(Request $request)
     {
 
-        try{
+        try {
 
             $versi = VersiPilar::find((int)$request->input('id'));
 
-                return view($this->__route.'.form',[
-                    'pagetitle' => $this->pagetitle,
-                    'actionform' => 'update',
-                    'data' => $versi
+            return view($this->__route . '.form', [
+                'pagetitle' => $this->pagetitle,
+                'actionform' => 'update',
+                'data' => $versi
 
-                ]);
-        }catch(Exception $e){}
-
+            ]);
+        } catch (Exception $e) {
+        }
     }
-    
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -346,28 +349,28 @@ class VersiPilarController extends Controller
 
     public function edit_pilar(Request $request)
     {
-        try{
+        try {
             $versi = VersiPilar::find((int)$request->input('versi'));
-            $relasi = RelasiPilarTpb::where('versi_pilar_id',(int)$request->input('versi'))->where('pilar_pembangunan_id',(int)$request->input('id'));
-            $pilar = PilarPembangunan::get();
+            $relasi = RelasiPilarTpb::where('versi_pilar_id', (int)$request->input('versi'))->where('pilar_pembangunan_id', (int)$request->input('id'));
+            $pilar = PilarPembangunan::where('is_active', true)->orderBy('nama', 'asc')->get();
             $tpb = Tpb::get();
             $tpb_id = $relasi->pluck('tpb_id')->all();
 
-                return view($this->__route.'.form_pilar',[
-                    'pagetitle' => $this->pagetitle,
-                    'actionform' => 'update',
-                    'data' => $versi,
-                    'relasi' => $relasi,
-                    'pilar' => $pilar,
-                    'tpb' => $tpb,
-                    'tpb_id' => $tpb_id,
-                    'pilar_pembangunan_id' => (int)$request->input('id')
+            return view($this->__route . '.form_pilar', [
+                'pagetitle' => $this->pagetitle,
+                'actionform' => 'update',
+                'data' => $versi,
+                'relasi' => $relasi,
+                'pilar' => $pilar,
+                'tpb' => $tpb,
+                'tpb_id' => $tpb_id,
+                'pilar_pembangunan_id' => (int)$request->input('id')
 
-                ]);
-        }catch(Exception $e){}
-
+            ]);
+        } catch (Exception $e) {
+        }
     }
-    
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -377,28 +380,28 @@ class VersiPilarController extends Controller
 
     public function edit_tpb(Request $request)
     {
-        try{
-            $relasi = RelasiPilarTpb::select('relasi_pilar_tpbs.id','tpbs.no_tpb','tpbs.nama')
-                                    ->leftJoin('tpbs','tpbs.id','relasi_pilar_tpbs.tpb_id')
-                                    ->where('relasi_pilar_tpbs.id',(int)$request->input('id'))
-                                    ->first();
-            $kode_indikator_id = RelasiTpbKodeIndikator::where('relasi_pilar_tpb_id',(int)$request->input('id'))->pluck('kode_indikator_id')->all();
-            $kode_tujuan_tpb_id = RelasiTpbKodeTujuanTpb::where('relasi_pilar_tpb_id',(int)$request->input('id'))->pluck('kode_tujuan_tpb_id')->all();
+        try {
+            $relasi = RelasiPilarTpb::select('relasi_pilar_tpbs.id', 'tpbs.no_tpb', 'tpbs.nama')
+                ->leftJoin('tpbs', 'tpbs.id', 'relasi_pilar_tpbs.tpb_id')
+                ->where('relasi_pilar_tpbs.id', (int)$request->input('id'))
+                ->first();
+            $kode_indikator_id = RelasiTpbKodeIndikator::where('relasi_pilar_tpb_id', (int)$request->input('id'))->pluck('kode_indikator_id')->all();
+            $kode_tujuan_tpb_id = RelasiTpbKodeTujuanTpb::where('relasi_pilar_tpb_id', (int)$request->input('id'))->pluck('kode_tujuan_tpb_id')->all();
 
-                return view($this->__route.'.form_tpb',[
-                    'pagetitle' => $this->pagetitle,
-                    'actionform' => 'update',
-                    'data' => $relasi,
-                    'tpb_id' => (int)$request->input('tpb'),
-                    'kode_indikator' => KodeIndikator::get(),
-                    'kode_tujuan_tpb' => KodeTujuanTpb::get(),
-                    'kode_indikator_id' => $kode_indikator_id,
-                    'kode_tujuan_tpb_id' => $kode_tujuan_tpb_id,
-                ]);
-        }catch(Exception $e){}
-
+            return view($this->__route . '.form_tpb', [
+                'pagetitle' => $this->pagetitle,
+                'actionform' => 'update',
+                'data' => $relasi,
+                'tpb_id' => (int)$request->input('tpb'),
+                'kode_indikator' => KodeIndikator::get(),
+                'kode_tujuan_tpb' => KodeTujuanTpb::get(),
+                'kode_indikator_id' => $kode_indikator_id,
+                'kode_tujuan_tpb_id' => $kode_tujuan_tpb_id,
+            ]);
+        } catch (Exception $e) {
+        }
     }
-    
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -408,20 +411,21 @@ class VersiPilarController extends Controller
 
     public function add_pilar(Request $request)
     {
-        try{
+        try {
             $versi = VersiPilar::find((int)$request->input('id'));
-            $pilar = PilarPembangunan::get();
+            // $pilar = PilarPembangunan::get();
+            $pilar = PilarPembangunan::where('is_active', true)->orderBy('nama', 'asc')->orderBy('jenis_anggaran', 'asc')->get();
             $tpb = Tpb::get();
 
-                return view($this->__route.'.form_pilar',[
-                    'pagetitle' => 'Tambah Relasi Pilar dan TPB',
-                    'actionform' => 'insert',
-                    'data' => $versi,
-                    'pilar' => $pilar,
-                    'tpb' => $tpb,
-                ]);
-        }catch(Exception $e){}
-
+            return view($this->__route . '.form_pilar', [
+                'pagetitle' => 'Tambah Relasi Pilar dan TPB',
+                'actionform' => 'insert',
+                'data' => $versi,
+                'pilar' => $pilar,
+                'tpb' => $tpb,
+            ]);
+        } catch (Exception $e) {
+        }
     }
 
     /**
@@ -431,8 +435,8 @@ class VersiPilarController extends Controller
     public function delete_pilar(Request $request)
     {
         DB::beginTransaction();
-        try{
-            $data = RelasiPilarTpb::where('versi_pilar_id',(int)$request->input('versi_pilar_id'))->where('pilar_pembangunan_id',(int)$request->input('pilar_pembangunan_id'));
+        try {
+            $data = RelasiPilarTpb::where('versi_pilar_id', (int)$request->input('versi_pilar_id'))->where('pilar_pembangunan_id', (int)$request->input('pilar_pembangunan_id'));
             $data->delete();
 
             DB::commit();
@@ -441,7 +445,7 @@ class VersiPilarController extends Controller
                 'msg' => 'Sukses hapus data',
                 'title' => 'Sukses'
             ];
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             DB::rollback();
             $result = [
                 'flag'  => 'warning',
@@ -459,7 +463,7 @@ class VersiPilarController extends Controller
     public function delete(Request $request)
     {
         DB::beginTransaction();
-        try{
+        try {
             $data = VersiPilar::find((int)$request->input('id'));
             $data->delete();
 
@@ -469,7 +473,7 @@ class VersiPilarController extends Controller
                 'msg' => 'Sukses hapus data',
                 'title' => 'Sukses'
             ];
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             DB::rollback();
             $result = [
                 'flag'  => 'warning',
@@ -492,7 +496,7 @@ class VersiPilarController extends Controller
 
         return Validator::make($request->all(), $required, $message);
     }
-    
+
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -505,23 +509,23 @@ class VersiPilarController extends Controller
             'title' => 'Error'
         ];
 
-        try{
+        try {
             $param['status'] = $request->input('status');
             $perusahaan = VersiPilar::find((int)$request->input('id'));
             $perusahaan->update((array)$param);
 
             DB::commit();
             $result = [
-            'flag'  => 'success',
-            'msg' => 'Sukses ubah data',
-            'title' => 'Sukses'
+                'flag'  => 'success',
+                'msg' => 'Sukses ubah data',
+                'title' => 'Sukses'
             ];
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             DB::rollback();
             $result = [
-            'flag'  => 'warning',
-            'msg' => $e->getMessage(),
-            'title' => 'Gagal'
+                'flag'  => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
             ];
         }
 
