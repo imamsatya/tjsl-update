@@ -11,6 +11,7 @@
 @endsection
 
 @section('content')
+    <div id="pilars" data-pilars="{{ $pilars }}"></div>
     <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
         <!--begin::Container-->
         <div id="kt_content_container" class="container">
@@ -100,6 +101,8 @@
 
                                         </div>
                                         <div class="col-lg-4">
+
+                                            {{-- {{ $tpb[0]->tpb_jenis_anggaran }} --}}
                                             <input type="number" min="0"
                                                 name="cid_tpb[{{ $i }}][{{ $j }}]"
                                                 class="form-control form-control-lg form-control-solid" placeholder="Rp ..."
@@ -107,6 +110,8 @@
 
                                         </div>
                                         <div class="col-lg-4">
+
+                                            {{-- {{ $tpb[1]->tpb_jenis_anggaran ?? false }} --}}
                                             <input type="number" min="0"
                                                 name="noncid_tpb[{{ $i }}][{{ $j }}]"
                                                 class="form-control form-control-lg form-control-solid" placeholder="Rp ..."
@@ -146,7 +151,7 @@
                             <div class="col-lg-12">
                                 <button id="proses" class="btn btn-danger me-3">Close</button>
                                 <button id="clear-btn" class="btn btn-info me-3">Clear</button>
-                                <button id="proses" class="btn btn-success me-3">Simpan</button>
+                                <button id="simpan-btn" class="btn btn-success me-3">Simpan</button>
                             </div>
                         </div>
 
@@ -179,6 +184,19 @@
                 input.value = 0;
             });
         });
+
+        const simpanBtn = document.querySelector("#simpan-btn");
+        simpanBtn.addEventListener("click", function() {
+            console.log('halo')
+            var pilars = document.getElementById('pilars');
+            var dataPilars = pilars.getAttribute('data-pilars');
+            console.log(dataPilars); // Output: Hello world!
+
+            // let pilars = {{ $pilars }}
+            // console.log(pilars)
+        });
+
+
         //CID
         // Select all cid_tpb input fields
         const cidTpbFields = document.querySelectorAll('input[name^="cid_tpb"]');
