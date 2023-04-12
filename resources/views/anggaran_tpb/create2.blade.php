@@ -11,7 +11,6 @@
 @endsection
 
 @section('content')
-    <div id="pilars" data-pilars="{{ $pilars }}"></div>
     <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
         <!--begin::Container-->
         <div id="kt_content_container" class="container">
@@ -79,16 +78,15 @@
 
                                     </div>
                                     <div class="col-lg-4">
-                                        <input type="number" min="0" name="cid_total[{{ $i }}]" disabled
+                                        <input type="text"name="cid_total[{{ $i }}]" disabled
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Rp ... (total)" value="" />
+                                            placeholder="Rp ... (total)" value="" style="text-align:right;" />
 
                                     </div>
                                     <div class="col-lg-4">
-                                        <input type="number" min="0" disabled
-                                            name="noncid_total[{{ $i }}]"
+                                        <input type="text"disabled name="noncid_total[{{ $i }}]"
                                             class="form-control form-control-lg form-control-solid"
-                                            placeholder="Rp ... (total)" value="" />
+                                            placeholder="Rp ... (total)" value="" style="text-align:right;" />
 
                                     </div>
                                 </div>
@@ -101,21 +99,60 @@
 
                                         </div>
                                         <div class="col-lg-4">
+                                            @if (isset($tpb[0]))
+                                                @if ($tpb[0]->tpb_jenis_anggaran == 'CID')
+                                                    {{-- {{ $tpb[0]->tpb_jenis_anggaran }} -
+                                                    {{ $tpb[0]->id }} --}}
+                                                    <input type="text"data-idrelasi="{{ $tpb[0]->id }}"
+                                                        name="cid_tpb[{{ $i }}][{{ $j }}]"
+                                                        class="form-control form-control-lg form-control-solid"
+                                                        placeholder="Rp ..." value="" style="text-align:right;"
+                                                        oninput="formatCurrency(this)"
+                                                        onkeypress="return onlyNumbers(event)" />
+                                                @endif
+                                            @endif
+                                            @if (isset($tpb[1]))
+                                                @if ($tpb[1]->tpb_jenis_anggaran == 'CID')
+                                                    {{-- {{ $tpb[1]->tpb_jenis_anggaran }} -
+                                                    {{ $tpb[1]->id }} --}}
+                                                    <input type="text"data-idrelasi="{{ $tpb[1]->id }}"
+                                                        name="cid_tpb[{{ $i }}][{{ $j }}]"
+                                                        class="form-control form-control-lg form-control-solid"
+                                                        placeholder="Rp ..." value="" style="text-align:right;"
+                                                        oninput="formatCurrency(this)"
+                                                        onkeypress="return onlyNumbers(event)" />
+                                                @endif
+                                            @endif
 
-                                            {{-- {{ $tpb[0]->tpb_jenis_anggaran }} --}}
-                                            <input type="number" min="0"
-                                                name="cid_tpb[{{ $i }}][{{ $j }}]"
-                                                class="form-control form-control-lg form-control-solid" placeholder="Rp ..."
-                                                value="" />
 
                                         </div>
                                         <div class="col-lg-4">
-
+                                            @if (isset($tpb[0]))
+                                                @if ($tpb[0]->tpb_jenis_anggaran == 'non CID')
+                                                    {{-- {{ $tpb[0]->tpb_jenis_anggaran }} -
+                                                    {{ $tpb[0]->id }} --}}
+                                                    <input type="text" data-idrelasi="{{ $tpb[0]->id }}"
+                                                        name="noncid_tpb[{{ $i }}][{{ $j }}]"
+                                                        class="form-control form-control-lg form-control-solid"
+                                                        placeholder="Rp ..." value="" style="text-align:right;"
+                                                        oninput="formatCurrency(this)"
+                                                        onkeypress="return onlyNumbers(event)" />
+                                                @endif
+                                            @endif
+                                            @if (isset($tpb[1]))
+                                                @if ($tpb[1]->tpb_jenis_anggaran == 'non CID')
+                                                    {{-- {{ $tpb[1]->tpb_jenis_anggaran }} -
+                                                    {{ $tpb[1]->id }} --}}
+                                                    <input type="text" data-idrelasi="{{ $tpb[1]->id }}"
+                                                        name="noncid_tpb[{{ $i }}][{{ $j }}]"
+                                                        class="form-control form-control-lg form-control-solid"
+                                                        placeholder="Rp ..." value="" style="text-align:right;"
+                                                        oninput="formatCurrency(this)"
+                                                        onkeypress="return onlyNumbers(event)" />
+                                                @endif
+                                            @endif
                                             {{-- {{ $tpb[1]->tpb_jenis_anggaran ?? false }} --}}
-                                            <input type="number" min="0"
-                                                name="noncid_tpb[{{ $i }}][{{ $j }}]"
-                                                class="form-control form-control-lg form-control-solid" placeholder="Rp ..."
-                                                value="" />
+
 
                                         </div>
                                     </div>
@@ -132,15 +169,17 @@
 
                                 </div>
                                 <div class="col-lg-4">
-                                    <input type="number" min="0" name="cid_grand_total"
+                                    <input type="text"name="cid_grand_total"
                                         class="form-control form-control-lg form-control-solid"
-                                        placeholder="Rp ... (grand total)" disabled value="" />
+                                        placeholder="Rp ... (grand total)" disabled value=""
+                                        onchange="formatCurrency(this)" style="text-align:right;" />
 
                                 </div>
                                 <div class="col-lg-4">
-                                    <input type="number" min="0" name="noncid_grand_total"
+                                    <input type="text"name="noncid_grand_total"
                                         class="form-control form-control-lg form-control-solid"
-                                        placeholder="Rp ... (grand total)" disabled value="" />
+                                        placeholder="Rp ... (grand total)" disabled value=""
+                                        onchange="formatCurrency(this)" style="text-align:right;" />
 
                                 </div>
                             </div>
@@ -170,13 +209,34 @@
 
     <script>
         $(document).ready(function() {
-            $('input[name^="cid_tpb"]').on('input', function() {
-                $(this).val($(this).val().replace(/[^0-9]/g, ''));
-            });
-            $('input[name^="noncid_tpb"]').on('input', function() {
-                $(this).val($(this).val().replace(/[^0-9]/g, ''));
-            });
+            // $('input[name^="cid_tpb"]').on('input', function() {
+            //     $(this).val($(this).val().replace(/[^0-9]/g, ''));
+
+
+            // });
+            // $('input[name^="noncid_tpb"]').on('input', function() {
+            //     $(this).val($(this).val().replace(/[^0-9]/g, ''));
+            // });
         });
+
+        function formatCurrency(element) {
+            const value = element.value.replace(/[^\d]/g, "");
+            const formatter = new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            const formattedValue = formatter.format(value);
+            element.value = formattedValue.replace(/,/g, ".");
+        }
+
+        function onlyNumbers(event) {
+            const key = event.keyCode || event.which;
+            if (key < 48 || key > 57) {
+                event.preventDefault();
+            }
+        }
         const clearBtn = document.querySelector("#clear-btn");
         clearBtn.addEventListener("click", function() {
             const inputFields = document.querySelectorAll("input[type='number']");
@@ -187,20 +247,33 @@
 
         const simpanBtn = document.querySelector("#simpan-btn");
         simpanBtn.addEventListener("click", function() {
-            console.log('halo')
-            var pilars = document.getElementById('pilars');
-            var dataPilars = pilars.getAttribute('data-pilars');
-            console.log(dataPilars); // Output: Hello world!
+            console.log('simpan clicked')
+            const tpbs_value = [];
+            const cidTpbFields = document.querySelectorAll('input[name^="cid_tpb"]');
+            cidTpbFields.forEach(function(cidTpbField) {
+                const object = {
+                    idrelasi: cidTpbField.dataset.idrelasi,
+                    value: cidTpbField.value
+                };
+                tpbs_value.push(object);
 
-            // let pilars = {{ $pilars }}
-            // console.log(pilars)
+            })
+
+            const noncidTpbFields = document.querySelectorAll('input[name^="noncid_tpb"]');
+            noncidTpbFields.forEach(function(noncidTpbField) {
+                const object = {
+                    idrelasi: noncidTpbField.dataset.idrelasi,
+                    value: noncidTpbField.value
+                };
+                tpbs_value.push(object);
+
+            })
         });
 
 
         //CID
         // Select all cid_tpb input fields
         const cidTpbFields = document.querySelectorAll('input[name^="cid_tpb"]');
-
         // For each cid_tpb field, add an event listener to update the corresponding cid_total field
         cidTpbFields.forEach(function(cidTpbField) {
             cidTpbField.addEventListener('input', function() {
@@ -211,31 +284,34 @@
 
                 // Get the corresponding cid_total and noncid_total fields
                 const cidTotalField = document.querySelector(`input[name="cid_total[${pillarIndex}]"]`);
-                const nonCidTotalField = document.querySelector(
-                    `input[name="noncid_total[${pillarIndex}]"]`);
+
 
                 // Calculate the total for the current pillar and update the cid_total and noncid_total fields
                 let cidTotal = 0;
-                let nonCidTotal = 0;
+
                 const tpbFields = document.querySelectorAll(`input[name^="cid_tpb[${pillarIndex}]"]`);
                 tpbFields.forEach(function(tpbField) {
                     if (tpbField.value) {
+                        let value = tpbField.value.replace(/[^\d]/g,
+                            ""); // remove any non-numeric characters from the input value
                         if (tpbField.getAttribute('name').includes('cid')) {
-                            cidTotal += parseInt(tpbField.value);
-                        } else {
-                            nonCidTotal += parseInt(tpbField.value);
+                            cidTotal += parseInt(value);
                         }
                     }
                 });
                 cidTotalField.value = cidTotal;
-                nonCidTotalField.value = nonCidTotal;
+
 
                 // Update the cid_grand_total field
                 const cidGrandTotalField = document.querySelector('input[name="cid_grand_total"]');
                 let cidGrandTotal = 0;
                 const cidTotalFields = document.querySelectorAll('input[name^="cid_total"]');
                 cidTotalFields.forEach(function(cidTotalField) {
-                    cidGrandTotal += parseInt(cidTotalField.value) || 0;
+                    if (cidTotalField.value) {
+                        let value = cidTotalField.value.replace(/[^\d]/g,
+                            ""); // remove any non-numeric characters from the input value
+                        cidGrandTotal += parseInt(value) || 0;
+                    }
                 });
                 cidGrandTotalField.value = cidGrandTotal;
             });
@@ -244,39 +320,45 @@
         //noncid
         // Select all noncid_tpb input fields
         const noncidTpbFields = document.querySelectorAll('input[name^="noncid_tpb"]');
-
         // For each noncid_tpb field, add an event listener to update the corresponding noncid_total field
         noncidTpbFields.forEach(function(noncidTpbField) {
             noncidTpbField.addEventListener('input', function() {
-                // Get the index of the current noncid_tpb field
+                // Get the index of the current cid_tpb field
                 const fieldIndex = noncidTpbField.getAttribute('name').match(/\[(\d+)\]\[(\d+)\]/);
                 const pillarIndex = fieldIndex[1];
                 const tpbIndex = fieldIndex[2];
 
-                // Get the corresponding noncid_total and nonnoncid_total fields
+                // Get the corresponding cid_total and noncid_total fields
                 const noncidTotalField = document.querySelector(
                     `input[name="noncid_total[${pillarIndex}]"]`);
 
-                // Calculate the total for the current pillar and update the noncid_total and nonnoncid_total fields
+
+                // Calculate the total for the current pillar and update the cid_total and noncid_total fields
                 let noncidTotal = 0;
 
                 const tpbFields = document.querySelectorAll(`input[name^="noncid_tpb[${pillarIndex}]"]`);
                 tpbFields.forEach(function(tpbField) {
                     if (tpbField.value) {
+                        let value = tpbField.value.replace(/[^\d]/g,
+                            ""); // remove any non-numeric characters from the input value
                         if (tpbField.getAttribute('name').includes('noncid')) {
-                            noncidTotal += parseInt(tpbField.value);
+                            noncidTotal += parseInt(value);
                         }
                     }
                 });
                 noncidTotalField.value = noncidTotal;
 
 
-                // Update the noncid_grand_total field
+                // Update the cid_grand_total field
                 const noncidGrandTotalField = document.querySelector('input[name="noncid_grand_total"]');
                 let noncidGrandTotal = 0;
                 const noncidTotalFields = document.querySelectorAll('input[name^="noncid_total"]');
                 noncidTotalFields.forEach(function(noncidTotalField) {
-                    noncidGrandTotal += parseInt(noncidTotalField.value) || 0;
+                    if (noncidTotalField.value) {
+                        let value = noncidTotalField.value.replace(/[^\d]/g,
+                            ""); // remove any non-numeric characters from the input value
+                        noncidGrandTotal += parseInt(value) || 0;
+                    }
                 });
                 noncidGrandTotalField.value = noncidGrandTotal;
             });
