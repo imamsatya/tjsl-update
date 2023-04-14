@@ -21,6 +21,7 @@ use App\Models\VersiPilar;
 use App\Models\User;
 use App\Models\LogAnggaranTpb;
 use App\Exports\AnggaranTpbExport;
+use Session;
 
 class AnggaranTpbController extends Controller
 {
@@ -106,7 +107,8 @@ class AnggaranTpbController extends Controller
                 'anggaran_tpbs.perusahaan_id',
                 'anggaran_tpbs.tahun',
                 'pilar_pembangunans.nama',
-                'pilar_pembangunans.id'
+                'pilar_pembangunans.id',
+
             )
             ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
             ->get();
@@ -207,14 +209,43 @@ class AnggaranTpbController extends Controller
             ->join('pilar_pembangunans', 'pilar_pembangunans.id', '=', 'relasi_pilar_tpbs.pilar_pembangunan_id')
             ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
             ->where('versi_pilar_id', $versi->id)
-            ->get(['relasi_pilar_tpbs.id', 'pilar_pembangunans.nama as pilar_name', 'pilar_pembangunans.jenis_anggaran as pilar_jenis_anggaran', 'tpbs.nama as tpb_name', 'tpbs.jenis_anggaran as tpb_jenis_anggaran'])
-            ->groupBy([
-                'pilar_name',
-                function ($item) {
-                    return $item->tpb_name;
+            ->get(['relasi_pilar_tpbs.id', 'pilar_pembangunans.nama as pilar_name', 'pilar_pembangunans.jenis_anggaran as pilar_jenis_anggaran', 'tpbs.nama as tpb_name', 'tpbs.jenis_anggaran as tpb_jenis_anggaran']);
+
+
+        $current = AnggaranTpb::join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+            ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
+            ->join('pilar_pembangunans', 'pilar_pembangunans.id', '=', 'relasi_pilar_tpbs.pilar_pembangunan_id')
+            ->where('perusahaan_id', $perusahaan_id)
+            ->where('tahun', $tahun)
+            ->get();
+
+
+        if (count($current) > 0) {
+            $actionform = 'update';
+        } else {
+            $actionform = 'insert';
+        }
+
+        foreach ($pilars as $key => $pilar) {
+            foreach ($current as $key => $current2) {
+
+                if ($pilar->id == $current2->relasi_pilar_tpb_id) {
+
+                    $pilarArray = (array) $pilar; // convert object to array
+                    $pilarArray['anggaran'] = $current2->anggaran; // add new key
+                    $pilars[$key] = (object) $pilarArray; // convert array back to object and assign it to $pilars
                 }
-            ]);
+            }
+        }
+        $pilars = $pilars->groupBy([
+            'pilar_name',
+            function ($item) {
+                return $item->tpb_name;
+            }
+        ]);
+
         // dd($pilars);
+
 
         return view(
             $this->__route . '.create2',
@@ -222,7 +253,9 @@ class AnggaranTpbController extends Controller
                 'pagetitle' => $this->pagetitle,
                 'breadcrumb' => '',
                 'pilars' => $pilars,
-                // 'actionform' => 'insert',
+                'perusahaan_id' => $perusahaan_id,
+                'tahun' => $tahun,
+                'actionform' => $actionform,
                 // 'pilar' => PilarPembangunan::get(),
                 // 'versi_pilar_id' => $versi_pilar_id,
                 // 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
@@ -310,6 +343,7 @@ class AnggaranTpbController extends Controller
                 break;
 
             case 'update':
+
                 DB::beginTransaction();
                 try {
                     $anggaran_tpb = AnggaranTpb::find((int)$request->input('id'));
@@ -337,6 +371,170 @@ class AnggaranTpbController extends Controller
         }
 
         return response()->json($result);
+    }
+
+    public function store2(Request $request)
+    {
+
+        $result = [
+            'flag' => 'error',
+            'msg' => 'Error System',
+            'title' => 'Error'
+        ];
+
+        $param['perusahaan_id'] = $request->perusahaan_id;
+        $param['tahun'] = $request->tahun;
+        $param['status_id'] = 2;
+        $param['user_id']  = \Auth::user()->id;
+
+        if ($request->perusahaan_id == '') {
+            $id_users = \Auth::user()->id;
+            $users = User::where('id', $id_users)->first();
+            $param['perusahaan_id'] = $users->id_bumn;
+        }
+
+        $validasi = true;
+        if ($request->actionform == 'insert') {
+            dd('insert in');
+            foreach ($request->tpbs_value as $key => $value) {
+
+                $param['anggaran'] = $value['value'];
+                $param['relasi_pilar_tpb_id'] = $value['idrelasi'];
+                $checkdata = AnggaranTpb::where('perusahaan_id', $param['perusahaan_id'])
+                    ->where('tahun', $param['tahun'])
+                    ->where('relasi_pilar_tpb_id', $param['relasi_pilar_tpb_id'])
+                    ->first();
+
+                if ($checkdata != null) {
+                    $validasi = false;
+                    $validasi_msg = @$checkdata->relasi->tpb->no_tpb . ' - ' . @$checkdata->relasi->tpb->nama;
+                } else {
+                    $data = AnggaranTpb::create((array)$param);
+                    AnggaranTpbController::store_log($data->id, $param['status_id'], $param['anggaran'], 'RKA');
+                }
+            }
+        }
+
+        if ($request->actionform == 'update') {
+            # code...
+
+            $anggaran_tpb =  AnggaranTpb::where('perusahaan_id', $param['perusahaan_id'])
+                ->where('tahun', $param['tahun']);
+
+
+            foreach ($request->tpbs_value as $key => $tpb) {
+                $anggaran_tpb_row = $anggaran_tpb->where('relasi_pilar_tpb_id', $tpb['idrelasi'])->first();
+                if (isset($anggaran_tpb_row)) {
+                    $anggaran_tpb_row->anggaran = $tpb['value'];
+                    $anggaran_tpb_row->save();
+                    AnggaranTpbController::store_log($anggaran_tpb_row->id, $anggaran_tpb_row->status_id, $tpb['value'], 'RKA Revisi');
+                }
+            }
+
+
+            // $param['anggaran'] = str_replace(',', '', $request->input('anggaran'));
+            // $anggaran_tpb->update((array)$param);
+
+            // AnggaranTpbController::store_log($anggaran_tpb->id, $anggaran_tpb->status_id, $param['anggaran'], 'RKA Revisi');
+        }
+
+
+
+
+        // switch ($request->input('actionform')) {
+        //     case 'insert':
+        //         DB::beginTransaction();
+        //         try {
+        //             $param['perusahaan_id'] = $request->perusahaan_id;
+        //             $param['tahun'] = $request->tahun;
+        //             $param['status_id'] = 2;
+        //             $param['user_id']  = \Auth::user()->id;
+
+        //             if ($request->perusahaan_id == '') {
+        //                 $id_users = \Auth::user()->id;
+        //                 $users = User::where('id', $id_users)->first();
+        //                 $param['perusahaan_id'] = $users->id_bumn;
+        //             }
+
+        //             $validasi = true;
+        //             if ($request->tpb_id) {
+        //                 $tpb_id = $request->tpb_id;
+        //                 $anggaran = $request->anggaran;
+        //                 for ($i = 0; $i < count($tpb_id); $i++) {
+        //                     $param['relasi_pilar_tpb_id'] = $tpb_id[$i];
+        //                     $param['anggaran'] = str_replace(',', '', $anggaran[$i]);
+
+        //                     $checkdata = AnggaranTpb::where('perusahaan_id', $param['perusahaan_id'])
+        //                         ->where('tahun', $param['tahun'])
+        //                         ->where('relasi_pilar_tpb_id', $param['relasi_pilar_tpb_id'])
+        //                         ->first();
+
+        //                     if ($checkdata != null) {
+        //                         $validasi = false;
+        //                         $validasi_msg = @$checkdata->relasi->tpb->no_tpb . ' - ' . @$checkdata->relasi->tpb->nama;
+        //                     } else {
+        //                         $data = AnggaranTpb::create((array)$param);
+        //                         AnggaranTpbController::store_log($data->id, $param['status_id'], $param['anggaran'], 'RKA');
+        //                     }
+        //                 }
+        //             }
+
+        //             if ($validasi) {
+        //                 DB::commit();
+        //                 $result = [
+        //                     'flag'  => 'success',
+        //                     'msg' => 'Sukses tambah data',
+        //                     'title' => 'Sukses'
+        //                 ];
+        //             } else {
+        //                 DB::rollback();
+        //                 $result = [
+        //                     'flag'  => 'warning',
+        //                     'msg' => 'Data Anggaran ' . $validasi_msg . ' sudah ada',
+        //                     'title' => 'Gagal'
+        //                 ];
+        //             }
+        //         } catch (\Exception $e) {
+        //             DB::rollback();
+        //             $result = [
+        //                 'flag'  => 'warning',
+        //                 'msg' => $e->getMessage(),
+        //                 'title' => 'Gagal'
+        //             ];
+        //         }
+
+        //         break;
+
+        //     case 'update':
+        //         DB::beginTransaction();
+        //         try {
+        //             $anggaran_tpb = AnggaranTpb::find((int)$request->input('id'));
+        //             $param['anggaran'] = str_replace(',', '', $request->input('anggaran'));
+        //             $anggaran_tpb->update((array)$param);
+
+        //             AnggaranTpbController::store_log($anggaran_tpb->id, $anggaran_tpb->status_id, $param['anggaran'], 'RKA Revisi');
+
+        //             DB::commit();
+        //             $result = [
+        //                 'flag'  => 'success',
+        //                 'msg' => 'Sukses ubah data',
+        //                 'title' => 'Sukses'
+        //             ];
+        //         } catch (\Exception $e) {
+        //             DB::rollback();
+        //             $result = [
+        //                 'flag'  => 'warning',
+        //                 'msg' => $e->getMessage(),
+        //                 'title' => 'Gagal'
+        //             ];
+        //         }
+
+        //         break;
+        // }
+
+        // return response()->json($result);
+        Session::flash('success', "Berhasil Menyimpan Input Data RKA");
+        echo json_encode(['result' => true]);
     }
 
     /**
