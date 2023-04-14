@@ -361,7 +361,7 @@
         });
 
         const simpanBtn = document.querySelector("#simpan-btn");
-        simpanBtn.addEventListener("click", function() {
+        simpanBtn.addEventListener("click", async function() {
             console.log('simpan clicked')
             const tpbs_value = [];
             const cidTpbFields = document.querySelectorAll('input[name^="cid_tpb"]');
@@ -406,7 +406,8 @@
 
             var actionform = document.getElementById('actionform');
             var actionform = actionform.getAttribute('data-variable');
-            $.ajax({
+            console.log(actionform)
+            await $.ajax({
                 url: '/anggaran_tpb/store2',
                 type: 'POST',
                 data: {
@@ -422,7 +423,7 @@
                     toastr.success(
                         `Berhasil!`
                     );
-                    window.location.reload();
+                    // window.location.reload();
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     console.log(errorThrown);

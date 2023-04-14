@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class AnggaranTpb extends Model
 {
     protected $guarded = [];
-
+    protected $table = 'anggaran_tpbs';
     public function perusahaan()
     {
         return $this->belongsTo('App\Models\Perusahaan', 'perusahaan_id');
