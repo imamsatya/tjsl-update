@@ -66,6 +66,12 @@ class AnggaranTpbController extends Controller
             ->leftJoin('tpbs', 'tpbs.id', 'relasi_pilar_tpbs.tpb_id');
         $anggaran_pilar = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id');
+
+        // $anggaran_pilar = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
+        //     ->leftJoin('pilar_pembangunans as p1', 'p1.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
+        //     ->leftJoin('pilar_pembangunans as p2', 'p2.id', 'relasi_pilar_tpbs.pilar_pembangunan_id');
+
+
         $anggaran_bumn  = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
             ->leftJoin('perusahaans', 'perusahaans.id', 'anggaran_tpbs.perusahaan_id');
 
@@ -112,6 +118,26 @@ class AnggaranTpbController extends Controller
             )
             ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
             ->get();
+        // $anggaran_pilar = $anggaran_pilar->where('p1.jenis_anggaran', 'CID')
+        //     ->orWhere('p2.jenis_anggaran', 'non CID')->select(
+        //         'anggaran_tpbs.perusahaan_id',
+        //         'anggaran_tpbs.tahun',
+        //         'relasi_pilar_tpbs.pilar_pembangunan_id',
+        //         DB::Raw("sum(case when p1.jenis_anggaran = 'CID' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_cid"),
+        //         DB::Raw("sum(case when p2.jenis_anggaran = 'non CID' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_non_cid"),
+        //         'p1.nama as pilar_nama',
+        //         'p1.id as pilar_id'
+        //     )
+        //     ->groupBy(
+        //         'relasi_pilar_tpbs.pilar_pembangunan_id',
+        //         'anggaran_tpbs.perusahaan_id',
+        //         'anggaran_tpbs.tahun',
+        //         'p1.nama',
+        //         'p1.id',
+        //     )
+        //     ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
+        //     ->get();
+
 
         $anggaran_bumn = $anggaran_bumn->select(
             'anggaran_tpbs.perusahaan_id',
@@ -124,7 +150,7 @@ class AnggaranTpbController extends Controller
             ->groupBy('perusahaans.id')
             ->get();
         $anggaran = $anggaran->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')->orderBy('no_tpb')->get();
-
+        // dd($anggaran_bumn);
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
