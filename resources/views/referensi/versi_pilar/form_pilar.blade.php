@@ -11,7 +11,7 @@
         </div>
         <div class="col-lg-6">
             <label>Pilar Pembangunan</label>
-            <select class="form-select form-select-solid form-select2" name="pilar_pembangunan_id"
+            <select class="form-select form-select-solid form-select2" id="select-pilar-option" name="pilar_pembangunan_id"
                 data-kt-select2="true" data-placeholder="Pilih Pilar" data-dropdown-parent="#winform"
                 data-allow-clear="true" required>
                 <option></option>
@@ -29,7 +29,7 @@
     <div class="form-group row mb-5">
         <div class="col-lg-12">
             <label>TPB</label>
-            <select class="form-select form-select-solid form-select2" name="tpb[]" data-kt-select2="true"
+            <select disabled="disabled" class="form-select form-select-solid form-select2 select-tpb-option" name="tpb[]" data-kt-select2="true"
                 data-placeholder="Pilih TPB" data-dropdown-parent="#winform" data-allow-clear="true" required
                 multiple="multiple">
                 <option></option>
@@ -86,6 +86,49 @@
             // Update the tpb select input with the filtered options
             $('select[name="tpb[]"]').html(filteredTpbOptions);
         });
+
+        $('.select-tpb-option').on('click', function(){
+            let isOptionDisabled = $('.select-tpb-option').prop('disabled')
+            if(isOptionDisabled) {
+                swal.fire({                    
+                    icon: 'warning',
+                    html: 'Pilar Pembangunan tidak boleh kosong!',
+                    type: 'warning', 
+                    confirmButtonText: "<i class='bi bi-arrows-collapse' style='color: white'></i> Close"
+                });
+            }
+        })
+
+        $('#select-pilar-option').on('change', function() {
+            const idPilar = $(this).select2("data")[0].id
+            const jenisAnggaranPilar = $(this).select2("data")[0].element.dataset.jenisAnggaran
+            
+            $('.select-tpb-option').prop('disabled', false)
+            $('.select-tpb-option').select2({
+                templateSelection: function(option) {
+                    var $select = $('.select-tpb-option')
+                    var tag = $(option.element).data("jenis-anggaran");
+                    var term = ""
+                    if($select.data("select2")) {
+                        var $search = $select.data("select2").$dropdown.find(".select2-search__field")
+                        if($search.length) {
+                            term = $search.val()
+                        }
+
+                        if ($select.data("select2").isOpen() && term && tag) {
+                            if (tag.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
+                                return option.text;
+                            } else {
+                                return null;
+                            }
+                        } else {
+                            return option.text;
+                        }
+                    }
+                    
+                }
+            })
+        })
     });
 
     function setFormValidate() {

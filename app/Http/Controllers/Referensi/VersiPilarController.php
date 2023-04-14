@@ -418,7 +418,7 @@ class VersiPilarController extends Controller
             $tpb = Tpb::get();
 
             return view($this->__route . '.form_pilar', [
-                'pagetitle' => 'Tambah Relasi Pilar dan TPB',
+                'pagetitle' => 'Relasi Pilar dan TPB',
                 'actionform' => 'insert',
                 'data' => $versi,
                 'pilar' => $pilar,
