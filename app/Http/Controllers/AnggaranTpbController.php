@@ -421,7 +421,7 @@ class AnggaranTpbController extends Controller
 
         $validasi = true;
         if ($request->actionform == 'insert') {
-            dd('insert in');
+            // dd('insert in');
             foreach ($request->tpbs_value as $key => $value) {
 
                 $param['anggaran'] = $value['value'];
