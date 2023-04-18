@@ -1019,12 +1019,22 @@
     var selectedTahun = $('#tahun').val();
     var selectedTahunText = $('#tahun option:selected').text();
 
-    // Do something with the selected value and text
-    console.log("selectedPerusahaanId: " + selectedPerusahaanId);
-    console.log("selectedPerusahaanText: " + selectedPerusahaanText);
+    if(selectedPerusahaanId === '' || selectedTahun === '') {
+        swal.fire({                    
+            icon: 'warning',
+            html: 'Perusahaan (BUMN) dan Tahun harus terisi!',
+            type: 'warning', 
+            confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+        });
+        return
+    }
 
-    console.log("selectedTahun: " + selectedTahun);
-    console.log("selectedTahunText: " + selectedTahunText);
+    // Do something with the selected value and text
+    // console.log("selectedPerusahaanId: " + selectedPerusahaanId);
+    // console.log("selectedPerusahaanText: " + selectedPerusahaanText);
+
+    // console.log("selectedTahun: " + selectedTahun);
+    // console.log("selectedTahunText: " + selectedTahunText);
 
     // Use the Laravel's built-in route function to generate the new URL
     var url = "{{ route('anggaran_tpb.create2', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";

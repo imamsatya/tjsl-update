@@ -205,44 +205,54 @@ class AnggaranTpbController extends Controller
     {
         $versi = VersiPilar::whereNull('tanggal_akhir')->orWhere('tanggal_akhir', '>=', date('Y-m-d'))->first();
         $versi_pilar_id = $versi->id;
+        // $pilars = DB::table('relasi_pilar_tpbs')
+        //     ->join('pilar_pembangunans', 'pilar_pembangunans.id', '=', 'relasi_pilar_tpbs.pilar_pembangunan_id')
+        //     ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
+        //     ->where('versi_pilar_id', $versi->id)
+        //     ->get(['relasi_pilar_tpbs.id', 'pilar_pembangunans.nama as pilar_name', 'pilar_pembangunans.jenis_anggaran as pilar_jenis_anggaran', 'tpbs.nama as tpb_name', 'tpbs.jenis_anggaran as tpb_jenis_anggaran']);
+
+
+        // $current = AnggaranTpb::join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+        //     ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
+        //     ->join('pilar_pembangunans', 'pilar_pembangunans.id', '=', 'relasi_pilar_tpbs.pilar_pembangunan_id')
+        //     ->where('perusahaan_id', $perusahaan_id)
+        //     ->where('tahun', $tahun)
+        //     ->get();
+
         $pilars = DB::table('relasi_pilar_tpbs')
             ->join('pilar_pembangunans', 'pilar_pembangunans.id', '=', 'relasi_pilar_tpbs.pilar_pembangunan_id')
             ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
-            ->where('versi_pilar_id', $versi->id)
-            ->get(['relasi_pilar_tpbs.id', 'pilar_pembangunans.nama as pilar_name', 'pilar_pembangunans.jenis_anggaran as pilar_jenis_anggaran', 'tpbs.nama as tpb_name', 'tpbs.jenis_anggaran as tpb_jenis_anggaran']);
+            ->leftJoin('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun){
+                $join->on('anggaran_tpbs.relasi_pilar_tpb_id', '=', 'relasi_pilar_tpbs.id')
+                    ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
+                    ->where('anggaran_tpbs.tahun', $tahun);
+            })
+            ->where('versi_pilar_id', $versi->id)            
+            ->get(['relasi_pilar_tpbs.id', 'pilar_pembangunans.nama as pilar_name', 'pilar_pembangunans.jenis_anggaran as pilar_jenis_anggaran', 'tpbs.nama as tpb_name', 'tpbs.jenis_anggaran as tpb_jenis_anggaran', 'anggaran_tpbs.anggaran']);
 
+        // if (count($current) > 0) {
+        //     $actionform = 'update';
+        // } else {
+        //     $actionform = 'insert';
+        // }
 
-        $current = AnggaranTpb::join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
-            ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
-            ->join('pilar_pembangunans', 'pilar_pembangunans.id', '=', 'relasi_pilar_tpbs.pilar_pembangunan_id')
-            ->where('perusahaan_id', $perusahaan_id)
-            ->where('tahun', $tahun)
-            ->get();
+        // foreach ($pilars as $key => $pilar) {
+        //     foreach ($current as $key => $current2) {
 
+        //         if ($pilar->id == $current2->relasi_pilar_tpb_id) {
 
-        if (count($current) > 0) {
-            $actionform = 'update';
-        } else {
-            $actionform = 'insert';
-        }
-
-        foreach ($pilars as $key => $pilar) {
-            foreach ($current as $key => $current2) {
-
-                if ($pilar->id == $current2->relasi_pilar_tpb_id) {
-
-                    $pilarArray = (array) $pilar; // convert object to array
-                    $pilarArray['anggaran'] = $current2->anggaran; // add new key
-                    $pilars[$key] = (object) $pilarArray; // convert array back to object and assign it to $pilars
-                }
-            }
-        }
+        //             $pilarArray = (array) $pilar; // convert object to array
+        //             $pilarArray['anggaran'] = $current2->anggaran; // add new key
+        //             $pilars[$key] = (object) $pilarArray; // convert array back to object and assign it to $pilars
+        //         }
+        //     }
+        // }
         $pilars = $pilars->groupBy([
             'pilar_name',
             function ($item) {
                 return $item->tpb_name;
             }
-        ]);
+        ])->sortByDesc(null);
 
         // dd($pilars);
 
@@ -255,7 +265,8 @@ class AnggaranTpbController extends Controller
                 'pilars' => $pilars,
                 'perusahaan_id' => $perusahaan_id,
                 'tahun' => $tahun,
-                'actionform' => $actionform,
+                'actionform' => '-',
+                'nama_perusahaan' => Perusahaan::find($perusahaan_id)->nama_lengkap
                 // 'pilar' => PilarPembangunan::get(),
                 // 'versi_pilar_id' => $versi_pilar_id,
                 // 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
@@ -384,7 +395,7 @@ class AnggaranTpbController extends Controller
 
         $param['perusahaan_id'] = $request->perusahaan_id;
         $param['tahun'] = $request->tahun;
-        $param['status_id'] = 2;
+        $param['status_id'] = DB::table('statuss')->where('nama', 'In Progress')->first()->id;
         $param['user_id']  = \Auth::user()->id;
 
         if ($request->perusahaan_id == '') {
@@ -393,63 +404,85 @@ class AnggaranTpbController extends Controller
             $param['perusahaan_id'] = $users->id_bumn;
         }
 
-        $validasi = true;
-        if ($request->actionform == 'insert') {
+        foreach($request->tpbs_value as $value) {
+            $param['anggaran'] = $value['value'];
+            $param['relasi_pilar_tpb_id'] = $value['idrelasi'];
 
-            foreach ($request->tpbs_value as $key => $value) {
-
-                $param['anggaran'] = $value['value'];
-                $param['relasi_pilar_tpb_id'] = $value['idrelasi'];
-                $checkdata = AnggaranTpb::where('perusahaan_id', $param['perusahaan_id'])
+            $checkdata = AnggaranTpb::where('perusahaan_id', $param['perusahaan_id'])
                     ->where('tahun', $param['tahun'])
                     ->where('relasi_pilar_tpb_id', $param['relasi_pilar_tpb_id'])
                     ->first();
-
-                if ($checkdata != null) {
-                    $validasi = false;
-                    $validasi_msg = @$checkdata->relasi->tpb->no_tpb . ' - ' . @$checkdata->relasi->tpb->nama;
-                } else {
-                    $data = AnggaranTpb::create((array)$param);
-                    AnggaranTpbController::store_log($data->id, $param['status_id'], $param['anggaran'], 'RKA');
-                }
+            
+            if($checkdata != null) { // update
+                if($checkdata->anggaran != intval($param['anggaran'])) {
+                    $checkdata->update(['anggaran' => intval($param['anggaran'])]);
+                    AnggaranTpbController::store_log($checkdata->id, $checkdata->status_id, $param['anggaran'], 'RKA Revisi');
+                }                
+            } else { // insert
+                $data = AnggaranTpb::create((array)$param);
+                AnggaranTpbController::store_log($data->id, $param['status_id'], $param['anggaran'], 'RKA');
             }
         }
 
-        if ($request->actionform == 'update') {
-            # code...
-            // dd($request->tpbs_value);
-            $anggaran_tpb =  AnggaranTpb::where('perusahaan_id', $param['perusahaan_id'])
-                ->where('tahun', $param['tahun']);
+        echo json_encode(['result' => true]);
 
-            // dd($anggaran_tpb->get()); // Debugging statement
-            foreach ($request->tpbs_value as $key => $tpb) {
-                // dd(intval($tpb['value']));
-                $anggaran_tpb_row = $anggaran_tpb->where('relasi_pilar_tpb_id', $tpb['idrelasi'])->first();
-                // dd($anggaran_tpb_row);
+        // $validasi = true;
+        // if ($request->actionform == 'insert') {
 
-                if (isset($anggaran_tpb_row)) {
-                    // dd(true);
-                    // $anggaran_tpb_row->anggaran = intval($tpb['value']);
-                    // $anggaran_tpb_row->save();
-                    $anggaran_tpb_row->update(['anggaran' => intval($tpb['value'])]);
-                    // dd($anggaran_tpb_row);
-                    try {
-                        //code...
-                        AnggaranTpbController::store_log($anggaran_tpb_row->id, $anggaran_tpb_row->status_id, $tpb['value'], 'RKA Revisi');
-                    } catch (\Throwable $th) {
-                        throw $th;
-                        // dd($th);
-                    }
-                }
-                // dd(false);
-            }
+        //     foreach ($request->tpbs_value as $key => $value) {
+
+        //         $param['anggaran'] = $value['value'];
+        //         $param['relasi_pilar_tpb_id'] = $value['idrelasi'];
+        //         $checkdata = AnggaranTpb::where('perusahaan_id', $param['perusahaan_id'])
+        //             ->where('tahun', $param['tahun'])
+        //             ->where('relasi_pilar_tpb_id', $param['relasi_pilar_tpb_id'])
+        //             ->first();
+
+        //         if ($checkdata != null) {
+        //             $validasi = false;
+        //             $validasi_msg = @$checkdata->relasi->tpb->no_tpb . ' - ' . @$checkdata->relasi->tpb->nama;
+        //         } else {
+        //             $data = AnggaranTpb::create((array)$param);
+        //             AnggaranTpbController::store_log($data->id, $param['status_id'], $param['anggaran'], 'RKA');
+        //         }
+        //     }
+        // }
+
+        // if ($request->actionform == 'update') {
+        //     # code...
+        //     // dd($request->tpbs_value);
+        //     $anggaran_tpb =  AnggaranTpb::where('perusahaan_id', $param['perusahaan_id'])
+        //         ->where('tahun', $param['tahun']);
+
+        //     // dd($anggaran_tpb->get()); // Debugging statement
+        //     foreach ($request->tpbs_value as $key => $tpb) {
+        //         // dd(intval($tpb['value']));
+        //         $anggaran_tpb_row = $anggaran_tpb->where('relasi_pilar_tpb_id', $tpb['idrelasi'])->first();
+        //         // dd($anggaran_tpb_row);
+
+        //         if (isset($anggaran_tpb_row)) {
+        //             // dd(true);
+        //             // $anggaran_tpb_row->anggaran = intval($tpb['value']);
+        //             // $anggaran_tpb_row->save();
+        //             $anggaran_tpb_row->update(['anggaran' => intval($tpb['value'])]);
+        //             // dd($anggaran_tpb_row);
+        //             try {
+        //                 //code...
+        //                 AnggaranTpbController::store_log($anggaran_tpb_row->id, $anggaran_tpb_row->status_id, $tpb['value'], 'RKA Revisi');
+        //             } catch (\Throwable $th) {
+        //                 throw $th;
+        //                 // dd($th);
+        //             }
+        //         }
+        //         // dd(false);
+        //     }
 
 
-            // $param['anggaran'] = str_replace(',', '', $request->input('anggaran'));
-            // $anggaran_tpb->update((array)$param);
+        //     // $param['anggaran'] = str_replace(',', '', $request->input('anggaran'));
+        //     // $anggaran_tpb->update((array)$param);
 
-            // AnggaranTpbController::store_log($anggaran_tpb->id, $anggaran_tpb->status_id, $param['anggaran'], 'RKA Revisi');
-        }
+        //     // AnggaranTpbController::store_log($anggaran_tpb->id, $anggaran_tpb->status_id, $param['anggaran'], 'RKA Revisi');
+        // }
 
 
 
@@ -546,8 +579,8 @@ class AnggaranTpbController extends Controller
         // }
 
         // return response()->json($result);
-        Session::flash('success', "Berhasil Menyimpan Input Data RKA");
-        echo json_encode(['result' => true]);
+        // Session::flash('success', "Berhasil Menyimpan Input Data RKA");
+        // echo json_encode(['result' => true]);
     }
 
     /**
