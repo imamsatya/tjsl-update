@@ -73,12 +73,12 @@ class PeriodeLaporanController extends Controller
                 })
                 ->editColumn('tanggal_awal', function ($row) {
                     $tanggal_awal = $row->tanggal_awal;
-                    if ($row->tanggal_awal) $tanggal_awal = date("d M", strtotime($row->tanggal_awal));
+                    if ($row->tanggal_awal) $tanggal_awal = date("d M Y", strtotime($row->tanggal_awal));
                     return $tanggal_awal;
                 })
                 ->editColumn('tanggal_akhir', function ($row) {
                     $tanggal_akhir = $row->tanggal_akhir;
-                    if ($row->tanggal_akhir) $tanggal_akhir = date("d M", strtotime($row->tanggal_akhir));
+                    if ($row->tanggal_akhir) $tanggal_akhir = date("d M Y", strtotime($row->tanggal_akhir));
                     return $tanggal_akhir;
                 })
                 ->editColumn('jenis_laporan', function ($row) {

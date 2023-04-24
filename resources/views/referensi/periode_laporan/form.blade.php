@@ -90,13 +90,21 @@
 
         $('.input-tanggal').flatpickr({
             enableTime: false,
-            dateFormat: "d M",
+            dateFormat: "d M Y",
         });
 
         $('#jenis-periode').change(function() {
             if ($(this).val() === 'tentatif') {
+                $('.input-tanggal').flatpickr({
+                    enableTime: false,
+                    dateFormat: "d M",
+                });
                 $('#urutan-field').hide(); // hide the urutan field
             } else {
+                $('.input-tanggal').flatpickr({
+                    enableTime: false,
+                    dateFormat: "d M Y",
+                });
                 $('#urutan-field').show(); // show the urutan field
             }
         });
