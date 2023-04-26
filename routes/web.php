@@ -544,6 +544,20 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::get('create/{perusahaan_id}/{tahun}', 'App\Http\Controllers\RencanaKerja\ProgramController@create')->name('rencana_kerja.program.create');
         });
 
+        Route::prefix('laporan_manajemen')->group(function () {
+            Route::get('index', 'App\Http\Controllers\RencanaKerja\LaporanManajemenController@index')->name('rencana_kerja.laporan_manajemen.index');
+            Route::get('datatable', 'App\Http\Controllers\RencanaKerja\LaporanManajemenController@datatable')->name('rencana_kerja.laporan_manajemen.datatable');
+            
+        });
+
+        Route::prefix('tble')->group(function () {
+            Route::get('index', 'App\Http\Controllers\RencanaKerja\TbleController@index')->name('rencana_kerja.tble.index');
+            Route::get('datatable', 'App\Http\Controllers\RencanaKerja\TbleController@datatable')->name('rencana_kerja.tble.datatable');
+            
+        });
+
+
+
         // Route::get('index', 'App\Http\Controllers\AnggaranTpbController@index')->name('anggaran_tpb.index');
         // Route::post('create', 'App\Http\Controllers\AnggaranTpbController@create')->name('anggaran_tpb.create');
         // Route::post('edit', 'App\Http\Controllers\AnggaranTpbController@edit')->name('anggaran_tpb.edit');
@@ -559,6 +573,28 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
         // //
         // Route::get('create2/{perusahaan_id}/{tahun}', 'App\Http\Controllers\AnggaranTpbController@create2')->name('anggaran_tpb.create2');
         // Route::post('store2', 'App\Http\Controllers\AnggaranTpbController@store2')->name('anggaran_tpb.store2');
+    });
+
+    Route::prefix('laporan_realisasi')->group(function () {
+       
+        Route::prefix('triwulan')->group(function () {
+            Route::prefix('spd_pumk')->group(function () {
+                Route::get('index', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@index')->name('laporan_realisasi.triwulan.spd_pumk.index');
+                // Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\Triwulan\LaporanManajemenTriwulanController@datatable')->name('rencana_kerja.laporan_manajemen.datatable');
+                
+            });
+            Route::prefix('laporan_manajemen')->group(function () {
+                Route::get('index', 'App\Http\Controllers\LaporanRealisasi\Triwulan\LaporanManajemenTriwulanController@index')->name('laporan_realisasi.triwulan.laporan_manajemen.index');
+                // Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\Triwulan\LaporanManajemenTriwulanController@datatable')->name('rencana_kerja.laporan_manajemen.datatable');
+                
+            });
+        });
+
+        Route::prefix('tble')->group(function () {
+            Route::get('index', 'App\Http\Controllers\LaporanRealisasi\TbleRealisasiController@index')->name('laporan_realisasi.tble.index');
+            // Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\TbleController@datatable')->name('rencana_kerja.tble.datatable');
+            
+        });
     });
 
     // untuk melakukan penarikan data api kegiatan dari app tjsl (cek data api update)
