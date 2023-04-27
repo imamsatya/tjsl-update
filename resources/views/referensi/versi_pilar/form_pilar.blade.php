@@ -94,7 +94,7 @@
                     icon: 'warning',
                     html: 'Pilar Pembangunan tidak boleh kosong!',
                     type: 'warning', 
-                    confirmButtonText: "<i class='bi bi-arrows-collapse' style='color: white'></i> Close"
+                    confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
                 });
             }
         })
