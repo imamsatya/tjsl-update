@@ -118,9 +118,10 @@ class SpdPumkRkaController extends Controller
         //         }
         //     }
         // }
-
+        $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
         $current = PumkAnggaran::where('bumn_id', $perusahaan_id)
             ->where('tahun', $tahun)
+            ->where('periode_id', $periode_rka_id)
             ->first();
 
 
@@ -244,8 +245,9 @@ class SpdPumkRkaController extends Controller
                 try {
                     $current = PumkAnggaran::where('bumn_id', $request->perusahaan_id)
                         ->where('tahun', $request->tahun)
+                        ->where('periode_id', $periode_rka_id )
                         ->first();
-
+                    
                     //dana tersedia
                     $current->saldo_awal = $request->spdpumk_rka['saldo_awal'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['saldo_awal']);
                     $current->income_mitra_binaan = $request->spdpumk_rka['pengembalian_mitra_binaan'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pengembalian_mitra_binaan']);

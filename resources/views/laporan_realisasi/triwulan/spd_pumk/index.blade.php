@@ -280,6 +280,7 @@
                                     <th>Dana Tersedia</th>
                                     <th>Dana Tersalurkan</th>
                                     <th>Saldo Akhir</th>
+                                    <th>Periode</th>
                                     <th>Status</th>
                                     <th style="text-align:center;">Aksi</th>
                                     <th><label
@@ -321,9 +322,9 @@
         var urledit = "{{ route('referensi.tpb.edit') }}";
         var urlstore = "{{ route('referensi.tpb.store') }}";
         var urlupdate = "{{ route('referensi.tpb.update') }}";
-        var urldatatable = "{{ route('rencana_kerja.spdpumk_rka.datatable') }}";
+        var urldatatable = "{{ route('laporan_realisasi.triwulan.spd_pumk.datatable') }}";
         var urldelete = "{{ route('referensi.tpb.delete') }}";
-        var urllog = "{{route('rencana_kerja.spdpumk_rka.log')}}";
+        var urllog = "{{route('laporan_realisasi.triwulan.spd_pumk.log')}}";
         $(document).ready(function() {
             $('#page-title').html("{{ $pagetitle }}");
             $('#page-breadcrumb').html("{{ $breadcrumb }}");
@@ -436,7 +437,7 @@
                         console.log('User confirmed deletion');
                         // Send an AJAX request to set the "selected" attribute in the database
                         $.ajax({
-                            url: '/rencana_kerja/spdpumk_rka/delete',
+                            url: '/laporan_realisasi/triwulan/spd_pumk/delete',
                             type: 'POST',
                             data: {
                                 "_token": "{{ csrf_token() }}",
@@ -473,7 +474,7 @@
             var periode_laporan = $('#periode_laporan') .val()
            
 
-            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&status_spd=' + status_spd + '&=periode_laporan' + periode_laporan ;
+            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&status_spd=' + status_spd + '&periode_laporan=' + periode_laporan ;
         });
 
 
@@ -531,6 +532,11 @@
                         render: function(data, type, row) {
                             return (data);
                         }
+                    },
+                    {
+                        data: 'periode_laporans_nama',
+                        name: 'periode_laporans_nama',
+                        
                     },
                     {
                         data: 'status_id',
@@ -686,6 +692,8 @@
         var selectedTahun = $('#tahun').val();
         var selectedTahunText = $('#tahun option:selected').text();
 
+        var selectedPeriode = $('#periode_laporan').val();
+
         // Do something with the selected value and text
         console.log("selectedPerusahaanId: " + selectedPerusahaanId);
         console.log("selectedPerusahaanText: " + selectedPerusahaanText);
@@ -694,8 +702,8 @@
         console.log("selectedTahunText: " + selectedTahunText);
 
         // Use the Laravel's built-in route function to generate the new URL
-        var url = "{{ route('rencana_kerja.spdpumk_rka.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
-        url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun);
+        var url = "{{ route('laporan_realisasi.triwulan.spd_pumk.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'periode_id' => ':periode_id']) }}";
+        url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(':periode_id', selectedPeriode);
 
         // Redirect the user to the new page
         window.location.href = url;

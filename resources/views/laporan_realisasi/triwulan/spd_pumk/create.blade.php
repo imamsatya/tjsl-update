@@ -14,6 +14,7 @@
     <div id="perusahaan_id" data-variable="{{ $perusahaan_id }}"></div>
     <div id="tahun" data-variable="{{ $tahun }}"></div>
     <div id="actionform" data-variable="{{ $actionform }}"></div>
+    <div id="periode_id" data-variable="{{ $periode_id }}"></div>
     <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
         <!--begin::Container-->
         <div id="kt_content_container" class="container">
@@ -157,22 +158,22 @@
                     <!--end::Alert-->
                 @endif
                 <div class="row">
-                    <div class="col-lg-6 mb-20">
+                    <div class="col-lg-4 mb-20">
                         <label>BUMN</label>
                         @php
                         $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
-                    @endphp
-                    <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
-                        <option></option>
-                        @foreach($perusahaan as $p)  
-                            @php
-                                $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
-                            @endphp
-                            <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
-                        @endforeach
-                    </select>
+                        @endphp
+                        <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
+                            <option></option>
+                            @foreach($perusahaan as $p)  
+                                @php
+                                    $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
+                                @endphp
+                                <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                        <div class="col-lg-6 mb-20">
+                    <div class="col-lg-4 mb-20">
                             <label>Tahun</label>
                             <select class="form-select form-select-solid form-select2" id="select-tahun" name="tahun" data-kt-select2="true" >
                                 @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
@@ -182,8 +183,20 @@
                                     <option value="{{$i}}" {!! $select !!}>{{$i}}</option>
                                 @php } @endphp
                             </select>
-                        </div>
                     </div>
+                    <div class="col-lg-4 mb-20">
+                        <label>Periode</label>
+                        <select  id="periode_laporan" class="form-select form-select-solid form-select2" name="periode_laporan" data-kt-select2="true" data-placeholder="Pilih Periode Laporan" data-allow-clear="true">
+                            <option></option>
+                            @foreach($periode as $p)  
+                            @php
+                                $select = (($p->id == $periode_id) ? 'selected="selected"' : '');
+                            @endphp
+                            <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
+                        @endforeach
+                        </select>
+                    </div>
+                </div>
                         <form method="POST">
                             @csrf
                         <div class="mb-8">
@@ -607,6 +620,9 @@
              var actionform = document.getElementById('actionform');
             var actionform = actionform.getAttribute('data-variable');
 
+            var periode_id = document.getElementById('periode_id');
+            var periode_id = periode_id.getAttribute('data-variable');
+
             //total dana tersedia
             let saldo_awal =  parseInt(saldo_awal_input.value.replace(/[^0-9\-]/g, ''))
             let pengembalian_mitra_binaan =  parseInt(pengembalian_mitra_binaan_input.value.replace(/[^0-9\-]/g, ''))
@@ -647,13 +663,14 @@
            
             // console.log(actionform)
             await $.ajax({
-                url: '/rencana_kerja/spdpumk_rka/store',
+                url: '/laporan_realisasi/triwulan/spd_pumk/store',
                 type: 'POST',
                 data: {
                     "_token": "{{ csrf_token() }}",
                     spdpumk_rka: spdpumk_rka,
                     tahun: tahun,
                     perusahaan_id: perusahaan_id,
+                    periode_id: periode_id,
                     actionform: actionform
                 },
                 success: function(response) {
