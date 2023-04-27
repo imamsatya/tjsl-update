@@ -63,11 +63,15 @@ class AnggaranTpbController extends Controller
 
         $anggaran       = AnggaranTpb::select('relasi_pilar_tpbs.pilar_pembangunan_id', 'anggaran_tpbs.*', 'tpbs.nama as tpb_nama', 'tpbs.no_tpb as no_tpb')
             ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
-            ->leftJoin('tpbs', 'tpbs.id', 'relasi_pilar_tpbs.tpb_id');
-        $anggaran_pilar = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
+            ->leftJoin('tpbs', 'tpbs.id', 'relasi_pilar_tpbs.tpb_id')
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id');
+        $anggaran_pilar = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
+            ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
+            ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id');
         $anggaran_bumn  = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
-            ->leftJoin('perusahaans', 'perusahaans.id', 'anggaran_tpbs.perusahaan_id');
+            ->leftJoin('perusahaans', 'perusahaans.id', 'anggaran_tpbs.perusahaan_id')
+            ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
+            ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id');
 
         if ($perusahaan_id) {
             $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
@@ -82,48 +86,63 @@ class AnggaranTpbController extends Controller
             $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.tahun', $tahun);
         }
 
-        if ($request->pilar_pembangunan_id) {
-            $anggaran = $anggaran->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
-            $anggaran_pilar = $anggaran_pilar->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
-            $anggaran_bumn = $anggaran_bumn->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
+        if ($request->pilar_pembangunan) {
+            $anggaran = $anggaran->where('pilar_pembangunans.nama', $request->pilar_pembangunan);
+            $anggaran_pilar = $anggaran_pilar->where('pilar_pembangunans.nama', $request->pilar_pembangunan);
+            $anggaran_bumn = $anggaran_bumn->where('pilar_pembangunans.nama', $request->pilar_pembangunan);
         }
 
-        if ($request->tpb_id) {
-            $anggaran = $anggaran->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
-            $anggaran_pilar = $anggaran_pilar->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
-            $anggaran_bumn = $anggaran_bumn->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
+        if ($request->tpb) {
+            $anggaran = $anggaran->where('tpbs.no_tpb', $request->tpb);
+            $anggaran_pilar = $anggaran_pilar->where('tpbs.no_tpb', $request->tpb);
+            $anggaran_bumn = $anggaran_bumn->where('tpbs.no_tpb', $request->tpb);
+        }
+
+        if($request->status){
+            $statusId = DB::table('statuss')->where('nama', $request->status)->first();
+            if($statusId) {
+                $anggaran = $anggaran->where('anggaran_tpbs.status_id', $statusId->id);
+                $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.status_id', $statusId->id);
+                $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.status_id', $statusId->id);
+            }
         }
 
         $anggaran_pilar = $anggaran_pilar->select(
             'anggaran_tpbs.perusahaan_id',
             'anggaran_tpbs.tahun',
-            'relasi_pilar_tpbs.pilar_pembangunan_id',
-            DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'),
+            // 'relasi_pilar_tpbs.pilar_pembangunan_id',
+            DB::Raw('sum(case when tpbs.jenis_anggaran = \'CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_cid'),
+            DB::Raw('sum(case when tpbs.jenis_anggaran = \'non CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_noncid'),
             'pilar_pembangunans.nama as pilar_nama',
-            'pilar_pembangunans.id as pilar_id'
+            // 'pilar_pembangunans.id as pilar_id'
         )
             ->groupBy(
-                'relasi_pilar_tpbs.pilar_pembangunan_id',
+                // 'relasi_pilar_tpbs.pilar_pembangunan_id',
                 'anggaran_tpbs.perusahaan_id',
                 'anggaran_tpbs.tahun',
                 'pilar_pembangunans.nama',
-                'pilar_pembangunans.id',
+                // 'pilar_pembangunans.id',
 
             )
-            ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
+            // ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
+            ->orderBy('pilar_pembangunans.nama')
             ->get();
 
         $anggaran_bumn = $anggaran_bumn->select(
             'anggaran_tpbs.perusahaan_id',
             'perusahaans.nama_lengkap',
             'perusahaans.id',
-            DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran')
+            DB::Raw('sum(case when tpbs.jenis_anggaran = \'CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_cid'),
+            DB::Raw('sum(case when tpbs.jenis_anggaran = \'non CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_noncid')
         )
             ->groupBy('anggaran_tpbs.perusahaan_id')
             ->groupBy('perusahaans.nama_lengkap')
             ->groupBy('perusahaans.id')
             ->get();
-        $anggaran = $anggaran->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')->orderBy('no_tpb')->get();
+        $anggaran = $anggaran->select('*', 'anggaran_tpbs.id as id_anggaran','pilar_pembangunans.nama as pilar_nama', 'tpbs.nama as tpb_nama', DB::Raw('(case when tpbs.jenis_anggaran = \'non CID\' then anggaran end) as anggaran_noncid'), DB::Raw('(case when tpbs.jenis_anggaran = \'CID\' then anggaran end) as anggaran_cid'))
+                ->orderBy('pilar_pembangunans.nama')
+                ->orderBy('no_tpb')->get();
+        
 
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
@@ -137,9 +156,9 @@ class AnggaranTpbController extends Controller
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
             'tahun' => ($request->tahun ? $request->tahun : date('Y')),
-            'pilar_pembangunan_id' => $request->pilar_pembangunan_id,
-            'tpb_id' => $request->tpb_id,
-            'view_only' => $view_only
+            'pilar_pembangunan_id' => $request->pilar_pembangunan,
+            'tpb_id' => $request->tpb,
+            'view_only' => $view_only,
         ]);
     }
 
@@ -617,10 +636,12 @@ class AnggaranTpbController extends Controller
     {
         DB::beginTransaction();
         try {
-            $data = AnggaranTpb::find((int)$request->input('id'));
+            // $data = AnggaranTpb::find((int)$request->input('id'));
+            $data = AnggaranTpb::find((int) $request->input('anggaran'));
             $data->delete();
 
-            $log = LogAnggaranTpb::where('anggaran_tpb_id', (int)$request->input('id'));
+            // $log = LogAnggaranTpb::where('anggaran_tpb_id', (int)$request->input('id'));
+            $log = LogAnggaranTpb::where('anggaran_tpb_id', (int) $request->input('anggaran'));
             $log->delete();
 
             DB::commit();
@@ -648,16 +669,19 @@ class AnggaranTpbController extends Controller
     {
         DB::beginTransaction();
         try {
-            $data = AnggaranTpb::LeftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
-                ->where('anggaran_tpbs.perusahaan_id', (int)$request->input('perusahaan_id'))
-                ->where('anggaran_tpbs.tahun', (int)$request->input('tahun'))
-                ->where('relasi_pilar_tpbs.pilar_pembangunan_id', (int)$request->input('id'));
-            foreach ($data as $a) {
-                $log = LogAnggaranTpb::where('anggaran_tpb_id', $a->id);
-                $log->delete();
+            $pilarPembangunan = DB::table('pilar_pembangunans')->where('nama', $request->input('nama_pilar'))->get();
+            foreach($pilarPembangunan as $pilar_pembangunan) {
+                $data = AnggaranTpb::LeftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                    ->where('anggaran_tpbs.perusahaan_id', (int)$request->input('perusahaan_id'))
+                    ->where('anggaran_tpbs.tahun', (int)$request->input('tahun'))
+                    ->where('relasi_pilar_tpbs.pilar_pembangunan_id', $pilar_pembangunan->id);
+                foreach ($data as $a) {
+                    $log = LogAnggaranTpb::where('anggaran_tpb_id', $pilar_pembangunan->id);
+                    $log->delete();
+                }
+                $data->delete();
             }
-            $data->delete();
-
+            
             DB::commit();
             $result = [
                 'flag'  => 'success',
