@@ -158,22 +158,44 @@
                                     </div>
                                     <div class="row mb-6">
                                         <!--begin::Label-->
-                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Status</label>
+                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Pilar</label>
                                         <!--end::Label-->
                                         <!--begin::Col-->
                                         <div class="col-lg-8 fv-row">
-                                            <select  id="status-anggaran" class="form-select form-select-solid form-select2" name="status_anggaran" data-kt-select2="true" data-placeholder="Pilih Status Anggaran" data-allow-clear="true">
+                                            @php
+                                            $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
+                                        @endphp
+                                        <select class="form-select form-select-solid form-select2" id="pilar_id" name="pilar_id" data-kt-select2="true" data-placeholder="Pilih Pilar" {{ $disabled }}>
+                                            <option></option>
+                                            @foreach($perusahaan as $p)  
+                                                @php
+                                                    $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
+                                                @endphp
+                                                <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
+                                            @endforeach
+                                        </select>
+
+                                        </div>
+                                        <!--end::Col-->
+                                    </div>
+                                    <div class="row mb-6">
+                                        <!--begin::Label-->
+                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Anggaran</label>
+                                        <!--end::Label-->
+                                        <!--begin::Col-->
+                                        <div class="col-lg-8 fv-row">
+                                            <select  id="jenis_anggaran" class="form-select form-select-solid form-select2" name="jenis_anggaran" data-kt-select2="true" data-placeholder="Pilih Status Anggaran" data-allow-clear="true">
                                                 <option></option>
-                                                <option value="Finish" >
-                                                        Finish</option>
-                                                <option value="In Progress" >
-                                                    In Progress</option>
+                                                <option value="CID" >
+                                                        CID</option>
+                                                <option value="Non CID" >
+                                                    Non CID</option>
                                             </select>
 
                                         </div>
                                         <!--end::Col-->
                                     </div>
-                                    
+                                   
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row mb-6">
@@ -191,6 +213,57 @@
                                                 @php } @endphp
                                             </select>
 
+                                        </div>
+                                        <!--end::Col-->
+                                    </div>
+                                    <div class="row mb-6">
+                                        <!--begin::Label-->
+                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">TPB</label>
+                                        <!--end::Label-->
+                                        <!--begin::Col-->
+                                        <div class="col-lg-8 fv-row">
+                                            @php
+                                            $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
+                                        @endphp
+                                        <select class="form-select form-select-solid form-select2" id="tpb_id" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB" {{ $disabled }}>
+                                            <option></option>
+                                            @foreach($perusahaan as $p)  
+                                                @php
+                                                    $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
+                                                @endphp
+                                                <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
+                                            @endforeach
+                                        </select>
+
+                                        </div>
+                                        <!--end::Col-->
+                                    </div>
+                                    <div class="row mb-6">
+                                        <!--begin::Label-->
+                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Kriteria Program</label>
+                                        <!--end::Label-->
+                                        <!--begin::Col-->
+                                        <div class="col-lg-8 fv-row d-flex align-items-center justify-content-start">
+                                            <div style="display:flex; flex-direction: row;">
+                                                <div class="form-check form-check-custom form-check-solid form-check-sm me-8">
+                                                    <input class="form-check-input" type="checkbox" value="" id="flexRadioLg"/>
+                                                    <label class="form-check-label" for="flexRadioLg">
+                                                        Prioritas
+                                                    </label>
+                                                </div> 
+                                                <div class="form-check form-check-custom form-check-solid form-check-sm me-8">
+                                                    <input class="form-check-input" type="checkbox" value="" id="flexRadioLg"/>
+                                                    <label class="form-check-label" for="flexRadioLg">
+                                                        CSV
+                                                    </label>
+                                                </div>
+                                                <div class="form-check form-check-custom form-check-solid form-check-sm">
+                                                    <input class="form-check-input" type="checkbox" value="" id="flexRadioLg"/>
+                                                    <label class="form-check-label" for="flexRadioLg">
+                                                        Umum
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
                                         <!--end::Col-->
                                     </div>

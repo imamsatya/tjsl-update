@@ -75,7 +75,8 @@ class SpdPumkRkaController extends Controller
 
             $anggaran = $anggaran->where('status_id', $request->status_spd);
         }
-        $anggaran = $anggaran->get();
+        
+        $pumk_anggaran = $anggaran->orderBy('tahun', 'desc')->get();
         // dd($anggaran);
         // dd($anggaran[0]->nama_lengkap);
 
@@ -91,7 +92,7 @@ class SpdPumkRkaController extends Controller
             'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
-            'anggaran' => $anggaran,
+            'anggaran' => $pumk_anggaran,
             'status' => $status,
             'status_id' => $request->status_spd ?? ''
         ]);
@@ -398,7 +399,7 @@ class SpdPumkRkaController extends Controller
             $anggaran = $anggaran->where('status_id', $request->status_spd);
         }
 
-        $pumk_anggaran = $anggaran->get();
+        $pumk_anggaran = $anggaran->orderBy('tahun', 'desc')->get();
         // dd($pumk_anggaran);
         try {
             return datatables()->of($pumk_anggaran)

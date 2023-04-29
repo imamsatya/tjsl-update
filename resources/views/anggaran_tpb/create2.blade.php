@@ -211,7 +211,7 @@
                                             <div class="col-1"></div>
                                             <div class="col-lg-5">
                                                 <!-- <div class="ms-8">{{ $indexTPB }}</div> -->
-                                                {{ $indexTPB }}
+                                           {{$tpb[0]->tpb_no_tpb.' - '.$indexTPB }}
 
                                             </div>
                                             <div class="col-lg-3">
@@ -372,12 +372,12 @@
             });
 
             // Add event listener to window unload
-            window.addEventListener('beforeunload', (event) => {
-                if (formChanged) {
-                    event.preventDefault();
-                    event.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
-                }
-            });
+            // window.addEventListener('beforeunload', (event) => {
+            //     if (formChanged) {
+            //         event.preventDefault();
+            //         event.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+            //     }
+            // });
             
             const clearBtn = document.querySelector("#clear-btn");
             clearBtn.addEventListener("click", function() {
@@ -451,22 +451,25 @@
                         })
                     },
                     success: function(response) {
-                        $.unblockUI();
+                       
                         // console.log(`success : ${response}`)
                         // toastr.success(
                         //     `Berhasil menyimpan data!`
                         // );
-                        swal.fire({                    
-                            icon: 'success',
-                            title: 'Sukses!',
-                            html: 'Berhasil menyimpan data',
-                            type: 'success', 
-                            confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
-                        }).then(function(){
-                            $('html, body').animate({ scrollTop: 0 }, 'slow');
-                            formChanged = false;
-                        })
-                        
+                        // swal.fire({                    
+                        //     icon: 'success',
+                        //     title: 'Sukses!',
+                        //     html: 'Berhasil menyimpan data',
+                        //     type: 'success', 
+                        //     confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                        // }).then(function(){
+                        //     $('html, body').animate({ scrollTop: 0 }, 'slow');
+                        //     formChanged = false;
+                        // })
+
+                        var url = "{{ route('anggaran_tpb.index') }}";
+                        window.location.href = url;
+                        $.unblockUI();
                         
                         // window.location.reload();
                     },

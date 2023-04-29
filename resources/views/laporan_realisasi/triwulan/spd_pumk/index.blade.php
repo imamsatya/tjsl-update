@@ -516,21 +516,24 @@
                         data: 'income_total',
                         name: 'income_total',
                         render: function(data, type, row) {
-                            return (data);
+                            let formattedValue = formatCurrency2(data.toString());
+                            return `<div class="text-end">${formattedValue}</div>`;
                         }
                     },
                     {
                         data: 'outcome_total',
                         name: 'outcome_total',
                         render: function(data, type, row) {
-                            return (data);
+                            let formattedValue = formatCurrency2(data.toString());
+                            return `<div class="text-end">${formattedValue}</div>`;
                         }
                     },
                     {
                         data: 'saldo_akhir',
                         name: 'saldo_akhir',
                         render: function(data, type, row) {
-                            return (data);
+                            let formattedValue = formatCurrency2(data.toString());
+                            return `<div class="text-end">${formattedValue}</div>`;
                         }
                     },
                     {
@@ -594,10 +597,6 @@
                         }
                     }
                 ],
-                order: [
-                    [1, 'asc'], // set initial sorting by the second column (no_tpb)
-                    [3, 'asc']
-                ],
                 drawCallback: function(settings) {
                     var info = datatable.page.info();
                     $('[data-toggle="tooltip"]').tooltip();
@@ -610,6 +609,27 @@
                 }
             });
         }
+
+        function formatCurrency2(element) {
+         
+         let value = element.replace(/[^\d-]/g, ""); // Remove all non-numeric characters except for hyphen "-"
+         const isNegative = value.startsWith("-");
+         value = value.replace("-", ""); // Remove hyphen if it exists
+         const formatter = new Intl.NumberFormat("id-ID", {
+             style: "currency",
+             currency: "IDR",
+             minimumFractionDigits: 0,
+             maximumFractionDigits: 0
+         });
+         let formattedValue = formatter.format(value);
+         formattedValue = formattedValue.replace(/,/g, ".");
+         if (isNegative) {
+             formattedValue = "( " + formattedValue + " )";
+         } 
+         element = formattedValue;
+         return element
+      
+     }
 
         function onbtndelete(element) {
             swal.fire({
@@ -693,7 +713,15 @@
         var selectedTahunText = $('#tahun option:selected').text();
 
         var selectedPeriode = $('#periode_laporan').val();
-
+        if(selectedPerusahaanId === '' || selectedTahun === '' || selectedPeriode === '') {
+            swal.fire({                    
+                icon: 'warning',
+                html: 'Perusahaan (BUMN), Tahun dan Periode harus terisi!',
+                type: 'warning', 
+                confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+            });
+            return
+         }
         // Do something with the selected value and text
         console.log("selectedPerusahaanId: " + selectedPerusahaanId);
         console.log("selectedPerusahaanText: " + selectedPerusahaanText);

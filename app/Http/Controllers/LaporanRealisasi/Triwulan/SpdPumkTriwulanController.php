@@ -80,7 +80,7 @@ class SpdPumkTriwulanController extends Controller
 
             $anggaran = $anggaran->where('periode_id', $request->periode_laporan);
         }
-        $anggaran = $anggaran->get();
+        $anggaran = $anggaran->orderBy('tahun', 'desc')->get();
         // dd($anggaran);
         // dd($anggaran[0]->nama_lengkap);
 
@@ -390,7 +390,7 @@ class SpdPumkTriwulanController extends Controller
 
             $anggaran = $anggaran->where('periode_id', $request->periode_laporan);
         }
-        $pumk_anggaran = $anggaran->get();
+        $pumk_anggaran = $anggaran->orderBy('tahun', 'desc')->get();
         // dd($pumk_anggaran);
         try {
             return datatables()->of($pumk_anggaran)

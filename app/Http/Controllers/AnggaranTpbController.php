@@ -247,7 +247,8 @@ class AnggaranTpbController extends Controller
                     ->where('anggaran_tpbs.tahun', $tahun);
             })
             ->where('versi_pilar_id', $versi->id)            
-            ->get(['relasi_pilar_tpbs.id', 'pilar_pembangunans.nama as pilar_name', 'pilar_pembangunans.jenis_anggaran as pilar_jenis_anggaran', 'tpbs.nama as tpb_name', 'tpbs.jenis_anggaran as tpb_jenis_anggaran', 'anggaran_tpbs.anggaran']);
+            ->get(['relasi_pilar_tpbs.id', 'pilar_pembangunans.nama as pilar_name', 'pilar_pembangunans.jenis_anggaran as pilar_jenis_anggaran', 'tpbs.nama as tpb_name', 'tpbs.jenis_anggaran as tpb_jenis_anggaran', 'anggaran_tpbs.anggaran', 'tpbs.no_tpb as tpb_no_tpb']);
+
 
         // if (count($current) > 0) {
         //     $actionform = 'update';
@@ -272,7 +273,7 @@ class AnggaranTpbController extends Controller
                 return $item->tpb_name;
             }
         ])->sortByDesc(null);
-
+            
         // dd($pilars);
 
 
@@ -436,10 +437,14 @@ class AnggaranTpbController extends Controller
                 if($checkdata->anggaran != intval($param['anggaran'])) {
                     $checkdata->update(['anggaran' => intval($param['anggaran'])]);
                     AnggaranTpbController::store_log($checkdata->id, $checkdata->status_id, $param['anggaran'], 'RKA Revisi');
+                    Session::flash('success', "Berhasil Mengubah Input Data RKA");
+                    // return redirect()->route('anggaran_tpb.index')->with('success', 'Berhasil Mengubah Input Data RKA');
                 }                
             } else { // insert
                 $data = AnggaranTpb::create((array)$param);
                 AnggaranTpbController::store_log($data->id, $param['status_id'], $param['anggaran'], 'RKA');
+                Session::flash('success', "Berhasil Menyimpan Input Data RKA");
+                // return redirect()->route('anggaran_tpb.index')->with('success', 'Berhasil Menyimpan Input Data RKA');
             }
         }
 
