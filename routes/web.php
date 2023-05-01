@@ -461,7 +461,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('export_pdf', 'App\Http\Controllers\LaporanManajemen\LaporanKeuanganController@export_pdf')->name('laporan_manajemen.laporan_keuangan.export_pdf');
         });
     });
-    Auth::routes();
+    // Auth::routes();
 
 
     // Fetch Route
@@ -526,6 +526,78 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
         Route::post('store', 'App\Http\Controllers\UserGuideController@store')->name('userguide.store');
         Route::post('delete', 'App\Http\Controllers\UserGuideController@delete')->name('userguide.delete');
         Route::get('datatable', 'App\Http\Controllers\UserGuideController@datatable')->name('userguide.datatable');
+    });
+
+    //Route baru
+    Route::prefix('rencana_kerja')->group(function () {
+        Route::prefix('spdpumk_rka')->group(function () {
+            Route::get('index', 'App\Http\Controllers\RencanaKerja\SpdPumkRkaController@index')->name('rencana_kerja.spdpumk_rka.index');
+            Route::get('create/{perusahaan_id}/{tahun}', 'App\Http\Controllers\RencanaKerja\SpdPumkRkaController@create')->name('rencana_kerja.spdpumk_rka.create');
+            Route::post('store', 'App\Http\Controllers\RencanaKerja\SpdPumkRkaController@store')->name('rencana_kerja.spdpumk_rka.store');
+            Route::post('log', 'App\Http\Controllers\RencanaKerja\SpdPumkRkaController@log_status')->name('rencana_kerja.spdpumk_rka.log');
+            Route::get('datatable', 'App\Http\Controllers\RencanaKerja\SpdPumkRkaController@datatable')->name('rencana_kerja.spdpumk_rka.datatable');
+            Route::post('delete', 'App\Http\Controllers\RencanaKerja\SpdPumkRkaController@delete')->name('rencana_kerja.spdpumk_rka.delete');
+        });
+
+        Route::prefix('program')->group(function () {
+            Route::get('index', 'App\Http\Controllers\RencanaKerja\ProgramController@index')->name('rencana_kerja.program.index');
+            Route::get('create/{perusahaan_id}/{tahun}', 'App\Http\Controllers\RencanaKerja\ProgramController@create')->name('rencana_kerja.program.create');
+        });
+
+        Route::prefix('laporan_manajemen')->group(function () {
+            Route::get('index', 'App\Http\Controllers\RencanaKerja\LaporanManajemenController@index')->name('rencana_kerja.laporan_manajemen.index');
+            Route::get('datatable', 'App\Http\Controllers\RencanaKerja\LaporanManajemenController@datatable')->name('rencana_kerja.laporan_manajemen.datatable');
+            
+        });
+
+        Route::prefix('tble')->group(function () {
+            Route::get('index', 'App\Http\Controllers\RencanaKerja\TbleController@index')->name('rencana_kerja.tble.index');
+            Route::get('datatable', 'App\Http\Controllers\RencanaKerja\TbleController@datatable')->name('rencana_kerja.tble.datatable');
+            
+        });
+
+
+
+        // Route::get('index', 'App\Http\Controllers\AnggaranTpbController@index')->name('anggaran_tpb.index');
+        // Route::post('create', 'App\Http\Controllers\AnggaranTpbController@create')->name('anggaran_tpb.create');
+        // Route::post('edit', 'App\Http\Controllers\AnggaranTpbController@edit')->name('anggaran_tpb.edit');
+        // Route::post('store', 'App\Http\Controllers\AnggaranTpbController@store')->name('anggaran_tpb.store');
+        // Route::post('delete', 'App\Http\Controllers\AnggaranTpbController@delete')->name('anggaran_tpb.delete');
+        // Route::post('delete_by_pilar', 'App\Http\Controllers\AnggaranTpbController@delete_by_pilar')->name('anggaran_tpb.delete_by_pilar');
+        // Route::get('datatable', 'App\Http\Controllers\AnggaranTpbController@datatable')->name('anggaran_tpb.datatable');
+        // Route::post('export', 'App\Http\Controllers\AnggaranTpbController@export')->name('anggaran_tpb.export');
+        // Route::post('validasi', 'App\Http\Controllers\AnggaranTpbController@validasi')->name('anggaran_tpb.validasi');
+        // Route::post('get_status', 'App\Http\Controllers\AnggaranTpbController@get_status')->name('anggaran_tpb.get_status');
+        // Route::post('log_status', 'App\Http\Controllers\AnggaranTpbController@log_status')->name('anggaran_tpb.log_status');
+
+        // //
+        // Route::get('create2/{perusahaan_id}/{tahun}', 'App\Http\Controllers\AnggaranTpbController@create2')->name('anggaran_tpb.create2');
+        // Route::post('store2', 'App\Http\Controllers\AnggaranTpbController@store2')->name('anggaran_tpb.store2');
+    });
+
+    Route::prefix('laporan_realisasi')->group(function () {
+       
+        Route::prefix('triwulan')->group(function () {
+            Route::prefix('spd_pumk')->group(function () {
+                Route::get('index', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@index')->name('laporan_realisasi.triwulan.spd_pumk.index');
+                Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@datatable')->name('laporan_realisasi.triwulan.spd_pumk.datatable');
+                Route::get('create/{perusahaan_id}/{tahun}/{periode_id}', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@create')->name('laporan_realisasi.triwulan.spd_pumk.create');
+                Route::post('store', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@store')->name('laporan_realisasi.triwulan.spd_pumk.store');
+                Route::post('delete', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@delete')->name('laporan_realisasi.triwulan.spd_pumk.delete');
+                Route::post('log', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@log_status')->name('laporan_realisasi.triwulan.spd_pumk.log');
+            });
+            Route::prefix('laporan_manajemen')->group(function () {
+                Route::get('index', 'App\Http\Controllers\LaporanRealisasi\Triwulan\LaporanManajemenTriwulanController@index')->name('laporan_realisasi.triwulan.laporan_manajemen.index');
+                // Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\Triwulan\LaporanManajemenTriwulanController@datatable')->name('rencana_kerja.laporan_manajemen.datatable');
+                
+            });
+        });
+
+        Route::prefix('tble')->group(function () {
+            Route::get('index', 'App\Http\Controllers\LaporanRealisasi\TbleRealisasiController@index')->name('laporan_realisasi.tble.index');
+            // Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\TbleController@datatable')->name('rencana_kerja.tble.datatable');
+            
+        });
     });
 
     // untuk melakukan penarikan data api kegiatan dari app tjsl (cek data api update)

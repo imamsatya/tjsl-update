@@ -18,10 +18,12 @@ class PumkAnggaran extends Model
         'income_bumn_pembina_lain',
         'income_jasa_adm_pumk',
         'income_adm_bank',
+        'income_biaya_lainnya',
         'income_total',
         'outcome_mandiri',
         'outcome_kolaborasi_bumn',
         'outcome_bumn_khusus',
+        'outcome_bri',
         'outcome_total',
         'saldo_akhir',
         'created_by',
@@ -29,6 +31,4 @@ class PumkAnggaran extends Model
         'created_at',
         'updated_at'
     ];
-
-                    
 }

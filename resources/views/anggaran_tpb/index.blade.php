@@ -359,10 +359,12 @@
                     
                                         $total += $p->sum_anggaran;
                                     @endphp
-                                
+                                    @if( (int)($p->sum_anggaran_cid) != 0 || (int)($p->sum_anggaran_noncid) != 0)
+                                    {{-- @if(true) --}}
+                                    
                                     <tr class="treegrid-bumn{{@$b->id}}pilar{{str_replace(' ', '-', @$p->pilar_nama)}} {{$class_parent}} item-bumn{{@$b->id}}pilar{{str_replace(' ', '-', @$p->pilar_nama)}}" >
                                         <td style="text-align:center;">{{$no}}</td>
-                                        <td>{{$p->pilar_nama}}</td>
+                                        <td>{{$p->pilar_nama}} </td>
                                         <td style="text-align:right;">{{number_format($p->sum_anggaran_cid,0,',',',')}}</td>
                                         <td>{{number_format($p->sum_anggaran_noncid,0,',',',')}}</td>
                                         <td>{{number_format($p->sum_anggaran_noncid + $p->sum_anggaran_cid,0,',',',')}}</td>
@@ -381,6 +383,7 @@
                                             <input class="form-check-input is_active-check" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
                                             </label></td>
                                     </tr>
+                                    @endif
                                     
                                     @foreach ($anggaran_anak as $a) 
                                     @php 
@@ -390,7 +393,9 @@
                                         }else if($a->status_id == 3){
                                             $status_class = 'warning';
                                         }
-                                    @endphp     
+                                    @endphp  
+                                     @if( (int)($p->sum_anggaran_cid) != 0 || (int)($p->sum_anggaran_noncid) != 0)   
+                                     @if( (int)($a->anggaran_cid) != 0 || (int)($a->anggaran_noncid) != 0)   
                                     <tr class="treegrid-{{$a->id}} treegrid-parent-bumn{{@$b->id}}pilar{{str_replace(' ', '-', @$p->pilar_nama)}} item{{$a->id}}">
                                         <td></td>
                                         <td>{{@$a->no_tpb .' - '. @$a->tpb_nama}}</td>
@@ -413,6 +418,8 @@
                                             <input class="form-check-input is_active-check" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
                                             </label></td>
                                     </tr>
+                                    @endif
+                                    @endif
                                     @endforeach
                                 @endforeach
                             @endforeach
@@ -1066,8 +1073,8 @@
 
     //Imam
     function redirectToNewPage() {
-    var selectedPerusahaanId = $('#perusahaan_id').val();
-    var selectedPerusahaanText = $('#perusahaan_id option:selected').text();
+        var selectedPerusahaanId = $('#perusahaan_id').val();
+        var selectedPerusahaanText = $('#perusahaan_id option:selected').text();
 
     var selectedTahun = $('#tahun').val();
     var selectedTahunText = $('#tahun option:selected').text();
@@ -1089,13 +1096,13 @@
     // console.log("selectedTahun: " + selectedTahun);
     // console.log("selectedTahunText: " + selectedTahunText);
 
-    // Use the Laravel's built-in route function to generate the new URL
-    var url = "{{ route('anggaran_tpb.create2', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
-    url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun);
+        // Use the Laravel's built-in route function to generate the new URL
+        var url = "{{ route('anggaran_tpb.create2', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
+        url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun);
 
-    // Redirect the user to the new page
-    window.location.href = url;
-}
+        // Redirect the user to the new page
+        window.location.href = url;
+    }
 </script>
 @endsection
 
