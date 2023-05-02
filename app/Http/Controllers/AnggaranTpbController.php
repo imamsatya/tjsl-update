@@ -64,7 +64,6 @@ class AnggaranTpbController extends Controller
         $anggaran       = AnggaranTpb::select('relasi_pilar_tpbs.pilar_pembangunan_id', 'anggaran_tpbs.*', 'tpbs.nama as tpb_nama', 'tpbs.no_tpb as no_tpb')
             ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
             ->leftJoin('tpbs', 'tpbs.id', 'relasi_pilar_tpbs.tpb_id')
-            ->leftJoin('tpbs', 'tpbs.id', 'relasi_pilar_tpbs.tpb_id')
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id');
         $anggaran_pilar = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
@@ -72,10 +71,7 @@ class AnggaranTpbController extends Controller
         $anggaran_bumn  = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
             ->leftJoin('perusahaans', 'perusahaans.id', 'anggaran_tpbs.perusahaan_id')
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
-            ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
-            ->leftJoin('perusahaans', 'perusahaans.id', 'anggaran_tpbs.perusahaan_id')
-            ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
-            ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id');
+            ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id');            
 
         if ($perusahaan_id) {
             $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
@@ -110,29 +106,11 @@ class AnggaranTpbController extends Controller
                 $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.status_id', $statusId->id);
                 $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.status_id', $statusId->id);
             }
-        }
-
-        if ($request->tpb) {
-            $anggaran = $anggaran->where('tpbs.no_tpb', $request->tpb);
-            $anggaran_pilar = $anggaran_pilar->where('tpbs.no_tpb', $request->tpb);
-            $anggaran_bumn = $anggaran_bumn->where('tpbs.no_tpb', $request->tpb);
-        }
-
-        if($request->status){
-            $statusId = DB::table('statuss')->where('nama', $request->status)->first();
-            if($statusId) {
-                $anggaran = $anggaran->where('anggaran_tpbs.status_id', $statusId->id);
-                $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.status_id', $statusId->id);
-                $anggaran_bumn = $anggaran_bumn->where('anggaran_tpbs.status_id', $statusId->id);
-            }
-        }
+        }                
 
         $anggaran_pilar = $anggaran_pilar->select(
             'anggaran_tpbs.perusahaan_id',
-            'anggaran_tpbs.tahun',
-            // 'relasi_pilar_tpbs.pilar_pembangunan_id',
-            DB::Raw('sum(case when tpbs.jenis_anggaran = \'CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_cid'),
-            DB::Raw('sum(case when tpbs.jenis_anggaran = \'non CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_noncid'),
+            'anggaran_tpbs.tahun',            
             // 'relasi_pilar_tpbs.pilar_pembangunan_id',
             DB::Raw('sum(case when tpbs.jenis_anggaran = \'CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_cid'),
             DB::Raw('sum(case when tpbs.jenis_anggaran = \'non CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_noncid'),
@@ -159,9 +137,7 @@ class AnggaranTpbController extends Controller
         $anggaran_bumn = $anggaran_bumn->select(
             'anggaran_tpbs.perusahaan_id',
             'perusahaans.nama_lengkap',
-            'perusahaans.id',
-            DB::Raw('sum(case when tpbs.jenis_anggaran = \'CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_cid'),
-            DB::Raw('sum(case when tpbs.jenis_anggaran = \'non CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_noncid'),
+            'perusahaans.id',            
             DB::Raw('sum(case when tpbs.jenis_anggaran = \'CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_cid'),
             DB::Raw('sum(case when tpbs.jenis_anggaran = \'non CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_noncid')
         )
@@ -171,11 +147,7 @@ class AnggaranTpbController extends Controller
             ->get();
         $anggaran = $anggaran->select('*', 'anggaran_tpbs.id as id_anggaran','pilar_pembangunans.nama as pilar_nama', 'tpbs.nama as tpb_nama', DB::Raw('(case when tpbs.jenis_anggaran = \'non CID\' then anggaran end) as anggaran_noncid'), DB::Raw('(case when tpbs.jenis_anggaran = \'CID\' then anggaran end) as anggaran_cid'))
                 ->orderBy('pilar_pembangunans.nama')
-                ->orderBy('no_tpb')->get();
-        
-        $anggaran = $anggaran->select('*', 'anggaran_tpbs.id as id_anggaran','pilar_pembangunans.nama as pilar_nama', 'tpbs.nama as tpb_nama', DB::Raw('(case when tpbs.jenis_anggaran = \'non CID\' then anggaran end) as anggaran_noncid'), DB::Raw('(case when tpbs.jenis_anggaran = \'CID\' then anggaran end) as anggaran_cid'))
-                ->orderBy('pilar_pembangunans.nama')
-                ->orderBy('no_tpb')->get();
+                ->orderBy('no_tpb')->get();        
         
 
         return view($this->__route . '.index', [
@@ -185,8 +157,8 @@ class AnggaranTpbController extends Controller
             'anggaran' => $anggaran,
             'anggaran_pilar' => $anggaran_pilar,
             'anggaran_bumn' => $anggaran_bumn,
-            'pilar' => PilarPembangunan::where('is_active', true)->get(),
-            'tpb' => Tpb::get(),
+            'pilar' => PilarPembangunan::select(DB::raw('DISTINCT ON (nama) *'))->where('is_active', true)->orderBy('nama')->orderBy('id')->get(),
+            'tpb' => Tpb::select(DB::raw('DISTINCT ON (no_tpb) *'))->orderBy('no_tpb')->orderBy('id')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
             'tahun' => ($request->tahun ? $request->tahun : date('Y')),
@@ -207,16 +179,19 @@ class AnggaranTpbController extends Controller
      */
 
     public function log_status(Request $request)
-    {
-        $anggaran = AnggaranTpb::find((int)$request->input('id'));
-        $log_anggaran_tpb = LogAnggaranTpb::where('anggaran_tpb_id', (int)$request->input('id'))
+    {        
+        $log_anggaran_tpb_cid = LogAnggaranTpb::where('anggaran_tpb_id', (int)$request->input('id_cid'))
+            ->orderBy('created_at')
+            ->get();
+
+        $log_anggaran_tpb_noncid = LogAnggaranTpb::where('anggaran_tpb_id', (int)$request->input('id_noncid'))
             ->orderBy('created_at')
             ->get();
 
         return view($this->__route . '.log_status', [
             'pagetitle' => 'Log Status',
-            'data' => $anggaran,
-            'log' => $log_anggaran_tpb
+            'log_cid' => $log_anggaran_tpb_cid,
+            'log_noncid' => $log_anggaran_tpb_noncid
         ]);
     }
 
@@ -427,11 +402,20 @@ class AnggaranTpbController extends Controller
 
                 DB::beginTransaction();
                 try {
-                    $anggaran_tpb = AnggaranTpb::find((int)$request->input('id'));
-                    $param['anggaran'] = str_replace(',', '', $request->input('anggaran'));
-                    $anggaran_tpb->update((array)$param);
+                    $anggaran_tpb_cid = AnggaranTpb::find((int) $request->input('id_cid'));
+                    $anggaran_tpb_noncid = AnggaranTpb::find((int) $request->input('id_noncid'));
 
-                    AnggaranTpbController::store_log($anggaran_tpb->id, $anggaran_tpb->status_id, $param['anggaran'], 'RKA Revisi');
+                    if($anggaran_tpb_cid) {
+                        $param_cid['anggaran'] = str_replace(',', '', $request->input('anggaran_cid'));
+                        $anggaran_tpb_cid->update((array)$param_cid);
+                        AnggaranTpbController::store_log($anggaran_tpb_cid->id, $anggaran_tpb_cid->status_id, $param_cid['anggaran'], 'RKA Revisi');
+                    }
+
+                    if($anggaran_tpb_noncid) {
+                        $param_noncid['anggaran'] = str_replace(',', '', $request->input('anggaran_noncid'));
+                        $anggaran_tpb_noncid->update((array)$param_noncid);
+                        AnggaranTpbController::store_log($anggaran_tpb_noncid->id, $anggaran_tpb_noncid->status_id, $param_noncid['anggaran'], 'RKA Revisi');
+                    }
 
                     DB::commit();
                     $result = [
@@ -723,7 +707,8 @@ class AnggaranTpbController extends Controller
 
         try {
 
-            $anggaran_tpb = AnggaranTpb::find((int)$request->input('id'));
+            $anggaran_tpb_cid = AnggaranTpb::find((int)$request->input('id_cid'));
+            $anggaran_tpb_noncid = AnggaranTpb::find((int)$request->input('id_noncid'));
 
             return view($this->__route . '.edit', [
                 'pagetitle' => $this->pagetitle,
@@ -731,10 +716,39 @@ class AnggaranTpbController extends Controller
                 'tpb' => Tpb::get(),
                 'pilar' => PilarPembangunan::get(),
                 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
-                'data' => $anggaran_tpb
+                'data' => $anggaran_tpb_cid,
+                'data_cid' => $anggaran_tpb_cid,
+                'data_noncid' => $anggaran_tpb_noncid
             ]);
         } catch (Exception $e) {
         }
+    }
+
+    public function deleteBySelect(Request $request) {
+        DB::beginTransaction();
+        try {
+            $list_id_anggaran = $request->input('anggaran_deleted');
+            foreach($list_id_anggaran as $id_anggaran) {
+                $data = AnggaranTpb::find((int) $id_anggaran);
+                $param['anggaran'] = 0;
+                $data->update((array)$param);
+                AnggaranTpbController::store_log($data->id, $data->status_id, $param['anggaran'], 'RKA Revisi - Delete');
+            }
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses hapus data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal hapus data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
     }
 
     /**

@@ -345,7 +345,11 @@
             });
             
             $("#close-btn").on('click', function() {
-                window.location.href = "{{route('anggaran_tpb.index')}}";
+                var url = window.location.pathname;
+                var segments = url.split('/');
+                console.log(segments)
+                let routeTo = "{{route('anggaran_tpb.index')}}"+"?perusahaan_id="+segments[3]+"&tahun="+segments[4]                
+                window.location.href = routeTo
             })
 
             $("#select-tahun").on('change', function() {
@@ -451,26 +455,31 @@
                         })
                     },
                     success: function(response) {
+
+                        $.unblockUI();
                        
                         // console.log(`success : ${response}`)
                         // toastr.success(
                         //     `Berhasil menyimpan data!`
                         // );
-                        // swal.fire({                    
-                        //     icon: 'success',
-                        //     title: 'Sukses!',
-                        //     html: 'Berhasil menyimpan data',
-                        //     type: 'success', 
-                        //     confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
-                        // }).then(function(){
-                        //     $('html, body').animate({ scrollTop: 0 }, 'slow');
-                        //     formChanged = false;
-                        // })
+                        swal.fire({                    
+                            icon: 'success',
+                            title: 'Sukses!',
+                            html: 'Berhasil menyimpan data',
+                            type: 'success', 
+                            confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                        }).then(function(){
+                            $('html, body').animate({ scrollTop: 0 }, 'slow');
+                            formChanged = false;
+                        })
 
-                        var url = "{{ route('anggaran_tpb.index') }}";
-                        window.location.href = url;
-                        $.unblockUI();
+                        var url = window.location.pathname;
+                        var segments = url.split('/');
+                        console.log(segments)
+                        let routeTo = "{{route('anggaran_tpb.index')}}"+"?perusahaan_id="+segments[3]+"&tahun="+segments[4]                
+                        window.location.href = routeTo
                         
+                                            
                         // window.location.reload();
                     },
                     error: function(jqXHR, textStatus, errorThrown) {

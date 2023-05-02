@@ -1,10 +1,11 @@
 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
 	@csrf
-	<input type="hidden" name="id" id="id" readonly="readonly" value="{{$actionform == 'update'? (int)$data->id : null}}" />
+	<input type="hidden" name="id_cid" id="id_cid" readonly="readonly" value="{{$actionform == 'update'? ($data_cid ? (int)$data_cid->id : null) : null}}" />
+    <input type="hidden" name="id_noncid" id="id_noncid" readonly="readonly" value="{{$actionform == 'update'? ($data_noncid ? (int)$data_noncid->id : null) : null}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
 
     <div class="form-group row mb-5">
-        <div class="col-lg-12">
+        <div class="col-lg-6">
             <label>BUMN</label>
             <select class="form-select form-select-solid form-select2" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" disabled="disabled">
                 <option></option>
@@ -16,9 +17,8 @@
                 @endforeach
             </select>
         </div>
-    </div>
-    <div class="form-group row mb-5">
         <div class="col-lg-6">
+            <label>TPB</label>
             <select class="form-select form-select-solid form-select2" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB" disabled="disabled">
                 <option></option>
                 @foreach($tpb as $p)  
@@ -29,8 +29,23 @@
                 @endforeach
             </select>
         </div>
+    </div>   
+    <div class="form-group row mb-5">
         <div class="col-lg-6">
-            <input type="text" class="form-control input-anggaran" style="text-align:right;" name="anggaran" value="{{  number_format($data->anggaran,0,',',',') }}" required>
+            <label>CID</label>
+            @if($data_cid)            
+            <input type="text" class="form-control input-anggaran" style="text-align:right;" name="anggaran_cid" value="{{  number_format($data_cid->anggaran,0,',',',') }}" required>
+            @else
+            <input type="text" class="form-control" disabled>
+            @endif
+        </div>
+        <div class="col-lg-6">
+            <label>NON CID</label>
+            @if($data_noncid)
+            <input type="text" class="form-control input-anggaran" style="text-align:right;" name="anggaran_noncid" value="{{  number_format($data_noncid->anggaran,0,',',',') }}" required>
+            @else
+            <input type="text" class="form-control" disabled>
+            @endif
         </div>
     </div>
     <div class="text-center pt-15">
@@ -91,7 +106,7 @@
                 }
             },
         submitHandler: function(form){
-                var typesubmit = $("input[type=submit][clicked=true]").val();
+                var typesubmit = $("input[type=submit][clicked=true]").val();                
                 
                 $(form).ajaxSubmit({
                     type: 'post',
