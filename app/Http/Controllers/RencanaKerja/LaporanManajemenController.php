@@ -46,6 +46,9 @@ class LaporanManajemenController extends Controller
                 }
             }
         }
+
+        //cek perusahaan
+
         $status = DB::table('statuses')->get();
         $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
         $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')

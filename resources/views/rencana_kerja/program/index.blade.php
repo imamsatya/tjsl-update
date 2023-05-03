@@ -129,118 +129,77 @@
                             <!--end::Alert-->
                         @endif
                         <!--begin: Datatable -->
-                        <form action="{{ route('referensi.tpb.store') }}" method="POST">
-                            @csrf
-                            <!--begin::Input group-->
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="row mb-6">
-                                        <!--begin::Label-->
-                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">BUMN</label>
-                                        <!--end::Label-->
-                                        <!--begin::Col-->
-                                        <div class="col-lg-8 fv-row">
+                        <div class="row" id="form-cari">
+                            <div class="form-group row  mb-5">
+                                <div class="col-lg-6">
+                                    <label>BUMN</label>
+                                    @php
+                                        $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
+                                    @endphp
+                                    <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
+                                        <option></option>
+                                        @foreach($perusahaan as $p)  
                                             @php
-                                            $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
-                                        @endphp
-                                        <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
-                                            <option></option>
-                                            @foreach($perusahaan as $p)  
-                                                @php
-                                                    $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
-                                                @endphp
-                                                <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
-                                            @endforeach
-                                        </select>
-
-                                        </div>
-                                        <!--end::Col-->
-                                    </div>
-                                    <div class="row mb-6">
-                                        <!--begin::Label-->
-                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Pilar</label>
-                                        <!--end::Label-->
-                                        <!--begin::Col-->
-                                        <div class="col-lg-8 fv-row">
-                                            @php
-                                            $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
-                                        @endphp
-                                        <select class="form-select form-select-solid form-select2" id="pilar_id" name="pilar_id" data-kt-select2="true" data-placeholder="Pilih Pilar" {{ $disabled }}>
-                                            <option></option>
-                                            @foreach($perusahaan as $p)  
-                                                @php
-                                                    $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
-                                                @endphp
-                                                <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
-                                            @endforeach
-                                        </select>
-
-                                        </div>
-                                        <!--end::Col-->
-                                    </div>
-                                    <div class="row mb-6">
-                                        <!--begin::Label-->
-                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Anggaran</label>
-                                        <!--end::Label-->
-                                        <!--begin::Col-->
-                                        <div class="col-lg-8 fv-row">
-                                            <select  id="jenis_anggaran" class="form-select form-select-solid form-select2" name="jenis_anggaran" data-kt-select2="true" data-placeholder="Pilih Status Anggaran" data-allow-clear="true">
-                                                <option></option>
-                                                <option value="CID" >
-                                                        CID</option>
-                                                <option value="Non CID" >
-                                                    Non CID</option>
-                                            </select>
-
-                                        </div>
-                                        <!--end::Col-->
-                                    </div>
-                                   
+                                                $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
+                                            @endphp
+                                            <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="row mb-6">
-                                        <!--begin::Label-->
-                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Tahun</label>
-                                        <!--end::Label-->
-                                        <!--begin::Col-->
-                                        <div class="col-lg-8 fv-row">
-                                            <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true" >
-                                                @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
-                                                    @php
-                                                        $select = (($i == $tahun) ? 'selected="selected"' : '');
-                                                    @endphp
-                                                    <option value="{{$i}}" {!! $select !!}>{{$i}}</option>
-                                                @php } @endphp
-                                            </select>
-
-                                        </div>
-                                        <!--end::Col-->
-                                    </div>
-                                    <div class="row mb-6">
-                                        <!--begin::Label-->
-                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">TPB</label>
-                                        <!--end::Label-->
-                                        <!--begin::Col-->
-                                        <div class="col-lg-8 fv-row">
+                                <div class="col-lg-6">
+                                    <label>Tahun</label>
+                                    <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true" >
+                                        @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
                                             @php
-                                            $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
-                                        @endphp
-                                        <select class="form-select form-select-solid form-select2" id="tpb_id" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB" {{ $disabled }}>
-                                            <option></option>
-                                            @foreach($perusahaan as $p)  
-                                                @php
-                                                    $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
-                                                @endphp
-                                                <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
-                                            @endforeach
-                                        </select>
-
-                                        </div>
-                                        <!--end::Col-->
-                                    </div>
-                                    <div class="row mb-6">
+                                                $select = (($i == $tahun) ? 'selected="selected"' : '');
+                                            @endphp
+                                            <option value="{{$i}}" {!! $select !!}>{{$i}}</option>
+                                        @php } @endphp
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row  mb-5">
+                                <div class="col-lg-6">
+                                    <label>Jenis Anggaran</label>
+                                    <select  id="jenis-anggaran" class="form-select form-select-solid form-select2" name="jenis_anggaran" data-kt-select2="true" data-placeholder="Pilih Jenis Anggaran" data-allow-clear="true">
+                                        <option></option>
+                                        <option value="CID" {{ request('jenis_anggaran') === 'CID' ? 'selected="selected"' : '' }} >
+                                                CID</option>
+                                        <option value="non CID" {{ request('jenis_anggaran') === 'non CID' ? 'selected="selected"' : '' }} >
+                                            non CID</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>TPB</label>
+                                    <select id="tpb_id" class="form-select form-select-solid form-select2" name="tpb_id" data-kt-select2="true"  data-placeholder="Pilih TPB" data-allow-clear="true">
+                                        <option></option>
+                                        @foreach($tpb as $p)  
+                                            @php
+                                                $select = (($p->no_tpb == $tpb_id) ? 'selected="selected"' : '');
+                                            @endphp
+                                            <option data-jenis-anggaran="{{ $p->jenis_anggaran }}" value="{{ $p->no_tpb }}" {!! $select !!}>{{ $p->no_tpb }} - {{ $p->nama }} [{{$p->jenis_anggaran}}]</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row  mb-5">
+                                <div class="col-lg-6">
+                                    <label>Pilar Pembangunan</label>
+                                    <select id="pilar_pembangunan_id" class="form-select form-select-solid form-select2" name="pilar_pembangunan_id" data-kt-select2="true" data-placeholder="Pilih Pilar" data-allow-clear="true">
+                                        <option></option>
+                                        @foreach($pilar as $p)  
+                                            @php
+                                                $select = (($p->nama == $pilar_pembangunan_id) ? 'selected="selected"' : '');
+                                            @endphp
+                                            <option data-jenis-anggaran="{{ $p->jenis_anggaran }}" value="{{ $p->nama }}" {!! $select !!}>{{ $p->nama }} - {{$p->jenis_anggaran}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>Kriteria Program</label>
+                                    <div class="row mb-6 mt-2">
                                         <!--begin::Label-->
-                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Kriteria Program</label>
+                                        {{-- <label class="col-lg-4 col-form-label required fw-semibold fs-6">Kriteria Program</label> --}}
                                         <!--end::Label-->
                                         <!--begin::Col-->
                                         <div class="col-lg-8 fv-row d-flex align-items-center justify-content-start">
@@ -266,13 +225,16 @@
                                             </div>
                                         </div>
                                         <!--end::Col-->
-                                    </div>
+                                    </div>                           
                                 </div>
                             </div>
-                            <!--end::Input group-->
-                            <br>
-                            <button type="submit" class="btn btn-primary">Proses</button>
-                        </form>
+                            <div class="form-group row  mb-5">
+                                <div class="col-lg-6">
+                                    <button id="proses" class="btn btn-success me-3">Proses</button>
+                                </div>
+                            </div>
+                            <div class="separator border-gray-200 mb-10"></div>
+                        </div>
                     </div>
                 </div>
                 <!--end::Card body-->
@@ -479,6 +441,49 @@
             });
 
 
+            const urlParams = new URLSearchParams(window.location.search)
+            const checkJenisAnggaran = urlParams.get('jenis_anggaran')
+            if(checkJenisAnggaran !== '') {
+                setTimeout(()=>{
+                    $("#jenis-anggaran").val(checkJenisAnggaran).trigger('change')
+                }, 1000)
+            }
+            $("#jenis-anggaran").on('change', function(){
+                // yovi
+                const jenisAnggaran = $(this).val()
+                $("#tpb_id, #pilar_pembangunan_id").val('').trigger('change')
+                
+                
+                $("#tpb_id, #pilar_pembangunan_id").select2({    
+                    templateResult: function(data) {
+                        if($(data.element).attr('data-jenis-anggaran') === jenisAnggaran || jenisAnggaran === '') return data.text
+                        return null
+                    },
+                    templateSelection: function(data) {
+                        if($(data.element).attr('data-jenis-anggaran') === jenisAnggaran || jenisAnggaran === '') return data.text
+                        return null
+                    }
+                })            
+
+                let textAnggaran = jenisAnggaran ? `- ${jenisAnggaran}` : ''
+                $("#select2-pilar_pembangunan_id-container .select2-selection__placeholder").text('Pilih Pilar '+textAnggaran)
+                $("#select2-tpb_id-container .select2-selection__placeholder").text('Pilih TPB '+textAnggaran)
+
+                // $("#tpb_id").select2({    
+                //     // placeholder: 'Pilih TPB',            
+                //     templateResult: function(data) {
+                //         if($(data.element).attr('data-jenis-anggaran') === jenisAnggaran || jenisAnggaran === '') return $('<span>').text(data.text);
+                //         return null
+                //     },
+                //     templateSelection: function(data) {
+                //         if($(data.element).attr('data-jenis-anggaran') === jenisAnggaran || jenisAnggaran === '') return data.text
+                //         return null
+                //     }
+                // })            
+            
+         })
+
+
         });
 
         function setDatatable() {
@@ -627,6 +632,9 @@
 
         var selectedTahun = $('#tahun').val();
         var selectedTahunText = $('#tahun option:selected').text();
+        
+
+        var selectedJenisAnggaran = $('#jenis-anggaran').val();
 
         // Do something with the selected value and text
         console.log("selectedPerusahaanId: " + selectedPerusahaanId);
@@ -634,10 +642,19 @@
 
         console.log("selectedTahun: " + selectedTahun);
         console.log("selectedTahunText: " + selectedTahunText);
+        if(selectedPerusahaanId === '' || selectedTahun === '' || selectedJenisAnggaran === '') {
+        swal.fire({                    
+            icon: 'warning',
+            html: 'Perusahaan (BUMN), Tahun dan Jenis Anggaran harus terisi!',
+            type: 'warning', 
+            confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+        });
+        return
+    }
 
         // Use the Laravel's built-in route function to generate the new URL
-        var url = "{{ route('rencana_kerja.spdpumk_rka.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
-        url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun);
+        var url = "{{ route('rencana_kerja.program.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'jenis_anggaran' => ':jenis_anggaran']) }}";
+        url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(':jenis_anggaran', selectedJenisAnggaran);
 
         // Redirect the user to the new page
         window.location.href = url;

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TargetTpb extends Model
 {
     protected $guarded = [];
-
+    protected $table = 'target_tpbs';
     public function status()
     {
     	return $this->belongsTo('App\Models\Status', 'status_id');
