@@ -433,6 +433,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
         //
         Route::get('create2/{perusahaan_id}/{tahun}', 'App\Http\Controllers\AnggaranTpbController@create2')->name('anggaran_tpb.create2');
         Route::post('store2', 'App\Http\Controllers\AnggaranTpbController@store2')->name('anggaran_tpb.store2');
+        Route::post('delete_by_select', 'App\Http\Controllers\AnggaranTpbController@deleteBySelect')->name('anggaran_tpb.delete_by_select');
     });
 
     Route::prefix('laporan_manajemen')->group(function () {
