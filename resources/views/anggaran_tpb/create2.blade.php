@@ -211,7 +211,7 @@
                                             <div class="col-1"></div>
                                             <div class="col-lg-5">
                                                 <!-- <div class="ms-8">{{ $indexTPB }}</div> -->
-                                                {{ $indexTPB }}
+                                           {{$tpb[0]->tpb_no_tpb.' - '.$indexTPB }}
 
                                             </div>
                                             <div class="col-lg-3">
@@ -345,7 +345,11 @@
             });
             
             $("#close-btn").on('click', function() {
-                window.location.href = "{{route('anggaran_tpb.index')}}";
+                var url = window.location.pathname;
+                var segments = url.split('/');
+                console.log(segments)
+                let routeTo = "{{route('anggaran_tpb.index')}}"+"?perusahaan_id="+segments[3]+"&tahun="+segments[4]                
+                window.location.href = routeTo
             })
 
             $("#select-tahun").on('change', function() {
@@ -372,12 +376,12 @@
             });
 
             // Add event listener to window unload
-            window.addEventListener('beforeunload', (event) => {
-                if (formChanged) {
-                    event.preventDefault();
-                    event.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
-                }
-            });
+            // window.addEventListener('beforeunload', (event) => {
+            //     if (formChanged) {
+            //         event.preventDefault();
+            //         event.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+            //     }
+            // });
             
             const clearBtn = document.querySelector("#clear-btn");
             clearBtn.addEventListener("click", function() {
@@ -451,7 +455,9 @@
                         })
                     },
                     success: function(response) {
+
                         $.unblockUI();
+                       
                         // console.log(`success : ${response}`)
                         // toastr.success(
                         //     `Berhasil menyimpan data!`
@@ -466,8 +472,14 @@
                             $('html, body').animate({ scrollTop: 0 }, 'slow');
                             formChanged = false;
                         })
+
+                        var url = window.location.pathname;
+                        var segments = url.split('/');
+                        console.log(segments)
+                        let routeTo = "{{route('anggaran_tpb.index')}}"+"?perusahaan_id="+segments[3]+"&tahun="+segments[4]                
+                        window.location.href = routeTo
                         
-                        
+                                            
                         // window.location.reload();
                     },
                     error: function(jqXHR, textStatus, errorThrown) {

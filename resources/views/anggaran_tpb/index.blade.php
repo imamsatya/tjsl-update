@@ -197,7 +197,7 @@
                                         @php
                                             $select = (($p->no_tpb == $tpb_id) ? 'selected="selected"' : '');
                                         @endphp
-                                        <option data-jenis-anggaran="{{ $p->jenis_anggaran }}" value="{{ $p->no_tpb }}" {!! $select !!}>{{ $p->no_tpb }} - {{ $p->nama }} [{{$p->jenis_anggaran}}]</option>
+                                        <option data-jenis-anggaran="{{ $p->jenis_anggaran }}" value="{{ $p->no_tpb }}" {!! $select !!}>{{ $p->no_tpb }} - {{ $p->nama }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -211,7 +211,7 @@
                                         @php
                                             $select = (($p->nama == $pilar_pembangunan_id) ? 'selected="selected"' : '');
                                         @endphp
-                                        <option data-jenis-anggaran="{{ $p->jenis_anggaran }}" value="{{ $p->nama }}" {!! $select !!}>{{ $p->nama }} - {{$p->jenis_anggaran}}</option>
+                                        <option data-jenis-anggaran="{{ $p->jenis_anggaran }}" value="{{ $p->nama }}" {!! $select !!}>{{ $p->nama }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -294,15 +294,16 @@
                                     $no=0;
                                     $sum_bumn = $anggaran_bumn->where('perusahaan_id', $b->id)->first(); 
                                     $anggaran_pilar_bumn = $anggaran_pilar->where('perusahaan_id', $b->id);
+
+                                    $statusInProgress = $anggaran->where('perusahaan_id', $b->id)->where('status_id', 2)->first();
+                                    if($statusInProgress) $statusPerusahaan = $statusInProgress;
+                                    else $statusPerusahaan = $anggaran->where('perusahaan_id', $b->id)->first();
                                     
-                                    $status = $anggaran->where('perusahaan_id', $b->id)->first();
-                                    if($status){
-                                        $status_class = 'primary';
-                                        if($status->status_id == 1){
-                                            $status_class = 'success';
-                                        }else if($status->status_id == 3){
-                                            $status_class = 'warning';
-                                        }
+                                    $status_class = 'primary';
+                                    if($statusPerusahaan->status_id == 1){
+                                        $status_class = 'success';
+                                    } else if($statusPerusahaan->status_id == 3){
+                                        $status_class = 'warning';
                                     }
 
                                     $total_cid += $sum_bumn->sum_anggaran_cid;
@@ -317,24 +318,22 @@
                                         {{number_format($sum_bumn->sum_anggaran_cid,0,',',',')}}
                                         @endif
                                     </td>
-                                    <td>
+                                    <td style="text-align:right;">
                                         @if($sum_bumn)
                                         {{number_format($sum_bumn->sum_anggaran_noncid,0,',',',')}}
                                         @endif
                                     </td>
-                                    <td>
+                                    <td style="text-align:right;">
                                         @if($sum_bumn)
                                         {{number_format($sum_bumn->sum_anggaran_noncid +$sum_bumn->sum_anggaran_cid ,0,',',',')}}
                                         @endif
                                     </td>
                                     <td style="text-align:center;">
-                                        @if($status)
-                                        <a class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{@$status->status->nama}}</a>
-                                        @endif
+                                        <a class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{@$statusPerusahaan->status->nama}}</a>
                                     </td>
                                     <td></td>
                                     <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                        <input class="form-check-input is_active-check" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
+                                        <input class="form-check-input is_active-check perusahaan-check" data-perusahaan-parent="perusahaan-{{$b->id}}" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
                                         </label></td>
                                   
                                 </tr>  
@@ -343,12 +342,16 @@
                                     @php 
                                         $no++;
                                         $anggaran_anak = $anggaran->where('perusahaan_id', $b->id)->where('pilar_nama', $p->pilar_nama);                                        
+
                                         
-                                        $status = $anggaran->where('perusahaan_id', $b->id)->where('pilar_nama', $p->pilar_nama)->first();
+                                        $statusInProgress = $anggaran->where('perusahaan_id', $b->id)->where('pilar_nama', $p->pilar_nama)->where('status_id', 2)->first();
+                                        if($statusInProgress) $statusPilar = $statusInProgress;
+                                        else $statusPilar = $anggaran->where('perusahaan_id', $b->id)->where('pilar_nama', $p->pilar_nama)->first();
+                                        
                                         $status_class = 'primary';
-                                        if($status->status_id == 1){
+                                        if($statusPilar->status_id == 1){
                                             $status_class = 'success';
-                                        }else if($status->status_id == 3){
+                                        } else if($statusPilar->status_id == 3){
                                             $status_class = 'warning';
                                         }
                                         
@@ -358,61 +361,98 @@
                                         }
                     
                                         $total += $p->sum_anggaran;
+                                        $currentPrintable = true;
+                                        $nextPrintable = true;
                                     @endphp
-                                
+                                    
+                                    
                                     <tr class="treegrid-bumn{{@$b->id}}pilar{{str_replace(' ', '-', @$p->pilar_nama)}} {{$class_parent}} item-bumn{{@$b->id}}pilar{{str_replace(' ', '-', @$p->pilar_nama)}}" >
                                         <td style="text-align:center;">{{$no}}</td>
-                                        <td>{{$p->pilar_nama}}</td>
+                                        <td>{{$p->pilar_nama}} </td>
                                         <td style="text-align:right;">{{number_format($p->sum_anggaran_cid,0,',',',')}}</td>
-                                        <td>{{number_format($p->sum_anggaran_noncid,0,',',',')}}</td>
-                                        <td>{{number_format($p->sum_anggaran_noncid + $p->sum_anggaran_cid,0,',',',')}}</td>
+                                        <td style="text-align:right;">{{number_format($p->sum_anggaran_noncid,0,',',',')}}</td>
+                                        <td style="text-align:right;">{{number_format($p->sum_anggaran_noncid + $p->sum_anggaran_cid,0,',',',')}}</td>
                                         <td style="text-align:center;">
-                                            <a class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{@$status->status->nama}}</a>
+                                            <a class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{@$statusPilar->status->nama}}</a>
                                         </td>
-                                        <td style="text-align:center;">
-                                            @if(!$view_only)
-                                                @if($status->status_id != 1)
-                                                <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete-pilar" data-perusahaan_id="{{$b->id}}" data-id="{{$p->pilar_id}}" data-tahun="{{$p->tahun}}" data-nama="{{$p->pilar_nama}}" data-toggle="tooltip" title="Hapus data {{$p->pilar_nama}} tahun {{$p->tahun}}"><i class="bi bi-trash fs-3"></i></button>
-                                                @endif
-                                            @endif
+                                        <td style="text-align:center;">                                            
                                         </td>
                                        
                                         <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                            <input class="form-check-input is_active-check" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
+                                            <input class="form-check-input is_active-check pilar-check perusahaan-{{$b->id}}" data-pilar-parent="pilar-{{$b->id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
                                             </label></td>
                                     </tr>
+                                                                                                      
                                     
-                                    @foreach ($anggaran_anak as $a) 
-                                    @php 
+                                    @php
+                                        $anggaran_anak = $anggaran_anak->values();
+                                    @endphp
+                                    
+                                    @foreach ($anggaran_anak as $key => $a)                                     
+                                    @php     
+                                        
+
+                                        $currentPrintable = $nextPrintable;
+                                        if(!$nextPrintable) $nextPrintable = true;
+
+                                        $id_anggaran_cid = $a->jenis_anggaran === 'CID' ? $a->id_anggaran : null;
+                                        $id_anggaran_noncid = $a->jenis_anggaran === 'non CID' ? $a->id_anggaran : null;
+                                        $anggaran_cid = $a->anggaran_cid;
+                                        $anggaran_noncid = $a->anggaran_noncid;   
+                                        $status = $a->status->nama;   
+                                        $status_id = $a->status_id;
+
+                                        $nextTpb = isset($anggaran_anak[$key+1]) ? $anggaran_anak[$key+1] : null;
+                                        
+                                        if($nextTpb !== null) {
+                                            if($a->no_tpb === $nextTpb->no_tpb) {
+                                                if($nextTpb->jenis_anggaran == 'CID') {
+                                                    $anggaran_cid = $nextTpb->anggaran_cid;
+                                                    $id_anggaran_cid = $nextTpb->id_anggaran;
+                                                } else {
+                                                    $anggaran_noncid = $nextTpb->anggaran_noncid;
+                                                    $id_anggaran_noncid = $nextTpb->id_anggaran;
+                                                }
+
+                                                if($nextTpb->status->nama == 'In Progress') $status = $nextTpb->status->nama;
+                                                if($nextTpb->status_id != 1) $status_id = $nextTpb->status_id;
+
+                                                $currentPrintable = true;
+                                                $nextPrintable = false;
+                                            }
+                                        }
+                                        
                                         $status_class = 'primary';
-                                        if($a->status_id == 1){
+                                        if($status_id == 1){
                                             $status_class = 'success';
-                                        }else if($a->status_id == 3){
+                                        }else if($status_id == 3){
                                             $status_class = 'warning';
                                         }
-                                    @endphp     
+                                    @endphp                                       
+                                     @if($currentPrintable)   
                                     <tr class="treegrid-{{$a->id}} treegrid-parent-bumn{{@$b->id}}pilar{{str_replace(' ', '-', @$p->pilar_nama)}} item{{$a->id}}">
                                         <td></td>
                                         <td>{{@$a->no_tpb .' - '. @$a->tpb_nama}}</td>
-                                        <td style="text-align:right;">{{number_format($a->anggaran_cid,0,',',',')}}</td>
-                                        <td>{{number_format($a->anggaran_noncid,0,',',',')}}</td>
-                                        <td>{{number_format($a->anggaran_noncid + $a->anggaran_cid,0,',',',')}}</td>
+                                        <td style="text-align:right;">{{$id_anggaran_cid ? number_format($anggaran_cid,0,',',',') : '-'}}</td>
+                                        <td style="text-align:right;">{{$id_anggaran_noncid ? number_format($anggaran_noncid,0,',',',') : '-'}}</td>
+                                        <td style="text-align:right;">{{number_format($anggaran_noncid + $anggaran_cid,0,',',',')}}</td>
                                         <td style="text-align:center;">
-                                            <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$a->id}}">{{@$a->status->nama}}</span>
+                                            <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$a->id}}" data-anggaran-cid="{{ $id_anggaran_cid }}" data-anggaran-noncid="{{ $id_anggaran_noncid }}">{{$status}}</span>
                                         </td>
                                         <td style="text-align:center;">
                                             @if(!$view_only)
-                                                @if($a->status_id != 1)
-                                                <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-anggaran="{{ $a->id_anggaran }}" data-id="{{$a->id}}" data-toggle="tooltip" title="Ubah data {{@$a->no_tpb}}"><i class="bi bi-pencil fs-3"></i></button>
-                                                <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-anggaran="{{ $a->id_anggaran }}" data-perusahaan_id="{{$b->id}}" data-id="{{$a->id}}" data-nama="{{@$a->no_tpb}}" data-toggle="tooltip" title="Hapus data {{@$a->no_tpb}}"><i class="bi bi-trash fs-3"></i></button>
+                                                @if($status_id != 1)
+                                                <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-anggaran-cid="{{ $id_anggaran_cid }}" data-anggaran-noncid="{{ $id_anggaran_noncid }}" data-id="{{$a->id}}" data-toggle="tooltip" title="Ubah data {{@$a->no_tpb}}"><i class="bi bi-pencil fs-3"></i></button>
+                                                <!-- <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-anggaran="{{ $a->id_anggaran }}" data-perusahaan_id="{{$b->id}}" data-id="{{$a->id}}" data-nama="{{@$a->no_tpb}}" data-toggle="tooltip" title="Hapus data {{@$a->no_tpb}}"><i class="bi bi-trash fs-3"></i></button> -->
                                                 @endif
                                             @endif
                                         </td>
                                         
                                         <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                            <input class="form-check-input is_active-check" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
+                                            <input class="form-check-input is_active-check tpb-check perusahaan-{{$b->id}} pilar-{{$b->id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" data-anggaran-cid="{{ $id_anggaran_cid }}" data-anggaran-noncid="{{ $id_anggaran_noncid }}" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
                                             </label></td>
                                     </tr>
+                                    @endif                                    
                                     @endforeach
                                 @endforeach
                             @endforeach
@@ -423,7 +463,7 @@
                                 <td></td>
                                 <td style="text-align:left;">-</td>
                                 <td style="text-align:center;">-</td>
-                                <td style="text-align:center;"><span class="btn cls-log badge badge-light-warning fw-bolder me-auto px-4 py-3">Unfilled</span></td>
+                                <td style="text-align:center;"><span class="badge badge-light-warning fw-bolder me-auto px-4 py-3">Unfilled</span></td>
                                 <td></td>
                             @endif
                             </tbody>
@@ -461,6 +501,7 @@
     var urldatatable = "{{route('anggaran_tpb.datatable')}}";
     var urldelete = "{{route('anggaran_tpb.delete')}}";
     var urldeletepilar = "{{route('anggaran_tpb.delete_by_pilar')}}";
+    var urldeletebyselect = "{{route('anggaran_tpb.delete_by_select')}}";
     var urlexport = "{{route('anggaran_tpb.export')}}";
     var urlvalidasi = "{{route('anggaran_tpb.validasi')}}";
     var urlgetstatus = "{{route('anggaran_tpb.get_status')}}";
@@ -481,12 +522,13 @@
         });
 
         $('body').on('click','.cls-log',function(){
-            winform(urllog, {'id':$(this).data('id')}, 'Log Status');
+            // winform(urllog, {'id':$(this).data('id')}, 'Log Status');
+            winform(urllog, {'id_cid':$(this).data('anggaran-cid'), 'id_noncid':$(this).data('anggaran-noncid')}, 'Log Status');
         });
 
         $('body').on('click','.cls-button-edit',function(){
             // winform(urledit, {'id':$(this).data('id')}, 'Ubah Data');
-            winform(urledit, {'id':$(this).data('anggaran')}, 'Ubah Data');
+            winform(urledit, {'id_cid':$(this).data('anggaran-cid'), 'id_noncid':$(this).data('anggaran-noncid') }, 'Ubah Data');
         });
 
         $('body').on('click','.cls-button-delete',function(){
@@ -533,7 +575,7 @@
             var pilar_pembangunan_id = $('#pilar_pembangunan_id').val();
             var tpb_id = $('#tpb_id').val();
             const jenisAnggaran = $("#jenis-anggaran").val()
-            const statusAnggaran = $("#status-anggaran").val()
+            const statusAnggaran = $("#status-anggaran").val()            
 
             window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&pilar_pembangunan=' + pilar_pembangunan_id + '&tpb=' + tpb_id + '&jenis_anggaran=' +jenisAnggaran+ '&status=' +statusAnggaran;
         });
@@ -542,49 +584,121 @@
             showValidasi();
         }   
 
-        const urlParams = new URLSearchParams(window.location.search)
-        const checkJenisAnggaran = urlParams.get('jenis_anggaran')
-        if(checkJenisAnggaran !== '') {
-            setTimeout(()=>{
-                $("#jenis-anggaran").val(checkJenisAnggaran).trigger('change')
-            }, 1000)
-        }
+        $('.delete-selected-data').on('click', function(){
+            var selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            var selectedCids = [];
+            var selectedNonCids = [];
 
-        $("#jenis-anggaran").on('change', function(){
-            // yovi
-            const jenisAnggaran = $(this).val()
-            $("#tpb_id, #pilar_pembangunan_id").val('').trigger('change')
-            
-            
-            $("#tpb_id, #pilar_pembangunan_id").select2({    
-                templateResult: function(data) {
-                    if($(data.element).attr('data-jenis-anggaran') === jenisAnggaran || jenisAnggaran === '') return data.text
-                    return null
-                },
-                templateSelection: function(data) {
-                    if($(data.element).attr('data-jenis-anggaran') === jenisAnggaran || jenisAnggaran === '') return data.text
-                    return null
-                }
-            })            
+            selectedCheckboxes.forEach(function(checkbox) {
+                if(checkbox.getAttribute('data-anggaran-cid')) selectedCids.push(checkbox.getAttribute('data-anggaran-cid'));
+                if(checkbox.getAttribute('data-anggaran-noncid')) selectedNonCids.push(checkbox.getAttribute('data-anggaran-noncid'));
+            });
 
-            let textAnggaran = jenisAnggaran ? `- ${jenisAnggaran}` : ''
-            $("#select2-pilar_pembangunan_id-container .select2-selection__placeholder").html('Pilih Pilar '+textAnggaran)
-            $("#select2-tpb_id-container .select2-selection__placeholder").html('Pilih TPB '+textAnggaran)
-
-            // $("#tpb_id").select2({    
-            //     // placeholder: 'Pilih TPB',            
-            //     templateResult: function(data) {
-            //         if($(data.element).attr('data-jenis-anggaran') === jenisAnggaran || jenisAnggaran === '') return $('<span>').text(data.text);
-            //         return null
-            //     },
-            //     templateSelection: function(data) {
-            //         if($(data.element).attr('data-jenis-anggaran') === jenisAnggaran || jenisAnggaran === '') return data.text
-            //         return null
-            //     }
-            // })            
+            if(!selectedCids.length && !selectedNonCids.length) {
+                swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    html: 'Tidak ada data terpilih untuk dihapus!',
+                    buttonsStyling: true,
+                    confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                })
+                return
+            }
             
+            deleteAnggaranSelectedTpb(selectedCids.concat(selectedNonCids))            
         })
+
+        $("#select-all").on('click', function(){
+            var checkboxes = $('.is_active-check');            
+            checkboxes.prop('checked', $(this).prop('checked'));
+        }) 
+
+        $(".pilar-check").on('click', function() {
+            const parentPilar = $(this).data('pilar-parent')
+            var checkboxes = $(`.${parentPilar}`)
+            checkboxes.prop('checked', $(this).prop('checked'))
+        })
+
+        $(".perusahaan-check").on('click', function() {
+            const parentPerusahaan = $(this).data('perusahaan-parent')
+            var checkboxes = $(`.${parentPerusahaan}`)
+            checkboxes.prop('checked', $(this).prop('checked'))
+        })
+      
     });
+
+    function deleteAnggaranSelectedTpb(selectedAnggaran) {
+        const jumlahDataDeleted = selectedAnggaran.length
+        swal.fire({
+            title: "Pemberitahuan",
+            html: "Yakin hapus data ? <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahDataDeleted+" rows]</span>",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, hapus data",
+            cancelButtonText: "Tidak"
+        }).then(function(result) {
+            if (result.value) {
+                $.ajax({
+                url: urldeletebyselect,
+                data:{
+                    "anggaran_deleted": selectedAnggaran
+                },
+                type:'post',
+                dataType:'json',
+                beforeSend: function(){
+                    $.blockUI();
+                },
+                success: function(data){
+                    $.unblockUI();
+
+                    swal.fire({
+                            title: data.title,
+                            html: data.msg,
+                            icon: data.flag,
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });
+
+                    if(data.flag == 'success') {
+                        // datatable.ajax.reload( null, false );
+                        location.reload(); 
+                    }
+                    
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });  
+                    }
+                });
+            }
+        });
+    }
 
     function addCommas(nStr) {
         nStr += '';
@@ -1066,8 +1180,8 @@
 
     //Imam
     function redirectToNewPage() {
-    var selectedPerusahaanId = $('#perusahaan_id').val();
-    var selectedPerusahaanText = $('#perusahaan_id option:selected').text();
+        var selectedPerusahaanId = $('#perusahaan_id').val();
+        var selectedPerusahaanText = $('#perusahaan_id option:selected').text();
 
     var selectedTahun = $('#tahun').val();
     var selectedTahunText = $('#tahun option:selected').text();
@@ -1089,13 +1203,13 @@
     // console.log("selectedTahun: " + selectedTahun);
     // console.log("selectedTahunText: " + selectedTahunText);
 
-    // Use the Laravel's built-in route function to generate the new URL
-    var url = "{{ route('anggaran_tpb.create2', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
-    url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun);
+        // Use the Laravel's built-in route function to generate the new URL
+        var url = "{{ route('anggaran_tpb.create2', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
+        url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun);
 
-    // Redirect the user to the new page
-    window.location.href = url;
-}
+        // Redirect the user to the new page
+        window.location.href = url;
+    }
 </script>
 @endsection
 
