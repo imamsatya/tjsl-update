@@ -178,8 +178,8 @@
                                     </select>
                                 </div>
                                 <div class="col-lg-6">
-                                    <label>TPB</label>
-                                    <select id="tpb_id" class="form-select form-select-solid form-select2" name="tpb_id" data-kt-select2="true"  data-placeholder="Pilih TPB" data-allow-clear="true">
+                                    <label>Program???</label>
+                                    <select id="program_id" class="form-select form-select-solid form-select2" name="program_id" data-kt-select2="true"  data-placeholder="Pilih Program" data-allow-clear="true">
                                         <option></option>
                                         @foreach($tpb as $p)  
                                             @php
@@ -204,36 +204,42 @@
                                     </select>
                                 </div>
                                 <div class="col-lg-6">
-                                    <label>Kriteria Program</label>
-                                    <div class="row mb-6 mt-2">
-                                        <!--begin::Label-->
-                                        {{-- <label class="col-lg-4 col-form-label required fw-semibold fs-6">Kriteria Program</label> --}}
-                                        <!--end::Label-->
-                                        <!--begin::Col-->
-                                        <div class="col-lg-8 fv-row d-flex align-items-center justify-content-start">
-                                            <div style="display:flex; flex-direction: row;">
-                                                <div class="form-check form-check-custom form-check-solid form-check-sm me-8">
-                                                    <input class="form-check-input" type="checkbox" name="kriteria_program" value="prioritas" {{ in_array('prioritas', $kriteria_program) ? 'checked' : '' }} id="checkboxPrioritas"/>
-                                                    <label class="form-check-label" for="flexRadioLg">
-                                                        Prioritas 
-                                                    </label>
-                                                </div> 
-                                                <div class="form-check form-check-custom form-check-solid form-check-sm me-8">
-                                                    <input class="form-check-input" type="checkbox" name="kriteria_program"  value="csv" {{ in_array('csv', $kriteria_program) ? 'checked' : '' }} id="checkboxCSV"/>
-                                                    <label class="form-check-label" for="flexRadioLg">
-                                                        CSV
-                                                    </label>
-                                                </div>
-                                                <div class="form-check form-check-custom form-check-solid form-check-sm">
-                                                    <input class="form-check-input" type="checkbox" name="kriteria_program" value="umum" {{ in_array('umum', $kriteria_program) ? 'checked' : '' }} id="checkboxUmum"/>
-                                                    <label class="form-check-label" for="flexRadioLg">
-                                                        Umum
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!--end::Col-->
-                                    </div>                           
+                                    <label>Bulan</label>
+                                    <select id="bulan_id" class="form-select form-select-solid form-select2" name="bulan_id" data-kt-select2="true"  data-placeholder="Pilih Bulan" data-allow-clear="true">
+                                        <option></option>
+                                        @foreach($bulan as $bulan_row)  
+                                            {{-- @php
+                                                $select = (($p->no_tpb == $tpb_id) ? 'selected="selected"' : '');
+                                            @endphp --}}
+                                            <option  value="{{ $bulan_row->id }}" {!! $select !!}>{{ $bulan_row->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row  mb-5">
+                                <div class="col-lg-6">
+                                    <label>TPB</label>
+                                    <select id="tpb_id" class="form-select form-select-solid form-select2" name="tpb_id" data-kt-select2="true"  data-placeholder="Pilih TPB" data-allow-clear="true">
+                                        <option></option>
+                                        @foreach($tpb as $p)  
+                                            @php
+                                                $select = (($p->no_tpb == $tpb_id) ? 'selected="selected"' : '');
+                                            @endphp
+                                            <option data-jenis-anggaran="{{ $p->jenis_anggaran }}" value="{{ $p->no_tpb }}" {!! $select !!}>{{ $p->no_tpb }} - {{ $p->nama }} [{{$p->jenis_anggaran}}]</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>Jenis Kegiatan</label>
+                                    <select id="jenis_kegiatan" class="form-select form-select-solid form-select2" name="jenis_kegiatan" data-kt-select2="true"  data-placeholder="Pilih Jenis Kegiatan" data-allow-clear="true">
+                                        <option></option>
+                                        <option value="prioritas" {{ request('jenis_kegiatan') == 'prioritas' ? 'selected="selected"' : '' }} >
+                                                Prioritas</option>
+                                        <option value="umum" {{ request('jenis_kegiatan') == 'umum' ? 'selected="selected"' : '' }} >
+                                                Umum</option>
+                                        <option value="csv" {{ request('jenis_kegiatan') == 'csv' ? 'selected="selected"' : '' }} >
+                                                CSV</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="form-group row  mb-5">
@@ -923,10 +929,10 @@
 
         console.log("selectedTahun: " + selectedTahun);
         console.log("selectedTahunText: " + selectedTahunText);
-        if(selectedPerusahaanId === '' || selectedTahun === '' || selectedJenisAnggaran === '') {
+        if(selectedPerusahaanId === '' || selectedTahun === '') {
         swal.fire({                    
             icon: 'warning',
-            html: 'Perusahaan (BUMN), Tahun dan Jenis Anggaran harus terisi!',
+            html: 'Perusahaan (BUMN) dan Tahun harus terisi!',
             type: 'warning', 
             confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
         });
@@ -934,9 +940,8 @@
     }
 
         // Use the Laravel's built-in route function to generate the new URL
-        var url = "{{ route('rencana_kerja.program.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'jenis_anggaran' => ':jenis_anggaran']) }}";
-        url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(':jenis_anggaran', selectedJenisAnggaran);
-
+        var url = "{{ route('laporan_realisasi.bulanan.kegiatan.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
+        url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun)
         // Redirect the user to the new page
         window.location.href = url;
     }

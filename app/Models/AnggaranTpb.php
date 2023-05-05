@@ -22,4 +22,9 @@ class AnggaranTpb extends Model
     {
         return $this->belongsTo('App\Models\Status', 'status_id');
     }
+
+    public function targettpb()
+    {
+        return $this->belongsTo('App\Models\TargetTpb', 'anggaran_tpb_id');
+    }
 }

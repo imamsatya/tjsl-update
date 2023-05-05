@@ -185,20 +185,39 @@
                         </div>
                         <div class="col-lg-4 mb-20">
                        
-                            <label>Jenis Anggaran</label>
-                            <select  id="jenis-anggaran" class="form-select form-select-solid form-select2" name="jenis_anggaran" data-kt-select2="true" data-placeholder="Pilih Jenis Anggaran" data-allow-clear="true">
+                            <label>Bulan</label>
+                            <select id="bulan_id" class="form-select form-select-solid form-select2" name="bulan_id" data-kt-select2="true"  data-placeholder="Pilih Bulan" data-allow-clear="true">
                                 <option></option>
-                                <option value="CID" {{ request('jenis_anggaran') === 'CID' ? 'selected="selected"' : '' }} >
-                                        CID</option>
-                                <option value="non CID" {{ request('jenis_anggaran') === 'non CID' ? 'selected="selected"' : '' }} >
-                                    non CID</option>
+                                @foreach($bulan as $bulan_row)  
+                                    {{-- @php
+                                        $select = (($p->no_tpb == $tpb_id) ? 'selected="selected"' : '');
+                                    @endphp --}}
+                                    <option  value="{{ $bulan_row->id }}" {!! $select !!}>{{ $bulan_row->nama }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
                         <form method="POST" id="program-form">
                             @csrf
                             <div class="mb-6 ">
+                                <div class="row mb-6">
+                                    <div class="col-lg-2 ">
+                                        <div class="ms-2">Jenis Anggaran</div>
+
+
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <select  id="jenis-anggaran" class="form-select form-select-solid form-select2" name="jenis_anggaran" data-kt-select2="true" data-placeholder="Pilih Jenis Anggaran" data-allow-clear="true">
+                                            <option></option>
+                                            <option value="CID" {{ request('jenis_anggaran') === 'CID' ? 'selected="selected"' : '' }} >
+                                                    CID</option>
+                                            <option value="non CID" {{ request('jenis_anggaran') === 'non CID' ? 'selected="selected"' : '' }} >
+                                                non CID</option>
+                                        </select>
+
+                                    </div>
                                 
+                                </div>
                                 <div class="row mb-6">
                                     <div class="col-lg-2 ">
                                         <div class="ms-2">Nama Program</div>
@@ -397,300 +416,7 @@
                             </div>
                         </div>
 
-                        {{-- CID --}}
-                        <div class="card-px py-10">
-                            <!--begin: Datatable -->
-                            <div class="table-responsive">
-                                <table class="table table-striped table-bordered table-hover tree  table-checkable">
-                                    <thead>
-                                        <tr>
-                                            <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No.</th>
-                                            <th style="font-weight:bold;border-bottom: 1px solid #c8c7c7;">Pilar - TPB</th>
-                                            <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">  CID</th>
-                                            {{-- <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Non CID</th> --}}
-                                            <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Kriteria</th>
-                                            <th style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">Status</th>
-                                            <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
-                                            <th><label
-                                                class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
-                                                    class="form-check-input addCheck" type="checkbox"
-                                                    id="select-all"></label>
-                                        </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>       
-                                    @php 
-                                        $total=0;
-                                        $total_cid = 0;
-                                        $total_noncid = 0;
-                                        $bumn = $anggaran_bumn;
-                                       
-                                    @endphp       
-                                    @foreach ($bumn as $b)     
-                                        @php 
-                                            $no=0;
-                                            $sum_bumn = $anggaran_bumn->where('perusahaan_id', $b->id)->first(); 
-                                            $anggaran_pilar_bumn = $anggaran_pilar->where('perusahaan_id', $b->id);
-        
-                                            $statusInProgress = $anggaran->where('perusahaan_id', $b->id)->where('status_id', 2)->first();
-                                            if($statusInProgress) $statusPerusahaan = $statusInProgress;
-                                            else $statusPerusahaan = $anggaran->where('perusahaan_id', $b->id)->first();
-                                            
-                                            $status_class = 'primary';
-                                            if($statusPerusahaan->status_id == 1){
-                                                $status_class = 'success';
-                                            } else if($statusPerusahaan->status_id == 3){
-                                                $status_class = 'warning';
-                                            }
-        
-                                            $total_cid += $sum_bumn->sum_anggaran_cid;
-                                            $total_noncid += $sum_bumn->sum_anggaran_noncid;                                    
-                                        @endphp
-                                        @if(!$perusahaan_id)
-                                        <tr class="treegrid-bumn{{@$b->id}}" >
-                                            <td style="text-align:center;"></td>
-                                            <td>{{$b->nama_lengkap}}</td>
-                                            <td style="text-align:right;">
-                                                @if($sum_bumn)
-                                                {{number_format($sum_bumn->sum_anggaran_cid,0,',',',')}}
-                                                @endif
-                                            </td>
-                                            {{-- <td style="text-align:right;">
-                                                @if($sum_bumn)
-                                                {{number_format($sum_bumn->sum_anggaran_noncid,0,',',',')}}
-                                                @endif
-                                            </td> --}}
-                                            <td style="text-align:right;">
-                                                @if($sum_bumn)
-                                                {{-- {{number_format($sum_bumn->sum_anggaran_noncid +$sum_bumn->sum_anggaran_cid ,0,',',',')}} --}}
-                                                @endif
-                                            </td>
-                                            <td style="text-align:center;">
-                                                {{-- <a class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{@$statusPerusahaan->status->nama}}</a> --}}
-                                            </td>
-                                            <td></td>
-                                            <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                                <input class="form-check-input is_active-check perusahaan-check" data-perusahaan-parent="perusahaan-{{$b->id}}" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
-                                                </label></td>
-                                          
-                                        </tr>  
-                                        @endif    
-                                        @foreach ($anggaran_pilar_bumn as $p)                              
-                                            @php 
-    
-                                                $no++;
-                                                $anggaran_anak = $anggaran->where('perusahaan_id', $b->id)->where('pilar_nama', $p->pilar_nama);                                        
-                                            
-                                                
-                                                $statusInProgress = $anggaran->where('perusahaan_id', $b->id)->where('pilar_nama', $p->pilar_nama)->where('status_id', 2)->first();
-                                                if($statusInProgress) $statusPilar = $statusInProgress;
-                                                else $statusPilar = $anggaran->where('perusahaan_id', $b->id)->where('pilar_nama', $p->pilar_nama)->first();
-                                                
-                                                $status_class = 'primary';
-                                                if($statusPilar?->status_id == 1){
-                                                    $status_class = 'success';
-                                                } else if($statusPilar?->status_id == 3){
-                                                    $status_class = 'warning';
-                                                }
-                                                
-                                                $class_parent = '';
-                                                if(!$perusahaan_id){
-                                                    $class_parent = 'treegrid-parent-bumn' . $p->perusahaan_id;
-                                                }
-                            
-                                                $total += $p->sum_anggaran;
-                                                $currentPrintable = true;
-                                                $nextPrintable = true;
-                                            @endphp
-                                            
-                                            @if(number_format($p->sum_anggaran_cid) > 0 || number_format($p->sum_anggaran_noncid) > 0)
-                                            <tr class="treegrid-bumn{{@$b->id}}pilar{{str_replace(' ', '-', @$p->pilar_nama)}} {{$class_parent}} item-bumn{{@$b->id}}pilar{{str_replace(' ', '-', @$p->pilar_nama)}}" >
-                                                <td style="text-align:center;">{{$no}}</td>
-                                                <td>{{$p->pilar_nama}}</td>
-                                                <td style="text-align:right;">{{number_format($p->sum_anggaran_cid,0,',',',')}}</td>
-                                                {{-- <td style="text-align:right;">{{number_format($p->sum_anggaran_noncid,0,',',',')}}</td> --}}
-                                                <td style="text-align:right;">
-                                                    {{-- {{number_format($p->sum_anggaran_noncid + $p->sum_anggaran_cid,0,',',',')}} --}}
-                                                </td>
-                                                <td style="text-align:center;">
-                                                    {{-- <a class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{@$statusPilar->status->nama}}</a> --}}
-                                                </td>
-                                                <td style="text-align:center;">                                            
-                                                </td>
-                                               
-                                                <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                                    <input class="form-check-input is_active-check pilar-check perusahaan-{{$b->id}}" data-pilar-parent="pilar-{{$b->id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
-                                                    </label></td>
-                                            </tr>
-                                            @endif
-                                                                                                              
-                                            
-                                            @php
-                                                $anggaran_anak = $anggaran_anak->values();
-                                            @endphp
-                                            
-                                            @foreach ($anggaran_anak as $key => $a)                                     
-                                                @php     
-                                                    
-                                                    $currentPrintable = $nextPrintable;
-                                                    if(!$nextPrintable) $nextPrintable = true;
-            
-                                                    $id_anggaran_cid = $a->jenis_anggaran === 'CID' ? $a->id_anggaran : null;
-                                                    $id_anggaran_noncid = $a->jenis_anggaran === 'non CID' ? $a->id_anggaran : null;
-                                                    $anggaran_cid = $a->anggaran_cid;
-                                                    $anggaran_noncid = $a->anggaran_noncid;   
-                                                    $status = $a->status?->nama;   
-                                                    $status_id = $a->status_id;
-            
-                                                    $nextTpb = isset($anggaran_anak[$key+1]) ? $anggaran_anak[$key+1] : null;
-                                                    
-                                                    if($nextTpb !== null) {
-                                                        if($a->no_tpb === $nextTpb->no_tpb) {
-                                                            if($nextTpb->jenis_anggaran == 'CID') {
-                                                                $anggaran_cid = $nextTpb->anggaran_cid;
-                                                                $id_anggaran_cid = $nextTpb->id_anggaran;
-                                                            } else {
-                                                                $anggaran_noncid = $nextTpb->anggaran_noncid;
-                                                                $id_anggaran_noncid = $nextTpb->id_anggaran;
-                                                            }
-            
-                                                            if($nextTpb->status->nama == 'In Progress') $status = $nextTpb->status->nama;
-                                                            if($nextTpb->status_id != 1) $status_id = $nextTpb->status_id;
-            
-                                                            $currentPrintable = true;
-                                                            $nextPrintable = false;
-                                                        }
-                                                    }
-                                                    
-                                                    $status_class = 'primary';
-                                                    if($status_id == 1){
-                                                        $status_class = 'success';
-                                                    }else if($status_id == 3){
-                                                        $status_class = 'warning';
-                                                    }
-                                                @endphp                                       
-                                                @if($currentPrintable)
-                                                    @if(number_format($anggaran_cid) > 0 || number_format($anggaran_noncid) > 0)
-                                                    <tr class="treegrid-{{$a->id_anggaran}} treegrid-parent-bumn{{@$b->id}}pilar{{str_replace(' ', '-', @$p->pilar_nama)}} item-{{$a->id_anggaran}}">
-                                                        <td></td>
-                                                        <td>{{@$a->no_tpb .' - '. @$a->tpb_nama}}</td>
-                                                        @if( $jenis_anggaran == 'CID')
-                                                        <td style="text-align:right;">{{$id_anggaran_cid ? number_format($anggaran_cid,0,',',',') : '-'}}</td>
-                                                        @endif
-                                                        @if( $jenis_anggaran == 'non CID')
-                                                        <td style="text-align:right;">{{$id_anggaran_noncid ? number_format($anggaran_noncid,0,',',',') : '-'}}</td>
-                                                        @endif
-                                                        {{-- <td style="text-align:right;">{{number_format($anggaran_noncid + $anggaran_cid,0,',',',')}}</td> --}}
-                                                        <td style="text-align:center;">
-                                                            {{-- <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$a->id_anggaran}}" data-anggaran-cid="{{ $id_anggaran_cid }}" data-anggaran-noncid="{{ $id_anggaran_noncid }}">{{$status}}</span> --}}
-                                                        </td>
-                                                        <td style="text-align:center;">
-                                                            
-                                                        </td>
-                                                        <td style="text-align:center;">
-                                                            @if(!$view_only)
-                                                                @if($status_id != 1)
-                                                                {{-- <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-anggaran-cid="{{ $id_anggaran_cid }}" data-anggaran-noncid="{{ $id_anggaran_noncid }}" data-id="{{$a->id_anggaran}}" data-toggle="tooltip" title="Ubah data {{@$a->no_tpb}}"><i class="bi bi-pencil fs-3"></i></button> --}}
-                                                                <!-- <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-anggaran="{{ $a->id_anggaran }}" data-perusahaan_id="{{$b->id}}" data-id="{{$a->id_anggaran}}" data-nama="{{@$a->no_tpb}}" data-toggle="tooltip" title="Hapus data {{@$a->no_tpb}}"><i class="bi bi-trash fs-3"></i></button> -->
-                                                                @endif
-                                                            @endif
-                                                        </td>
-                                                        
-                                                        <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                                            <input class="form-check-input is_active-check tpb-check perusahaan-{{$b->id}} pilar-{{$b->id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" data-anggaran-cid="{{ $id_anggaran_cid }}" data-anggaran-noncid="{{ $id_anggaran_noncid }}" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
-                                                            </label></td>
-                                                    </tr>
-                                                    @endif
-    
-                                                    
-                                                @endif
-                                                @if($a->program != null)
-                                                @php     
-                                                // dd($a);
-                                                @endphp
-                                                        <tr class="treegrid-{{$a->id}} treegrid-parent-{{$a->id_anggaran}}  item-{{$a->id}}" >
-                                                            <td></td>
-                                                            <td>{{$a->program}}</td>
-                                                            @if( $jenis_anggaran == 'CID')
-                                                            <td style="text-align:right;">{{number_format($a->anggaran_alokasi,0,',',',') }}</td>
-                                                            @endif
-                                                            @if( $jenis_anggaran == 'non CID')
-                                                            <td style="text-align:right;">{{number_format($a->anggaran_alokasi,0,',',',') }}</td>
-                                                            @endif
-                                                            
-                                                            {{-- <td style="text-align:right;">{{number_format($anggaran_noncid + $anggaran_cid,0,',',',')}}</td> --}}
-                                                            
-                                                            <td style="text-align:right;"> 
-                                                                @if($a->kriteria_program_prioritas)
-                                                                    Prioritas;
-                                                                @endif
-                                                                @if($a->kriteria_program_csv)
-                                                                    CSV;
-                                                                @endif
-                                                                @if($a->kriteria_program_umum)
-                                                                Umum;
-                                                                @endif
-                                                            </td>
-                                                            <td style="text-align:center;">
-                                                                <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$a->id_target_tpb}}" data-anggaran-cid="{{ $id_anggaran_cid }}" data-anggaran-noncid="{{ $id_anggaran_noncid }}">{{$status}}</span>
-                                                            </td>
-                                                            <td style="text-align:center;">
-                                                                @if(!$view_only)
-                                                                    @if($status_id != 1)
-                                                                    <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-anggaran-cid="{{ $id_anggaran_cid }}" data-anggaran-noncid="{{ $id_anggaran_noncid }}" data-id="{{$a->id_target_tpb}}" data-toggle="tooltip" title="Ubah data {{@$a->no_tpb}}"><i class="bi bi-pencil fs-3"></i></button>
-                                                                    <!-- <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-anggaran="{{ $a->id_anggaran }}" data-perusahaan_id="{{$b->id}}" data-id="{{$a->id_anggaran}}" data-nama="{{@$a->no_tpb}}" data-toggle="tooltip" title="Hapus data {{@$a->no_tpb}}"><i class="bi bi-trash fs-3"></i></button> -->
-                                                                    @endif
-                                                                @endif
-                                                            </td>
-                                                            
-                                                            <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                                                <input class="form-check-input is_active-check tpb-check perusahaan-{{$b->id}} pilar-{{$b->id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" data-anggaran-cid="{{ $id_anggaran_cid }}" data-anggaran-noncid="{{ $id_anggaran_noncid }}" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
-                                                                </label></td>
-                                                        </tr>
-                                                    @endif 
-                                                
-                                                
-                                               
-                                                    
-                                                
-                                              
-                                                
-                                                
-                                            @endforeach
-                                        @endforeach
-                                    @endforeach
-                                    @php
-                                        $total = $total_cid + $total_noncid;
-                                    @endphp
-                                    @if($total==0)
-                                        <td></td>
-                                        <td style="text-align:left;">-</td>
-                                        <td style="text-align:center;">-</td>
-                                        <td style="text-align:center;"><span class="badge badge-light-warning fw-bolder me-auto px-4 py-3">Unfilled</span></td>
-                                        <td></td>
-                                    @endif
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            @if($total>0)
-                                            <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
-                                            <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">Total</th>
-                                            @if($jenis_anggaran == 'CID')
-                                            <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">{{number_format($total_cid,0,',',',')}}</th>
-                                            @endif
-                                            @if($jenis_anggaran == 'non CID')
-                                            <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">{{number_format($total_noncid,0,',',',')}}</th>
-                                            @endif
-                                            {{-- <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">{{number_format($total,0,',',',')}}</th> --}}
-                                            @endif
-                                        </tr>
-                                    </tfoot>
-                                </table>
-        
-        
-                            </div>
-                        </div>
-
+                        
                         <br><br>
                        
                        
