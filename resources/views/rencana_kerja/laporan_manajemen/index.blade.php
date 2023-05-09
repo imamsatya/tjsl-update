@@ -236,10 +236,11 @@
                                 data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
                             {{-- <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
-                            <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
+
+                            {{-- <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                             </button>
                             <button type="button" class="btn btn-primary btn-sm " onclick="redirectToNewPage()">Input Data
-                            </button>
+                            </button> --}}
                         </div>
                         <!--end::Search-->
                         <!--end::Group actions-->
@@ -290,13 +291,13 @@
 @section('addafterjs')
     <script>
         var datatable;
-        var urlcreate = "{{ route('referensi.tpb.create') }}";
+        var urlcreate = "{{ route('rencana_kerja.laporan_manajemen.create') }}";
         var urledit = "{{ route('referensi.tpb.edit') }}";
-        var urlstore = "{{ route('referensi.tpb.store') }}";
+        var urlstore = "{{ route('rencana_kerja.laporan_manajemen.store') }}";
         var urlupdate = "{{ route('referensi.tpb.update') }}";
         var urldatatable = "{{ route('rencana_kerja.laporan_manajemen.datatable') }}";
         var urldelete = "{{ route('referensi.tpb.delete') }}";
-        var urllog = "{{route('rencana_kerja.spdpumk_rka.log')}}";
+        var urllog = "{{route('rencana_kerja.laporan_manajemen.log')}}";
         $(document).ready(function() {
             $('#page-title').html("{{ $pagetitle }}");
             $('#page-breadcrumb').html("{{ $breadcrumb }}");
@@ -305,27 +306,12 @@
                 winform(urlcreate, {}, 'Tambah Data');
             });
 
+            $('body').on('click', '.cls-button-upload', function() {
+                winform(urlcreate,  {'laporan_id':$(this).data('id'),'perusahaan_id':$(this).data('perusahaan_id'), 'tahun':$(this).data('tahun'),'actionform':'insert'}, 'Upload Laporan');
+            });
+
             $('body').on('click', '.cls-button-edit', function() {
-                // const idPermohonan = $(this).data('permohonan')
-                var selectedPerusahaanId = $(this).data('perusahaan_id');
-           
-
-                var selectedTahun = $(this).data('tahun');
-           
-
-                // Do something with the selected value and text
-                console.log("selectedPerusahaanId: " + selectedPerusahaanId);
-          
-
-                console.log("selectedTahun: " + selectedTahun);
-           
-
-                // Use the Laravel's built-in route function to generate the new URL
-                var url = "{{ route('rencana_kerja.spdpumk_rka.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
-                url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun);
-
-                // Redirect the user to the new page
-                window.location.href = url;
+                winform(urlcreate,  {'laporan_id':$(this).data('id'),'perusahaan_id':$(this).data('perusahaan_id'), 'tahun':$(this).data('tahun'),'actionform':'update'}, 'Upload Laporan');
             });
 
             $('body').on('click', '.cls-button-delete', function() {
@@ -491,13 +477,16 @@
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row) {
-                            console.log(row)
+                            
                             let status = null
                             if (data === 1) {
                                  status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Finish</span>`
                             }
                             if (data === 2) {
                                  status = `<span class="btn cls-log badge badge-light-primary fw-bolder me-auto px-4 py-3" data-id="${row.id}">In Progress</span>`
+                            }
+                            if (data === 3) {
+                                 status = `<span class="btn cls-log badge badge-light-warning fw-bolder me-auto px-4 py-3" data-id="${row.id}">Unfilled</span>`
                             }
                             return status;
                         }
@@ -519,14 +508,26 @@
                         data: 'action',
                         name: 'action',
                         render: function(data, type, row){
-                            console.log(row.status_id)
+                            
                             let button = null;
+                            if (row.status_id === 3) {
+                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-upload text-center" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Upload data "><i class="bi bi-upload fs-3"></i></button>`
+                            }
                             if (row.status_id === 2) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+
+                                // <a rel='tooltip' data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" class="mb-4 jawban-file-st" title="File Jawaban" href="{{ asset('storage/${row.file_name}') }}" target="_blank" rel="noopener noreferrer"></a>
+                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit text-center me-2" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+
+                                // button2 = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button>`
+                                button2 = `<a rel='tooltip' data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" class="mb-4 jawban-file-st" title="File Jawaban" href="{{ asset('storage/${row.file_name}') }}" target="_blank" rel="noopener noreferrer"><button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button></a>`
+                                button = button + button2
                             }
 
                             if (row.status_id === 1) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info text-center me-2" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                                // button2 = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button>`
+                                button2 = `<a rel='tooltip' data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" class="mb-4 jawban-file-st" title="File Jawaban" href="{{ asset('storage/${row.file_name}') }}" target="_blank" rel="noopener noreferrer"><button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button></a>`
+                                button = button + button2
                             }
                             return button
                         }
@@ -572,19 +573,20 @@
                         success: function(data) {
                             $.unblockUI();
 
-                            swal.fire({
-                                title: data.title,
-                                html: data.msg,
-                                icon: data.flag,
+                            // swal.fire({
+                            //     title: data.title,
+                            //     html: data.msg,
+                            //     icon: data.flag,
 
-                                buttonsStyling: true,
+                            //     buttonsStyling: true,
 
-                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                            });
+                            //     confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                            // });
 
-                            if (data.flag == 'success') {
-                                datatable.ajax.reload(null, false);
-                            }
+                            // if (data.flag == 'success') {
+                            //     datatable.ajax.reload(null, false);
+                            // }
+                            window.location.reload();
 
                         },
                         error: function(jqXHR, exception) {
