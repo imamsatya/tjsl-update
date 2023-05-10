@@ -365,10 +365,10 @@
                                         $nextPrintable = true;
                                     @endphp
                                     
-                                    
+                                    @if(number_format($p->sum_anggaran_cid) > 0 || number_format($p->sum_anggaran_noncid) > 0)
                                     <tr class="treegrid-bumn{{@$b->id}}pilar{{str_replace(' ', '-', @$p->pilar_nama)}} {{$class_parent}} item-bumn{{@$b->id}}pilar{{str_replace(' ', '-', @$p->pilar_nama)}}" >
                                         <td style="text-align:center;">{{$no}}</td>
-                                        <td>{{$p->pilar_nama}} </td>
+                                        <td>{{$p->pilar_nama}}</td>
                                         <td style="text-align:right;">{{number_format($p->sum_anggaran_cid,0,',',',')}}</td>
                                         <td style="text-align:right;">{{number_format($p->sum_anggaran_noncid,0,',',',')}}</td>
                                         <td style="text-align:right;">{{number_format($p->sum_anggaran_noncid + $p->sum_anggaran_cid,0,',',',')}}</td>
@@ -382,6 +382,7 @@
                                             <input class="form-check-input is_active-check pilar-check perusahaan-{{$b->id}}" data-pilar-parent="pilar-{{$b->id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
                                             </label></td>
                                     </tr>
+                                    @endif
                                                                                                       
                                     
                                     @php
@@ -429,7 +430,8 @@
                                             $status_class = 'warning';
                                         }
                                     @endphp                                       
-                                     @if($currentPrintable)   
+                                     @if($currentPrintable)
+                                     @if(number_format($anggaran_cid) > 0 || number_format($anggaran_noncid) > 0)
                                     <tr class="treegrid-{{$a->id}} treegrid-parent-bumn{{@$b->id}}pilar{{str_replace(' ', '-', @$p->pilar_nama)}} item{{$a->id}}">
                                         <td></td>
                                         <td>{{@$a->no_tpb .' - '. @$a->tpb_nama}}</td>
@@ -452,6 +454,7 @@
                                             <input class="form-check-input is_active-check tpb-check perusahaan-{{$b->id}} pilar-{{$b->id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" data-anggaran-cid="{{ $id_anggaran_cid }}" data-anggaran-noncid="{{ $id_anggaran_noncid }}" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
                                             </label></td>
                                     </tr>
+                                    @endif
                                     @endif                                    
                                     @endforeach
                                 @endforeach

@@ -172,7 +172,7 @@ class SpdPumkRkaController extends Controller
         // dd($periode_rka_id);
         switch ($request->input('actionform')) {
             case 'insert':
-
+                DB::beginTransaction();
                 try {
                     $validasi = true;
                     // $perusahaan_id = \Auth::user()->id_bumn;

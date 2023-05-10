@@ -542,7 +542,11 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
 
         Route::prefix('program')->group(function () {
             Route::get('index', 'App\Http\Controllers\RencanaKerja\ProgramController@index')->name('rencana_kerja.program.index');
-            Route::get('create/{perusahaan_id}/{tahun}', 'App\Http\Controllers\RencanaKerja\ProgramController@create')->name('rencana_kerja.program.create');
+            Route::get('create/{perusahaan_id}/{tahun}/{jenis_anggaran}', 'App\Http\Controllers\RencanaKerja\ProgramController@create')->name('rencana_kerja.program.create');
+            Route::post('store', 'App\Http\Controllers\RencanaKerja\ProgramController@store')->name('rencana_kerja.program.store');
+            Route::post('edit', 'App\Http\Controllers\RencanaKerja\ProgramController@edit')->name('rencana_kerja.program.edit');
+            Route::post('edit_store', 'App\Http\Controllers\RencanaKerja\ProgramController@editStore')->name('rencana_kerja.program.edit_store');
+            Route::post('delete', 'App\Http\Controllers\RencanaKerja\ProgramController@delete')->name('rencana_kerja.program.delete');
         });
 
         Route::prefix('laporan_manajemen')->group(function () {
@@ -577,7 +581,17 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
     });
 
     Route::prefix('laporan_realisasi')->group(function () {
-       
+        Route::prefix('bulanan')->group(function () {
+            Route::prefix('kegiatan')->group(function () {
+                Route::get('index', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@index')->name('laporan_realisasi.bulanan.kegiatan.index');
+                Route::get('create/{perusahaan_id}/{tahun}', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@create')->name('laporan_realisasi.bulanan.kegiatan.create');
+                // Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@datatable')->name('laporan_realisasi.triwulan.spd_pumk.datatable');
+                
+                // Route::post('store', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@store')->name('laporan_realisasi.triwulan.spd_pumk.store');
+                // Route::post('delete', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@delete')->name('laporan_realisasi.triwulan.spd_pumk.delete');
+                // Route::post('log', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@log_status')->name('laporan_realisasi.triwulan.spd_pumk.log');
+            });
+        });
         Route::prefix('triwulan')->group(function () {
             Route::prefix('spd_pumk')->group(function () {
                 Route::get('index', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@index')->name('laporan_realisasi.triwulan.spd_pumk.index');

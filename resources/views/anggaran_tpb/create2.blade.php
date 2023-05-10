@@ -153,15 +153,15 @@
                         <form method="POST">
                             @csrf
                             <div class="row mb-4">
-                                <div class="col-lg-4">
+                                <div class="col-lg-6">
                                     {{-- <h1>Pilar - TPB</h1> --}}
 
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-lg-3">
                                     <h1>Anggaran CID</h1>
 
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-lg-3">
                                     <h1>Anggaran non CID</h1>
 
                                 </div>
