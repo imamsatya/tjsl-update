@@ -547,6 +547,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('edit', 'App\Http\Controllers\RencanaKerja\ProgramController@edit')->name('rencana_kerja.program.edit');
             Route::post('edit_store', 'App\Http\Controllers\RencanaKerja\ProgramController@editStore')->name('rencana_kerja.program.edit_store');
             Route::post('delete', 'App\Http\Controllers\RencanaKerja\ProgramController@delete')->name('rencana_kerja.program.delete');
+            Route::post('log', 'App\Http\Controllers\RencanaKerja\ProgramController@log_status')->name('rencana_kerja.program.log');
         });
 
         Route::prefix('laporan_manajemen')->group(function () {

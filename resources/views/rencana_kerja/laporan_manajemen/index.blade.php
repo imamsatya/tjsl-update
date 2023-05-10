@@ -319,8 +319,8 @@
             });
 
             $('body').on('click','.cls-log',function(){
-            winform(urllog, {'id':$(this).data('id')}, 'Log Data');
-        });
+                winform(urllog, {'id':$(this).data('id')}, 'Log Data');
+            });
 
 
             setDatatable();

@@ -458,7 +458,7 @@
         var datatable;
         var urledit = "{{route('rencana_kerja.program.edit')}}";        
         var urldelete = "{{ route('rencana_kerja.program.delete') }}";
-
+        var urllog = "{{ route('rencana_kerja.program.log') }}";
         $(document).ready(function() {
             $('.tree').treegrid({
                 initialState : 'collapsed',
@@ -472,6 +472,9 @@
             $('body').on('click', '.cls-button-edit', function() {
                 const program = $(this).data('id')
                 winform(urledit, {'program':program}, 'Ubah Data');
+            });
+            $('body').on('click','.cls-log',function(){
+                winform(urllog, {'id':$(this).data('id')}, 'Log Data');
             });
 
 

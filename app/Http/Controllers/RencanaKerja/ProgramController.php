@@ -539,4 +539,20 @@ class ProgramController extends Controller
         }
         return response()->json($result);
     }
+
+    public function log_status(Request $request)
+    {
+
+        $log = LogTargetTpb::select('log_target_tpbs.*', 'users.name AS user', 'statuses.nama AS status')
+            ->leftjoin('users', 'users.id', '=', 'log_target_tpbs.user_id')
+            ->leftjoin('statuses', 'statuses.id', '=', 'log_target_tpbs.status_id')
+            ->where('target_tpb_id', (int)$request->input('id'))
+            ->orderBy('created_at')
+            ->get();
+
+        return view($this->__route . '.log_status', [
+            'pagetitle' => 'Log Status',
+            'log' => $log
+        ]);
+    }
 }

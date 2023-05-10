@@ -297,7 +297,7 @@
                                         <div class="ms-2">Mitra BUMN</div>
                                     </div>
                                     <div class="col-lg-9">
-                                        <select class="form-select form-select-solid form-select2" id="mitra_bumn" name="mitra_bumn" data-kt-select2="true" data-placeholder="Pilih Mitra BUMN" >
+                                        <select class="form-select form-select-solid form-select2" id="mitra_bumn" name="mitra_bumn" data-kt-select2="true" data-placeholder="Pilih Mitra BUMN" data-allow-clear="true">
                                             <option></option>
                                             @foreach($perusahaan as $p)                                                  
                                                 <option value="{{ $p->id }}">{{ $p->nama_lengkap }}</option>
