@@ -286,7 +286,7 @@
                                     <tr>
                                         <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No.</th>
                                         <th style="font-weight:bold;border-bottom: 1px solid #c8c7c7;">Pilar - TPB</th>
-                                        <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">  {{ strtoupper($jenis_anggaran) }}</th>
+                                        <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;"> Anggaran </th>
                                         <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Kriteria</th>
                                         <th style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">Status</th>
                                         <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
@@ -335,7 +335,7 @@
                                         @endphp
                                         <tr class="treegrid-bumn-pilar-{{str_replace(' ', '-', @$p->pilar_nama)}}" >
                                             <td style="text-align:center;">{{$no}}</td>
-                                            <td>{{$p->pilar_nama}}</td>
+                                            <td>{{$p->pilar_nama}} - {{ strtoupper($jenis_anggaran) }}</td>
                                             <td style="text-align:right;">{{ number_format($total_program_per_pilar,0,',',',') }} <br/> <span style="color: {{ $total_program_per_pilar == $total_rka_pilar ? 'green' : 'red'}}; font-size: smaller">RKA: {{number_format($total_rka_pilar,0,',',',')}}</span></td>
                                             <td style="text-align:right;"></td>
                                             <td style="text-align:center;">
@@ -368,7 +368,7 @@
                                                 @endphp    
                                                 <tr class="treegrid-anggaran-{{$a->id_anggaran}} treegrid-parent-bumn-pilar-{{str_replace(' ', '-', @$p->pilar_nama)}} item-{{$a->id_anggaran}}">
                                                     <td></td>
-                                                    <td>{{@$a->no_tpb .' - '. @$a->tpb_nama}}</td>                                                        
+                                                    <td>{{@$a->no_tpb .' - '. @$a->tpb_nama}} - {{ strtoupper($jenis_anggaran) }}</td>                                                        
                                                     <td style="text-align:right;">{{ number_format($total_program_per_tpb,0,',',',') }} <br/> <span style="color: {{ $total_program_per_tpb == $a->anggaran ? 'green': 'red'}}; font-size: smaller">RKA: {{number_format($a->anggaran,0,',',',')}}</span></td>
                                                     <td style="text-align:center;"></td>
                                                     <td style="text-align:center;">
@@ -385,7 +385,7 @@
                                                     @if($ap->jenis_anggaran === $jenis_anggaran)
                                                     <tr class="treegrid-parent-anggaran-{{$a->id_anggaran}}">
                                                         <td></td>
-                                                        <td>{{$ap->program}}</td>
+                                                        <td>{{$ap->program}} - {{ strtoupper($jenis_anggaran) }}</td>
                                                         <td style="text-align:right;">{{number_format($ap->anggaran_alokasi,0,',',',')}}</td>                                                            
                                                         <td style="text-align:center;">
                                                             {{ $ap->kriteria_program_umum ? 'Umum; ' : '' }}
