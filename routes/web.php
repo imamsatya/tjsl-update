@@ -544,6 +544,9 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::get('index', 'App\Http\Controllers\RencanaKerja\ProgramController@index')->name('rencana_kerja.program.index');
             Route::get('create/{perusahaan_id}/{tahun}/{jenis_anggaran}', 'App\Http\Controllers\RencanaKerja\ProgramController@create')->name('rencana_kerja.program.create');
             Route::post('store', 'App\Http\Controllers\RencanaKerja\ProgramController@store')->name('rencana_kerja.program.store');
+            Route::post('edit', 'App\Http\Controllers\RencanaKerja\ProgramController@edit')->name('rencana_kerja.program.edit');
+            Route::post('edit_store', 'App\Http\Controllers\RencanaKerja\ProgramController@editStore')->name('rencana_kerja.program.edit_store');
+            Route::post('delete', 'App\Http\Controllers\RencanaKerja\ProgramController@delete')->name('rencana_kerja.program.delete');
         });
 
         Route::prefix('laporan_manajemen')->group(function () {
