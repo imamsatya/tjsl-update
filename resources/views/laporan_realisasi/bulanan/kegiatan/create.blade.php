@@ -201,12 +201,12 @@
                             @csrf
                             <div class="mb-6 ">
                                 <div class="row mb-6">
-                                    <div class="col-lg-2 ">
-                                        <div class="ms-2">Jenis Anggaran</div>
+                                    <div class="col-lg-3 ">
+                                        <div class="ms-2 required">Jenis Anggaran</div>
 
 
                                     </div>
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-9">
                                         <select  id="jenis-anggaran" class="form-select form-select-solid form-select2" name="jenis_anggaran" data-kt-select2="true" data-placeholder="Pilih Jenis Anggaran" data-allow-clear="true">
                                             <option></option>
                                             <option value="CID" {{ request('jenis_anggaran') === 'CID' ? 'selected="selected"' : '' }} >
@@ -219,186 +219,148 @@
                                 
                                 </div>
                                 <div class="row mb-6">
-                                    <div class="col-lg-2 ">
-                                        <div class="ms-2">Nama Program</div>
+                                    <div class="col-lg-3 ">
+                                        <div class="ms-2 required">Program???</div>
 
 
                                     </div>
-                                    <div class="col-lg-6">
-                                        <input type="text" name="nama_program" id="nama_program"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Nama Program"  
-                                            />
-
-                                    </div>
-                                
-                                </div>
-                                <div class="row mb-6">
-                                    <div class="col-lg-2 ">
-                                        <div class="ms-2">Pilih TPB</div>
-
-
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <select id="tpb_id" class="form-select form-select-solid form-select2" name="tpb_id" data-kt-select2="true"  data-placeholder="Pilih TPB" data-allow-clear="true">
+                                    <div class="col-lg-9">
+                                        <select  id="program_id" class="form-select form-select-solid form-select2" name="program_id" data-kt-select2="true" data-placeholder="Pilih Program" data-allow-clear="true">
                                             <option></option>
-                                            @foreach($tpb as $p)  
-                                                @php
-                                                    $select = (($p->no_tpb == $tpb_id) ? 'selected="selected"' : '');
-                                                @endphp
-                                                <option data-jenis-anggaran="{{ $p->jenis_anggaran }}" value="{{ $p->id }}" {!! $select !!}>{{ $p->no_tpb }} - {{ $p->nama }} [{{$p->jenis_anggaran}}]</option>
-                                            @endforeach
+                                            <option value="CID" {{ request('jenis_anggaran') === 'CID' ? 'selected="selected"' : '' }} >
+                                                    CID</option>
+                                            <option value="non CID" {{ request('jenis_anggaran') === 'non CID' ? 'selected="selected"' : '' }} >
+                                                non CID</option>
                                         </select>
 
                                     </div>
                                 
                                 </div>
                                 <div class="row mb-6">
-                                    <div class="col-lg-2 ">
-                                        <div class="ms-2">Unit Owner</div>
+                                    <div class="col-lg-3 ">
+                                        <div class="ms-2 required">Nama Kegiatan</div>
 
 
                                     </div>
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-9">
                                         <div class="form-floating">
                                             <textarea class="form-control" placeholder="Leave a comment here" id="unit_owner" name="unit_owner" style="height: 100px"></textarea>
-                                            <label for="unit_owner">Unit Owner</label>
+                                            <label for="unit_owner">Nama Kegiatan</label>
                                         </div>
 
                                     </div>
                                 
                                 </div>
                                 <div class="row mb-6">
-                                    <div class="col-lg-2">
-                                        <div class="ms-2">Kriteria Program</div>
-
-
+                                    <div class="col-lg-3 ">
+                                        <div class="ms-2 required">Jenis Kegiatan</div>
                                     </div>
-                                    <div class="col-lg-6 fv-row d-flex align-items-center justify-content-start">
-                                        
-                                        <div style="display:flex; flex-direction: row;">
-                                            <div class="form-check form-check-custom form-check-solid form-check-sm me-8">
-                                                <input class="form-check-input" type="checkbox" name="kriteria_program" value="prioritas" id="checkboxPrioritas"/>
-                                                <label class="form-check-label" for="checkboxPrioritas">
-                                                    Prioritas
-                                                </label>
-                                            </div> 
-                                            <div class="form-check form-check-custom form-check-solid form-check-sm me-8">
-                                                <input class="form-check-input" type="checkbox" name="kriteria_program" value="csv" id="checkboxCSV"/>
-                                                <label class="form-check-label" for="checkboxCSV">
-                                                    CSV
-                                                </label>
-                                            </div>
-                                            <div class="form-check form-check-custom form-check-solid form-check-sm">
-                                                <input class="form-check-input" type="checkbox" name="kriteria_program" value="umum" id="checkboxUmum"/>
-                                                <label class="form-check-label" for="checkboxUmum">
-                                                    Umum
-                                                </label>
-                                            </div>
-                                        </div>
-                                        
-                                        
-
-                                    </div>
-                                
-                                </div>
-
-                                <div class="row mb-6">
-                                    <div class="col-lg-2">
-                                        <div class="ms-2">ID Core Subject</div>
-
-
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <select  id="core_subject_id" class="form-select form-select-solid form-select2" name="core_subject_id" data-kt-select2="true" data-placeholder="Pilih ID Core Subject" data-allow-clear="true">
+                                    <div class="col-lg-9">
+                                        <select  id="jenis_kegiatan" class="form-select form-select-solid form-select2" name="jenis_kegiatan" data-kt-select2="true" data-placeholder="Pilih Jenis Kegiatan" data-allow-clear="true">
                                             <option></option>
-                                            @foreach($core_subject as $c)  
-                                            
-                                                <option value="{{ $c->id }}" >{{ $c->nama }}</option>
-                                            @endforeach
+                                            @foreach($jenis_kegiatan as $jenis_kegiatan_row)  
+                                            {{-- @php
+                                                $select = (($p->no_tpb == $tpb_id) ? 'selected="selected"' : '');
+                                            @endphp --}}
+                                            <option  value="{{ $jenis_kegiatan_row->id }}" {!! $select !!}>{{ $jenis_kegiatan_row->nama }}</option>
+                                        @endforeach
                                         </select>
 
                                     </div>
                                 
                                 </div>
-
                                 <div class="row mb-6">
-                                    <div class="col-lg-2">
-                                        <div class="ms-2">Pelaksanaan Program</div>
-
-
+                                    <div class="col-lg-3">
+                                        <div class="ms-2">Keterangan Kegiatan</div>
                                     </div>
-                                    <div class="col-lg-6">
-                                        <select  id="pelaksanaan_program" class="form-select form-select-solid form-select2" name="pelaksanaan_program" data-kt-select2="true" data-placeholder="Pilih Pelaksanaan Program" data-allow-clear="true">
-                                            <option></option>
-                                            <option value="Mandiri" {{ request('pelaksanaan_program') === 'Mandiri' ? 'selected="selected"' : '' }} >
-                                                    Mandiri</option>
-                                            <option value="Kolaborasi" {{ request('pelaksanaan_program') === 'Kolaborasi' ? 'selected="selected"' : '' }} >
-                                                Kolaborasi</option>
-                                        </select>
+                                    <div class="col-lg-9">
+                                        <input type="text" name="keterangan_kegiatan" id="keterangan_kegiatan"
+                                            class="form-control form-control-lg form-control-solid"
+                                            placeholder="Keterangan Singkat"  
+                                            />
                                     </div>
-                                
                                 </div>
-
                                 <div class="row mb-6">
-                                    <div class="col-lg-2">
-                                        <div class="ms-2">Mitra BUMN</div>
-
-
+                                    <div class="col-lg-3">
+                                        <div class="ms-2 required">Provinsi</div>
                                     </div>
-                                    <div class="col-lg-6">
-                                        <select class="form-select form-select-solid form-select2" id="mitra_bumn" name="mitra_bumn" data-kt-select2="true" data-placeholder="Pilih Mitra BUMN" {{ $disabled }}>
+                                    <div class="col-lg-9">
+                                        <select id="provinsi" class="form-select form-select-solid form-select2" name="provinsi" data-kt-select2="true" data-placeholder="Pilih Provinsi" data-allow-clear="true">
                                             <option></option>
-                                            @foreach($perusahaan as $p)  
-                                                @php
-                                                    $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
-                                                @endphp
-                                                <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
+                                            <!-- Add options dynamically from your backend -->
+                                            @foreach($provinsi as $provinsi_row)
+                                                <option value="{{ $provinsi_row->id }}">{{ $provinsi_row->nama }} </option>
                                             @endforeach
                                         </select>
                                     </div>
-                                
                                 </div>
-
                                 <div class="row mb-6">
-                                    <div class="col-lg-2">
-                                        <div class="ms-2">Program Multi Years</div>
+                                    <div class="col-lg-3">
+                                        <div class="ms-2 required">Kota/Kabupaten</div>
                                     </div>
-                                    <div class="col-lg-6 fv-row d-flex align-items-center justify-content-start">
-                                        <div style="display:flex; flex-direction: row;">
-                                            <div class="form-check form-check-custom form-check-solid form-check-sm me-8">
-                                                <input class="form-check-input" type="radio" name="program" id="multiyears_ya" value="ya"/>
-                                                <label class="form-check-label" for="prioritas">
-                                                    Ya
-                                                </label>
-                                            </div> 
-                                            <div class="form-check form-check-custom form-check-solid form-check-sm me-8">
-                                                <input class="form-check-input" type="radio" name="program" id="multiyears_tidak" value="tidak"/>
-                                                <label class="form-check-label" for="csv">
-                                                    Tidak
-                                                </label>
-                                            </div>
-                                        </div>
+                                    <div class="col-lg-9">
+                                        <select id="kota_kabupaten" class="form-select form-select-solid form-select2" name="kota_kabupaten" data-kt-select2="true" data-placeholder="Pilih Kota/Kabupaten" data-allow-clear="true">
+                                            <option></option>
+                                            <!-- Add options dynamically from your backend -->
+                                            @foreach($kota_kabupaten as $kota_kabupaten_row)
+                                                <option value="{{ $kota_kabupaten_row->id }}" data-provinsi-id="{{ $kota_kabupaten_row->provinsi_id }}">{{ $kota_kabupaten_row->nama }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
-                                
-
                                 <div class="row mb-6">
-                                    <div class="col-lg-2">
-                                        <div class="ms-2">Alokasi Anggaran</div>
-
-
+                                    <div class="col-lg-3">
+                                        <div class="ms-2 required">Realisasi Anggaran</div>
                                     </div>
-                                    <div class="col-lg-6">
-                                        <input type="text" name="alokasi_anggaran" id="alokasi_anggaran"
+                                    <div class="col-lg-9">
+                                        <input type="text" name="realisasi_anggaran" id="realisasi_anggaran"
                                             class="form-control form-control-lg form-control-solid"
                                             placeholder="Rp ... " oninput="formatCurrency(this)" 
                                             onkeypress="return onlyNumbers(event)" style="text-align:right;"  value="{{$data->income_bumn_pembina_lain ?? ''}}"
                                             />
+                                    </div>
+                                </div>
+                                <div class="row mb-6">
+                                    <div class="col-lg-3 ">
+                                        <div class="ms-2 required">Satuan Ukur</div>
+
+
+                                    </div>
+                                    <div class="col-lg-9">
+                                        <select  id="satuan_ukur" class="form-select form-select-solid form-select2" name="satuan_ukur" data-kt-select2="true" data-placeholder="Pilih Satuan Ukur" data-allow-clear="true">
+                                            <option></option>
+                                            @foreach($satuan_ukur as $satuan_ukur_row)
+                                                <option value="{{ $satuan_ukur_row->id }}" >{{ $satuan_ukur_row->nama }}</option>
+                                            @endforeach
+                                        </select>
 
                                     </div>
                                 
                                 </div>
+                                <div class="row mb-6">
+                                    <div class="col-lg-3">
+                                        <div class="ms-2">Realisasi Indikator</div>
+                                    </div>
+                                    <div class="col-lg-9">
+                                        <input type="text" name="realisasi_indikator" id="realisasi_indikator"
+                                            class="form-control form-control-lg form-control-solid"
+                                            placeholder="Berdasarkan Satuan Ukur"  
+                                            />
+                                    </div>
+                                </div>
+                                
+                                
+
+                               
+
+                                
+
+                                
+
+                              
+                                
+
+                              
                             
                                 
                             </div>
@@ -409,7 +371,7 @@
 
                         </form>
                         <div class="form-group row mt-8  mb-5 text-center">
-                            <div class="col-lg-12">
+                            <div class="col-lg-offset-3 col-lg-9">
                                 <button id="proses" class="btn btn-danger me-3">Close</button>
                                 <button id="clear-btn" class="btn btn-info me-3">Clear</button>
                                 <button id="simpan-btn" class="btn btn-success me-3">Simpan</button>
@@ -469,25 +431,37 @@
               
             
             })
+            $("#provinsi").on('change', function(){
+                
+                const provinsi = $(this).val()
+                $("#kota_kabupaten").val('').trigger('change')
+                
+                
+                $("#kota_kabupaten").select2({    
+                    templateResult: function(data) {
+                        if($(data.element).attr('data-provinsi-id') === provinsi || provinsi === '') return data.text
+                        return null
+                    },
+                    templateSelection: function(data) {
+                        if($(data.element).attr('data-provinsi-id') === provinsi || provinsi === '') return data.text
+                        return null
+                    }
+                })            
+
+                // let textAnggaran = jenisAnggaran ? `- ${jenisAnggaran}` : ''
+                $("#select2-kota_kabupaten-container .select2-selection__placeholder").text('Pilih Kota/Kabupaten ')
+                // $("#select2-tpb_id-container .select2-selection__placeholder").text('Pilih TPB '+textAnggaran)
+
+              
+            
+            })
+       
         });
 
+       
+
         function formatCurrency(element) {
-            //ver 1
-            // const value = element.value.replace(/[^\d]/g, "");
-            // const isNegative = value.startsWith("-");
-            // const formatter = new Intl.NumberFormat("id-ID", {
-            //     style: "currency",
-            //     currency: "IDR",
-            //     minimumFractionDigits: 0,
-            //     maximumFractionDigits: 0
-            // });
-            // let formattedValue = formatter.format(value);
-            // formattedValue = formattedValue.replace(/,/g, ".");
-            // if (isNegative) {
-            //     formattedValue = "- " + formattedValue;
-                
-            // }
-            // element.value = formattedValue;
+           
 
             //ver 2
             let value = element.value.replace(/[^\d-]/g, "");
