@@ -56,10 +56,10 @@ class LaporanManajemenController extends Controller
 
         //cek laporan setiap tahun dari 2021 sampai tahun saat ini
         
-        $all_perusahaan_id =Perusahaan::all()->pluck('id');
+        $all_perusahaan_id =Perusahaan::where('is_active', true)->where('induk', 0)->pluck('id');
         $currentYear = Carbon::now()->year;
         foreach ($all_perusahaan_id as $key => $cek_perusahaan_id) {
-            for ($year = 2021; $year <= $currentYear; $year++) {
+            for ($year = 2020; $year <= $currentYear; $year++) {
                 //code untuk cek
                 // $cek_laporan_rka = DB::table('laporan_manajemens')->where('tahun', 2023)->where('perusahaan_id', 60)->where('periode_laporan_id', $periode_rka_id)->first();
                 // dd($cek_laporan_rka);
@@ -81,29 +81,31 @@ class LaporanManajemenController extends Controller
 
         //cek perusahaan
 
-        $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')
-        ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')->where('periode_laporan_id', $periode_rka_id);
-        if ($request->perusahaan_id) {
+        // $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')
+        // ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')
+        // ->where('periode_laporan_id', $periode_rka_id)
+        // ->where('perusahaans.induk', 0);
+        // if ($request->perusahaan_id) {
 
-            $laporan_manajemen = $laporan_manajemen->where('perusahaan_id', $request->perusahaan_id);
-        }
+        //     $laporan_manajemen = $laporan_manajemen->where('perusahaan_id', $request->perusahaan_id);
+        // }
 
 
-        if ($request->tahun) {
+        // if ($request->tahun) {
 
-            $laporan_manajemen = $laporan_manajemen->where('tahun', $request->tahun);
-        }
+        //     $laporan_manajemen = $laporan_manajemen->where('tahun', $request->tahun);
+        // }
 
-        if ($request->status_laporan) {
+        // if ($request->status_laporan) {
 
-            $laporan_manajemen = $laporan_manajemen->where('status_id', $request->status_laporan);
-        }
-        // dd($laporan_manajemen->pluck('perusahaan_id'));
+        //     $laporan_manajemen = $laporan_manajemen->where('status_id', $request->status_laporan);
+        // }
+        // // dd($laporan_manajemen->pluck('perusahaan_id'));
        
         
         
 
-        $laporan_manajemen = $laporan_manajemen->get();
+        // $laporan_manajemen = $laporan_manajemen->get();
         
         // dd($laporan_manajemen->pluck('perusahaan_id'));
         return view($this->__route . '.index', [
@@ -111,7 +113,7 @@ class LaporanManajemenController extends Controller
             'breadcrumb' => 'Rencana Kerja - Laporan Manajemen - RKA',
             // 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
             'tahun' => ($request->tahun ?? ''),
-            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
             'status' => $status,
@@ -258,7 +260,7 @@ class LaporanManajemenController extends Controller
         // dd($request);
         $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
         $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')
-        ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')->where('periode_laporan_id', $periode_rka_id);
+        ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')->where('periode_laporan_id', $periode_rka_id)->where('perusahaans.induk', 0);
         if ($request->perusahaan_id) {
 
             $laporan_manajemen = $laporan_manajemen->where('perusahaan_id', $request->perusahaan_id);
@@ -306,19 +308,19 @@ class LaporanManajemenController extends Controller
         }
     }
 
-    public function log_status(Request $request)
-    {
+        public function log_status(Request $request)
+        {
 
-        $log = LogLaporanManajemen::select('log_laporan_manajemens.*', 'users.name AS user', 'statuses.nama AS status')
-            ->leftjoin('users', 'users.id', '=', 'log_laporan_manajemens.user_id')
-            ->leftjoin('statuses', 'statuses.id', '=', 'log_laporan_manajemens.status_id')
-            ->where('laporan_manajemen_id', (int)$request->input('id'))
-            ->orderBy('created_at')
-            ->get();
+            $log = LogLaporanManajemen::select('log_laporan_manajemens.*', 'users.name AS user', 'statuses.nama AS status')
+                ->leftjoin('users', 'users.id', '=', 'log_laporan_manajemens.user_id')
+                ->leftjoin('statuses', 'statuses.id', '=', 'log_laporan_manajemens.status_id')
+                ->where('laporan_manajemen_id', (int)$request->input('id'))
+                ->orderBy('created_at')
+                ->get();
 
-        return view($this->__route . '.log_status', [
-            'pagetitle' => 'Log Status',
-            'log' => $log
-        ]);
-    }
+            return view($this->__route . '.log_status', [
+                'pagetitle' => 'Log Status',
+                'log' => $log
+            ]);
+        }
 }

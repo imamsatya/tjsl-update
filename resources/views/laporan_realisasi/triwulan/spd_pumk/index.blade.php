@@ -492,7 +492,8 @@
                 data: function (d) {
                     d.perusahaan_id = $("select[name='perusahaan_id']").val(),
                     d.tahun = $("select[name='tahun']").val(),
-                    d.status_spd = $('#status_spd').val()
+                    d.status_spd = $('#status_spd').val(),
+                    d.periode_laporan = $('#periode_laporan').val()
                     }
                  },
                 columns: [

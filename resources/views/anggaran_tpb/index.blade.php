@@ -254,8 +254,12 @@
                                     </button>
                                     <button type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
                                     </button>
-                                <button type="button" class="btn btn-success btn-sm input-data" onclick="redirectToNewPage()">Input Data
+                                <button type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
                                 </button>
+                                @role('Super Admin')
+                                <button type="button" class="btn btn-primary btn-sm " >Verify
+                                </button>
+                                @endrole
                                 {{-- <a href="{{ route('anggaran_tpb.create2', ['param1' => 'parameter1', 'param2' => 'parameter2']) }}" class="btn btn-success btn-sm input-data">Input Data</a> --}}
                             </div>
                             <!--end::Search-->

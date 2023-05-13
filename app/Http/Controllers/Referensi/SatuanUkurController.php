@@ -47,7 +47,7 @@ class SatuanUkurController extends Controller
                 $button .= '</div>';
                 return $button;
             })
-            ->rawColumns(['nama','keterangan','action'])
+            ->rawColumns(['nama','keterangan','is_active','action'])
             ->toJson();
         }catch(Exception $e){
             return response([
@@ -84,6 +84,7 @@ class SatuanUkurController extends Controller
         if (!$validator->fails()) {
             $param['nama'] = $request->input('nama');
             $param['keterangan'] = $request->input('keterangan');
+            $param['is_active'] = $request->input('is_active');
 
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
@@ -185,8 +186,10 @@ class SatuanUkurController extends Controller
     protected function validateform($request)
     {
         $required['nama'] = 'required';
+        $required['status'] = 'required';
 
         $message['nama.required'] = 'Nama wajib diinput';
+        $message['status.required'] = 'Status wajib diinput';
 
         return Validator::make($request->all(), $required, $message);
     }

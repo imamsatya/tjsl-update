@@ -191,7 +191,7 @@ class KegiatanController extends Controller
                 ->orderBy('no_tpb')
                 // ->where('anggaran_tpbs', '!=', null)
                 ->get();        
-    //    dd($anggaran);
+        
 
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
@@ -227,6 +227,8 @@ class KegiatanController extends Controller
     {
         $admin_bumn = false;
         $view_only = false;
+        $id_users = \Auth::user()->id;
+        $users = User::where('id', $id_users)->first();
         if (!empty($users->getRoleNames())) {
             foreach ($users->getRoleNames() as $v) {
                 if ($v == 'Admin BUMN') {

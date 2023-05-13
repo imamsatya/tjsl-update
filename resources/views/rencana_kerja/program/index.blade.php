@@ -267,8 +267,12 @@
                         <div class="d-flex align-items-center position-relative my-1">
                             <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                             </button>
-                            <button type="button" class="btn btn-primary btn-sm " onclick="redirectToNewPage()">Input Data
+                            <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
                             </button>
+                            @role('Super Admin')
+                                <button type="button" class="btn btn-primary btn-sm " >Verify
+                                </button>
+                                @endrole
                         </div>
                         <!--end::Search-->
                         <!--end::Group actions-->

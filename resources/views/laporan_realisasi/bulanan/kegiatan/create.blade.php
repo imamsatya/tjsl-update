@@ -220,7 +220,7 @@
                                 </div>
                                 <div class="row mb-6">
                                     <div class="col-lg-3 ">
-                                        <div class="ms-2 required">Program???</div>
+                                        <div class="ms-2 required">Program</div>
 
 
                                     </div>

@@ -178,7 +178,7 @@
                                     </select>
                                 </div>
                                 <div class="col-lg-6">
-                                    <label>Program???</label>
+                                    <label>Program</label>
                                     <select id="program_id" class="form-select form-select-solid form-select2" name="program_id" data-kt-select2="true"  data-placeholder="Pilih Program" data-allow-clear="true">
                                         <option></option>
                                         @foreach($tpb as $p)  
@@ -285,8 +285,12 @@
                                 data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
                             <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                             </button>
-                            <button type="button" class="btn btn-primary btn-sm " onclick="redirectToNewPage()">Input Data
+                            <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
                             </button>
+                            @role('Super Admin')
+                            <button type="button" class="btn btn-primary btn-sm " >Verify
+                            </button>
+                            @endrole
                         </div>
                         <!--end::Search-->
                         <!--end::Group actions-->

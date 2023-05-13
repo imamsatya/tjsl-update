@@ -202,29 +202,15 @@
                     </div>
                     <!--end::Card title-->
                     <!--begin::Card toolbar-->
-                    <div class="card-toolbar">
-                        <!--begin::Search-->
-                        {{-- <div class="d-flex align-items-center position-relative my-1"
-                            data-kt-view-roles-table-toolbar="base">
-                            <button type="button" class="btn btn-success me-2 btn-sm cls-add"
-                                data-kt-view-roles-table-select="delete_selected">Simpan Status</button>
-                            <button type="button" class="btn btn-success btn-sm cls-add"
-                                data-kt-view-roles-table-select="delete_selected">Tambah</button>
-                            <button type="button" class="btn btn-danger btn-sm delete-selected-data">Hapus Data
-                                x</button>
-                        </div> --}}
-                        <div class="d-flex align-items-center position-relative my-1">
-                            {{-- <button type="button" class="btn btn-success me-2 btn-sm cls-add"
-                                data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
-                            {{-- <button type="button" class="btn btn-success btn-sm cls-add"
-                                data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
-                            <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
+                    <div class="d-flex align-items-center position-relative my-1">
+                        {{-- <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
+                        </button> --}}
+                        @role('Super Admin')
+                            <button type="button" class="btn btn-primary btn-sm " >Verify
                             </button>
-                            <button type="button" class="btn btn-primary btn-sm " onclick="redirectToNewPage()">Input Data
-                            </button>
-                        </div>
-                        <!--end::Search-->
-                        <!--end::Group actions-->
+                            @endrole
                     </div>
                     <!--end::Card toolbar-->
                 </div>
