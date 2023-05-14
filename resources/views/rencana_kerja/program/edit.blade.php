@@ -12,10 +12,7 @@
                 <div class="ms-2">Nama Program<span style="color: red">*</span></div>
             </div>
             <div class="col-lg-9">
-                <input type="text" name="nama_program_edit" id="nama_program_edit" value="{{ $data->program }}"
-                    class="form-control form-control-lg form-control-solid"
-                    placeholder="Nama Program"  
-                    />
+                <textarea class="form-control" id="nama_program_edit" name="nama_program_edit" style="height: 100px">{{ $data->program }}</textarea>                
             </div>
         </div>
         <div class="row mb-6">
@@ -35,11 +32,11 @@
             <div class="col-lg-3">
                 <div class="ms-2">Unit Owner</div>
             </div>
-            <div class="col-lg-9">
-                <div class="form-floating">
-                    <textarea class="form-control" placeholder="Leave a comment here" id="unit_owner_edit" name="unit_owner_edit" style="height: 100px">{{ $data->unit_owner }}</textarea>
-                    <label for="unit_owner">Unit Owner</label>
-                </div>
+            <div class="col-lg-9">                
+                <input value="{{ $data->unit_owner }}" type="text" name="unit_owner_edit" id="unit_owner_edit"
+                    class="form-control form-control-lg form-control-solid"
+                    placeholder="Unit Owner"  
+                    />  
             </div>
         </div>
         <div class="row mb-6">
@@ -191,7 +188,6 @@
         
         $('#form-edit').on('submit', function(event) {
             event.preventDefault()
-            console.log('submiting')
             $(this).validate({
                 rules: {     
                     nama_program_edit: 'required',
@@ -228,6 +224,8 @@
                 },
             })
 
+
+
             const kriteria_program_checkboxes = document.getElementsByName("kriteria_program_edit"); // mengambil semua checkbox dengan name="kriteria_program"
             const selectedKriteriaProgram = []; // deklarasi array untuk menyimpan nilai dari checkbox yang dipilih
 
@@ -241,7 +239,7 @@
             $('#alokasi_anggaran_edit').val(parseInt(tempAnggaran.replace(/[^0-9\-]/g, '')))
 
             let data = {
-                nama_program_edit : $("#nama_program_edit").val(),
+                nama_program_edit : $("#nama_program_edit").val().trim(),
                 tpb_id_edit : $("#tpb_id_edit").val(),
                 unit_owner_edit : $("#unit_owner_edit").val(),
                 kriteria_used : $("#kriteria_used").val(),
@@ -253,6 +251,17 @@
                 id_program: $("#id_program").val(),
                 tahun_edit: $("#tahun_edit").val(),
                 perusahaan_edit: $("#perusahaan_edit").val()
+            }
+
+            if(data.pelaksanaan_program_edit.toLowerCase() === 'mandiri' && data.mitra_bumn_edit != '') {
+                swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    html: 'Jika pelaksanaan progam = mandiri, mitra bumn tidak boleh terisi!',
+                    buttonsStyling: true,
+                    confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                })
+                return
             }
 
 
@@ -316,7 +325,15 @@
             })
         })
 
-        
+        $("#pelaksanaan_program_edit").on('change', function() {
+            const pp = $(this).val().toLowerCase()
+            if(pp === 'mandiri') {
+                $("#mitra_bumn_edit").val('').trigger('change')
+                $("#mitra_bumn_edit").prop('disabled', true)
+                return
+            }
+            $("#mitra_bumn_edit").prop('disabled', false)
+        })
 
         
     });

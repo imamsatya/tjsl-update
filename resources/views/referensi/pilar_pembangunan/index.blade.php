@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('addbeforecss')
+<link href="{{asset('/assets/plugins/custom/jstree/jstree.bundle.css')}}" rel="stylesheet" type="text/css" />
+@endsection
+
 @section('content')
     <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
         <!--begin::Container-->
@@ -218,8 +222,7 @@
                         <!--begin::Search-->
                         <div class="d-flex align-items-center position-relative my-1"
                             data-kt-view-roles-table-toolbar="base">
-                            {{-- <button type="button" class="btn btn-danger btn-sm cls-add "
-                                data-kt-view-roles-table-select="delete_selected">Hapus Data</button> --}}
+                            <button type="button" class="btn btn-warning btn-sm" style="margin-right: 5px" id="cls-order">Order Data</button> 
                             <button type="button" class="btn btn-danger btn-sm delete-selected-data">Hapus Data
                             </button>
                         </div>
@@ -260,6 +263,8 @@
 @endsection
 
 @section('addafterjs')
+    <script src="{{asset('/assets/plugins/custom/jstree/jstree.bundle.js')}}" type="text/javascript"></script>
+    <script src="{{asset('/assets/plugins/custom/jstree-grid-master/jstreegrid.js')}}" type="text/javascript"></script>
     <script>
         var datatable;
         var urlcreate = "{{ route('referensi.pilar_pembangunan.create') }}";
@@ -268,6 +273,8 @@
         var urlupdate = "{{ route('referensi.pilar_pembangunan.update') }}";
         var urldatatable = "{{ route('referensi.pilar_pembangunan.datatable') }}";
         var urldelete = "{{ route('referensi.pilar_pembangunan.delete') }}";
+        var urleditorder = "{{ route('referensi.pilar_pembangunan.order') }}";
+        var urleditordersubmit = "{{ route('referensi.pilar_pembangunan.ordersubmit') }}";
 
         $(document).ready(function() {
             $('#page-title').html("{{ $pagetitle }}");
@@ -384,6 +391,10 @@
 
 
             });
+
+            $("#cls-order").on('click', function() {
+                winform(urleditorder, {}, 'Edit Order Data');
+            })
         });
 
         function setDatatable() {

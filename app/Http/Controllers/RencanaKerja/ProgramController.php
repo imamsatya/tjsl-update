@@ -132,6 +132,7 @@ class ProgramController extends Controller
       
 
         $anggaran_pilar = $anggaran_pilar->select(
+            'pilar_pembangunans.order_pilar',
             'anggaran_tpbs.perusahaan_id',
             'anggaran_tpbs.tahun',            
             DB::Raw('sum(case when tpbs.jenis_anggaran = \'CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_cid'),
@@ -142,8 +143,9 @@ class ProgramController extends Controller
                 'anggaran_tpbs.perusahaan_id',
                 'anggaran_tpbs.tahun',
                 'pilar_pembangunans.nama',
+                'pilar_pembangunans.order_pilar'
             )
-            ->orderBy('pilar_pembangunans.nama')
+            ->orderBy('pilar_pembangunans.order_pilar')
             ->get();
 
         $anggaran_bumn = $anggaran_bumn->select(
@@ -171,7 +173,7 @@ class ProgramController extends Controller
         $anggaran = $anggaran->select('*', 'tpbs.id as id_tpbs', 'anggaran_tpbs.id as id_anggaran',
         'pilar_pembangunans.nama as pilar_nama', 'tpbs.nama as tpb_nama', DB::Raw('(case when tpbs.jenis_anggaran = \'non CID\' then anggaran end) as anggaran_noncid'), DB::Raw('(case when tpbs.jenis_anggaran = \'CID\' then anggaran end) as anggaran_cid'))
                 ->orderBy('pilar_pembangunans.nama')
-                ->orderBy('no_tpb')
+                ->orderBy('tpbs.id')
                 ->get(); 
 
 
@@ -254,7 +256,9 @@ class ProgramController extends Controller
         $jenis_anggaran = explode('-', $jenis_anggaran);
         $jenis_anggaran = implode(' ', $jenis_anggaran);        
 
+
         $anggaran_pilar = $anggaran_pilar->select(
+            'pilar_pembangunans.order_pilar',
             'anggaran_tpbs.perusahaan_id',
             'anggaran_tpbs.tahun',            
             DB::Raw('sum(case when tpbs.jenis_anggaran = \'CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_cid'),
@@ -265,14 +269,15 @@ class ProgramController extends Controller
                 'anggaran_tpbs.perusahaan_id',
                 'anggaran_tpbs.tahun',
                 'pilar_pembangunans.nama',
+                'pilar_pembangunans.order_pilar'
             )
-            ->orderBy('pilar_pembangunans.nama')
+            ->orderBy('pilar_pembangunans.order_pilar')
             ->get();
 
         $anggaran = $anggaran->select('*', 'tpbs.id as id_tpbs', 'anggaran_tpbs.id as id_anggaran',
         'pilar_pembangunans.nama as pilar_nama', 'tpbs.nama as tpb_nama', DB::Raw('(case when tpbs.jenis_anggaran = \'non CID\' then anggaran end) as anggaran_noncid'), DB::Raw('(case when tpbs.jenis_anggaran = \'CID\' then anggaran end) as anggaran_cid'))
                 ->orderBy('pilar_pembangunans.nama')
-                ->orderBy('no_tpb')
+                ->orderBy('tpbs.id')
                 ->get();   
                 
         $anggaran_program = $anggaran_program->select('target_tpbs.*', 'tpbs.*', 'target_tpbs.id as id_target_tpbs', 'pilar_pembangunans.nama as pilar_nama','tpbs.nama as tpb_nama', 
@@ -304,7 +309,8 @@ class ProgramController extends Controller
                         ->from('anggaran_tpbs')
                         ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id','=','anggaran_tpbs.relasi_pilar_tpb_id')
                         ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
-                        ->where('anggaran_tpbs.tahun', $tahun);
+                        ->where('anggaran_tpbs.tahun', $tahun)
+                        ->where('anggaran_tpbs.anggaran', '>', 0);
                 })->get(),
                 'tpb_id' => $request->tpb ?? '',
                 'core_subject' => CoreSubject::get(),
@@ -431,7 +437,7 @@ class ProgramController extends Controller
     }
 
     public function editStore(Request $request) {
-        // DB::beginTransaction();
+        DB::beginTransaction();
         try {
             $data = $request->input('data');
             $target_tpb = TargetTpb::find((int) $data['id_program']);            

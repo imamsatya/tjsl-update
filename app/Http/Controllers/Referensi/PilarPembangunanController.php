@@ -298,4 +298,49 @@ class PilarPembangunanController extends Controller
 
         return Validator::make($request->all(), $required, $message);
     }
+
+    public function order(Request $request) {
+        try {
+
+            $pilar = PilarPembangunan::select('nama', 'order_pilar')->where('is_active', '1')->groupBy('nama', 'order_pilar')->orderBy('order_pilar')->get();
+
+            $pilar = $pilar->map(function($item) {
+                return $item->nama;
+            });
+
+            return view($this->__route . '.order', [
+                'pagetitle' => $this->pagetitle,
+                'actionform' => 'update',
+                'data' => $pilar
+
+            ]);
+        } catch (Exception $e) {
+        }
+    }
+
+    public function orderSubmit(Request $request) {
+        try {
+            DB::beginTransaction();
+            $data = $request->input('data');
+            foreach($data as $index => $pilar) {
+                DB::table('pilar_pembangunans')->where('nama', $pilar)->update([
+                    'order_pilar' => $index + 1
+                ]);
+            }
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Berhasil memperbarui urutan pilar!',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
 }

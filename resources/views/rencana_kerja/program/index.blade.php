@@ -333,93 +333,97 @@
                                             }
 
                                         @endphp
-                                        <tr class="treegrid-bumn-pilar-{{str_replace(' ', '-', @$p->pilar_nama)}}" >
-                                            <td style="text-align:center;">{{$no}}</td>
-                                            <td>{{$p->pilar_nama}} - {{ strtoupper($jenis_anggaran) }}</td>
-                                            <td style="text-align:right;">{{ number_format($total_program_per_pilar,0,',',',') }} <br/> <span style="color: {{ $total_program_per_pilar == $total_rka_pilar ? 'green' : 'red'}}; font-size: smaller">RKA: {{number_format($total_rka_pilar,0,',',',')}}</span></td>
-                                            <td style="text-align:right;"></td>
-                                            <td style="text-align:center;">
-                                                <span class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3">{{$status}}</span>
-                                            </td>
-                                            <td style="text-align:center;"></td>
-                                            <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                                <input class="form-check-input is_active-check pilar-check" data-pilar-parent="pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" type="checkbox" data-anggaran="" name="selected-is_active[]" value="${row.id}">
-                                                </label></td>
-                                        </tr>
-                                        @foreach ($anggaran_anak as $key => $a)                                                                                                                                              
-                                            @if($a->jenis_anggaran === $jenis_anggaran)                                                    
-                                                @php
-                                                    $program = $anggaran_program->where('pilar_nama', $p->pilar_nama)->where('tpb_id', $a->id_tpbs);
-                                                    $total_program_per_tpb = $program->where('jenis_anggaran', $jenis_anggaran)->sum('anggaran_alokasi');
+                                        @if($total_rka_pilar)
+                                            <tr class="treegrid-bumn-pilar-{{str_replace(' ', '-', @$p->pilar_nama)}}" >
+                                                <td style="text-align:center;">{{$no}}</td>
+                                                <td>{{$p->pilar_nama}} - {{ strtoupper($jenis_anggaran) }}</td>
+                                                <td style="text-align:right;">{{ number_format($total_program_per_pilar,0,',',',') }} <br/> <span style="color: {{ $total_program_per_pilar <= $total_rka_pilar ? 'green' : 'red'}}; font-size: smaller">RKA: {{number_format($total_rka_pilar,0,',',',')}}</span></td>
+                                                <td style="text-align:right;"></td>
+                                                <td style="text-align:center;">
+                                                    <span class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3">{{$status}}</span>
+                                                </td>
+                                                <td style="text-align:center;"></td>
+                                                <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                                    <input class="form-check-input is_active-check pilar-check" data-pilar-parent="pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" type="checkbox" data-anggaran="" name="selected-is_active[]" value="${row.id}">
+                                                    </label></td>
+                                            </tr>
+                                            @foreach ($anggaran_anak as $key => $a)                                                                                                                                              
+                                                @if($a->jenis_anggaran === $jenis_anggaran)                                                    
+                                                    @php
+                                                        $program = $anggaran_program->where('pilar_nama', $p->pilar_nama)->where('tpb_id', $a->id_tpbs);
+                                                        $total_program_per_tpb = $program->where('jenis_anggaran', $jenis_anggaran)->sum('anggaran_alokasi');
 
-                                                    $status_tpb_inprogress = $program->where('status_id', 2)->first();
-                                                    if($status_tpb_inprogress) {
-                                                        $status_class = 'primary';
-                                                        $status = 'In Progress';
-                                                    } else {
-                                                        if($program->where('status_id', 1)->first()) {
-                                                            $status_class = 'success';
-                                                            $status = 'Finish';
+                                                        $status_tpb_inprogress = $program->where('status_id', 2)->first();
+                                                        if($status_tpb_inprogress) {
+                                                            $status_class = 'primary';
+                                                            $status = 'In Progress';
                                                         } else {
-                                                            $status_class = 'warning';
-                                                            $status = 'Unfilled';
+                                                            if($program->where('status_id', 1)->first()) {
+                                                                $status_class = 'success';
+                                                                $status = 'Finish';
+                                                            } else {
+                                                                $status_class = 'warning';
+                                                                $status = 'Unfilled';
+                                                            }
                                                         }
-                                                    }
-                                                @endphp    
-                                                <tr class="treegrid-anggaran-{{$a->id_anggaran}} treegrid-parent-bumn-pilar-{{str_replace(' ', '-', @$p->pilar_nama)}} item-{{$a->id_anggaran}}">
-                                                    <td></td>
-                                                    <td>{{@$a->no_tpb .' - '. @$a->tpb_nama}} - {{ strtoupper($jenis_anggaran) }}</td>                                                        
-                                                    <td style="text-align:right;">{{ number_format($total_program_per_tpb,0,',',',') }} <br/> <span style="color: {{ $total_program_per_tpb == $a->anggaran ? 'green': 'red'}}; font-size: smaller">RKA: {{number_format($a->anggaran,0,',',',')}}</span></td>
-                                                    <td style="text-align:center;"></td>
-                                                    <td style="text-align:center;">
-                                                        <span class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3">{{$status}}</span>
-                                                    </td>
-                                                    <td style="text-align:center;"></td>
-                                                    
-                                                    <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                                        <input class="form-check-input is_active-check tpb-check pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}} pilar-{{str_replace(' ', '-', @$p->pilar_nama)}}" data-tpb-parent="tpb-{{str_replace(' ', '-', @$a->no_tpb)}}-pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" type="checkbox" name="selected-is_active[]" value="${row.id}">
-                                                        </label></td>
-                                                </tr>
-                                                    
-                                                @foreach($program as $ap)
-                                                    @if($ap->jenis_anggaran === $jenis_anggaran)
-                                                    <tr class="treegrid-parent-anggaran-{{$a->id_anggaran}}">
-                                                        <td></td>
-                                                        <td>{{$ap->program}} - {{ strtoupper($jenis_anggaran) }}</td>
-                                                        <td style="text-align:right;">{{number_format($ap->anggaran_alokasi,0,',',',')}}</td>                                                            
-                                                        <td style="text-align:center;">
-                                                            {{ $ap->kriteria_program_umum ? 'Umum; ' : '' }}
-                                                            {{ $ap->kriteria_program_prioritas ? 'Prioritas; ' : '' }}
-                                                            {{ $ap->kriteria_program_csv ? 'CSV; ' : '' }}
-                                                        </td>
-                                                        <td style="text-align:center;">
-                                                            @php
-                                                                $status_class = 'primary';
-                                                                $status = 'In Progress';
-                                                                if($ap->status_id == 1){
-                                                                    $status_class = 'success';
-                                                                    $status = 'Finish';
-                                                                } else if($ap->status_id == 3){
-                                                                    $status_class = 'warning';
-                                                                    $status = '-';
-                                                                }
-                                                            @endphp
-                                                            <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$ap->id_target_tpbs}}">{{$status}}</span>
-                                                        </td>
-                                                        <td style="text-align:center;">
-                                                            @if($ap->status_id == 2)
-                                                            <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$ap->id_target_tpbs}}" data-toggle="tooltip" title="Ubah data {{$ap->program}}"><i class="bi bi-pencil fs-3"></i></button>
+                                                    @endphp 
+                                                    @if($a->anggaran)
+                                                        <tr class="treegrid-anggaran-{{$a->id_anggaran}} treegrid-parent-bumn-pilar-{{str_replace(' ', '-', @$p->pilar_nama)}} item-{{$a->id_anggaran}}">
+                                                            <td></td>
+                                                            <td>{{@$a->no_tpb .' - '. @$a->tpb_nama}} - {{ strtoupper($jenis_anggaran) }}</td>                                                        
+                                                            <td style="text-align:right;">{{ number_format($total_program_per_tpb,0,',',',') }} <br/> <span style="color: {{ $total_program_per_tpb <= $a->anggaran ? 'green': 'red'}}; font-size: smaller">RKA: {{number_format($a->anggaran,0,',',',')}}</span></td>
+                                                            <td style="text-align:center;"></td>
+                                                            <td style="text-align:center;">
+                                                                <span class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3">{{$status}}</span>
+                                                            </td>
+                                                            <td style="text-align:center;"></td>
+                                                            
+                                                            <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                                                <input class="form-check-input is_active-check tpb-check pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}} pilar-{{str_replace(' ', '-', @$p->pilar_nama)}}" data-tpb-parent="tpb-{{str_replace(' ', '-', @$a->no_tpb)}}-pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" type="checkbox" name="selected-is_active[]" value="${row.id}">
+                                                                </label></td>
+                                                        </tr>
+                                                            
+                                                        @foreach($program as $ap)
+                                                            @if($ap->jenis_anggaran === $jenis_anggaran)
+                                                            <tr class="treegrid-parent-anggaran-{{$a->id_anggaran}}">
+                                                                <td></td>
+                                                                <td>{{$ap->program}} - {{ strtoupper($jenis_anggaran) }}</td>
+                                                                <td style="text-align:right;">{{number_format($ap->anggaran_alokasi,0,',',',')}}</td>                                                            
+                                                                <td style="text-align:center;">
+                                                                    {{ $ap->kriteria_program_umum ? 'Umum; ' : '' }}
+                                                                    {{ $ap->kriteria_program_prioritas ? 'Prioritas; ' : '' }}
+                                                                    {{ $ap->kriteria_program_csv ? 'CSV; ' : '' }}
+                                                                </td>
+                                                                <td style="text-align:center;">
+                                                                    @php
+                                                                        $status_class = 'primary';
+                                                                        $status = 'In Progress';
+                                                                        if($ap->status_id == 1){
+                                                                            $status_class = 'success';
+                                                                            $status = 'Finish';
+                                                                        } else if($ap->status_id == 3){
+                                                                            $status_class = 'warning';
+                                                                            $status = '-';
+                                                                        }
+                                                                    @endphp
+                                                                    <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$ap->id_target_tpbs}}">{{$status}}</span>
+                                                                </td>
+                                                                <td style="text-align:center;">
+                                                                    @if($ap->status_id == 2)
+                                                                    <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$ap->id_target_tpbs}}" data-toggle="tooltip" title="Ubah data {{$ap->program}}"><i class="bi bi-pencil fs-3"></i></button>
+                                                                    @endif
+                                                                </td>
+                                                                
+                                                                <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                                                    <input class="form-check-input is_active-check tpb-{{str_replace(' ', '-', @$a->no_tpb)}}-pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}} pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}} pilar-{{str_replace(' ', '-', @$p->pilar_nama)}}" data-anggaran="{{ $ap->id_target_tpbs }}" type="checkbox" name="selected-is_active[]" value="${row.id}">
+                                                                    </label></td>
+                                                            </tr>
                                                             @endif
-                                                        </td>
-                                                        
-                                                        <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                                            <input class="form-check-input is_active-check tpb-{{str_replace(' ', '-', @$a->no_tpb)}}-pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}} pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}} pilar-{{str_replace(' ', '-', @$p->pilar_nama)}}" data-anggaran="{{ $ap->id_target_tpbs }}" type="checkbox" name="selected-is_active[]" value="${row.id}">
-                                                            </label></td>
-                                                    </tr>
+                                                        @endforeach
                                                     @endif
-                                                @endforeach
-                                            @endif                                            
-                                        @endforeach
+                                                @endif                                            
+                                            @endforeach
+                                        @endif
                                     @endif
                                 @endforeach 
                                                                 
@@ -436,7 +440,7 @@
                                         @if($total_program > 0)
                                         <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
                                         <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">Total</th>
-                                        <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">{{ number_format($total_program,0,',',',') }} <br/> <span style="color: {{ $total_program == $total_rka ? 'green' : 'red' }}; font-size: smaller">RKA: {{number_format($total_rka,0,',',',')}}</span></th>                                            
+                                        <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">{{ number_format($total_program,0,',',',') }} <br/> <span style="color: {{ $total_program <= $total_rka ? 'green' : 'red' }}; font-size: smaller">RKA: {{number_format($total_rka,0,',',',')}}</span></th>                                            
                                         @endif
                                     </tr>
                                 </tfoot>
