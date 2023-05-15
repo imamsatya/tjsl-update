@@ -14,6 +14,11 @@ use App\Models\CoreSubject;
 use App\Models\TargetTpb;
 use App\Models\LogTargetTpb;
 use App\Models\Bulan;
+use App\Models\JenisKegiatan;
+use App\Models\Provinsi;
+use App\Models\Kota;
+use App\Models\SatuanUkur;
+
 use DB;
 use Session;
 class KegiatanController extends Controller
@@ -222,17 +227,17 @@ class KegiatanController extends Controller
     {
         $admin_bumn = false;
         $view_only = false;
-        // if (!empty($users->getRoleNames())) {
-        //     foreach ($users->getRoleNames() as $v) {
-        //         if ($v == 'Admin BUMN') {
-        //             $admin_bumn = true;
-        //             $perusahaan_id = \Auth::user()->id_bumn;
-        //         }
-        //         if ($v == 'Admin Stakeholder') {
-        //             $view_only = true;
-        //         }
-        //     }
-        // }
+        if (!empty($users->getRoleNames())) {
+            foreach ($users->getRoleNames() as $v) {
+                if ($v == 'Admin BUMN') {
+                    $admin_bumn = true;
+                    $perusahaan_id = \Auth::user()->id_bumn;
+                }
+                if ($v == 'Admin Stakeholder') {
+                    $view_only = true;
+                }
+            }
+        }
         $versi = VersiPilar::whereNull('tanggal_akhir')->orWhere('tanggal_akhir', '>=', date('Y-m-d'))->first();
         $versi_pilar_id = $versi->id;
         // $pilars = DB::table('relasi_pilar_tpbs')
@@ -305,6 +310,26 @@ class KegiatanController extends Controller
                 }
             }
         }
+        //Kegiatan
+        // $program = DB::table('target_tpbs')
+        // ->leftJoin('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun){
+        //     $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+        //         ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
+        //         ->where('anggaran_tpbs.tahun', $tahun);
+        // })
+        // // ->leftJoin('tpbs', 'tpbs.id', '=', 'anggaran_tpbs.tpb_id')
+        // ->get();
+        // dd($program[0]);
+
+        // $targetTpbs = DB::table('target_tpbs')
+        //     ->leftJoin('anggaran_tpbs', 'target_tpbs.anggaran_tpb_id', '=', 'anggaran_tpbs.id')
+        //     ->leftJoin('relasi_pilar_tpbs', 'anggaran_tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
+        //     ->leftJoin('tpbs', 'relasi_pilar_tpbs.tpb_id', '=', 'tpbs.id')
+        //     ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
+        //     ->where('anggaran_tpbs.tahun', $tahun)
+        //     ->select('target_tpbs.*', 'tpbs.jenis_anggaran')
+        //     ->get();
+        // dd($targetTpbs);
 
        
         return view(
@@ -322,11 +347,11 @@ class KegiatanController extends Controller
                 // 'versi_pilar_id' => $versi_pilar_id,
                 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
                 'admin_bumn' => $admin_bumn,
-                'tpb' => Tpb::get(),
-                'tpb_id' => $request->tpb ?? '',
-                'core_subject' => CoreSubject::get(),
-                // 'perusahaan_id' => $perusahaan_id,
-                // 'data' => $anggaran_tpb
+                'jenis_kegiatan' => JenisKegiatan::all(),
+                'provinsi' => Provinsi::where('is_luar_negeri', false)->get(),
+                'kota_kabupaten' => Kota::where('is_luar_negeri', false)->get(),
+                'satuan_ukur' => SatuanUkur::all()
+                
            
             ]
         );

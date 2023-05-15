@@ -76,6 +76,8 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             //Imam
             Route::post('update', 'App\Http\Controllers\Referensi\PilarPembangunanController@update')->name('referensi.pilar_pembangunan.update');
             Route::post('update_status', 'App\Http\Controllers\Referensi\PilarPembangunanController@update_status')->name('referensi.pilar_pembangunan.update_status');
+            Route::post('order', 'App\Http\Controllers\Referensi\PilarPembangunanController@order')->name('referensi.pilar_pembangunan.order');
+            Route::post('ordersubmit', 'App\Http\Controllers\Referensi\PilarPembangunanController@orderSubmit')->name('referensi.pilar_pembangunan.ordersubmit');
         });
 
         Route::prefix('tpb')->group(function () {
@@ -547,11 +549,15 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('edit', 'App\Http\Controllers\RencanaKerja\ProgramController@edit')->name('rencana_kerja.program.edit');
             Route::post('edit_store', 'App\Http\Controllers\RencanaKerja\ProgramController@editStore')->name('rencana_kerja.program.edit_store');
             Route::post('delete', 'App\Http\Controllers\RencanaKerja\ProgramController@delete')->name('rencana_kerja.program.delete');
+            Route::post('log', 'App\Http\Controllers\RencanaKerja\ProgramController@log_status')->name('rencana_kerja.program.log');
         });
 
         Route::prefix('laporan_manajemen')->group(function () {
             Route::get('index', 'App\Http\Controllers\RencanaKerja\LaporanManajemenController@index')->name('rencana_kerja.laporan_manajemen.index');
             Route::get('datatable', 'App\Http\Controllers\RencanaKerja\LaporanManajemenController@datatable')->name('rencana_kerja.laporan_manajemen.datatable');
+            Route::post('create', 'App\Http\Controllers\RencanaKerja\LaporanManajemenController@create')->name('rencana_kerja.laporan_manajemen.create');
+            Route::post('store', 'App\Http\Controllers\RencanaKerja\LaporanManajemenController@store')->name('rencana_kerja.laporan_manajemen.store');
+            Route::post('log', 'App\Http\Controllers\RencanaKerja\LaporanManajemenController@log_status')->name('rencana_kerja.laporan_manajemen.log');
             
         });
 
@@ -603,7 +609,10 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             });
             Route::prefix('laporan_manajemen')->group(function () {
                 Route::get('index', 'App\Http\Controllers\LaporanRealisasi\Triwulan\LaporanManajemenTriwulanController@index')->name('laporan_realisasi.triwulan.laporan_manajemen.index');
-                // Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\Triwulan\LaporanManajemenTriwulanController@datatable')->name('rencana_kerja.laporan_manajemen.datatable');
+                Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\Triwulan\LaporanManajemenTriwulanController@datatable')->name('laporan_realisasi.triwulan.laporan_manajemen.datatable');
+                Route::post('create', 'App\Http\Controllers\LaporanRealisasi\Triwulan\LaporanManajemenTriwulanController@create')->name('laporan_realisasi.triwulan.laporan_manajemen.create');
+                Route::post('store', 'App\Http\Controllers\LaporanRealisasi\Triwulan\LaporanManajemenTriwulanController@store')->name('laporan_realisasi.triwulan.laporan_manajemen.store');
+                Route::post('log', 'App\Http\Controllers\LaporanRealisasi\Triwulan\LaporanManajemenTriwulanController@log_status')->name('laporan_realisasi.triwulan.laporan_manajemen.log');
                 
             });
         });

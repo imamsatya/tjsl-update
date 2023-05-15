@@ -6,12 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Perusahaan;
+use App\Models\LaporanManajemen;
+use App\Models\LogLaporanManajemen;
 use DB;
 use Session;
 use Datatables;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 class LaporanManajemenController extends Controller
 {
 
@@ -46,11 +50,37 @@ class LaporanManajemenController extends Controller
                 }
             }
         }
+        
+        $status = DB::table('statuses')->get();
+        $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
+
+        //cek laporan setiap tahun dari 2021 sampai tahun saat ini
+        
+        $all_perusahaan_id =Perusahaan::all()->pluck('id');
+        $currentYear = Carbon::now()->year;
+        foreach ($all_perusahaan_id as $key => $cek_perusahaan_id) {
+            for ($year = 2021; $year <= $currentYear; $year++) {
+                //code untuk cek
+                // $cek_laporan_rka = DB::table('laporan_manajemens')->where('tahun', 2023)->where('perusahaan_id', 60)->where('periode_laporan_id', $periode_rka_id)->first();
+                // dd($cek_laporan_rka);
+
+                $cek_laporan_rka = DB::table('laporan_manajemens')->where('tahun', $year)->where('perusahaan_id', $cek_perusahaan_id)->where('periode_laporan_id', $periode_rka_id)->first();
+                if(!$cek_laporan_rka){
+                    $latest_id = LaporanManajemen::max('id');
+                    $laporan_manajemen_new = new LaporanManajemen();
+                    $laporan_manajemen_new->id = $latest_id + 1;
+                    $laporan_manajemen_new->perusahaan_id = $cek_perusahaan_id;
+                    $laporan_manajemen_new->periode_laporan_id = $periode_rka_id;
+                    $laporan_manajemen_new->status_id = 3; //unfilled
+                    $laporan_manajemen_new->tahun = $year;
+                    $laporan_manajemen_new->save();
+                   
+                }
+            }
+        }
 
         //cek perusahaan
 
-        $status = DB::table('statuses')->get();
-        $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
         $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')
         ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')->where('periode_laporan_id', $periode_rka_id);
         if ($request->perusahaan_id) {
@@ -68,8 +98,14 @@ class LaporanManajemenController extends Controller
 
             $laporan_manajemen = $laporan_manajemen->where('status_id', $request->status_laporan);
         }
+        // dd($laporan_manajemen->pluck('perusahaan_id'));
+       
+        
+        
 
         $laporan_manajemen = $laporan_manajemen->get();
+        
+        // dd($laporan_manajemen->pluck('perusahaan_id'));
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Rencana Kerja - Laporan Manajemen - RKA',
@@ -88,9 +124,22 @@ class LaporanManajemenController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         //
+        $perusahaan = Perusahaan::where('id', $request->perusahaan_id)->first();
+        return view($this->__route.'.form',[
+            'pagetitle' => $this->pagetitle,
+            'actionform' => $request->actionform,
+            'perusahaan_id' => $request->perusahaan_id,
+            'tahun' => $request->tahun,
+            'perusahaan' => $perusahaan,
+            'laporan_id' => $request->laporan_id
+        
+            // 'data' => $kode_indikator,
+            // 'hastpb' => null,
+            // 'tpb' => Tpb::get()
+        ]);
     }
 
     /**
@@ -102,7 +151,62 @@ class LaporanManajemenController extends Controller
     public function store(Request $request)
     {
         //
+       try {
+            $perusahaan = Perusahaan::findOrFail($request->perusahaan_id);
+            $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
+            $validated = $request->validate([
+                'file' => 'required|mimes:pdf|max:15360',
+            ]);
+            if (!$validated) {
+                return redirect()->back()->withErrors($validated)->withInput();
+            }
+            if ($validated) {
+                $file = $request->file('file');
+                $filename = 'Laporan Manajemen RKA '.$perusahaan->nama_lengkap.' '.$request->tahun.'.'.$file->getClientOriginalExtension();
+                $upload_path = 'laporan_manajemen/rka';
+                $path = Storage::disk('public')->putFileAs($upload_path, $file, $filename);
+                
+                // dd('tes');
+                // If you want to save the path to the file in the database, you can do it like this:
+                $latest_id = LaporanManajemen::max('id');
+                $laporan_manajemen_new = new LaporanManajemen();
+                // $laporan_manajemen_new = $laporan_manajemen_new->where('perusahaan_id', $perusahaan->id)->where('tahun', $request->tahun)->where('periode_laporan_id', $periode_rka_id)->first();
+                $laporan_manajemen_new = $laporan_manajemen_new->where('id', $request->laporan_id)->first();
+                $laporan_manajemen_new->perusahaan_id = $perusahaan->id;
+                $laporan_manajemen_new->periode_laporan_id = $periode_rka_id;
+                $laporan_manajemen_new->status_id = 2; //in progress
+                $laporan_manajemen_new->tahun = $request->tahun;
+                $laporan_manajemen_new->file_name = $path;
+                $laporan_manajemen_new->user_id = \Auth::user()->id;
+                $laporan_manajemen_new->save();
+                
+                //save log
+                $log = new LogLaporanManajemen();
+                $log->laporan_manajemen_id = $laporan_manajemen_new->id;
+                $log->status_id = 2;//in progress
+                $log->user_id = \Auth::user()->id;
+                $log->save();
+
+                Session::flash('success', "Berhasil menyimpan File");
+                $result = [
+                    'flag'  => 'success',
+                    'msg' => 'Sukses tambah data',
+                    'title' => 'Sukses'
+                ];
+            
+            }
+        } catch (\Exception $e) {
+        //throw $th;
+        $result = [
+            'flag'  => 'warning',
+            'msg' => $e->getMessage(),
+            'title' => 'Gagal'
+        ];
+       }
+       
+       return response()->json($result);
     }
+    
 
     /**
      * Display the specified resource.
@@ -172,7 +276,8 @@ class LaporanManajemenController extends Controller
         }
 
         $laporan_manajemen = $laporan_manajemen->get();
-        // dd($laporan_manajemen);
+        // $all_perusahaan_id =$laporan_manajemen->pluck('perusahaan_id');
+        // dd();
         try {
             return datatables()->of($laporan_manajemen)
                 ->addColumn('action', function ($row) {
@@ -199,5 +304,21 @@ class LaporanManajemenController extends Controller
                 'data'            => []
             ]);
         }
+    }
+
+    public function log_status(Request $request)
+    {
+
+        $log = LogLaporanManajemen::select('log_laporan_manajemens.*', 'users.name AS user', 'statuses.nama AS status')
+            ->leftjoin('users', 'users.id', '=', 'log_laporan_manajemens.user_id')
+            ->leftjoin('statuses', 'statuses.id', '=', 'log_laporan_manajemens.status_id')
+            ->where('laporan_manajemen_id', (int)$request->input('id'))
+            ->orderBy('created_at')
+            ->get();
+
+        return view($this->__route . '.log_status', [
+            'pagetitle' => 'Log Status',
+            'log' => $log
+        ]);
     }
 }
