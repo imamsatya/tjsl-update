@@ -76,6 +76,8 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             //Imam
             Route::post('update', 'App\Http\Controllers\Referensi\PilarPembangunanController@update')->name('referensi.pilar_pembangunan.update');
             Route::post('update_status', 'App\Http\Controllers\Referensi\PilarPembangunanController@update_status')->name('referensi.pilar_pembangunan.update_status');
+            Route::post('order', 'App\Http\Controllers\Referensi\PilarPembangunanController@order')->name('referensi.pilar_pembangunan.order');
+            Route::post('ordersubmit', 'App\Http\Controllers\Referensi\PilarPembangunanController@orderSubmit')->name('referensi.pilar_pembangunan.ordersubmit');
         });
 
         Route::prefix('tpb')->group(function () {
