@@ -191,6 +191,25 @@ class KegiatanController extends Controller
                 ->orderBy('no_tpb')
                 // ->where('anggaran_tpbs', '!=', null)
                 ->get();        
+
+        //Kegiatan
+        $program = DB::table('target_tpbs')
+        ->join('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun) {
+            $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
+                ->where('anggaran_tpbs.tahun', $tahun);
+        })
+        ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+        ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
+        ->select(
+            'target_tpbs.*',
+
+            'anggaran_tpbs.id as anggaran_tpb_id',
+            'relasi_pilar_tpbs.id as relasi_pilar_tpb_id',
+            'tpbs.id as tpb_id',
+            'tpbs.jenis_anggaran'
+        )
+        ->get();
         
 
         return view($this->__route . '.index', [
@@ -214,6 +233,7 @@ class KegiatanController extends Controller
             'pilar_pembangunan_id' => $request->pilar_pembangunan,
             'tpb_id' => $request->tpb,
             'view_only' => $view_only,
+            'program' => $program
 
         ]);
     }
@@ -312,16 +332,25 @@ class KegiatanController extends Controller
                 }
             }
         }
-        //Kegiatan
-        // $program = DB::table('target_tpbs')
-        // ->leftJoin('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun){
-        //     $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
-        //         ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
-        //         ->where('anggaran_tpbs.tahun', $tahun);
-        // })
-        // // ->leftJoin('tpbs', 'tpbs.id', '=', 'anggaran_tpbs.tpb_id')
-        // ->get();
-        // dd($program[0]);
+        // Kegiatan
+        $program = DB::table('target_tpbs')
+        ->join('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun) {
+            $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
+                ->where('anggaran_tpbs.tahun', $tahun);
+        })
+        ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+        ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
+        ->select(
+            'target_tpbs.*',
+
+            'anggaran_tpbs.id as anggaran_tpb_id',
+            'relasi_pilar_tpbs.id as relasi_pilar_tpb_id',
+            'tpbs.id as tpb_id',
+            'tpbs.jenis_anggaran'
+        )
+        ->get();
+        // dd($program);
 
         // $targetTpbs = DB::table('target_tpbs')
         //     ->leftJoin('anggaran_tpbs', 'target_tpbs.anggaran_tpb_id', '=', 'anggaran_tpbs.id')
@@ -352,7 +381,8 @@ class KegiatanController extends Controller
                 'jenis_kegiatan' => JenisKegiatan::all(),
                 'provinsi' => Provinsi::where('is_luar_negeri', false)->get(),
                 'kota_kabupaten' => Kota::where('is_luar_negeri', false)->get(),
-                'satuan_ukur' => SatuanUkur::all()
+                'satuan_ukur' => SatuanUkur::where('is_active', true)->get(),
+                'program' => $program
                 
            
             ]
@@ -368,6 +398,19 @@ class KegiatanController extends Controller
     public function store(Request $request)
     {
         //
+
+        dd($request);
+        //yg belum
+        // jenis kegiatan, keterangan kegiatan, 
+
+        $kegiatan = new Kegiatan();
+        $kegiatan->target_tpb_id = $request->data->program_id;
+        $kegiatan->kegiatan = $request->data->nama_kegiatan;
+        $kegiatan->provinsi_id = $request->data->provinsi;
+        $kegiatan->kota_id = $request->data->kota_kabupaten;
+        $kegiatan->indikator = $request->data->realisasi_indikator;
+        $kegiatan->satuan_ukur_id = $request->data->satuan_ukur;
+        $kegiatan->anggaran_alokasi = $request->data->realisasi_anggaran;
     }
 
     /**

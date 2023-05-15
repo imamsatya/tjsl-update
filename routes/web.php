@@ -593,7 +593,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::get('create/{perusahaan_id}/{tahun}', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@create')->name('laporan_realisasi.bulanan.kegiatan.create');
                 // Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@datatable')->name('laporan_realisasi.triwulan.spd_pumk.datatable');
                 
-                // Route::post('store', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@store')->name('laporan_realisasi.triwulan.spd_pumk.store');
+                Route::post('store', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@store')->name('laporan_realisasi.bulanan.kegiatan.store');
                 // Route::post('delete', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@delete')->name('laporan_realisasi.triwulan.spd_pumk.delete');
                 // Route::post('log', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@log_status')->name('laporan_realisasi.triwulan.spd_pumk.log');
             });

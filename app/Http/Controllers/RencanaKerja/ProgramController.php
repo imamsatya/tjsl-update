@@ -176,7 +176,7 @@ class ProgramController extends Controller
                 ->orderBy('tpbs.id')
                 ->get(); 
 
-
+                // dd($jenis_anggaran);
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
@@ -290,6 +290,7 @@ class ProgramController extends Controller
         ->orderBy('no_tpb')
         ->get();  
 
+     
         return view(
             $this->__route . '.create',
             [

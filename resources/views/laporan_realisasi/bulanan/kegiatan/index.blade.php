@@ -181,12 +181,13 @@
                                     <label>Program</label>
                                     <select id="program_id" class="form-select form-select-solid form-select2" name="program_id" data-kt-select2="true"  data-placeholder="Pilih Program" data-allow-clear="true">
                                         <option></option>
-                                        @foreach($tpb as $p)  
-                                            @php
-                                                $select = (($p->no_tpb == $tpb_id) ? 'selected="selected"' : '');
-                                            @endphp
-                                            <option data-jenis-anggaran="{{ $p->jenis_anggaran }}" value="{{ $p->no_tpb }}" {!! $select !!}>{{ $p->no_tpb }} - {{ $p->nama }} [{{$p->jenis_anggaran}}]</option>
-                                        @endforeach
+                                        <option></option>
+                                        @foreach($program as $program_row)  
+                                        {{-- @php
+                                            $select = (($p->no_tpb == $tpb_id) ? 'selected="selected"' : '');
+                                        @endphp --}}
+                                        <option data-jenis-anggaran="{{ $program_row->jenis_anggaran }}"  value="{{ $program_row->id }}" {!! $select !!}>{{ $program_row->program }} - {{$program_row->jenis_anggaran}}</option>
+                                    @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -763,10 +764,10 @@
             $("#jenis-anggaran").on('change', function(){
                 // yovi
                 const jenisAnggaran = $(this).val()
-                $("#tpb_id, #pilar_pembangunan_id").val('').trigger('change')
+                $("#tpb_id, #pilar_pembangunan_id, #program_id").val('').trigger('change')
                 
                 
-                $("#tpb_id, #pilar_pembangunan_id").select2({    
+                $("#tpb_id, #pilar_pembangunan_id, #program_id").select2({    
                     templateResult: function(data) {
                         if($(data.element).attr('data-jenis-anggaran') === jenisAnggaran || jenisAnggaran === '') return data.text
                         return null
@@ -780,6 +781,7 @@
                 let textAnggaran = jenisAnggaran ? `- ${jenisAnggaran}` : ''
                 $("#select2-pilar_pembangunan_id-container .select2-selection__placeholder").text('Pilih Pilar '+textAnggaran)
                 $("#select2-tpb_id-container .select2-selection__placeholder").text('Pilih TPB '+textAnggaran)
+                $("#select2-program_id-container .select2-selection__placeholder").text('Pilih Program '+textAnggaran)
 
                 // $("#tpb_id").select2({    
                 //     // placeholder: 'Pilih TPB',            

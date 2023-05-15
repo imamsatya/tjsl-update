@@ -250,16 +250,19 @@
                                 data-kt-view-roles-table-toolbar="base">
                                 {{-- <button type="button" class="btn btn-danger btn-sm cls-add "
                                     data-kt-view-roles-table-select="delete_selected">Hapus Data</button> --}}
+                                @unlessrole('Verifikator Admin')
+                                    
                                     <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data
                                     </button>
                                     <button type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
                                     </button>
                                 <button type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
                                 </button>
-                                @role('Super Admin')
+                                @endunlessrole
+                                @hasanyrole('Super Admin|Verifikator Admin')
                                 <button type="button" class="btn btn-primary btn-sm " >Verify
                                 </button>
-                                @endrole
+                                @endhasanyrole
                                 {{-- <a href="{{ route('anggaran_tpb.create2', ['param1' => 'parameter1', 'param2' => 'parameter2']) }}" class="btn btn-success btn-sm input-data">Input Data</a> --}}
                             </div>
                             <!--end::Search-->
