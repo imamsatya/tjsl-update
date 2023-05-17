@@ -545,10 +545,10 @@
                             }
 
                             if (row.status_id === 1) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info text-center me-2" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                                // button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info text-center me-2" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                                 // button2 = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button>`
-                                button2 = `<a rel='tooltip' data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" class="mb-4 jawban-file-st" title="File Jawaban" href="{{ asset('storage/${row.file_name}') }}" target="_blank" rel="noopener noreferrer"><button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button></a>`
-                                button = button + button2
+                                button = `<a rel='tooltip' data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" class="mb-4 jawban-file-st" title="File Jawaban" href="{{ asset('storage/${row.file_name}') }}" target="_blank" rel="noopener noreferrer"><button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button></a>`
+                                // button = button + button2
                             }
                             return button
                         }

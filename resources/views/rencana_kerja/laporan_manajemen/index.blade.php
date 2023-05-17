@@ -222,25 +222,16 @@
                     <!--begin::Card toolbar-->
                     <div class="card-toolbar">
                         <!--begin::Search-->
-                        {{-- <div class="d-flex align-items-center position-relative my-1"
-                            data-kt-view-roles-table-toolbar="base">
-                            <button type="button" class="btn btn-success me-2 btn-sm cls-add"
-                                data-kt-view-roles-table-select="delete_selected">Simpan Status</button>
-                            <button type="button" class="btn btn-success btn-sm cls-add"
-                                data-kt-view-roles-table-select="delete_selected">Tambah</button>
-                            <button type="button" class="btn btn-danger btn-sm delete-selected-data">Hapus Data
-                                x</button>
-                        </div> --}}
+                       
                         <div class="d-flex align-items-center position-relative my-1">
-                            {{-- <button type="button" class="btn btn-success me-2 btn-sm cls-add"
-                                data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
-                            {{-- <button type="button" class="btn btn-success btn-sm cls-add"
-                                data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
-
                             {{-- <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                             </button>
-                            <button type="button" class="btn btn-primary btn-sm " onclick="redirectToNewPage()">Input Data
+                            <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
                             </button> --}}
+                            @role('Super Admin')
+                                <button type="button" class="btn btn-primary btn-sm " >Verify
+                                </button>
+                                @endrole
                         </div>
                         <!--end::Search-->
                         <!--end::Group actions-->
@@ -524,10 +515,10 @@
                             }
 
                             if (row.status_id === 1) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info text-center me-2" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                                // button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info text-center me-2" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                                 // button2 = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button>`
-                                button2 = `<a rel='tooltip' data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" class="mb-4 jawban-file-st" title="File Jawaban" href="{{ asset('storage/${row.file_name}') }}" target="_blank" rel="noopener noreferrer"><button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button></a>`
-                                button = button + button2
+                                button = `<a rel='tooltip' data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" class="mb-4 jawban-file-st" title="File Jawaban" href="{{ asset('storage/${row.file_name}') }}" target="_blank" rel="noopener noreferrer"><button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button></a>`
+                                // button = button + button2
                             }
                             return button
                         }

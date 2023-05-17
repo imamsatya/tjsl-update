@@ -26,7 +26,7 @@
                     <div class="card-title">
                         <h2 class="d-flex align-items-center">
                             {{-- {{ $pagetitle }}  --}}
-                            Data Program TPB
+                            Data Kegiatan 
                             <span class="text-gray-600 fs-6 ms-1"></span>
                         </h2>
                     </div>
@@ -220,17 +220,19 @@
                                 </div>
                                 <div class="row mb-6">
                                     <div class="col-lg-3 ">
-                                        <div class="ms-2 required">Program???</div>
+                                        <div class="ms-2 required">Program</div>
 
 
                                     </div>
                                     <div class="col-lg-9">
                                         <select  id="program_id" class="form-select form-select-solid form-select2" name="program_id" data-kt-select2="true" data-placeholder="Pilih Program" data-allow-clear="true">
                                             <option></option>
-                                            <option value="CID" {{ request('jenis_anggaran') === 'CID' ? 'selected="selected"' : '' }} >
-                                                    CID</option>
-                                            <option value="non CID" {{ request('jenis_anggaran') === 'non CID' ? 'selected="selected"' : '' }} >
-                                                non CID</option>
+                                            @foreach($program as $program_row)  
+                                            {{-- @php
+                                                $select = (($p->no_tpb == $tpb_id) ? 'selected="selected"' : '');
+                                            @endphp --}}
+                                            <option data-jenis-anggaran="{{ $program_row->jenis_anggaran }}"  value="{{ $program_row->id }}" {!! $select !!}>{{ $program_row->program }} - {{$program_row->jenis_anggaran}}</option>
+                                        @endforeach
                                         </select>
 
                                     </div>
@@ -244,8 +246,8 @@
                                     </div>
                                     <div class="col-lg-9">
                                         <div class="form-floating">
-                                            <textarea class="form-control" placeholder="Leave a comment here" id="unit_owner" name="unit_owner" style="height: 100px"></textarea>
-                                            <label for="unit_owner">Nama Kegiatan</label>
+                                            <textarea class="form-control" placeholder="Leave a comment here" id="nama_kegiatan" name="nama_kegiatan" style="height: 100px"></textarea>
+                                            <label for="nama_kegiatan">Nama Kegiatan</label>
                                         </div>
 
                                     </div>
@@ -410,10 +412,10 @@
             $("#jenis-anggaran").on('change', function(){
                 // yovi
                 const jenisAnggaran = $(this).val()
-                $("#tpb_id, #pilar_pembangunan_id").val('').trigger('change')
+                $("#program_id").val('').trigger('change')
                 
                 
-                $("#tpb_id, #pilar_pembangunan_id").select2({    
+                $("#program_id").select2({    
                     templateResult: function(data) {
                         if($(data.element).attr('data-jenis-anggaran') === jenisAnggaran || jenisAnggaran === '') return data.text
                         return null
@@ -425,12 +427,14 @@
                 })            
 
                 let textAnggaran = jenisAnggaran ? `- ${jenisAnggaran}` : ''
-                $("#select2-pilar_pembangunan_id-container .select2-selection__placeholder").text('Pilih Pilar '+textAnggaran)
-                $("#select2-tpb_id-container .select2-selection__placeholder").text('Pilih TPB '+textAnggaran)
+                $("#select2-program_id-container .select2-selection__placeholder").text('Pilih Program '+textAnggaran)
+          
 
               
             
             })
+              // Trigger the change event on page load
+            $("#jenis-anggaran").trigger('change');
             $("#provinsi").on('change', function(){
                 
                 const provinsi = $(this).val()
@@ -566,52 +570,48 @@
 
             var tahun = document.getElementById('select-tahun').value;
             // var tahun = tahun.getAttribute('data-variable');
+            var bulan = document.getElementById('bulan_id').value;
 
             var jenis_anggaran = document.getElementById('jenis-anggaran').value
 
              var actionform = document.getElementById('actionform');
             var actionform = actionform.getAttribute('data-variable');
             console.log(`perusahaan_id : ${perusahaan_id} | tahun : ${tahun} | jenis_anggaran : ${jenis_anggaran} | actionform : ${actionform}`)
-            //data program tpb
-            let nama_program = document.getElementById('nama_program').value
-            let tpb_id = document.getElementById('tpb_id').value
-            let unit_owner = document.getElementById('unit_owner').value
-            const kriteria_program_checkboxes = document.getElementsByName("kriteria_program"); // mengambil semua checkbox dengan name="kriteria_program"
-            const selectedKriteriaProgram = []; // deklarasi array untuk menyimpan nilai dari checkbox yang dipilih
+            
+            //data kegiatan
+            let program_id = document.getElementById('program_id').value
 
-            for (let i = 0; i < kriteria_program_checkboxes.length; i++) { // iterasi semua checkbox
-            if (kriteria_program_checkboxes[i].checked) { // jika checkbox terpilih
-                selectedKriteriaProgram.push(kriteria_program_checkboxes[i].value); // tambahkan nilai checkbox ke dalam array
-            }
-            }
-
-            let core_subject_id = document.getElementById('core_subject_id').value
-            let pelaksanaan_program = document.getElementById('pelaksanaan_program').value
-            let mitra_bumn = document.getElementById('mitra_bumn').value
-            let program_multiyears =  document.querySelector('input[name="program"]:checked').value
-            let alokasi_anggaran = document.getElementById('alokasi_anggaran').value
-            alokasi_anggaran = parseInt(alokasi_anggaran.replace(/[^0-9\-]/g, ''))
+            let nama_kegiatan = document.getElementById('nama_kegiatan').value
+            let jenis_kegiatan = document.getElementById('jenis_kegiatan').value
+            let keterangan_kegiatan = document.getElementById('keterangan_kegiatan').value
+            let provinsi = document.getElementById('provinsi').value
+            let kota_kabupaten = document.getElementById('kota_kabupaten').value
+            let realisasi_anggaran = document.getElementById('realisasi_anggaran').value
+            let satuan_ukur = document.getElementById('satuan_ukur').value
+            let realisasi_indikator = document.getElementById('realisasi_indikator').value
+            realisasi_anggaran = parseInt(realisasi_anggaran.replace(/[^0-9\-]/g, ''))
             let data = {
-                nama_program : nama_program,
-                tpb_id : tpb_id,
-                unit_owner : unit_owner,
-                kriteria_program : selectedKriteriaProgram,
-                core_subject_id : core_subject_id,
-                pelaksanaan_program : pelaksanaan_program,
-                mitra_bumn : mitra_bumn,
-                program_multiyears : program_multiyears,
-                alokasi_anggaran : alokasi_anggaran
+                program_id : program_id,
+                nama_kegiatan : nama_kegiatan ,
+                jenis_kegiatan : jenis_kegiatan ,
+                keterangan_kegiatan : keterangan_kegiatan ,
+                provinsi : provinsi ,
+                kota_kabupaten : kota_kabupaten ,
+                realisasi_anggaran : realisasi_anggaran ,
+                satuan_ukur : satuan_ukur ,
+                realisasi_indikator : realisasi_indikator 
             }
             console.log('data', data)
            
             console.log(actionform)
             await $.ajax({
-                url: '/rencana_kerja/program/store',
+                url: '/laporan_realisasi/bulanan/kegiatan/store',
                 type: 'POST',
                 data: {
                     "_token": "{{ csrf_token() }}",
                     data: data,
                     tahun: tahun,
+                    bulan: bulan,
                     perusahaan_id: perusahaan_id,
                     actionform: actionform,
                     jenis_anggaran: jenis_anggaran

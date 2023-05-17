@@ -37,7 +37,7 @@ class LaporanManajemenTriwulanController extends Controller
         //   dd($request->perusahaan_id);
           $id_users = \Auth::user()->id;
           $users = User::where('id', $id_users)->first();
-          $perusahaan_id2 = $request->perusahaan_id;
+          $perusahaan_id = (int)$request->perusahaan_id;
   
           $admin_bumn = false;
           $view_only = false;
@@ -55,17 +55,18 @@ class LaporanManajemenTriwulanController extends Controller
           $status = DB::table('statuses')->get();
           $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->get();
           //cek laporan
-          $all_perusahaan_id =Perusahaan::all()->pluck('id');
+          $all_perusahaan_id =Perusahaan::where('is_active', true)->where('induk', 0)->pluck('id');
           $currentYear = Carbon::now()->year;
-   
-            if ($perusahaan_id2) {
-                for ($year = 2021; $year <= $currentYear; $year++) {
+         
+            if ($perusahaan_id) {
+                for ($year = 2020; $year <= $currentYear; $year++) {
                     //code untuk cek
                     // $cek_laporan_rka = DB::table('laporan_manajemens')->where('tahun', 2023)->where('perusahaan_id', 60)->where('periode_laporan_id', $periode_rka_id)->first();
                     // dd($cek_laporan_rka);
+                    
                     foreach ($periode as $key => $periode_row) {
-                       
-                        $cek_laporan = DB::table('laporan_manajemens')->where('tahun', $year)->where('perusahaan_id', $perusahaan_id2)->where('periode_laporan_id',  $periode_row->id)->first();
+                     
+                        $cek_laporan = DB::table('laporan_manajemens')->where('tahun', $year)->where('perusahaan_id', $perusahaan_id)->where('periode_laporan_id',  $periode_row->id)->first();
                        
                         if(!$cek_laporan){
                           
@@ -73,7 +74,7 @@ class LaporanManajemenTriwulanController extends Controller
                             $laporan_manajemen_new = new LaporanManajemen();
                             $laporan_manajemen_new->id = $latest_id + 1;
                             $laporan_manajemen_new->perusahaan_id = $perusahaan_id2;
-                            $laporan_manajemen_new->periode_laporan_id = $periode_row;
+                            $laporan_manajemen_new->periode_laporan_id = $periode_row->id;
                             $laporan_manajemen_new->status_id = 3; //unfilled
                             $laporan_manajemen_new->tahun = $year;
                             $laporan_manajemen_new->save();
@@ -84,7 +85,7 @@ class LaporanManajemenTriwulanController extends Controller
                 }
             }
             
-     
+          
 
 
         //   dd($laporan_manajemen);
@@ -93,9 +94,9 @@ class LaporanManajemenTriwulanController extends Controller
               'breadcrumb' => 'Rencana Kerja - Tanda Bukti Lapor Elektronik - RKA',
               // 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
               'tahun' => ($request->tahun ?? ''),
-              'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
+              'perusahaan' => Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get(),
               'admin_bumn' => $admin_bumn,
-              'perusahaan_id' => $perusahaan_id2,
+              'perusahaan_id' => $perusahaan_id ?? 1,
               'status' => $status,
               'status_id' => $request->status_laporan ?? '',
               'periode'=>$periode,
@@ -243,7 +244,8 @@ class LaporanManajemenTriwulanController extends Controller
         $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap, periode_laporans.nama as periode_laporan_nama')
           ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')
           ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'laporan_manajemens.periode_laporan_id')
-          ->whereIn('periode_laporan_id', $periode->pluck('id')->toArray());
+          ->whereIn('periode_laporan_id', $periode->pluck('id')->toArray())
+          ->where('perusahaans.induk', 0);
         $perusahaan_id = $request->perusahaan_id ?? 1; //default id 1
           if ($perusahaan_id) {
 

@@ -134,6 +134,10 @@ class AnggaranTpbController extends Controller
             ->orderBy('pilar_pembangunans.nama')
             ->get();
 
+        $anggaran_pilar = $anggaran_pilar->filter(function($data) {
+            return $data->sum_anggaran_cid > 0 || $data->sum_anggaran_noncid > 0;
+        });
+
         $anggaran_bumn = $anggaran_bumn->select(
             'anggaran_tpbs.perusahaan_id',
             'perusahaans.nama_lengkap',
@@ -148,12 +152,15 @@ class AnggaranTpbController extends Controller
         $anggaran = $anggaran->select('*', 'anggaran_tpbs.id as id_anggaran','pilar_pembangunans.nama as pilar_nama', 'tpbs.nama as tpb_nama', DB::Raw('(case when tpbs.jenis_anggaran = \'non CID\' then anggaran end) as anggaran_noncid'), DB::Raw('(case when tpbs.jenis_anggaran = \'CID\' then anggaran end) as anggaran_cid'))
                 ->orderBy('pilar_pembangunans.nama')
                 ->orderBy('no_tpb')->get();        
-        
+
+        $anggaran = $anggaran->filter(function($condition) {
+            return $condition->anggaran_cid > 0 || $condition->anggaran_noncid > 0;
+        });
 
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
-            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get(),
             'anggaran' => $anggaran,
             'anggaran_pilar' => $anggaran_pilar,
             'anggaran_bumn' => $anggaran_bumn,
@@ -722,6 +729,36 @@ class AnggaranTpbController extends Controller
             ]);
         } catch (Exception $e) {
         }
+    }
+
+    public function verifikasiData(Request $request) {
+        DB::beginTransaction();
+        try {
+            $list_id_anggaran = $request->input('anggaran_verifikasi');
+            foreach($list_id_anggaran as $id_anggaran) {
+                $data = AnggaranTpb::find((int) $id_anggaran);
+                if($data && $data->status_id !== 1) {
+                    $param['status_id'] = 1;
+                    $data->update((array)$param);
+                    AnggaranTpbController::store_log($data->id, $data->status_id, $data->anggaran, 'RKA Revisi - Verifikasi');
+                }
+                
+            }
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal verifikasi data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
     }
 
     public function deleteBySelect(Request $request) {

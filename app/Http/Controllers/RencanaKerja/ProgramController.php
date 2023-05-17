@@ -176,11 +176,11 @@ class ProgramController extends Controller
                 ->orderBy('tpbs.id')
                 ->get(); 
 
-
+                // dd($jenis_anggaran);
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
-            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get(),
             'anggaran' => $anggaran,
             'anggaran_pilar' => $anggaran_pilar,
             'anggaran_bumn' => $anggaran_bumn,
@@ -290,6 +290,7 @@ class ProgramController extends Controller
         ->orderBy('no_tpb')
         ->get();  
 
+     
         return view(
             $this->__route . '.create',
             [
@@ -560,5 +561,34 @@ class ProgramController extends Controller
             'pagetitle' => 'Log Status',
             'log' => $log
         ]);
+    }
+
+    public function verifikasiData(Request $request) {
+        DB::beginTransaction();
+        try {
+            $list_id = $request->input('program');
+            foreach($list_id as $program) {
+                $data = TargetTpb::find((int) $program);
+                if($data && $data->status_id !== 1) {
+                    $param['status_id'] = 1;
+                    $data->update((array)$param);
+                    ProgramController::store_log($data->id,$data->status_id);
+                }
+            }
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal verifikasi data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
     }
 }

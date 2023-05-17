@@ -162,7 +162,7 @@
                         @php
                         $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
                     @endphp
-                    <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
+                    <select class="form-select form-select-solid form-select2" id="select-perusahaan" name="select-perusahaan" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
                         <option></option>
                         @foreach($perusahaan as $p)  
                             @php
@@ -299,7 +299,7 @@
 
                                 </div>
                                 <div class="col-lg-6">
-                                    <input type="text" name="total_dana_tersedia" disabled
+                                    <input style="background-color: #d8efe2; color: #01863e; text-align:right; font-weight: bold" type="text" name="total_dana_tersedia" disabled
                                         class="form-control form-control-lg form-control-solid"
                                         placeholder="Rp ... (total) "  value=""
                                         style="text-align:right;" />
@@ -391,7 +391,7 @@
 
                                 </div>
                                 <div class="col-lg-6">
-                                    <input type="text" name="total_dana_disalurkan" disabled
+                                    <input style="background-color: #d8efe2; color: #01863e; text-align:right; font-weight: bold" type="text" name="total_dana_disalurkan" disabled
                                         class="form-control form-control-lg form-control-solid"
                                         placeholder="Rp ... (total) "  value=""
                                         style="text-align:right;" />
@@ -408,7 +408,7 @@
 
                             </div>
                             <div class="col-lg-6">
-                                <input type="text" name="saldo_akhir" disabled
+                                <input style="background-color: #d8efe2; color: #01863e; text-align:right; font-weight: bold" type="text" name="saldo_akhir" disabled
                                     class="form-control form-control-lg form-control-solid"
                                     placeholder="Rp ... (saldo akhir) "  value=""
                                     style="text-align:right;" />
@@ -421,7 +421,7 @@
                         </form>
                         <div class="form-group row mt-2  mb-5 text-end">
                             <div class="col-lg-12">
-                                <button id="proses" class="btn btn-danger me-3">Close</button>
+                                <button id="close-btn" class="btn btn-danger me-3">Close</button>
                                 <button id="clear-btn" class="btn btn-info me-3">Clear</button>
                                 <button id="simpan-btn" class="btn btn-success me-3">Simpan</button>
                             </div>
@@ -442,7 +442,40 @@
 
     <script>
         $(document).ready(function() {
-            
+            $("#close-btn").on('click', function() {
+                var url = window.location.pathname;
+                var segments = url.split('/');
+                console.log(segments)
+                let routeTo = "{{route('rencana_kerja.spdpumk_rka.index')}}"+"?perusahaan_id="+segments[4]+"&tahun="+segments[5]                
+                window.location.href = routeTo
+            })
+
+            $("#select-perusahaan").on('change', function() {
+                const perusahaanSelected = $(this).val()
+                let currentUrl = window.location.href
+
+                
+                // Escape any special characters in perusahaanSelected to avoid issues with regex
+                const escapedPerusahaanSelected = perusahaanSelected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+                // Create a regular expression to match the "/1/" part in the URL
+                const regex = new RegExp(/\/\d+\//);
+
+                // Replace the matched part with the value of perusahaanSelected
+                let updatedUrl = currentUrl.replace(regex, `/${escapedPerusahaanSelected}/`);
+                // console.log(perusahaanSelected)
+                // console.log(currentUrl)
+                // console.log(updatedUrl)
+                // currentUrl = currentUrl.substr(0, currentUrl.length - 4) + yearSelected;
+                window.location.href = updatedUrl
+            })
+
+            $("#select-tahun").on('change', function() {
+                const yearSelected = $(this).val()
+                let currentUrl = window.location.href
+                currentUrl = currentUrl.substr(0, currentUrl.length - 4) + yearSelected;
+                window.location.href = currentUrl
+            })
         });
 
         function formatCurrency(element) {
@@ -671,13 +704,7 @@
         });
 
 
-        const selectElement = document.getElementById('select-tahun');
-        selectElement.addEventListener('change', function(event) {
-            const selectedOption = event.target.value;
-            console.log(selectedOption)
-        // call your function here, passing in the selectedOption value as an argument
-        });
-
+       
 
         
 
