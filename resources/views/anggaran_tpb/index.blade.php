@@ -250,8 +250,7 @@
                                 data-kt-view-roles-table-toolbar="base">
                                 {{-- <button type="button" class="btn btn-danger btn-sm cls-add "
                                     data-kt-view-roles-table-select="delete_selected">Hapus Data</button> --}}
-                                @unlessrole('Verifikator Admin')
-                                    
+                                @unlessrole('Verifikator BUMN')
                                     <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data
                                     </button>
                                     <button type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
@@ -259,8 +258,8 @@
                                 <button type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
                                 </button>
                                 @endunlessrole
-                                @hasanyrole('Super Admin|Verifikator Admin')
-                                <button type="button" class="btn btn-primary btn-sm " >Verify
+                                @hasanyrole('Super Admin|Verifikator BUMN')
+                                <button type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
                                 </button>
                                 @endhasanyrole
                                 {{-- <a href="{{ route('anggaran_tpb.create2', ['param1' => 'parameter1', 'param2' => 'parameter2']) }}" class="btn btn-success btn-sm input-data">Input Data</a> --}}
@@ -344,7 +343,7 @@
                                         </label></td>
                                   
                                 </tr>  
-                                @endif    
+                                @endif   
                                 @foreach ($anggaran_pilar_bumn as $p)                              
                                     @php 
                                         $no++;
@@ -354,8 +353,9 @@
                                         $statusInProgress = $anggaran->where('perusahaan_id', $b->id)->where('pilar_nama', $p->pilar_nama)->where('status_id', 2)->first();
                                         if($statusInProgress) $statusPilar = $statusInProgress;
                                         else $statusPilar = $anggaran->where('perusahaan_id', $b->id)->where('pilar_nama', $p->pilar_nama)->first();
-                                        
+                                            
                                         $status_class = 'primary';
+                                        
                                         if($statusPilar->status_id == 1){
                                             $status_class = 'success';
                                         } else if($statusPilar->status_id == 3){
@@ -380,7 +380,7 @@
                                         <td style="text-align:right;">{{number_format($p->sum_anggaran_noncid,0,',',',')}}</td>
                                         <td style="text-align:right;">{{number_format($p->sum_anggaran_noncid + $p->sum_anggaran_cid,0,',',',')}}</td>
                                         <td style="text-align:center;">
-                                            <a class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{@$statusPilar->status->nama}}</a>
+                                            <a class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{@$statusPilar->status->nama}} {{ $statusInProgress }}</a>
                                         </td>
                                         <td style="text-align:center;">                                            
                                         </td>
@@ -516,6 +516,7 @@
     var urlvalidasi = "{{route('anggaran_tpb.validasi')}}";
     var urlgetstatus = "{{route('anggaran_tpb.get_status')}}";
     var urllog = "{{route('anggaran_tpb.log_status')}}";
+    var urlverifikasidata = "{{route('anggaran_tpb.verifikasi_data')}}";
 
     $(document).ready(function(){
         $('.tree').treegrid({
@@ -634,8 +635,106 @@
             var checkboxes = $(`.${parentPerusahaan}`)
             checkboxes.prop('checked', $(this).prop('checked'))
         })
+
+        $("#verify-data").on('click', function() {
+            var selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            var selectedCids = [];
+            var selectedNonCids = [];
+
+            selectedCheckboxes.forEach(function(checkbox) {
+                if(checkbox.getAttribute('data-anggaran-cid')) selectedCids.push(checkbox.getAttribute('data-anggaran-cid'));
+                if(checkbox.getAttribute('data-anggaran-noncid')) selectedNonCids.push(checkbox.getAttribute('data-anggaran-noncid'));
+            });
+
+            if(!selectedCids.length && !selectedNonCids.length) {
+                swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    html: 'Tidak ada data terpilih untuk diverifikasi!',
+                    buttonsStyling: true,
+                    confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                })
+                return
+            }
+            
+            verifySelectedData(selectedCids.concat(selectedNonCids)) 
+            
+        })
       
     });
+
+    function verifySelectedData(selectedData) {
+        const jumlahSelected = selectedData.length
+        swal.fire({
+            title: "Pemberitahuan",
+            html: "Yakin verifikasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahSelected+" rows]</span>",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, verifikasi data",
+            cancelButtonText: "Tidak"
+        }).then(function(result) {
+            if (result.value) {
+                $.ajax({
+                url: urlverifikasidata,
+                data:{
+                    "anggaran_verifikasi": selectedData
+                },
+                type:'post',
+                dataType:'json',
+                beforeSend: function(){
+                    $.blockUI();
+                },
+                success: function(data){
+                    $.unblockUI();
+
+                    swal.fire({
+                            title: data.title,
+                            html: data.msg,
+                            icon: data.flag,
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });
+
+                    if(data.flag == 'success') {
+                        // datatable.ajax.reload( null, false );
+                        location.reload(); 
+                    }
+                    
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });  
+                    }
+                });
+            }
+        });
+    }
 
     function deleteAnggaranSelectedTpb(selectedAnggaran) {
         const jumlahDataDeleted = selectedAnggaran.length

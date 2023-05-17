@@ -20,8 +20,8 @@
                         $select = $actionform == 'update' && $p->id == $pilar_pembangunan_id ? 'selected="selected"' : '';
                     @endphp
                     <option value="{{ $p->id }}" {!! $select !!}
-                        data-jenis-anggaran="{{ $p->jenis_anggaran }}">{{ $p->nama }} -
-                        {{ $p->jenis_anggaran }}</option>
+                        data-jenis-anggaran="{{ $p->jenis_anggaran }}">{{ $p->nama }}
+                        [{{ $p->jenis_anggaran }}]</option>
                 @endforeach
             </select>
         </div>
@@ -29,7 +29,7 @@
     <div class="form-group row mb-5">
         <div class="col-lg-12">
             <label>TPB</label>
-            <select disabled="disabled" class="form-select form-select-solid form-select2 select-tpb-option" name="tpb[]" data-kt-select2="true"
+            <select {{ $isDisabled = $actionform === 'insert' ? 'disabled="disabled"' : '' }} class="form-select form-select-solid form-select2 select-tpb-option" name="tpb[]" data-kt-select2="true"
                 data-placeholder="Pilih TPB" data-dropdown-parent="#winform" data-allow-clear="true" required
                 multiple="multiple">
                 <option></option>
@@ -58,8 +58,10 @@
 
 <script type="text/javascript">
     var title = "{{ $actionform == 'update' ? 'Update' : 'Tambah' }}" + " {{ $pagetitle }}";
-
+    var tpb = "{{ $tpb }}"
+    
     $(document).ready(function() {
+        console.log(tpb)
         $('.modal-title').html(title);
         $('.form-select2').select2();
         $('.modal').on('shown.bs.modal', function() {
@@ -96,12 +98,38 @@
                     type: 'warning', 
                     confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
                 });
+            } else {
+                console.log( selectedJenisPilar )
+                // $('.select-tpb-option').select2({
+                //     templateSelection: function(option) {
+                //         var $select = $('.select-tpb-option')
+                //         var tag = $("#select-pilar-option").data("jenis-anggaran");
+                //         var term = ""
+                //         if($select.data("select2")) {
+                //             var $search = $select.data("select2").$dropdown.find(".select2-search__field")
+                //             if($search.length) {
+                //                 term = $search.val()
+                //             }
+
+                //             if ($select.data("select2").isOpen() && term && tag) {
+                //                 if (tag.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
+                //                     return option.text;
+                //                 } else {
+                //                     return null;
+                //                 }
+                //             } else {
+                //                 return option.text;
+                //             }
+                //         }
+                        
+                //     }
+                // })
             }
         })
 
         $('#select-pilar-option').on('change', function() {
-            const idPilar = $(this).select2("data")[0].id
-            const jenisAnggaranPilar = $(this).select2("data")[0].element.dataset.jenisAnggaran
+            // const idPilar = $(this).select2("data")[0].id
+            // const jenisAnggaranPilar = $(this).select2("data")[0].element.dataset.jenisAnggaran
             
             $('.select-tpb-option').prop('disabled', false)
             $('.select-tpb-option').select2({
@@ -130,6 +158,13 @@
             })
         })
     });
+
+    $('#select-pilar-option').on('select2:select', function (e) {
+        var selectedOption = e.params.data.element;
+        var dataTag = $(selectedOption).data('jenis-anggaran');
+        selectedJenisPilar = dataTag;
+    });
+
 
     function setFormValidate() {
         $('#form-edit').validate({

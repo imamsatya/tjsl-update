@@ -265,14 +265,14 @@
                         <!--begin::Search-->
                        
                         <div class="d-flex align-items-center position-relative my-1">
-                            @unlessrole('Verifikator Admin')
+                            @unlessrole('Verifikator BUMN')
                             <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                             </button>
                             <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
                             </button>
                             @endunlessrole
-                            @hasanyrole('Super Admin|Verifikator Admin')
-                                <button type="button" class="btn btn-primary btn-sm " >Verify
+                            @hasanyrole('Super Admin|Verifikator BUMN')
+                                <button type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
                                 </button>
                             @endhasanyrole
                         </div>
@@ -469,6 +469,8 @@
         var urledit = "{{route('rencana_kerja.program.edit')}}";        
         var urldelete = "{{ route('rencana_kerja.program.delete') }}";
         var urllog = "{{ route('rencana_kerja.program.log') }}";
+        var urlverifikasidata = "{{route('rencana_kerja.program.verifikasi_data')}}";
+
         $(document).ready(function() {
             $('.tree').treegrid({
                 initialState : 'collapsed',
@@ -588,8 +590,103 @@
             })
             $("#jenis-anggaran").trigger('change');
 
+            $("#verify-data").on('click', function() {
+                var selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+                var selectedData = [];
 
-        });                
+                selectedCheckboxes.forEach(function(checkbox) {
+                    if(checkbox.getAttribute('data-anggaran')) selectedData.push(checkbox.getAttribute('data-anggaran'));
+                });
+
+                if(!selectedData.length) {
+                    swal.fire({
+                        icon: 'warning',
+                        title: 'Warning',
+                        html: 'Tidak ada data terpilih untuk diverifikasi!',
+                        buttonsStyling: true,
+                        confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                    })
+                    return
+                }
+                
+                verifySelectedData(selectedData) 
+                
+            })
+
+        });    
+        
+        function verifySelectedData(selectedData) {
+            const jumlahSelected = selectedData.length
+            swal.fire({
+                title: "Pemberitahuan",
+                html: "Yakin verifikasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahSelected+" rows]</span>",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Ya, verifikasi data",
+                cancelButtonText: "Tidak"
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                    url: urlverifikasidata,
+                    data:{
+                        "program": selectedData
+                    },
+                    type:'post',
+                    dataType:'json',
+                    beforeSend: function(){
+                        $.blockUI();
+                    },
+                    success: function(data){
+                        $.unblockUI();
+
+                        swal.fire({
+                                title: data.title,
+                                html: data.msg,
+                                icon: data.flag,
+
+                                buttonsStyling: true,
+
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });
+
+                        if(data.flag == 'success') {
+                            // datatable.ajax.reload( null, false );
+                            location.reload(); 
+                        }
+                        
+                    },
+                    error: function(jqXHR, exception) {
+                        $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                        swal.fire({
+                            title: "Error System",
+                            html: msgerror+', coba ulangi kembali !!!',
+                            icon: 'error',
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });  
+                        }
+                    });
+                }
+            });
+        }
 
         //Imam
         function redirectToNewPage() {

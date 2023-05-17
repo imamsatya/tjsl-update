@@ -414,8 +414,8 @@ class VersiPilarController extends Controller
         try {
             $versi = VersiPilar::find((int)$request->input('id'));
             // $pilar = PilarPembangunan::get();
-            $pilar = PilarPembangunan::where('is_active', true)->orderBy('nama', 'asc')->orderBy('jenis_anggaran', 'asc')->get();
-            $tpb = Tpb::get();
+            $pilar = PilarPembangunan::where('is_active', true)->orderBy('nama', 'asc')->orderBy('order_pilar', 'asc')->get();
+            $tpb = Tpb::where('is_active', true)->get();
 
             return view($this->__route . '.form_pilar', [
                 'pagetitle' => 'Relasi Pilar dan TPB',
