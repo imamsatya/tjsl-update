@@ -436,6 +436,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
         Route::get('create2/{perusahaan_id}/{tahun}', 'App\Http\Controllers\AnggaranTpbController@create2')->name('anggaran_tpb.create2');
         Route::post('store2', 'App\Http\Controllers\AnggaranTpbController@store2')->name('anggaran_tpb.store2');
         Route::post('delete_by_select', 'App\Http\Controllers\AnggaranTpbController@deleteBySelect')->name('anggaran_tpb.delete_by_select');
+        Route::post('verifikasi_data', 'App\Http\Controllers\AnggaranTpbController@verifikasiData')->name('anggaran_tpb.verifikasi_data');
     });
 
     Route::prefix('laporan_manajemen')->group(function () {
@@ -550,6 +551,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('edit_store', 'App\Http\Controllers\RencanaKerja\ProgramController@editStore')->name('rencana_kerja.program.edit_store');
             Route::post('delete', 'App\Http\Controllers\RencanaKerja\ProgramController@delete')->name('rencana_kerja.program.delete');
             Route::post('log', 'App\Http\Controllers\RencanaKerja\ProgramController@log_status')->name('rencana_kerja.program.log');
+            Route::post('verifikasi_data', 'App\Http\Controllers\RencanaKerja\ProgramController@verifikasiData')->name('rencana_kerja.program.verifikasi_data');
         });
 
         Route::prefix('laporan_manajemen')->group(function () {
