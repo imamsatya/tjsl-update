@@ -590,12 +590,12 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
         Route::prefix('bulanan')->group(function () {
             Route::prefix('kegiatan')->group(function () {
                 Route::get('index', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@index')->name('laporan_realisasi.bulanan.kegiatan.index');
-                Route::get('create/{perusahaan_id}/{tahun}', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@create')->name('laporan_realisasi.bulanan.kegiatan.create');
-                // Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@datatable')->name('laporan_realisasi.triwulan.spd_pumk.datatable');
-                
+                Route::get('create/{perusahaan_id}/{tahun}/{bulan}', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@create')->name('laporan_realisasi.bulanan.kegiatan.create');
+                Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@datatable')->name('laporan_realisasi.bulanan.kegiatan.datatable');
                 Route::post('store', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@store')->name('laporan_realisasi.bulanan.kegiatan.store');
                 // Route::post('delete', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@delete')->name('laporan_realisasi.triwulan.spd_pumk.delete');
                 // Route::post('log', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@log_status')->name('laporan_realisasi.triwulan.spd_pumk.log');
+                Route::post('log', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@log_status')->name('laporan_realisasi.bulanan.kegiatan.log');
             });
 
             Route::prefix('pumk')->group(function () {
