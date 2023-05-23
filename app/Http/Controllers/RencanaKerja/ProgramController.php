@@ -38,9 +38,10 @@ class ProgramController extends Controller
 
         $admin_bumn = false;
         $view_only = false;
+        $perusahaan_id = $request->perusahaan_id ?? 1;
         if (!empty($users->getRoleNames())) {
             foreach ($users->getRoleNames() as $v) {
-                if ($v == 'Admin BUMN') {
+                if ($v == 'Admin BUMN' || $v == 'Verifikator BUMN') {
                     $admin_bumn = true;
                     $perusahaan_id = \Auth::user()->id_bumn;
                 }
@@ -71,7 +72,7 @@ class ProgramController extends Controller
             ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
             ->leftJoin('target_tpbs', 'target_tpbs.anggaran_tpb_id', 'anggaran_tpbs.id');
 
-        $perusahaan_id = $request->perusahaan_id ?? 1;
+        
         if ($perusahaan_id) {
             $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
             $anggaran_pilar = $anggaran_pilar->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);

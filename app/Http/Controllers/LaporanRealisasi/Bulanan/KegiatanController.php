@@ -48,13 +48,13 @@ class KegiatanController extends Controller
         // dd($request->kriteria_program);
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
-        $perusahaan_id = $request->perusahaan_id ?? 1;
 
         $admin_bumn = false;
         $view_only = false;
+        $perusahaan_id = $request->perusahaan_id ?? 1;
         if (!empty($users->getRoleNames())) {
             foreach ($users->getRoleNames() as $v) {
-                if ($v == 'Admin BUMN') {
+                if ($v == 'Admin BUMN' || $v == 'Verifikator BUMN') {
                     $admin_bumn = true;
                     $perusahaan_id = \Auth::user()->id_bumn;
                 }
@@ -91,9 +91,7 @@ class KegiatanController extends Controller
         )
         ->get();
         
-
-        $perusahaan_id = $request->perusahaan_id ?? 1;
-        $bulan = $request->bulan ?? 1;
+        $bulan = $request->bulan_id ?? 1;
         $tahun = $request->tahun ?? date('Y');
         
         $kegiatan = DB::table('kegiatans')
@@ -159,7 +157,7 @@ class KegiatanController extends Controller
             'program' => $program,
             'jenis_kegiatan' => $jenis_kegiatan,
             'jenis_kegiatan_id' => $jenis_kegiatan_id,
-            'bulan_id' => $request->bulan ?? 1,
+            'bulan_id' => $request->bulan_id ?? 1,
             'program_id' => $request->program_id ?? '',
             'jenis_kegiatan_id' => $request->jenis_kegiatan ?? ''
 
@@ -365,7 +363,7 @@ class KegiatanController extends Controller
             $kegiatanRealisasi->status_id = 2;//in progress
             $kegiatanRealisasi->save();
 
-            KegiatanController::store_log($kegiatan->id,$kegiatanRealisasi->status_id);
+            KegiatanController::store_log($kegiatanRealisasi->id,$kegiatanRealisasi->status_id);
             DB::commit();
             Session::flash('success', "Berhasil Menyimpan Data Kegiatan");
             $result = [
@@ -400,9 +398,182 @@ class KegiatanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
-        //
+        
+        $kegiatan = DB::table('kegiatans')
+        ->join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', 'kegiatans.id')
+        ->where('kegiatans.id', $request->id)
+        ->first();
+
+        $perusahaan_id = $request->perusahaan_id;
+        $tahun = $request->tahun;
+        $jenis_anggaran = $request->jenis_anggaran;
+        
+        $program = DB::table('target_tpbs')
+        ->join('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun) {
+            $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
+                ->where('anggaran_tpbs.tahun', $tahun);
+        })
+        ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+        ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
+        ->select(
+            'target_tpbs.*',
+
+            'anggaran_tpbs.id as anggaran_tpb_id',
+            'relasi_pilar_tpbs.id as relasi_pilar_tpb_id',
+            'tpbs.id as tpb_id',
+            'tpbs.jenis_anggaran'
+        )
+        ->get();
+
+        $jenis_kegiatan = DB::table('jenis_kegiatans')->where('is_active', true)->get();
+      
+        // $kegiatan = DB::table('kegiatans')
+        // ->join('kegiatan_realisasis', function($join) use ($bulan, $tahun) {
+        //     $join->on('kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
+        //         ->where('kegiatan_realisasis.bulan', $bulan)
+        //         ->where('kegiatan_realisasis.tahun', $tahun);
+        // })
+        // ->join('target_tpbs', 'target_tpbs.id', 'kegiatans.target_tpb_id')
+        // ->join('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun) {
+        //     $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+        //         ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
+        //         ->where('anggaran_tpbs.tahun', $tahun);
+        // })
+        // ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+        // ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
+        // ->leftJoin('jenis_kegiatans', 'jenis_kegiatans.id', '=', 'kegiatans.jenis_kegiatan_id')
+        // ->join('provinsis', 'provinsis.id', '=', 'kegiatans.provinsi_id')
+        // ->join('kotas', 'kotas.id', '=', 'kegiatans.kota_id')
+        // ->join('satuan_ukur', 'satuan_ukur.id', '=', 'kegiatans.satuan_ukur_id')
+        // ->select(
+        //     'kegiatans.*',
+        //     'kegiatan_realisasis.bulan as kegiatan_realisasi_bulan',
+        //     'kegiatan_realisasis.tahun as kegiatan_realisasi_tahun',
+        //     'kegiatan_realisasis.anggaran as kegiatan_realisasi_anggaran',
+        //     'kegiatan_realisasis.anggaran_total as kegiatan_realisasi_anggaran_total',
+        //     'kegiatan_realisasis.status_id as kegiatan_realisasi_status_id',
+        //     'target_tpbs.program as target_tpb_program',
+        //     'jenis_kegiatans.nama as jenis_kegiatan_nama',
+        //     'provinsis.nama as provinsi_nama',
+        //     'kotas.nama as kota_nama',
+        //     'anggaran_tpbs.id as anggaran_tpb_id',
+        //     'relasi_pilar_tpbs.id as relasi_pilar_tpb_id',
+        //     'tpbs.id as tpb_id',
+        //     'tpbs.jenis_anggaran',
+        //     'satuan_ukur.nama as satuan_ukur_nama'
+        // )
+        // ->get();
+
+        // dd($kegiatan);
+        try {
+            // $data = TargetTpb::find((int)$request->input('program'));
+            // $anggaran_tpbs = AnggaranTpb::find($data->anggaran_tpb_id);
+            // $perusahaan_id = $anggaran_tpbs->perusahaan_id;
+            // $tahun = $anggaran_tpbs->tahun;
+            // $tpbs_temp = Tpb::find($data->tpb_id);
+            return view($this->__route . '.edit', [
+                'pagetitle' => $this->pagetitle,
+                'actionform' => 'update',
+                // 'tpb' => DB::table('tpbs')->select('*')->whereIn('id', function($query) use($perusahaan_id, $tahun) {
+                //     $query->select('relasi_pilar_tpbs.tpb_id as id')
+                //         ->from('anggaran_tpbs')
+                //         ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id','=','anggaran_tpbs.relasi_pilar_tpb_id')
+                //         ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
+                //         ->where('anggaran_tpbs.tahun', $tahun);
+                // })->where('tpbs.jenis_anggaran', $tpbs_temp->jenis_anggaran)->get(),
+                // 'core_subject' => CoreSubject::get(),
+                // 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
+                // 'data' => $data,
+                // 'id_program' => $request->input('program'),
+                // 'tahun' => $tahun,
+                // 'perusahaan_id' => $perusahaan_id
+                'kegiatan' => $kegiatan,
+                'program' => $program,
+                'jenis_kegiatan' => $jenis_kegiatan,
+                'jenis_anggaran' => $jenis_anggaran,
+                'provinsi' => Provinsi::where('is_luar_negeri', false)->get(),
+                'kota_kabupaten' => Kota::where('is_luar_negeri', false)->get(),
+                'satuan_ukur' => SatuanUkur::where('is_active', true)->get(),
+            ]);
+        } catch (Exception $e) {
+        }
+    }
+
+    public function editStore(Request $request) {
+
+        // dd($request);
+        // dd($request->data['kegiatan_data']['id']);
+       
+        
+        
+        DB::beginTransaction();
+        try {
+            $kegiatan = Kegiatan::where('id', $request->data['kegiatan_data']['kegiatan_id'])->first();
+            $kegiatan->target_tpb_id = $request->data['program_id_edit'];
+            $kegiatan->kegiatan = $request->data['nama_kegiatan_edit'];
+            $kegiatan->provinsi_id = $request->data['provinsi_edit'];
+            $kegiatan->kota_id = $request->data['kota_kabupaten_edit'];
+            $kegiatan->indikator = $request->data['realisasi_indikator_edit'];
+            $kegiatan->satuan_ukur_id = $request->data['satuan_ukur_edit'];
+            $kegiatan->anggaran_alokasi = $request->data['realisasi_anggaran_edit'];
+            $kegiatan->save();
+
+            $kegiatanRealisasi = KegiatanRealisasi::where('kegiatan_id',$request->data['kegiatan_data']['kegiatan_id'] )->first();
+            $kegiatanRealisasi->anggaran = $kegiatan->anggaran_alokasi;
+            $kegiatanRealisasi->save();
+            KegiatanController::store_log( $kegiatanRealisasi->id, 2);//in progress
+
+            //cek ulang kumulatif anggaran versi sebelumnya
+            $kegiatanGroupOld = Kegiatan::where('kegiatan', $request->data['kegiatan_data']['kegiatan'])
+            ->where('target_tpb_id', $request->data['kegiatan_data']['target_tpb_id'])
+            ->join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
+            ->orderBy('kegiatan_realisasis.bulan')
+            ->get();
+            
+            $kumulatif_anggaran_old = 0;
+            foreach ($kegiatanGroupOld as $key => $kegiatan) {
+           
+                $kumulatif_anggaran_old = $kumulatif_anggaran_old + $kegiatan->anggaran;
+                $kegiatanRealisasi = KegiatanRealisasi::where('id', $kegiatan->id )->first();
+                $kegiatanRealisasi->anggaran = $kegiatan->anggaran_alokasi;
+                $kegiatanRealisasi->anggaran_total = $kumulatif_anggaran_old;
+                $kegiatanRealisasi->save();
+            }
+
+            //cek ulang kumulatif anggaran versi baru
+            $kegiatanGroupNew = Kegiatan::where('kegiatan',  $kegiatan->kegiatan)
+            ->where('target_tpb_id', $kegiatan->target_tpb_id)
+            ->join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
+            ->orderBy('kegiatan_realisasis.bulan')
+            ->get();
+
+            $kumulatif_anggaran_new = 0;
+            foreach ($kegiatanGroupNew as $key => $kegiatan) {
+           
+                $kumulatif_anggaran_new = $kumulatif_anggaran_new + $kegiatan->anggaran;
+                $kegiatanRealisasi = KegiatanRealisasi::where('id', $kegiatan->id )->first();
+                $kegiatanRealisasi->anggaran = $kegiatan->anggaran_alokasi;
+                $kegiatanRealisasi->anggaran_total = $kumulatif_anggaran_new;
+                $kegiatanRealisasi->save();
+            }
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Berhasil memperbarui data!',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
     }
 
     /**
@@ -540,11 +711,12 @@ class KegiatanController extends Controller
 
     public function log_status(Request $request)
     {
+        $kegiatanRealisasi = KegiatanRealisasi::where('kegiatan_id', (int)$request->input('id'))->first();
 
         $log = LogKegiatan::select('log_kegiatans.*', 'users.name AS user', 'statuses.nama AS status')
             ->leftjoin('users', 'users.id', '=', 'log_kegiatans.user_id')
             ->leftjoin('statuses', 'statuses.id', '=', 'log_kegiatans.status_id')
-            ->where('kegiatan_id', (int)$request->input('id'))
+            ->where('kegiatan_id', $kegiatanRealisasi->id)
             ->orderBy('created_at')
             ->get();
 
@@ -552,5 +724,100 @@ class KegiatanController extends Controller
             'pagetitle' => 'Log Status',
             'log' => $log
         ]);
+    }
+
+    public function delete(Request $request) {
+        
+      
+         
+         
+       
+        DB::beginTransaction();
+        try {
+            foreach ($request->kegiatan_deleted as $key => $kegiatan_id) {
+                //kegiatan
+                $kegiatan = Kegiatan::where('id', $kegiatan_id)->first();
+                
+                //save old kegiatan nama dan target_tpb_id
+                $kegiatan_nama = $kegiatan->kegiatan;
+                $target_tpb_id = $kegiatan->target_tpb_id;
+    
+                //delete kegiatan dan kegiatan realisasis
+                $kegiatan_realisasis = KegiatanRealisasi::where('kegiatan_id', $kegiatan_id)->first();
+                $kegiatan_realisasis->delete();
+                $kegiatan->delete();
+                //cek ulang kumulatif anggaran versi sebelumnya
+                $kegiatanGroupOld = Kegiatan::where('kegiatan', $kegiatan_nama)
+                ->where('target_tpb_id', $target_tpb_id)
+                ->join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
+                ->orderBy('kegiatan_realisasis.bulan')
+                ->get();
+    
+                $kumulatif_anggaran_old = 0;
+                foreach ($kegiatanGroupOld as $key => $kegiatanOld) {
+               
+                    $kumulatif_anggaran_old = $kumulatif_anggaran_old + $kegiatanOld->anggaran;
+                    $kegiatanRealisasi = KegiatanRealisasi::where('id', $kegiatanOld->id )->first();
+                    $kegiatanRealisasi->anggaran = $kegiatanOld->anggaran_alokasi;
+                    $kegiatanRealisasi->anggaran_total = $kumulatif_anggaran_old;
+                    $kegiatanRealisasi->save();
+                }
+                
+            }
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses hapus data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal hapus data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function verifikasiData(Request $request) {
+
+       
+        DB::beginTransaction();
+        try {
+            foreach ($request->kegiatan_verifikasi as $key => $kegiatan_id) {
+                $kegiatan = Kegiatan::where('id', $kegiatan_id)->first();
+                
+                //save old kegiatan nama dan target_tpb_id
+                $kegiatan_nama = $kegiatan->kegiatan;
+                $target_tpb_id = $kegiatan->target_tpb_id;
+    
+                //delete kegiatan dan kegiatan realisasis
+                $kegiatan_realisasi = KegiatanRealisasi::where('kegiatan_id', $kegiatan_id)->first();
+                if($kegiatan_realisasi && $kegiatan_realisasi->status_id !== 1) {
+                    $kegiatan_realisasi->status_id = 1;
+                    $kegiatan_realisasi->save();
+                    KegiatanController::store_log($kegiatan_realisasi->id, 1);//finish
+
+
+                }
+                
+        }
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal verifikasi data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
     }
 }

@@ -419,7 +419,7 @@
                 }, 1000)
             }
             $("#jenis-anggaran").on('change', function(){
-                // yovi
+             
                 const jenisAnggaran = $(this).val()
                 $("#program_id").val('').trigger('change')
                 
@@ -686,7 +686,7 @@
             if(data.satuan_ukur === '' ) return {status: false, message: 'Satuan Ukur anggaran harus terisi!'}
             if(data.realisasi_indikator === '' ) return {status: false, message: 'Realisasi Indikator anggaran harus terisi!'}
 
-            if(data.pelaksanaan_program.toLowerCase() === 'mandiri' && data.mitra_bumn != '') return {status: false, message: 'Jika pelaksanaan program = Mandiri, isian Mitra BUMN harus kosong/tidak terisi!'}
+            
             return {status: true}
         }
 

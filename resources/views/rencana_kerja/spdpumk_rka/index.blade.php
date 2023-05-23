@@ -551,7 +551,7 @@
                         data: 'action',
                         name: 'action',
                         render: function(data, type, row){
-                            console.log(row.status_id)
+                            // console.log(row.status_id)
                             let button = null;
                             if (row.status_id === 2) {
                                 button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`

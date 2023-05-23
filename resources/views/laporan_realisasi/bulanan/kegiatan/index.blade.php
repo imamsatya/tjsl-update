@@ -322,7 +322,7 @@
                             Data
                         </button>
                         @role('Super Admin')
-                        <button type="button" class="btn btn-primary btn-sm ">Verify
+                        <button type="button" class="btn btn-primary btn-sm " id="verify-data">Verify
                         </button>
                         @endrole
                     </div>
@@ -347,7 +347,7 @@
                                 <th>Realisasi (Rp)</th>
                                 <th>Indikator Capaian</th>
                                 <th>Status</th>
-                                <th style="text-align:center;width:120px;">Aksi</th>
+                                <th style="text-align:center; ">Aksi</th>
                                 <th><label
                                     class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
                                         class="form-check-input addCheck" type="checkbox"
@@ -374,9 +374,11 @@
     // var urlstore = "{{ route('referensi.tpb.store') }}";
     // var urlupdate = "{{ route('referensi.tpb.update') }}";
     // var urldatatable = "{{ route('referensi.tpb.datatable') }}";
-    // var urldelete = "{{ route('referensi.tpb.delete') }}";
+    var urldelete = "{{ route('laporan_realisasi.bulanan.kegiatan.delete') }}";
     var urldatatable = "{{ route('laporan_realisasi.bulanan.kegiatan.datatable') }}";
     var urllog = "{{route('laporan_realisasi.bulanan.kegiatan.log')}}";
+    var urledit = "{{route('laporan_realisasi.bulanan.kegiatan.edit')}}";  
+    var urlverifikasidata = "{{route('laporan_realisasi.bulanan.kegiatan.verifikasi_data')}}";
 
     $(document).ready(function () {
         $('.tree').treegrid({
@@ -393,7 +395,10 @@
 
         $('body').on('click', '.cls-button-edit', function () {
             winform(urledit, {
-                'id': $(this).data('id')
+                'id': $(this).data('id'),
+                'perusahaan_id' : $("select[name='perusahaan_id']").val(),
+                'tahun' : $("select[name='tahun']").val(),
+                'jenis_anggaran' : $('#jenis-anggaran').val()
             }, 'Ubah Data');
         });
 
@@ -483,51 +488,51 @@
         });
 
         //body
-        $('body').on('click', '.delete-selected-data', function () {
-            console.log('halo')
-            var selectedData = $('input[name="selected-data[]"]:checked').map(function () {
-                return $(this).val();
-            }).get();
-            Swal.fire({
-                title: 'Apakah Anda Yakin?',
-                text: 'Apakah anda yakin akang menghapus data yang sudah dipilih?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // If the user confirmed the deletion, do something here
-                    console.log('User confirmed deletion');
-                    // Send an AJAX request to set the "selected" attribute in the database
-                    $.ajax({
-                        url: '/referensi/tpb/delete',
-                        type: 'POST',
-                        data: {
-                            "_token": "{{ csrf_token() }}",
-                            selectedData: selectedData
-                        },
-                        success: function (response) {
-                            window.location.reload();
-                            // console.log(`success : ${response}`)
-                            // toastr.success(
-                            //     `Status data <strong>${nama_tpb}</strong> dengan ID TPB <strong>${no_tpb}</strong> dan jenis anggaran <strong>${jenis_anggaran}</strong> berhasil diubah menjadi <strong>${finalStatus}</strong>!`
-                            // );
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            console.log(errorThrown);
-                        }
-                    });
-                } else {
-                    // If the user cancelled the deletion, do something here
-                    console.log('User cancelled deletion');
-                }
-            })
-            console.log(selectedData)
+        // $('body').on('click', '.delete-selected-data', function () {
+        //     console.log('halo')
+        //     var selectedData = $('input[name="selected-data[]"]:checked').map(function () {
+        //         return $(this).val();
+        //     }).get();
+        //     Swal.fire({
+        //         title: 'Apakah Anda Yakin?',
+        //         text: 'Apakah anda yakin akang menghapus data yang sudah dipilih?',
+        //         icon: 'warning',
+        //         showCancelButton: true,
+        //         confirmButtonText: 'Ya',
+        //         cancelButtonText: 'Batal',
+        //         reverseButtons: true
+        //     }).then((result) => {
+        //         if (result.isConfirmed) {
+        //             // If the user confirmed the deletion, do something here
+        //             console.log('User confirmed deletion');
+        //             // Send an AJAX request to set the "selected" attribute in the database
+        //             $.ajax({
+        //                 url: '/referensi/tpb/delete',
+        //                 type: 'POST',
+        //                 data: {
+        //                     "_token": "{{ csrf_token() }}",
+        //                     selectedData: selectedData
+        //                 },
+        //                 success: function (response) {
+        //                     window.location.reload();
+        //                     // console.log(`success : ${response}`)
+        //                     // toastr.success(
+        //                     //     `Status data <strong>${nama_tpb}</strong> dengan ID TPB <strong>${no_tpb}</strong> dan jenis anggaran <strong>${jenis_anggaran}</strong> berhasil diubah menjadi <strong>${finalStatus}</strong>!`
+        //                     // );
+        //                 },
+        //                 error: function (jqXHR, textStatus, errorThrown) {
+        //                     console.log(errorThrown);
+        //                 }
+        //             });
+        //         } else {
+        //             // If the user cancelled the deletion, do something here
+        //             console.log('User cancelled deletion');
+        //         }
+        //     })
+        //     console.log(selectedData)
 
 
-        });
+        // });
 
 
         const urlParams = new URLSearchParams(window.location.search)
@@ -566,6 +571,45 @@
 
         })
         $("#jenis-anggaran").trigger('change');
+
+        $(".delete-selected-data").on('click', function() {
+                var selectedProgram = $('input[name="selected-data[]"]:checked').map(function () {
+                         return $(this).val();
+                     }).get();
+               
+               
+                if(!selectedProgram.length) {
+                    swal.fire({
+                        icon: 'warning',
+                        title: 'Warning',
+                        html: 'Tidak ada data terpilih untuk dihapus!',
+                        buttonsStyling: true,
+                        confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                    })
+                    return
+                }
+                deleteSelectedProgram(selectedProgram)
+            })
+
+            $("#verify-data").on('click', function() {
+                var selectedProgram = $('input[name="selected-data[]"]:checked').map(function () {
+                         return $(this).val();
+                     }).get();
+
+                     if(!selectedProgram.length) {
+                    swal.fire({
+                        icon: 'warning',
+                        title: 'Warning',
+                        html: 'Tidak ada data terpilih untuk dihapus!',
+                        buttonsStyling: true,
+                        confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                    })
+                    return
+                }
+            
+            verifySelectedData(selectedProgram) 
+            
+        })
 
 
     });
@@ -657,7 +701,7 @@
                     data: 'action',
                     name: 'action',
                     render: function(data, type, row){
-                            console.log(row)
+                            // console.log(row)
                             let button = null;
                             if (row.kegiatan_realisasi_status_id === 2) {
                                 button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
@@ -809,6 +853,149 @@
         url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(':bulan_id', selectedBulan)
         // Redirect the user to the new page
         window.location.href = url;
+    }
+
+    function deleteSelectedProgram(selectedProgram) {
+            const jumlahDataDeleted = selectedProgram.length
+            swal.fire({
+                title: "Pemberitahuan",
+                html: "Yakin hapus data ? <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahDataDeleted+" rows]</span>",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Ya, hapus data",
+                cancelButtonText: "Tidak"
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                    url: urldelete,
+                    data:{
+                        "kegiatan_deleted": selectedProgram
+                    },
+                    type:'post',
+                    dataType:'json',
+                    beforeSend: function(){
+                        $.blockUI();
+                    },
+                    success: function(data){
+                        $.unblockUI();
+
+                        swal.fire({
+                                title: data.title,
+                                html: data.msg,
+                                icon: data.flag,
+                                buttonsStyling: true,
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });
+
+                        if(data.flag == 'success') {
+                            location.reload(); 
+                        }
+                        
+                    },
+                    error: function(jqXHR, exception) {
+                        $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                        swal.fire({
+                            title: "Error System",
+                            html: msgerror+', coba ulangi kembali !!!',
+                            icon: 'error',
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });  
+                        }
+                    });
+                }
+            });  
+    } 
+
+    function verifySelectedData(selectedData) {
+        const jumlahSelected = selectedData.length
+        swal.fire({
+            title: "Pemberitahuan",
+            html: "Yakin verifikasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahSelected+" rows]</span>",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, verifikasi data",
+            cancelButtonText: "Tidak"
+        }).then(function(result) {
+            if (result.value) {
+                $.ajax({
+                url: urlverifikasidata,
+                data:{
+                    "kegiatan_verifikasi": selectedData
+                },
+                type:'post',
+                dataType:'json',
+                beforeSend: function(){
+                    $.blockUI();
+                },
+                success: function(data){
+                    $.unblockUI();
+
+                    swal.fire({
+                            title: data.title,
+                            html: data.msg,
+                            icon: data.flag,
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });
+
+                    if(data.flag == 'success') {
+                        // datatable.ajax.reload( null, false );
+                        location.reload(); 
+                    }
+                    
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });  
+                    }
+                });
+            }
+        });
     }
 
 </script>
