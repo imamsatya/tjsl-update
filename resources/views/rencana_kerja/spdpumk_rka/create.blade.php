@@ -593,13 +593,13 @@
                 input.addEventListener('input', () => {
                     // Get the values of all the input fields and sum them up
                     console.log('saldo_awal_input',saldo_awal_input)
-            const saldo_awal = parseInt(saldo_awal_input.value.replace(/[^0-9\-]/g, "")) || 0;
-            const pengembalian_mitra_binaan = parseInt(pengembalian_mitra_binaan_input.value.replace(/[^0-9\-]/g, "")) || 0;
-            const pengembalian_bumn_penyalur = parseInt(pengembalian_bumn_penyalur_input.value.replace(/[^0-9\-]/g, "")) || 0;
-            const pendapatan_jasa_admin_pumk = parseInt(pendapatan_jasa_admin_pumk_input.value.replace(/[^0-9\-]/g, "")) || 0;
-            const pendapatan_jasa_bank = parseInt(pendapatan_jasa_bank_input.value.replace(/[^0-9\-]/g, "")) || 0;
-            const pendapatan_biaya_lainnya = parseInt(pendapatan_biaya_lainnya_input.value.replace(/[^0-9\-]/g, "")) || 0;
-            const total_dana_tersedia = saldo_awal + pengembalian_mitra_binaan + pengembalian_bumn_penyalur + pendapatan_jasa_admin_pumk + pendapatan_jasa_bank + pendapatan_biaya_lainnya;
+                    const saldo_awal = parseInt(saldo_awal_input.value.replace(/[^0-9\-]/g, "")) || 0;
+                    const pengembalian_mitra_binaan = parseInt(pengembalian_mitra_binaan_input.value.replace(/[^0-9\-]/g, "")) || 0;
+                    const pengembalian_bumn_penyalur = parseInt(pengembalian_bumn_penyalur_input.value.replace(/[^0-9\-]/g, "")) || 0;
+                    const pendapatan_jasa_admin_pumk = parseInt(pendapatan_jasa_admin_pumk_input.value.replace(/[^0-9\-]/g, "")) || 0;
+                    const pendapatan_jasa_bank = parseInt(pendapatan_jasa_bank_input.value.replace(/[^0-9\-]/g, "")) || 0;
+                    const pendapatan_biaya_lainnya = parseInt(pendapatan_biaya_lainnya_input.value.replace(/[^0-9\-]/g, "")) || 0;
+                    const total_dana_tersedia = saldo_awal + pengembalian_mitra_binaan + pengembalian_bumn_penyalur + pendapatan_jasa_admin_pumk + pendapatan_jasa_bank + pendapatan_biaya_lainnya;
                     console.log('saldo awal', saldo_awal)
                     // Update the value of the total_dana_tersedia input field
                     total_dana_tersedia_input.value = total_dana_tersedia;

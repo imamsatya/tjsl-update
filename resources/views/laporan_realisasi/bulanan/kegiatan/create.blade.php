@@ -160,7 +160,8 @@
                         <div class="col-lg-4 mb-20">
                                 <label>BUMN</label>
                                 @php
-                                $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
+                                // $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
+                                $disabled = 'disabled="true"';
                             @endphp
                             <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
                                 <option></option>
@@ -174,7 +175,11 @@
                         </div>
                         <div class="col-lg-4 mb-20">
                             <label>Tahun</label>
-                            <select class="form-select form-select-solid form-select2" id="select-tahun" name="tahun" data-kt-select2="true" >
+                            @php
+                            // $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
+                            $disabled = 'disabled="true"';
+                        @endphp
+                            <select class="form-select form-select-solid form-select2" id="select-tahun" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun" {{$disabled}} >
                                 @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
                                     @php
                                         $select = (($i == $tahun) ? 'selected="selected"' : '');
@@ -186,12 +191,16 @@
                         <div class="col-lg-4 mb-20">
                        
                             <label>Bulan</label>
-                            <select id="bulan_id" class="form-select form-select-solid form-select2" name="bulan_id" data-kt-select2="true"  data-placeholder="Pilih Bulan" data-allow-clear="true">
+                            @php
+                            // $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
+                            $disabled = 'disabled="true"';
+                        @endphp
+                            <select id="bulan_id" class="form-select form-select-solid form-select2" name="bulan_id" data-kt-select2="true"  data-placeholder="Pilih Bulan" data-allow-clear="true" {{$disabled}}>
                                 <option></option>
                                 @foreach($bulan as $bulan_row)  
-                                    {{-- @php
-                                        $select = (($p->no_tpb == $tpb_id) ? 'selected="selected"' : '');
-                                    @endphp --}}
+                                            @php
+                                            $select = (($bulan_row->id == $bulan_id) ? 'selected="selected"' : '');
+                                        @endphp
                                     <option  value="{{ $bulan_row->id }}" {!! $select !!}>{{ $bulan_row->nama }}</option>
                                 @endforeach
                             </select>
@@ -410,7 +419,7 @@
                 }, 1000)
             }
             $("#jenis-anggaran").on('change', function(){
-                // yovi
+             
                 const jenisAnggaran = $(this).val()
                 $("#program_id").val('').trigger('change')
                 
@@ -564,7 +573,7 @@
         const simpanBtn = document.querySelector("#simpan-btn");
         simpanBtn.addEventListener("click", async function() {
             console.log('simpan clicked')
-            
+            // e.preventDefault();
             var perusahaan_id = document.getElementById('perusahaan_id').value;
             // var perusahaan_id = perusahaan_id.getAttribute('data-variable');
 
@@ -602,7 +611,17 @@
                 realisasi_indikator : realisasi_indikator 
             }
             console.log('data', data)
-           
+            const resultValidate = validate(data)
+
+            if(!resultValidate.status) {
+                swal.fire({                    
+                    icon: 'warning',
+                    html: resultValidate.message,
+                    type: 'warning', 
+                    confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                });
+                return
+            }
             console.log(actionform)
             await $.ajax({
                 url: '/laporan_realisasi/bulanan/kegiatan/store',
@@ -616,12 +635,22 @@
                     actionform: actionform,
                     jenis_anggaran: jenis_anggaran
                 },
+                beforeSend: function() {
+                    $.blockUI({
+                        theme: false,
+                        baseZ: 2000
+                    })
+                },
                 success: function(response) {
-                    
+                    $.unblockUI();
                     console.log(`success : ${response}`)
-                    toastr.success(
-                        `Berhasil!`
-                    );
+                    swal.fire({                    
+                        icon: 'success',
+                        title: 'Sukses!',
+                        html: 'Berhasil menyimpan data',
+                        type: 'success', 
+                        confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                    })
                     window.location.reload();
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -637,6 +666,29 @@
             console.log(selectedOption)
         // call your function here, passing in the selectedOption value as an argument
         });
+
+        function validate(data) {
+            // program_id : program_id,
+            //     nama_kegiatan : nama_kegiatan ,
+            //     jenis_kegiatan : jenis_kegiatan ,
+            //     keterangan_kegiatan : keterangan_kegiatan ,
+            //     provinsi : provinsi ,
+            //     kota_kabupaten : kota_kabupaten ,
+            //     realisasi_anggaran : realisasi_anggaran ,
+            //     satuan_ukur : satuan_ukur ,
+            //     realisasi_indikator : realisasi_indikator 
+            if(data.program_id === '') return {status: false, message: 'Program harus terisi!'}
+            if(data.nama_kegiatan === '') return {status: false, message: 'Nama Kegiatan harus terisi!'}
+            if(data.keterangan_kegiatan === '') return {status: false, message: 'Keterangan harus terisi!'}
+            if(data.provinsi === '') return {status: false, message: 'Provinsi harus terisi!'}
+            if(data.kota_kabupaten === '') return {status: false, message: 'Kota/Kabupaten harus terisi!'}
+            if(data.realisasi_anggaran === '' ) return {status: false, message: 'Realisasi Anggaran anggaran harus terisi!'}
+            if(data.satuan_ukur === '' ) return {status: false, message: 'Satuan Ukur anggaran harus terisi!'}
+            if(data.realisasi_indikator === '' ) return {status: false, message: 'Realisasi Indikator anggaran harus terisi!'}
+
+            
+            return {status: true}
+        }
 
 
         
