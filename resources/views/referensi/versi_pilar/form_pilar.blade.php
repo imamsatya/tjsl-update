@@ -29,19 +29,10 @@
     <div class="form-group row mb-5">
         <div class="col-lg-12">
             <label>TPB</label>
-            <select {{ $isDisabled = $actionform === 'insert' ? 'disabled="disabled"' : '' }} class="form-select form-select-solid form-select2 select-tpb-option" name="tpb[]" data-kt-select2="true"
+            <select id="tpb-option" {{ $isDisabled = $actionform === 'insert' ? 'disabled="disabled"' : '' }} class="form-select form-select-solid form-select2 select-tpb-option" name="tpb[]" data-kt-select2="true"
                 data-placeholder="Pilih TPB" data-dropdown-parent="#winform" data-allow-clear="true" required
                 multiple="multiple">
-                <option></option>
-                @foreach ($tpb as $p)
-                    @php
-                        $select = $actionform == 'update' && in_array($p->id, $tpb_id) ? 'selected="selected"' : '';
-                    @endphp
-                    <option value="{{ $p->id }}" {!! $select !!}
-                        data-jenis-anggaran="{{ $p->jenis_anggaran }}">
-                        {{ $p->no_tpb . ' - ' . $p->nama . ' - ' . $p->jenis_anggaran }}
-                    </option>
-                @endforeach
+                <option></option>                
             </select>
         </div>
     </div>
@@ -59,9 +50,29 @@
 <script type="text/javascript">
     var title = "{{ $actionform == 'update' ? 'Update' : 'Tambah' }}" + " {{ $pagetitle }}";
     var tpb = "{{ $tpb }}"
+    var pilar_pembangunan = "{{ $pilar_pembangunan_id }}"
     
     $(document).ready(function() {
-        console.log(tpb)
+        
+        const decodedTpb = $('<textarea />').html(tpb).text(); // decode HTML entities
+        const actualTpb = JSON.parse(decodedTpb);
+        const tpbOption = actualTpb.map(function(data) {
+            return {id: data.id, text: `${data.no_tpb} - ${data.nama} [${data.jenis_anggaran}]`, jenis: `${data.jenis_anggaran}`}
+        }) 
+        
+        console.log(pilar_pembangunan)
+
+        $("#tpb-option").select2({
+            data: tpbOption,
+            templateSelection: function(data) {
+                data.element.setAttribute('data-jenis-anggaran', data.jenis)
+                return data.text
+            },
+            matcher: function(params, data) {
+                
+            }
+        })
+
         $('.modal-title').html(title);
         $('.form-select2').select2();
         $('.modal').on('shown.bs.modal', function() {

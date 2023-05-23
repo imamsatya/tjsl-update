@@ -423,6 +423,7 @@ class VersiPilarController extends Controller
                 'data' => $versi,
                 'pilar' => $pilar,
                 'tpb' => $tpb,
+                'pilar_pembangunan_id' => ''
             ]);
         } catch (Exception $e) {
         }
