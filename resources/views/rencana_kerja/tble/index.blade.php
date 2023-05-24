@@ -225,7 +225,7 @@
                                     <th>No.</th>
                                     <th>BUMN</th>
                                     <th>Tahun</th>
-                                    <th>Status</th>
+                                    
                                     
                                     <th style="text-align:center;">Aksi</th>
                                 </tr>
@@ -263,6 +263,7 @@
         var urlstore = "{{ route('referensi.tpb.store') }}";
         var urlupdate = "{{ route('referensi.tpb.update') }}";
         var urldatatable = "{{ route('rencana_kerja.laporan_manajemen.datatable') }}";
+        // var urldatatable = "{{ route('rencana_kerja.tble.datatable') }}";
         var urldelete = "{{ route('referensi.tpb.delete') }}";
         var urllog = "{{route('rencana_kerja.spdpumk_rka.log')}}";
         $(document).ready(function() {
@@ -453,24 +454,7 @@
                    
 
                    
-                    {
-                        data: 'status_id',
-                        name: 'status_id',
-                        orderable: false,
-                        searchable: false,
-                        render: function(data, type, row) {
-                            console.log(row)
-                            let status = null
-                            if (data === 1) {
-                                 status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Finish</span>`
-                            }
-                            if (data === 2) {
-                                 status = `<span class="btn cls-log badge badge-light-primary fw-bolder me-auto px-4 py-3" data-id="${row.id}">In Progress</span>`
-                            }
-                            return status;
-                        }
-                    },
-
+                   
                     // {
                     //     data: 'is_active',
                     //     orderable: false,
@@ -487,15 +471,8 @@
                         data: 'action',
                         name: 'action',
                         render: function(data, type, row){
-                            console.log(row.status_id)
-                            let button = null;
-                            if (row.status_id === 2) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
-                            }
-
-                            if (row.status_id === 1) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
-                            }
+                            
+                            button = `<a rel='tooltip' data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" class="mb-4 jawban-file-st" title="File Jawaban" href="{{ asset('storage/${row.file_name}') }}" target="_blank" rel="noopener noreferrer"><button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button></a>`
                             return button
                         }
                     }
