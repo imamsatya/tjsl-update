@@ -251,12 +251,14 @@
                                 {{-- <button type="button" class="btn btn-danger btn-sm cls-add "
                                     data-kt-view-roles-table-select="delete_selected">Hapus Data</button> --}}
                                
+                                    @can('view-kegiatan')
                                     <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data
                                     </button>
                                     <button type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
                                     </button>
                                 <button type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
                                 </button>
+                                @endcan
                               
                                 @can('view-verify')
                                 <button type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify

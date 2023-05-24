@@ -265,11 +265,13 @@
                         <!--begin::Search-->
                        
                         <div class="d-flex align-items-center position-relative my-1">
+                            @can('view-kegiatan')
                             <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
                             <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                             </button>
                             <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
                             </button>
+                            @endcan
                           
                             @can('view-verify')
                                 <button type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
