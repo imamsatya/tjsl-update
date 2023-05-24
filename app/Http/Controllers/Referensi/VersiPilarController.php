@@ -254,6 +254,8 @@ class VersiPilarController extends Controller
 
                     foreach ($tpb as $p) {
                         $param['tpb_id'] = $p;
+                        // $param['pilar_pembangunan_id'] = (int)$request->input('pilar_pembangunan_id');
+                        // $param['versi_pilar_id'] = (int)$request->input('id');
                         RelasiPilarTpb::create((array)$param);
                     }
 
@@ -353,7 +355,9 @@ class VersiPilarController extends Controller
             $versi = VersiPilar::find((int)$request->input('versi'));
             $relasi = RelasiPilarTpb::where('versi_pilar_id', (int)$request->input('versi'))->where('pilar_pembangunan_id', (int)$request->input('id'));
             $pilar = PilarPembangunan::where('is_active', true)->orderBy('nama', 'asc')->get();
-            $tpb = Tpb::get();
+            
+            $tpbTerpilih = RelasiPilarTpb::select('tpb_id as id')->where('versi_pilar_id', $versi->id)->where('pilar_pembangunan_id', '!=', (int)$request->input('id'));
+            $tpb = Tpb::whereNotIn('id', $tpbTerpilih)->where('is_active', true)->get();
             $tpb_id = $relasi->pluck('tpb_id')->all();
 
             return view($this->__route . '.form_pilar', [
@@ -413,9 +417,11 @@ class VersiPilarController extends Controller
     {
         try {
             $versi = VersiPilar::find((int)$request->input('id'));
+            $pilarTerpilih = RelasiPilarTpb::select('pilar_pembangunan_id as id')->where('versi_pilar_id', $versi->id);
+            $tpbTerpilih = RelasiPilarTpb::select('tpb_id as id')->where('versi_pilar_id', $versi->id);
             // $pilar = PilarPembangunan::get();
-            $pilar = PilarPembangunan::where('is_active', true)->orderBy('nama', 'asc')->orderBy('order_pilar', 'asc')->get();
-            $tpb = Tpb::where('is_active', true)->get();
+            $pilar = PilarPembangunan::whereNotIn('id', $pilarTerpilih)->where('is_active', true)->orderBy('nama', 'asc')->orderBy('order_pilar', 'asc')->get();
+            $tpb = Tpb::whereNotIn('id', $tpbTerpilih)->where('is_active', true)->get();
 
             return view($this->__route . '.form_pilar', [
                 'pagetitle' => 'Relasi Pilar dan TPB',
@@ -423,6 +429,7 @@ class VersiPilarController extends Controller
                 'data' => $versi,
                 'pilar' => $pilar,
                 'tpb' => $tpb,
+                'pilar_pembangunan_id' => ''
             ]);
         } catch (Exception $e) {
         }

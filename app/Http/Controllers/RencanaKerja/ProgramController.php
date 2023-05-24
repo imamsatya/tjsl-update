@@ -15,6 +15,8 @@ use App\Models\TargetTpb;
 use App\Models\LogTargetTpb;
 use DB;
 use Session;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ProgramTpbExport;
 
 class ProgramController extends Controller
 {
@@ -591,5 +593,74 @@ class ProgramController extends Controller
             ];
         }
         return response()->json($result);
+    }
+
+    public function export(Request $request) {
+
+        $anggaran_program  = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
+            ->leftJoin('perusahaans', 'perusahaans.id', 'anggaran_tpbs.perusahaan_id')
+            ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
+            ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
+            ->leftJoin('target_tpbs', 'target_tpbs.anggaran_tpb_id', 'anggaran_tpbs.id');
+
+        
+        if ($request->perusahaan_id) {            
+            $anggaran_program = $anggaran_program->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
+        }
+
+        if ($request->tahun) {            
+            $anggaran_program = $anggaran_program->where('anggaran_tpbs.tahun', $request->tahun);
+        }
+
+        if ($request->pilar_pembangunan_id) {
+            $anggaran_program = $anggaran_program->where('pilar_pembangunans.id', $request->pilar_pembangunan_id);
+        }
+
+        if($request->jenis_anggaran) {
+            $anggaran_program = $anggaran_program->where('tpbs.jenis_anggaran', $request->jenis_anggaran);
+        }
+     
+        if ($request->tpb_id) {
+            $anggaran_program = $anggaran_program->where('tpbs.id', $request->tpb_id);
+        }
+
+        // $kriteria_program = explode(',', $request->kriteria_program);
+        // if(count($kriteria_program)) {
+
+        //     $anggaran_program = $anggaran_program->where(function($query) use ($kriteria_program) {
+        //         if(in_array('prioritas', $kriteria_program)) {
+        //             $query->orWhere('kriteria_program_prioritas', true);
+        //         }
+    
+        //         if(in_array('csv', $kriteria_program)) {
+        //             $query->orWhere('kriteria_program_csv', true);
+        //         }
+    
+        //         if(in_array('umum', $kriteria_program)) {
+        //             $query->orWhere('kriteria_program_umum', true);
+        //         }    
+        //     });
+            
+        // }
+      
+
+        $anggaran_program = $anggaran_program->select('target_tpbs.*', 'tpbs.*', 'target_tpbs.id as id_target_tpbs', 'pilar_pembangunans.nama as pilar_nama','tpbs.nama as tpb_nama', 
+            'perusahaans.nama_lengkap as nama_perusahaan',
+            'pilar_pembangunans.jenis_anggaran as jenis_anggaran_pilar',
+            'tpbs.jenis_anggaran as jenis_anggaran_tpb',
+            'anggaran_tpbs.anggaran as anggaran_tpb',
+            DB::Raw('(case when tpbs.jenis_anggaran = \'non CID\' then anggaran end) as anggaran_noncid'), 
+            DB::Raw('(case when tpbs.jenis_anggaran = \'CID\' then anggaran end) as anggaran_cid'),
+            DB::Raw('(case when tpbs.jenis_anggaran = \'non CID\' then anggaran_alokasi end) as anggaran_alokasi_noncid'), 
+            DB::Raw('(case when tpbs.jenis_anggaran = \'CID\' then anggaran_alokasi end) as anggaran_alokasi_cid')
+        )
+        ->orderBy('pilar_pembangunans.nama')
+        ->orderBy('tpbs.id')
+        ->orderBy('target_tpbs.id')
+        ->get();  
+
+
+        $namaFile = "Data Program TPB ".date('dmY').".xlsx";
+        return Excel::download(new ProgramTpbExport($anggaran_program, $request->tahun), $namaFile);        
     }
 }

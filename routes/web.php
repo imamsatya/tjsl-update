@@ -552,6 +552,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('delete', 'App\Http\Controllers\RencanaKerja\ProgramController@delete')->name('rencana_kerja.program.delete');
             Route::post('log', 'App\Http\Controllers\RencanaKerja\ProgramController@log_status')->name('rencana_kerja.program.log');
             Route::post('verifikasi_data', 'App\Http\Controllers\RencanaKerja\ProgramController@verifikasiData')->name('rencana_kerja.program.verifikasi_data');
+            Route::post('export', 'App\Http\Controllers\RencanaKerja\ProgramController@export')->name('rencana_kerja.program.export');
         });
 
         Route::prefix('laporan_manajemen')->group(function () {
