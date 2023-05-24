@@ -250,18 +250,18 @@
                                 data-kt-view-roles-table-toolbar="base">
                                 {{-- <button type="button" class="btn btn-danger btn-sm cls-add "
                                     data-kt-view-roles-table-select="delete_selected">Hapus Data</button> --}}
-                                @unlessrole('Verifikator BUMN')
+                               
                                     <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data
                                     </button>
                                     <button type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
                                     </button>
                                 <button type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
                                 </button>
-                                @endunlessrole
-                                @hasanyrole('Super Admin|Verifikator BUMN')
+                              
+                                @can('view-verify')
                                 <button type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
                                 </button>
-                                @endhasanyrole
+                                @endcan
                                 {{-- <a href="{{ route('anggaran_tpb.create2', ['param1' => 'parameter1', 'param2' => 'parameter2']) }}" class="btn btn-success btn-sm input-data">Input Data</a> --}}
                             </div>
                             <!--end::Search-->
@@ -380,7 +380,7 @@
                                         <td style="text-align:right;">{{number_format($p->sum_anggaran_noncid,0,',',',')}}</td>
                                         <td style="text-align:right;">{{number_format($p->sum_anggaran_noncid + $p->sum_anggaran_cid,0,',',',')}}</td>
                                         <td style="text-align:center;">
-                                            <a class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{@$statusPilar->status->nama}} {{ $statusInProgress }}</a>
+                                            <a class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{@$statusPilar->status->nama}} </a>
                                         </td>
                                         <td style="text-align:center;">                                            
                                         </td>
@@ -659,6 +659,10 @@
             
             verifySelectedData(selectedCids.concat(selectedNonCids)) 
             
+        })
+
+        $(".rekap-data").on('click', function(){
+            exportExcel();
         })
       
     });

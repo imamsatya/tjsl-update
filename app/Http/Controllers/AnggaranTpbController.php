@@ -51,7 +51,7 @@ class AnggaranTpbController extends Controller
         $view_only = false;
         if (!empty($users->getRoleNames())) {
             foreach ($users->getRoleNames() as $v) {
-                if ($v == 'Admin BUMN') {
+                if ($v == 'Admin BUMN' || $v == 'Verifikator BUMN') {
                     $admin_bumn = true;
                     $perusahaan_id = \Auth::user()->id_bumn;
                 }
@@ -893,7 +893,8 @@ class AnggaranTpbController extends Controller
     {
         $anggaran = AnggaranTpb::Select('anggaran_tpbs.*')
             ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
-            ->leftJoin('tpbs', 'tpbs.id', 'relasi_pilar_tpbs.tpb_id');
+            ->leftJoin('tpbs', 'tpbs.id', 'relasi_pilar_tpbs.tpb_id')
+            ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id');
 
         if ($request->perusahaan_id) {
             $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
@@ -911,7 +912,7 @@ class AnggaranTpbController extends Controller
             $anggaran = $anggaran->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
         }
 
-        $anggaran = $anggaran->get();
+        $anggaran = $anggaran->orderBy('anggaran_tpbs.perusahaan_id')->orderBy('pilar_pembangunans.nama')->orderBy('tpbs.id')->get();
         $namaFile = "Data Anggaran TPB " . date('dmY') . ".xlsx";
         return Excel::download(new AnggaranTpbExport($anggaran, $request->tahun), $namaFile);
     }

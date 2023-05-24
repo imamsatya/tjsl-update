@@ -11,7 +11,7 @@
         </div>
         <div class="col-lg-6">
             <label>Pilar Pembangunan</label>
-            <select class="form-select form-select-solid form-select2" id="select-pilar-option" name="pilar_pembangunan_id"
+            <select {{ $actionform == 'update' ? 'disabled="disabled"' : '' }} class="form-select form-select-solid form-select2" id="select-pilar-option" name="pilar_pembangunan_id"
                 data-kt-select2="true" data-placeholder="Pilih Pilar" data-dropdown-parent="#winform"
                 data-allow-clear="true" required>
                 <option></option>
@@ -29,19 +29,19 @@
     <div class="form-group row mb-5">
         <div class="col-lg-12">
             <label>TPB</label>
-            <select {{ $isDisabled = $actionform === 'insert' ? 'disabled="disabled"' : '' }} class="form-select form-select-solid form-select2 select-tpb-option" name="tpb[]" data-kt-select2="true"
+            <select id="tpb-option" {{ $isDisabled = $actionform === 'insert' ? 'disabled="disabled"' : '' }} class="form-select form-select-solid form-select2 select-tpb-option" name="tpb[]" data-kt-select2="true"
                 data-placeholder="Pilih TPB" data-dropdown-parent="#winform" data-allow-clear="true" required
                 multiple="multiple">
-                <option></option>
+                <option></option>  
                 @foreach ($tpb as $p)
                     @php
                         $select = $actionform == 'update' && in_array($p->id, $tpb_id) ? 'selected="selected"' : '';
                     @endphp
                     <option value="{{ $p->id }}" {!! $select !!}
                         data-jenis-anggaran="{{ $p->jenis_anggaran }}">
-                        {{ $p->no_tpb . ' - ' . $p->nama . ' - ' . $p->jenis_anggaran }}
+                        {{ $p->no_tpb . ' - ' . $p->nama . ' [' . $p->jenis_anggaran .']' }}
                     </option>
-                @endforeach
+                @endforeach               
             </select>
         </div>
     </div>
@@ -58,10 +58,9 @@
 
 <script type="text/javascript">
     var title = "{{ $actionform == 'update' ? 'Update' : 'Tambah' }}" + " {{ $pagetitle }}";
-    var tpb = "{{ $tpb }}"
     
     $(document).ready(function() {
-        console.log(tpb)
+    
         $('.modal-title').html(title);
         $('.form-select2').select2();
         $('.modal').on('shown.bs.modal', function() {
@@ -76,7 +75,7 @@
         // Get the original tpb options
         var originalTpbOptions = $('select[name="tpb[]"]').html();
 
-        $('select[name="pilar_pembangunan_id"]').change(function() {
+        $('select[name="pilar_pembangunan_id"]').on('change', function() {
             // Get the selected jenis_anggaran value
             var jenisAnggaran = $(this).find(':selected').data('jenis-anggaran');
 
@@ -87,7 +86,15 @@
 
             // Update the tpb select input with the filtered options
             $('select[name="tpb[]"]').html(filteredTpbOptions);
+
+            if(jenisAnggaran === undefined) {
+                $('.select-tpb-option').prop('disabled', true)
+            } else {
+                $('.select-tpb-option').prop('disabled', false)
+            }
         });
+
+        $("#select-pilar-option").trigger('change')
 
         $('.select-tpb-option').on('click', function(){
             let isOptionDisabled = $('.select-tpb-option').prop('disabled')
@@ -98,71 +105,17 @@
                     type: 'warning', 
                     confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
                 });
-            } else {
-                console.log( selectedJenisPilar )
-                // $('.select-tpb-option').select2({
-                //     templateSelection: function(option) {
-                //         var $select = $('.select-tpb-option')
-                //         var tag = $("#select-pilar-option").data("jenis-anggaran");
-                //         var term = ""
-                //         if($select.data("select2")) {
-                //             var $search = $select.data("select2").$dropdown.find(".select2-search__field")
-                //             if($search.length) {
-                //                 term = $search.val()
-                //             }
-
-                //             if ($select.data("select2").isOpen() && term && tag) {
-                //                 if (tag.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
-                //                     return option.text;
-                //                 } else {
-                //                     return null;
-                //                 }
-                //             } else {
-                //                 return option.text;
-                //             }
-                //         }
-                        
-                //     }
-                // })
             }
         })
 
-        $('#select-pilar-option').on('change', function() {
-            // const idPilar = $(this).select2("data")[0].id
-            // const jenisAnggaranPilar = $(this).select2("data")[0].element.dataset.jenisAnggaran
-            
-            $('.select-tpb-option').prop('disabled', false)
-            $('.select-tpb-option').select2({
-                templateSelection: function(option) {
-                    var $select = $('.select-tpb-option')
-                    var tag = $(option.element).data("jenis-anggaran");
-                    var term = ""
-                    if($select.data("select2")) {
-                        var $search = $select.data("select2").$dropdown.find(".select2-search__field")
-                        if($search.length) {
-                            term = $search.val()
-                        }
-
-                        if ($select.data("select2").isOpen() && term && tag) {
-                            if (tag.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
-                                return option.text;
-                            } else {
-                                return null;
-                            }
-                        } else {
-                            return option.text;
-                        }
-                    }
-                    
-                }
-            })
+        $('.select-tpb-option').select2({
+            tags: false
         })
-    });
 
-    $('#select-pilar-option').on('select2:select', function (e) {
-        var selectedOption = e.params.data.element;
-        var dataTag = $(selectedOption).data('jenis-anggaran');
-        selectedJenisPilar = dataTag;
+        $('.select-tpb-option').on('select2:unselect', function (event) {
+            const value = event.params.data.id;
+            console.log('Removed:', value);
+        });
     });
 
 
@@ -195,6 +148,7 @@
             },
             submitHandler: function(form) {
                 var typesubmit = $("input[type=submit][clicked=true]").val();
+                $("#select-pilar-option").prop('disabled', false)
 
                 $(form).ajaxSubmit({
                     type: 'post',
