@@ -265,7 +265,7 @@
                         <!--begin::Search-->
                        
                         <div class="d-flex align-items-center position-relative my-1">
-                            
+                            <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
                             <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                             </button>
                             <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
@@ -470,6 +470,7 @@
         var urldelete = "{{ route('rencana_kerja.program.delete') }}";
         var urllog = "{{ route('rencana_kerja.program.log') }}";
         var urlverifikasidata = "{{route('rencana_kerja.program.verifikasi_data')}}";
+        var urlexport = "{{route('rencana_kerja.program.export')}}";
 
         $(document).ready(function() {
             $('.tree').treegrid({
@@ -551,10 +552,6 @@
             })
 
             
-            
-
-
-            
             $("#jenis-anggaran").on('change', function(){
                 const jenisAnggaran = $(this).val()
                 $("#tpb_id, #pilar_pembangunan_id").val('').trigger('change')
@@ -588,7 +585,7 @@
                 // })            
             
             })
-            $("#jenis-anggaran").trigger('change');
+            settingOptionOnLoad()
 
             $("#verify-data").on('click', function() {
                 var selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
@@ -613,7 +610,24 @@
                 
             })
 
-        });    
+            $(".rekap-data").on('click', function(){
+                exportExcel();
+            })
+
+        });  
+        
+        function settingOptionOnLoad() {
+            $("#jenis-anggaran").trigger('change');
+            const urlParams = new URLSearchParams(window.location.search);
+            const paramPilar = urlParams.get('pilar_pembangunan');
+            const paramTpb = urlParams.get('tpb');
+            if(paramPilar) {
+                $("#pilar_pembangunan_id").val(paramPilar).trigger('change')
+            }
+            if(paramTpb) {
+                $("#tpb_id").val(paramTpb).trigger('change')
+            }
+        }
         
         function verifySelectedData(selectedData) {
             const jumlahSelected = selectedData.length
@@ -782,6 +796,80 @@
                     });
                 }
             });  
-        } 
+        }
+        
+        function exportExcel()
+        {
+            $.ajax({
+                type: 'post',
+                data: {
+                    'perusahaan_id' : $("select[name='perusahaan_id']").val(),
+                    'tahun' : $("select[name='tahun']").val(),
+                    'pilar_pembangunan_id' : $("select[name='pilar_pembangunan_id']").val(),
+                    'tpb_id' : $("select[name='tpb_id']").val(),
+                    'jenis_anggaran': $("#jenis-anggaran").val()
+                },
+                beforeSend: function () {
+                    $.blockUI();
+                },
+                url: urlexport,
+                xhrFields: {
+                    responseType: 'blob',
+                },
+                success: function(data){
+                    $.unblockUI();
+
+                    var today = new Date();
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                    var yyyy = today.getFullYear();
+                    
+                    today = dd + '-' + mm + '-' + yyyy;
+                    var filename = 'Data Anggaran TPB '+today+'.xlsx';
+
+                    var blob = new Blob([data], {
+                        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    });
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = filename;
+
+                    document.body.appendChild(link);
+
+                    link.click();
+                    document.body.removeChild(link);
+                },
+                error: function(jqXHR, exception){
+                    $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                });      
+                    
+                }
+            });
+            return false;
+        }
     </script>
 @endsection

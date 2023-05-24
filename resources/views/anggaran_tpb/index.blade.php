@@ -660,6 +660,10 @@
             verifySelectedData(selectedCids.concat(selectedNonCids)) 
             
         })
+
+        $(".rekap-data").on('click', function(){
+            exportExcel();
+        })
       
     });
 
