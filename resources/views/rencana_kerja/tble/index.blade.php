@@ -303,7 +303,16 @@
 
             $('body').on('click','.cls-log',function(){
             winform(urllog, {'id':$(this).data('id')}, 'Log Data');
-        });
+            });
+
+            $('body').on('click','.cls-button-download',function(){
+            // winform(urllog, {'id':$(this).data('id')}, 'Log Status');
+            let id_perusahaan = $(this).data('perusahaan_id')
+            let tahun = $(this).data('tahun')
+            console.log('id_perusahaan', id_perusahaan)
+            console.log('tahun', tahun)
+            window.location.href = `/laporan_realisasi/tble/cetak-data/${id_perusahaan}/${tahun}`
+            });
 
 
             setDatatable();
@@ -408,13 +417,13 @@
             $('#proses').on('click', function(event){
             // datatable.ajax.reload()
             console.log($('#status_laporan').val())
-            var url = window.location.origin + '/rencana_kerja/laporan_manajemen/index';
+            var url = window.location.origin + '/rencana_kerja/tble/index';
             var perusahaan_id = $('#perusahaan_id').val();
             var tahun = $('#tahun').val();
-            var status_laporan = $('#status_laporan').val()
+          
            
 
-            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&status_laporan=' + status_laporan;
+            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun ;
         });
 
 
@@ -450,6 +459,7 @@
                         data: 'tahun',
                         name: 'tahun',
                         orderable: true,
+                        
                     },
                    
 
@@ -472,7 +482,7 @@
                         name: 'action',
                         render: function(data, type, row){
                             
-                            button = `<a rel='tooltip' data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" class="mb-4 jawban-file-st" title="File Jawaban" href="{{ asset('storage/${row.file_name}') }}" target="_blank" rel="noopener noreferrer"><button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button></a>`
+                            button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button>`
                             return button
                         }
                     }

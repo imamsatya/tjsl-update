@@ -567,7 +567,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
         Route::prefix('tble')->group(function () {
             Route::get('index', 'App\Http\Controllers\RencanaKerja\TbleController@index')->name('rencana_kerja.tble.index');
             Route::get('datatable', 'App\Http\Controllers\RencanaKerja\TbleController@datatable')->name('rencana_kerja.tble.datatable');
-            
+            Route::get('cetak-data/{id}/{tahun}', 'App\Http\Controllers\RencanaKerja\TbleController@cetakDataById')->name('rencana_kerja.tble.cetak');
         });
 
 
@@ -634,6 +634,8 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
 
         Route::prefix('tble')->group(function () {
             Route::get('index', 'App\Http\Controllers\LaporanRealisasi\TbleRealisasiController@index')->name('laporan_realisasi.tble.index');
+            Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\TbleRealisasiController@datatable')->name('laporan_realisasi.tble.datatable');
+            Route::get('cetak-data/{id}/{tahun}/{periode_id}', 'App\Http\Controllers\LaporanRealisasi\TbleRealisasiController@cetakDataById')->name('laporan_realisasi.tble.cetak');
             // Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\TbleController@datatable')->name('rencana_kerja.tble.datatable');
             
         });
@@ -655,4 +657,9 @@ Route::get('cc', function () {
     \Artisan::call('cache:clear');
     \Artisan::call('config:clear');
     dd('cache & config clear successfully');
+});
+
+//tes template
+Route::get('/detailtemplate', function () {
+    return view('rencana_kerja.tble.detailtemplate');
 });
