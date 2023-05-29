@@ -26,17 +26,17 @@ class LandingPageController extends Controller
         $client = null;
         $response = null;
         $data = null;
-        if($this->publik_api_host && $this->publik_sso && $this->publik_host){
-            $client = self::getClient();
-            $response = $client->get($this->publik_api_host.$this->publik_sso.'/service-to-tjsl', ['verify' => false]);
-            $data = json_decode($response->getBody(), true);
-        }
+        // if($this->publik_api_host && $this->publik_sso && $this->publik_host){
+        //     $client = self::getClient();
+        //     $response = $client->get($this->publik_api_host.$this->publik_sso.'/service-to-tjsl', ['verify' => false]);
+        //     $data = json_decode($response->getBody(), true);
+        // }
 
-        if(!$client || !$response || !$data){
+        // if(!$client || !$response || !$data){
             return view('landing_page.index-static');
-        }else{
-            return view('landing_page.index-dynamic',['data'=>$data['data'], 'publik_host'=>$this->publik_host]);
-        }
+        // }else{
+        //     return view('landing_page.index-dynamic',['data'=>$data['data'], 'publik_host'=>$this->publik_host]);
+        // }
     }
 
 }
