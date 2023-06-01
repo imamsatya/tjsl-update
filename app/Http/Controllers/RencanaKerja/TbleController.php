@@ -163,7 +163,7 @@ class TbleController extends Controller
             for ($i = 2020; $i <= $currentYear; $i++) {    
                 $item = $perusahaan_row;  
                 $item['tahun'] = 'Rencana Kerja '.$i;
-                $newarray[] = $item;
+                array_push($newarray, $item);
             }
         }
         
