@@ -161,7 +161,8 @@
                                 <div style="display: flex; flex-direction: row;">
                                     <div class="col-11 me-2">
                                         <label>Tahun</label>
-                                        <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true">
+                                        <select class="form-select form-select-solid form-select2" id="tahun"
+                                            name="tahun" data-kt-select2="true">
                                             @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
                                             @php
                                             $select = (($i == $tahun) ? 'selected="selected"' : '');
@@ -170,23 +171,25 @@
                                             @php } @endphp
                                         </select>
                                     </div>
-                            
+
                                     <div class="col-11">
                                         <label>Bulan</label>
-                                        <select id="bulan_id" class="form-select form-select-solid form-select2" name="bulan_id" data-kt-select2="true"
-                                            data-placeholder="Pilih Bulan" data-allow-clear="true">
+                                        <select id="bulan_id" class="form-select form-select-solid form-select2"
+                                            name="bulan_id" data-kt-select2="true" data-placeholder="Pilih Bulan"
+                                            data-allow-clear="true">
                                             <option></option>
                                             @foreach($bulan as $bulan_row)
-                                            {{-- @php
-                                                $select = (($p->no_tpb == $tpb_id) ? 'selected="selected"' : '');
-                                            @endphp --}}
-                                            <option value="{{ $bulan_row->id }}" {!! $select !!}>{{ $bulan_row->nama }}</option>
+                                            @php
+                                                $select = (($bulan_row->id == $bulan_id) ? 'selected="selected"' : '');
+                                            @endphp
+                                            <option value="{{ $bulan_row->id }}" {!! $select !!}>{{ $bulan_row->nama }}
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </div>
                         <div class="form-group row  mb-5">
                             <div class="col-lg-6">
@@ -195,13 +198,18 @@
                                     name="pilar_pembangunan_id" data-kt-select2="true"
                                     data-placeholder="Pilih Kolektibilitas" data-allow-clear="true">
                                     <option></option>
-                                    @foreach($pilar as $p)
+                                    {{-- @foreach($pilar as $p)
                                     @php
                                     $select = (($p->id == $pilar_pembangunan_id) ? 'selected="selected"' : '');
                                     @endphp
                                     <option data-jenis-anggaran="{{ $p->jenis_anggaran }}" value="{{ $p->id }}" {!!
                                         $select !!}>{{ $p->nama }} - {{$p->jenis_anggaran}}</option>
-                                    @endforeach
+                                    @endforeach --}}
+                                    <option value="lancar">Lancar</option>
+                                    <option value="kurang_lancar">Kurang Lancar</option>
+                                    <option value="diragukan">Diragukan</option>
+                                    <option value="macet">Macet</option>
+                                    <option value="pinajaman_bermasalah">Pinajaman Bermasalah</option>
                                 </select>
                             </div>
                             <div class="col-lg-6">
@@ -270,7 +278,7 @@
                     <div class="d-flex align-items-center position-relative my-1">
                         <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                         </button>
-                        <button type="button" class="btn btn-primary btn-sm input-data" >Input Data
+                        <button type="button" class="btn btn-primary btn-sm input-data">Input Data
                         </button>
                     </div>
                     <!--end::Search-->
@@ -284,19 +292,31 @@
                 <div class="card-px py-10">
                     <!--begin: Datatable -->
                     <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-hover tree  table-checkable">
+                        <table id="datatable"
+                            class="table table-striped table-bordered table-hover tree  table-checkable">
                             <thead>
                                 <tr>
                                     <th
                                         style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">
                                         No.</th>
-                                    <th style="font-weight:bold;border-bottom: 1px solid #c8c7c7;">Pilar - TPB</th>
                                     <th
                                         style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">
-                                        Anggaran </th>
+                                        Bulan - Tahun</th>
                                     <th
                                         style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">
-                                        Kriteria</th>
+                                        Nilai Penyaluran </th>
+                                    <th
+                                        style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">
+                                        Penyaluran Melalui BRI</th>
+                                    <th
+                                        style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">
+                                        Jumlah MB Baru</th>
+                                    <th
+                                        style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">
+                                        Jumlah MB Naik Kelas</th>
+                                    <th
+                                        style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">
+                                        Kolektabilitas</th>
                                     <th
                                         style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">
                                         Status</th>
@@ -325,6 +345,7 @@
         </div>
     </div>
 </div>
+
 @endsection
 
 @section('addafterjs')
@@ -332,8 +353,13 @@
 <script>
     var datatable;
     var urlcreate = "{{route('laporan_realisasi.bulanan.pumk.create')}}";
-    var urldelete = "{{ route('rencana_kerja.program.delete') }}";
-    var urllog = "{{ route('rencana_kerja.program.log') }}";
+    var urldatatable = "{{ route('laporan_realisasi.bulanan.pumk.datatable') }}";
+    var urllog = "{{ route('laporan_realisasi.bulanan.pumk.log') }}";
+    var urlkolektabilitas ="{{ route('laporan_realisasi.bulanan.pumk.kolektabilitas')}}";
+    //
+    var urldelete = "{{ route('laporan_realisasi.bulanan.pumk.delete') }}";
+    
+
     $(document).ready(function () {
         $('.tree').treegrid({
             initialState: 'collapsed',
@@ -343,10 +369,13 @@
         $('#page-title').html("{{ $pagetitle }}");
         $('#page-breadcrumb').html("{{ $breadcrumb }}");
 
-        $('body').on('click', '.input-data', function() {
-                const program = 1
-                winform(urlcreate, {'program':program}, 'Ubah Data');
-            });
+        $('body').on('click', '.input-data', function () {
+            var perusahaan_id = $('#perusahaan_id').val();
+            winform(urlcreate, {
+                'perusahaan_id': perusahaan_id
+            }, 'Ubah Data');
+
+        });
 
 
         $('body').on('click', '.cls-button-edit', function () {
@@ -360,62 +389,56 @@
                 'id': $(this).data('id')
             }, 'Log Data');
         });
-
+        $('body').on('click', '.cls-kolektabilitas', function () {
+            winform(urlkolektabilitas, {
+                'id': $(this).data('id')
+            }, 'Data Kolektabilitas');
+        });
+        setDatatable();
 
         $('#proses').on('click', function (event) {
             // datatable.ajax.reload()
-            var url = window.location.origin + '/rencana_kerja/program/index';
+            var url = window.location.origin + '/laporan_realisasi/bulanan/pumk/index';
             var perusahaan_id = $('#perusahaan_id').val();
             var tahun = $('#tahun').val();
-            var pilar_pembangunan_id = $('#pilar_pembangunan_id').val();
-            var tpb_id = $('#tpb_id').val();
-            const jenisAnggaran = $("#jenis-anggaran").val()
-            // const statusAnggaran = $("#status-anggaran").val()   
-            const kriteria_program_checkboxes = document.getElementsByName(
-            "kriteria_program"); // mengambil semua checkbox dengan name="kriteria_program"
-            const
-        selectedKriteriaProgram = []; // deklarasi array untuk menyimpan nilai dari checkbox yang dipilih
+            var bulan = $('#bulan_id').val();
+           
+            // const jenisAnggaran = $("#jenis-anggaran").val()
+            // // const statusAnggaran = $("#status-anggaran").val()   
+            // const kriteria_program_checkboxes = document.getElementsByName(
+            //     "kriteria_program"); // mengambil semua checkbox dengan name="kriteria_program"
+            // const
+            //     selectedKriteriaProgram = []; // deklarasi array untuk menyimpan nilai dari checkbox yang dipilih
 
-            for (let i = 0; i < kriteria_program_checkboxes.length; i++) { // iterasi semua checkbox
-                if (kriteria_program_checkboxes[i].checked) { // jika checkbox terpilih
-                    selectedKriteriaProgram.push(kriteria_program_checkboxes[i]
-                    .value); // tambahkan nilai checkbox ke dalam array
-                }
-            }
+            // for (let i = 0; i < kriteria_program_checkboxes.length; i++) { // iterasi semua checkbox
+            //     if (kriteria_program_checkboxes[i].checked) { // jika checkbox terpilih
+            //         selectedKriteriaProgram.push(kriteria_program_checkboxes[i]
+            //             .value); // tambahkan nilai checkbox ke dalam array
+            //     }
+            // }
 
             window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun +
-                '&pilar_pembangunan=' + pilar_pembangunan_id + '&tpb=' + tpb_id + '&jenis_anggaran=' +
-                jenisAnggaran + '&kriteria_program=' + selectedKriteriaProgram;
+                '&bulan=' + bulan 
+                // + '&tpb=' + tpb_id + '&jenis_anggaran=' +
+                // jenisAnggaran + '&kriteria_program=' + selectedKriteriaProgram;
         });
 
 
         //Imam
         // Add event listener for the "select all" checkbox in the table header
         $('#select-all').on('click', function () {
-            var checkboxes = $('.is_active-check');
+            var checkboxes = $('.row-check');
             checkboxes.prop('checked', $(this).prop('checked'));
         });
 
-        $(".pilar-check").on('click', function () {
-            const parentPilar = $(this).data('pilar-parent')
-            var checkboxes = $(`.${parentPilar}`)
-            checkboxes.prop('checked', $(this).prop('checked'))
-        })
-
-        $(".tpb-check").on('click', function () {
-            const parentTpb = $(this).data('tpb-parent')
-            var checkboxes = $(`.${parentTpb}`)
-            checkboxes.prop('checked', $(this).prop('checked'))
-        })
+        
 
         $(".delete-selected-data").on('click', function () {
-            var selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-            var selectedProgram = []
-            selectedCheckboxes.forEach(function (checkbox) {
-                if (checkbox.getAttribute('data-anggaran')) selectedProgram.push(checkbox
-                    .getAttribute('data-anggaran'));
-            });
-            if (!selectedProgram.length) {
+            var selectedData = $('input[name="selected-data[]"]:checked').map(function () {
+                         return $(this).val();
+                     }).get();
+           
+            if (!selectedData.length) {
                 swal.fire({
                     icon: 'warning',
                     title: 'Warning',
@@ -425,7 +448,7 @@
                 })
                 return
             }
-            deleteSelectedProgram(selectedProgram)
+            deleteselectedData(selectedData)
         })
 
 
@@ -473,6 +496,152 @@
 
 
     });
+
+    function setDatatable() {
+        datatable = $('#datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: urldatatable,
+                type: 'GET',
+                data: function (d) {
+                    d.perusahaan_id = $('#perusahaan_id').val(),
+                        d.tahun = $("#tahun").val(),
+
+
+                        d.bulan = $('#bulan_id').val()
+
+                }
+            },
+            columns: [
+                // ['id', 'target_tpb_program', 'kegiatan', 'jenis_kegiatan_nama', 'provinsi_nama','kota_nama', 'anggaran_alokasi', 'indikator', 'kegiatan_realisasi_status_id', 'action']
+                {
+                    data: 'id',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'bulan_id',
+                    name: 'bulan_id',
+                    render: function (data, type, row) {
+
+                        return row.bulan + ' ' + row.tahun;
+                    }
+                },
+                {
+                    data: 'nilai_penyaluran',
+                    name: 'nilai_penyaluran',
+                    className: 'text-end',
+                    render: function (data, type, row) {
+                        let formattedValue = formatCurrency2(data.toString());
+                        return `<div class="text-end">${formattedValue}</div>`;
+                    }
+                },
+                {
+                    data: 'nilai_penyaluran_melalui_bri',
+                    name: 'nilai_penyaluran_melalui_bri',
+                    className: 'text-end',
+                    render: function (data, type, row) {
+                        let formattedValue = formatCurrency2(data.toString());
+                        return `<div class="text-end">${formattedValue}</div>`;
+                    }
+                },
+                {
+                    data: 'jumlah_mb',
+                    name: 'jumlah_mb',
+                    className: 'text-end',
+                    render: function (data, type, row) {
+                       
+                        return `<div class="text-end">${data}</div>`;
+                    }
+                },
+                {
+                    data: 'jumlah_mb_naik_kelas',
+                    name: 'jumlah_mb_naik_kelas',
+                    className: 'text-end',
+                    render: function (data, type, row) {
+                   
+                        return `<div class="text-end">${data}</div>`;
+                    }
+                },
+                {
+                    render: function (data, type, row) {
+                        // return  row;
+                        return `<div class="text-center cls-kolektabilitas" data-id="${row.id}"><a href="javascript:void(0)">detail</a></div>`
+                    }
+                },
+                {
+                    data: 'status_id',
+                    name: 'status_id',
+                    orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            console.log(row)
+                            let status = null
+                            if (data === 1) {
+                                 status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Finish</span>`
+                            }
+                            if (data === 2) {
+                                 status = `<span class="btn cls-log badge badge-light-primary fw-bolder me-auto px-4 py-3" data-id="${row.id}">In Progress</span>`
+                            }
+                            return status;
+                        }
+                },
+                
+                {
+                    data: 'action',
+                    name: 'action',
+                    render: function (data, type, row) {
+                        // console.log(row)
+                        let button = null;
+                        if (row.status_id === 2) {
+                            // cls-button-edit, minus
+                            button =
+                                `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary " data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+                        }
+
+                        if (row.status_id === 1) {
+                            button =
+                                `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info" data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                        }
+                        return button
+                    }
+                },
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, row) {
+                        return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input class="form-check-input row-check" type="checkbox" name="selected-data[]" value="${row.id}"></label>`;
+                    }
+                }
+            ],
+            // footerCallback: function (row, data, start, end, display) {
+            //     var api = this.api();
+
+            //     var intVal = function ( i ) {
+            //         return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ? i : 0;
+            //     };
+
+            //     $(api.column(3).footer()).html(api.column(3).data().reduce(function (a, b) {
+            //             return addCommas(intVal(a) + intVal(b));
+            //         }, 0)
+            //     );
+            // },
+            drawCallback: function (settings) {
+                var info = datatable.page.info();
+                $('[data-toggle="tooltip"]').tooltip();
+                datatable.column(0, {
+                    search: 'applied',
+                    order: 'applied'
+                }).nodes().each(function (cell, i) {
+                    cell.innerHTML = info.start + i + 1;
+                });
+
+
+            }
+        });
+    }
 
     //Imam
     function redirectToNewPage() {
@@ -572,6 +741,104 @@
             }
         });
     }
+
+    function formatCurrency2(element) {
+         
+         let value = element.replace(/[^\d-]/g, ""); // Remove all non-numeric characters except for hyphen "-"
+         const isNegative = value.startsWith("-");
+         value = value.replace("-", ""); // Remove hyphen if it exists
+         const formatter = new Intl.NumberFormat("id-ID", {
+             style: "currency",
+             currency: "IDR",
+             minimumFractionDigits: 0,
+             maximumFractionDigits: 0
+         });
+         let formattedValue = formatter.format(value);
+         formattedValue = formattedValue.replace(/,/g, ".");
+         if (isNegative) {
+             formattedValue = "( " + formattedValue + " )";
+         } 
+         element = formattedValue;
+         return element
+      
+    }
+
+    function onlyNumbers(e) {
+        var ASCIICode = (e.which) ? e.which : e.keyCode
+        if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+            return false;
+        return true;
+    }
+
+    function deleteselectedData(selectedData) {
+            const jumlahDataDeleted = selectedData.length
+            swal.fire({
+                title: "Pemberitahuan",
+                html: "Yakin hapus data ? <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahDataDeleted+" rows]</span>",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Ya, hapus data",
+                cancelButtonText: "Tidak"
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                    url: urldelete,
+                    data:{
+                        "data_deleted": selectedData
+                    },
+                    type:'post',
+                    dataType:'json',
+                    beforeSend: function(){
+                        $.blockUI();
+                    },
+                    success: function(data){
+                        $.unblockUI();
+
+                        swal.fire({
+                                title: data.title,
+                                html: data.msg,
+                                icon: data.flag,
+                                buttonsStyling: true,
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });
+
+                        if(data.flag == 'success') {
+                            location.reload(); 
+                        }
+                        
+                    },
+                    error: function(jqXHR, exception) {
+                        $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                        swal.fire({
+                            title: "Error System",
+                            html: msgerror+', coba ulangi kembali !!!',
+                            icon: 'error',
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });  
+                        }
+                    });
+                }
+            });  
+    } 
 
 </script>
 @endsection

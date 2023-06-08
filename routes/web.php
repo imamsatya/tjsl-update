@@ -606,11 +606,11 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::prefix('pumk')->group(function () {
                 Route::get('index', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@index')->name('laporan_realisasi.bulanan.pumk.index');
                 Route::post('create', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@create')->name('laporan_realisasi.bulanan.pumk.create');
-                // Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@datatable')->name('laporan_realisasi.triwulan.spd_pumk.datatable');
-                
-                // Route::post('store', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@store')->name('laporan_realisasi.triwulan.spd_pumk.store');
-                // Route::post('delete', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@delete')->name('laporan_realisasi.triwulan.spd_pumk.delete');
-                // Route::post('log', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@log_status')->name('laporan_realisasi.triwulan.spd_pumk.log');
+                Route::post('store', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@store')->name('laporan_realisasi.bulanan.pumk.store');
+                Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@datatable')->name('laporan_realisasi.bulanan.pumk.datatable');
+                Route::post('log', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@log_status')->name('laporan_realisasi.bulanan.pumk.log');
+                Route::post('kolektabilitas', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@kolektabilitas_view')->name('laporan_realisasi.bulanan.pumk.kolektabilitas');
+                Route::post('delete', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@delete')->name('laporan_realisasi.bulanan.pumk.delete');
             });
         });
         Route::prefix('triwulan')->group(function () {

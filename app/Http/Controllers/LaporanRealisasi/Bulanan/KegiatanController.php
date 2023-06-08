@@ -36,7 +36,7 @@ class KegiatanController extends Controller
     {
 
         $this->__route = 'laporan_realisasi.bulanan.kegiatan';
-        $this->pagetitle = 'Laporan Realisasi Kegiatan TPB';
+        $this->pagetitle = 'Laporan Realisasi Kegiatan';
     }
     /**
      * Display a listing of the resource.
@@ -90,8 +90,9 @@ class KegiatanController extends Controller
             'tpbs.jenis_anggaran'
         )
         ->get();
-        
-        $bulan = $request->bulan_id ?? 1;
+        // $currentMonth = (int) date('n');
+
+        $bulan = $request->bulan_id ??  (int) date('n');
         $tahun = $request->tahun ?? date('Y');
         
         $kegiatan = DB::table('kegiatans')
@@ -157,7 +158,7 @@ class KegiatanController extends Controller
             'program' => $program,
             'jenis_kegiatan' => $jenis_kegiatan,
             'jenis_kegiatan_id' => $jenis_kegiatan_id,
-            'bulan_id' => $request->bulan_id ?? 1,
+            'bulan_id' =>  $bulan,
             'program_id' => $request->program_id ?? '',
             'jenis_kegiatan_id' => $request->jenis_kegiatan ?? ''
 
@@ -287,7 +288,7 @@ class KegiatanController extends Controller
         //     ->select('target_tpbs.*', 'tpbs.jenis_anggaran')
         //     ->get();
         // dd($targetTpbs);
-
+       
        
         return view(
             $this->__route . '.create',

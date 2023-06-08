@@ -311,7 +311,7 @@
             let tahun = $(this).data('tahun')
             console.log('id_perusahaan', id_perusahaan)
             console.log('tahun', tahun)
-            window.location.href = `/laporan_realisasi/tble/cetak-data/${id_perusahaan}/${tahun}`
+            window.location.href = `/rencana_kerja/tble/cetak-data/${id_perusahaan}/${tahun}`
             });
 
 
