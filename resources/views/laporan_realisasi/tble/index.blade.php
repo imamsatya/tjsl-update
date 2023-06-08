@@ -239,10 +239,10 @@
                                 data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
                             {{-- <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
-                            <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
+                            {{-- <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                             </button>
                             <button type="button" class="btn btn-primary btn-sm " onclick="redirectToNewPage()">Input Data
-                            </button>
+                            </button> --}}
                         </div>
                         <!--end::Search-->
                         <!--end::Group actions-->
@@ -260,7 +260,7 @@
                                     <th>No.</th>
                                     <th>BUMN</th>
                                     <th>Tahun</th>
-                                    <th>Status</th>
+                                    {{-- <th>Status</th> --}}
                                     
                                     <th style="text-align:center;">Aksi</th>
                                 </tr>
@@ -297,7 +297,10 @@
         var urledit = "{{ route('referensi.tpb.edit') }}";
         var urlstore = "{{ route('referensi.tpb.store') }}";
         var urlupdate = "{{ route('referensi.tpb.update') }}";
-        var urldatatable = "{{ route('rencana_kerja.laporan_manajemen.datatable') }}";
+        // var urldatatable = "{{ route('rencana_kerja.laporan_manajemen.datatable') }}";
+        // var urldatatable = "{{ route('laporan_realisasi.tble.datatable') }}";
+        var urldatatable = "{{ route('laporan_realisasi.triwulan.laporan_manajemen.datatable') }}";
+        
         var urldelete = "{{ route('referensi.tpb.delete') }}";
         var urllog = "{{route('rencana_kerja.spdpumk_rka.log')}}";
         $(document).ready(function() {
@@ -439,20 +442,31 @@
 
             });
 
+            $('body').on('click','.cls-button-download',function(){
+            // winform(urllog, {'id':$(this).data('id')}, 'Log Status');
+            let id_perusahaan = $(this).data('perusahaan_id')
+            let tahun = $(this).data('tahun')
+            let periode_id = $(this).data('periode_id')
+            console.log('id_perusahaan', id_perusahaan)
+            console.log('tahun', tahun)
+            window.location.href = `/laporan_realisasi/tble/cetak-data/${id_perusahaan}/${tahun}/${periode_id}`
+            });
+        });
+
             $('#proses').on('click', function(event){
             // datatable.ajax.reload()
             console.log($('#status_laporan').val())
-            var url = window.location.origin + '/rencana_kerja/laporan_manajemen/index';
+            var url = window.location.origin + '/laporan_realisasi/tble/index';
             var perusahaan_id = $('#perusahaan_id').val();
             var tahun = $('#tahun').val();
-            var status_laporan = $('#status_laporan').val()
+            var periode_id = $('#periode_laporan').val()
            
 
-            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&status_laporan=' + status_laporan;
+            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&periode_id=' + periode_id;
         });
 
 
-        });
+        
         
 
         function setDatatable() {
@@ -466,7 +480,7 @@
                 data: function (d) {
                     d.perusahaan_id = $("select[name='perusahaan_id']").val(),
                     d.tahun = $("select[name='tahun']").val(),
-                    d.status_laporan = $('#status_laporan').val()
+                    d.periode_laporan = $('#periode_laporan').val()
                     }
                  },
                 columns: [
@@ -484,27 +498,30 @@
                         data: 'tahun',
                         name: 'tahun',
                         orderable: true,
+                        render: function(data, type, row) {
+                          return row.periode_laporan_nama+'-'+data
+                        }
                     },
                    
 
                    
-                    {
-                        data: 'status_id',
-                        name: 'status_id',
-                        orderable: false,
-                        searchable: false,
-                        render: function(data, type, row) {
-                            console.log(row)
-                            let status = null
-                            if (data === 1) {
-                                 status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Finish</span>`
-                            }
-                            if (data === 2) {
-                                 status = `<span class="btn cls-log badge badge-light-primary fw-bolder me-auto px-4 py-3" data-id="${row.id}">In Progress</span>`
-                            }
-                            return status;
-                        }
-                    },
+                    // {
+                    //     data: 'status_id',
+                    //     name: 'status_id',
+                    //     orderable: false,
+                    //     searchable: false,
+                    //     render: function(data, type, row) {
+                    //         console.log(row)
+                    //         let status = null
+                    //         if (data === 1) {
+                    //              status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Finish</span>`
+                    //         }
+                    //         if (data === 2) {
+                    //              status = `<span class="btn cls-log badge badge-light-primary fw-bolder me-auto px-4 py-3" data-id="${row.id}">In Progress</span>`
+                    //         }
+                    //         return status;
+                    //     }
+                    // },
 
                     // {
                     //     data: 'is_active',
@@ -522,15 +539,9 @@
                         data: 'action',
                         name: 'action',
                         render: function(data, type, row){
-                            console.log(row.status_id)
-                            let button = null;
-                            if (row.status_id === 2) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
-                            }
-
-                            if (row.status_id === 1) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
-                            }
+                            console.log(row)
+                            button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-periode_id="${row.periode_laporan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button>`
+                            
                             return button
                         }
                     }

@@ -10,10 +10,11 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\FromView;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Illuminate\Contracts\View\View;
 use DB;
 
-class AnggaranTpbExport implements FromView , WithTitle, WithColumnFormatting
+class AnggaranTpbExport implements FromView , WithTitle, WithColumnFormatting, ShouldAutoSize
 {
     const FORMAT_NUMBER_CUSTOM = '#,##0';
     public function __construct($anggaran,$tahun){
@@ -46,7 +47,7 @@ class AnggaranTpbExport implements FromView , WithTitle, WithColumnFormatting
     public function columnFormats(): array
     {
         return [
-            'E' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2,
+            'G' => NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED2,
         ];
     }
 }

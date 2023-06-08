@@ -148,7 +148,7 @@
                         <!--end::Close-->
                     </div>
                     <!--end::Alert-->
-                @endif
+                @endif                
                     <div class="row" id="form-cari">
                         <div class="form-group row  mb-5">
                             <div class="col-lg-6">
@@ -251,16 +251,35 @@
                                 {{-- <button type="button" class="btn btn-danger btn-sm cls-add "
                                     data-kt-view-roles-table-select="delete_selected">Hapus Data</button> --}}
                                
+                                    @can('view-kegiatan')
                                     <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data
                                     </button>
-                                    <button type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
+                                    <button {{ $isOkToInput || $isEnableInputBySuperadmin ? '' : 'disabled' }} type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
                                     </button>
-                                <button type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
+                                <button {{ $isOkToInput || $isEnableInputBySuperadmin ? '' : 'disabled' }} type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
                                 </button>
+                                @endcan
                               
                                 @can('view-verify')
-                                <button type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
-                                </button>
+                                @if($countInprogress || !$anggaran->count())
+                                <button {{ $isOkToInput || $isEnableInputBySuperadmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
+                                </button>    
+                                @endif
+
+                                @if(!$countInprogress && $anggaran->count())
+                                <button {{ $isOkToInput || $isEnableInputBySuperadmin ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
+                                </button>  
+                                @endif    
+                                
+                                @if(!$isOkToInput && $isSuperAdmin)
+                                    @if($isEnableInputBySuperadmin)
+                                    <button type="button" class="btn btn-dark btn-sm ms-2 enable-disable-input-by-superadmin" data-status="disable" >Disable Input Data
+                                    </button> 
+                                    @else
+                                    <button type="button" class="btn btn-dark btn-sm ms-2 enable-disable-input-by-superadmin" data-status="enable" >Enable Input Data
+                                    </button> 
+                                    @endif
+                                @endif
                                 @endcan
                                 {{-- <a href="{{ route('anggaran_tpb.create2', ['param1' => 'parameter1', 'param2' => 'parameter2']) }}" class="btn btn-success btn-sm input-data">Input Data</a> --}}
                             </div>
@@ -268,20 +287,87 @@
                             <!--end::Group actions-->
                         </div>
                         <!--end::Card toolbar-->
-                    </div>                    
+                    </div> 
+                    <div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover tree-new table-checkable">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center;font-weight:bold;width:5%;border-bottom: 1px solid #c8c7c7;">No.</th>
+                                    <th style="font-weight:bold;width:30%;border-bottom: 1px solid #c8c7c7;">Pilar - TPB</th>
+                                    <th style="text-align:center;font-weight:bold;width:15%;border-bottom: 1px solid #c8c7c7;"> CID</th>
+                                    <th style="text-align:center;font-weight:bold;width:15%;border-bottom: 1px solid #c8c7c7;">Non CID</th>
+                                    <th style="text-align:center;font-weight:bold;width:15%;border-bottom: 1px solid #c8c7c7;">Total</th>
+                                    <th style="text-align:center;font-weight:bold;width:10%;border-bottom: 1px solid #c8c7c7;">Status</th>
+                                    <th style="text-align:center;width:5%;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
+                                    <th style="width: 5%"><label
+                                        class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
+                                            class="form-check-input" type="checkbox"></label>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="treegrid-perusahaan-1" data-type="perusahaan" data-value="1">
+                                    <td style="text-align:center;"></td>
+                                    <td>PT ABCD</td>
+                                    <td style="text-align:right;">
+                                        70000000
+                                    </td>
+                                    <td style="text-align:right;">
+                                        90000000
+                                    </td>
+                                    <td style="text-align:right;">
+                                        150000000
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <a class="badge badge-light-primary fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">In Progress</a>
+                                    </td>
+                                    <td></td>
+                                    <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                        <input class="form-check-input" type="checkbox">
+                                        </label></td>
+                                  
+                                </tr>
+                                <tr class="treegrid-parent-perusahaan-1" id="treegrid-parent-perusahaan-1" style="visibility: hidden"><td style="text-align:center;"></td></tr>
+                                <tr class="treegrid-perusahaan-2" data-type="perusahaan" data-value="2">
+                                    <td style="text-align:center;"></td>
+                                    <td>PT EFGH</td>
+                                    <td style="text-align:right;">
+                                        70000000
+                                    </td>
+                                    <td style="text-align:right;">
+                                        90000000
+                                    </td>
+                                    <td style="text-align:right;">
+                                        150000000
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <a class="badge badge-light-primary fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">In Progress</a>
+                                    </td>
+                                    <td></td>
+                                    <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                        <input class="form-check-input" type="checkbox">
+                                        </label></td>
+                                  
+                                </tr>
+                                <tr class="treegrid-parent-perusahaan-2" id="treegrid-parent-perusahaan-2" style="visibility: hidden"><td style="text-align:center;"></td></tr>
+                            </tbody>
+                        </table>
+                    </div>                   
                     <!--begin: Datatable -->
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered table-hover tree  table-checkable">
                             <thead>
                                 <tr>
-                                    <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No.</th>
-                                    <th style="font-weight:bold;border-bottom: 1px solid #c8c7c7;">Pilar - TPB</th>
-                                    <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;"> CID</th>
-                                    <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Non CID</th>
-                                    <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Total</th>
-                                    <th style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">Status</th>
-                                    <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
-                                    <th><label
+                                    <th style="text-align:center;font-weight:bold;width:5%;border-bottom: 1px solid #c8c7c7;">No.</th>
+                                    <th style="font-weight:bold;width:30%;border-bottom: 1px solid #c8c7c7;">Pilar - TPB</th>
+                                    <th style="text-align:center;font-weight:bold;width:15%;border-bottom: 1px solid #c8c7c7;"> CID</th>
+                                    <th style="text-align:center;font-weight:bold;width:15%;border-bottom: 1px solid #c8c7c7;">Non CID</th>
+                                    <th style="text-align:center;font-weight:bold;width:15%;border-bottom: 1px solid #c8c7c7;">Total</th>
+                                    <th style="text-align:center;font-weight:bold;width:10%;border-bottom: 1px solid #c8c7c7;">Status</th>
+                                    <th style="text-align:center;width:5%;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
+                                    <th style="width: 5%"><label
                                         class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
                                             class="form-check-input addCheck" type="checkbox"
                                             id="select-all"></label>
@@ -339,7 +425,7 @@
                                     </td>
                                     <td></td>
                                     <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                        <input class="form-check-input is_active-check perusahaan-check" data-perusahaan-parent="perusahaan-{{$b->id}}" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
+                                        <input disabled class="form-check-input  perusahaan-check" data-perusahaan-parent="perusahaan-{{$b->id}}" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
                                         </label></td>
                                   
                                 </tr>  
@@ -386,7 +472,7 @@
                                         </td>
                                        
                                         <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                            <input class="form-check-input is_active-check pilar-check perusahaan-{{$b->id}}" data-pilar-parent="pilar-{{$b->id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
+                                            <input disabled class="form-check-input pilar-check perusahaan-{{$b->id}}" data-pilar-parent="pilar-{{$b->id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" type="checkbox" data-no_tpb="${row.no_tpb}" data-nama="${row.nama}" data-jenis_anggaran="${row.jenis_anggaran}"  ${isChecked} name="selected-is_active[]" value="${row.id}">
                                             </label></td>
                                     </tr>
                                     @endif
@@ -451,7 +537,7 @@
                                         <td style="text-align:center;">
                                             @if(!$view_only)
                                                 @if($status_id != 1)
-                                                <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-anggaran-cid="{{ $id_anggaran_cid }}" data-anggaran-noncid="{{ $id_anggaran_noncid }}" data-id="{{$a->id}}" data-toggle="tooltip" title="Ubah data {{@$a->no_tpb}}"><i class="bi bi-pencil fs-3"></i></button>
+                                                <button {{ $isOkToInput || $isEnableInputBySuperadmin ? '' : 'disabled' }} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-anggaran-cid="{{ $id_anggaran_cid }}" data-anggaran-noncid="{{ $id_anggaran_noncid }}" data-id="{{$a->id}}" data-toggle="tooltip" title="Ubah data {{@$a->no_tpb}}"><i class="bi bi-pencil fs-3"></i></button>
                                                 <!-- <button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-anggaran="{{ $a->id_anggaran }}" data-perusahaan_id="{{$b->id}}" data-id="{{$a->id}}" data-nama="{{@$a->no_tpb}}" data-toggle="tooltip" title="Hapus data {{@$a->no_tpb}}"><i class="bi bi-trash fs-3"></i></button> -->
                                                 @endif
                                             @endif
@@ -517,8 +603,110 @@
     var urlgetstatus = "{{route('anggaran_tpb.get_status')}}";
     var urllog = "{{route('anggaran_tpb.log_status')}}";
     var urlverifikasidata = "{{route('anggaran_tpb.verifikasi_data')}}";
+    var urlgetdataperusahaan = "{{ route('anggaran_tpb.get_data_perusahaan_tree') }}";
+    var urlbatalverifikasidata = "{{route('anggaran_tpb.batal_verifikasi_data')}}";
+    var urlenableinputdata = "{{route('anggaran_tpb.enable_disable_input_data')}}";
 
     $(document).ready(function(){
+
+        const countInprogress = parseInt("{{ $countInprogress }}")
+        const countFinish = parseInt("{{ $countFinish }}")
+        const countDataAnggaran = parseInt("{{ $anggaran->count() }}")
+        
+
+        $(".tree-new").treegrid({            
+            initialState : 'collapsed',
+            treeColumn : 1,
+            indentTemplate : '<span style="width: 32px; height: 16px; display: inline-block; position: relative;"></span>',            
+        });
+
+        
+
+        var dataPerusahaanLoading = new Map()
+        var dataPilarLoading = new Map()
+        var dataTpbLoading = new Map()
+
+        $('.tree-new').on('click', 'tbody tr .treegrid-expander', async function() {
+            let $arrow = $(this);
+            let $row = $(this).closest('tr');
+            let typeRow = $row.data('type');
+            let value = $row.data('value');
+            var isExpanded = $row.hasClass('treegrid-expanded');
+            let selectedYear = $("#tahun").val()
+            let selectedClassTree = $row.attr('class').split(' ').filter((cls) => cls.startsWith('treegrid-perusahaan-'))[0]
+
+            // console.log('yoli', $row.treegrid('getNodeId'))
+
+            if(typeRow === 'perusahaan' && isExpanded) {
+                // console.log('Perusahaan ID:', value);
+                let dataPerusahaanLoaded = dataPerusahaanLoading.get(parseInt(value));
+                if(!dataPerusahaanLoaded) {
+                    // kalo belum pernah diload, request data ...
+                    let data = await loadDataPerusahaan(value, selectedYear);
+                    dataPerusahaanLoading.set(value, true);
+                    
+                    // console.log(data)
+
+                    // populate tree
+                    let pilarRow = '';
+                    let pilar = data.result;
+                    let parentClass = selectedClassTree.replace('treegrid-', 'treegrid-parent-')
+                    for(let i=0; i<pilar.length; i++) {
+                        let tempPilarRow = `
+                        <tr class="treegrid-bumn-${value}-pilar-${pilar[i].nama.split(' ').join('-')} ${parentClass}" >
+                            <td style="text-align:center;">${i+1}</td>
+                            <td>${pilar[i].nama}</td>
+                            <td style="text-align:right;">${pilar[i].jenis_anggaran === 'CID' ? pilar[i].total : ''}</td>
+                            <td style="text-align:right;">${pilar[i].jenis_anggaran === 'non CID' ? pilar[i].total : ''}</td>
+                            <td style="text-align:right;">-</td>
+                            <td style="text-align:center;">
+                                <a class="badge badge-light-primary fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">In Progress </a>
+                            </td>
+                            <td style="text-align:center;">                                            
+                            </td>
+                            
+                            <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                <input class="form-check-input is_active-check pilar-check perusahaan-${value}" data-pilar-parent="pilar-${value}-${pilar[i].nama.split(' ').join('-')}" type="checkbox">
+                                </label></td>
+                        </tr>
+                        <tr class="treegrid-parent-bumn-${value}-pilar-${pilar[i].nama.split(' ').join('-')}" id="treegrid-parent-bumn-${value}-pilar-${pilar[i].nama.split(' ').join('-')}" style="visibility: hidden"><td style="text-align:center;"></td></tr>
+                        `;
+                        pilarRow += tempPilarRow;
+                    }
+
+                    $("#"+parentClass).before(pilarRow);
+
+                    // refresh treegrid
+                    $(".tree-new").treegrid({
+                        initialState : 'inherit',
+                        treeColumn : 1,
+                        // indentTemplate : '<span style="width: 32px; height: 16px; display: inline-block; position: relative;"></span>',
+                    })
+
+                    console.log($arrow)
+
+                }
+            } else if(typeRow === 'pilar' && isExpanded) {
+                console.log('Pilar ID:', value);
+                let dataPilarLoaded = dataPilarLoading.get(parseInt(value))
+                if(!dataPilarLoaded) {
+                    // kalo belum pernah diload, request data ...
+                }
+            } else if(typeRow === 'tpb' && isExpanded) {
+                console.log('Tpb ID:', value);
+                let dataTpbLoaded = dataTpbLoading.get(parseInt(value))
+                if(!dataTpbLoaded) {
+                    // kalo belum pernah diload, request data ...
+                }
+            }                                        
+        });
+
+        $("#node-perusahaan-1").on('change', function(){
+            console.log('something here')
+        })
+
+        
+
         $('.tree').treegrid({
             initialState : 'collapsed',
             treeColumn : 1,
@@ -636,109 +824,424 @@
             checkboxes.prop('checked', $(this).prop('checked'))
         })
 
-        $("#verify-data").on('click', function() {
-            var selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-            var selectedCids = [];
-            var selectedNonCids = [];
+        // $("#verify-data").on('click', function() {
+        //     var selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+        //     var selectedCids = [];
+        //     var selectedNonCids = [];
 
-            selectedCheckboxes.forEach(function(checkbox) {
-                if(checkbox.getAttribute('data-anggaran-cid')) selectedCids.push(checkbox.getAttribute('data-anggaran-cid'));
-                if(checkbox.getAttribute('data-anggaran-noncid')) selectedNonCids.push(checkbox.getAttribute('data-anggaran-noncid'));
-            });
+        //     selectedCheckboxes.forEach(function(checkbox) {
+        //         if(checkbox.getAttribute('data-anggaran-cid')) selectedCids.push(checkbox.getAttribute('data-anggaran-cid'));
+        //         if(checkbox.getAttribute('data-anggaran-noncid')) selectedNonCids.push(checkbox.getAttribute('data-anggaran-noncid'));
+        //     });
 
-            if(!selectedCids.length && !selectedNonCids.length) {
+        //     if(!selectedCids.length && !selectedNonCids.length) {
+        //         swal.fire({
+        //             icon: 'warning',
+        //             title: 'Warning',
+        //             html: 'Tidak ada data terpilih untuk diverifikasi!',
+        //             buttonsStyling: true,
+        //             confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+        //         })
+        //         return
+        //     }
+            
+        //     verifySelectedData(selectedCids.concat(selectedNonCids)) 
+            
+        // })
+
+        $("#verify-data").on('click', function() {  
+
+            
+            if(!countInprogress || !countDataAnggaran) {
                 swal.fire({
-                    icon: 'warning',
-                    title: 'Warning',
-                    html: 'Tidak ada data terpilih untuk diverifikasi!',
-                    buttonsStyling: true,
-                    confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                    title: "Pemberitahuan",
+                    html: "Tidak ada data yang bisa diverifikasi!",
+                    icon: "warning",
+                    showCancelButton: false,
+                    confirmButtonText: "Close",
                 })
+
                 return
             }
+
+            const bumn = "{{ $perusahaan_id }}"
+            const tahun = "{{ $tahun }}"
+            const nama_bumn = "{{ $perusahaan_nama }}"
             
-            verifySelectedData(selectedCids.concat(selectedNonCids)) 
+
+            swal.fire({
+                title: "Pemberitahuan",
+                html: `<span style="color: red; font-weight: bold">Yakin verifikasi data ? </span><br/>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <tbody>
+                                <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                    <td>Perusahaan</td>
+                                    <td>${nama_bumn}</td>
+                                </tr>
+                                <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                    <td>Tahun</td>
+                                    <td>${tahun}</td>
+                                </tr>
+                                <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                    <td>Jumlah Verifikasi</td>
+                                    <td>${countInprogress} rows</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                        `,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Ya, verifikasi data",
+                cancelButtonText: "Tidak"
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                        url: urlverifikasidata,
+                        data:{
+                            "bumn": bumn,
+                            "tahun": tahun
+                        },
+                        type:'post',
+                        dataType:'json',
+                        beforeSend: function(){
+                            $.blockUI();
+                        },
+                        success: function(data){
+                            $.unblockUI();
+
+                            swal.fire({
+                                    title: data.title,
+                                    html: data.msg,
+                                    icon: data.flag,
+
+                                    buttonsStyling: true,
+
+                                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                            });
+
+                            if(data.flag == 'success') {
+                                // datatable.ajax.reload( null, false );
+                                location.reload(); 
+                            }
+                            
+                        },
+                        error: function(jqXHR, exception) {
+                            $.unblockUI();
+                            var msgerror = '';
+                            if (jqXHR.status === 0) {
+                                msgerror = 'jaringan tidak terkoneksi.';
+                            } else if (jqXHR.status == 404) {
+                                msgerror = 'Halaman tidak ditemukan. [404]';
+                            } else if (jqXHR.status == 500) {
+                                msgerror = 'Internal Server Error [500].';
+                            } else if (exception === 'parsererror') {
+                                msgerror = 'Requested JSON parse gagal.';
+                            } else if (exception === 'timeout') {
+                                msgerror = 'RTO.';
+                            } else if (exception === 'abort') {
+                                msgerror = 'Gagal request ajax.';
+                            } else {
+                                msgerror = 'Error.\n' + jqXHR.responseText;
+                            }
+                            swal.fire({
+                                title: "Error System",
+                                html: msgerror+', coba ulangi kembali !!!',
+                                icon: 'error',
+
+                                buttonsStyling: true,
+
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                            });  
+                        }
+                    });
+                }
+            });
             
         })
 
         $(".rekap-data").on('click', function(){
             exportExcel();
         })
+
+        $("#unverify-data").on('click', function() {
+            if(countInprogress || !countDataAnggaran) {
+                swal.fire({
+                    title: "Pemberitahuan",
+                    html: "Tidak ada data yang bisa di-unverify!",
+                    icon: "warning",
+                    showCancelButton: false,
+                    confirmButtonText: "Close",
+                })
+
+                return
+            }
+
+            const bumn = "{{ $perusahaan_id }}"
+            const tahun = "{{ $tahun }}"
+            const nama_bumn = "{{ $perusahaan_nama }}"
+
+            swal.fire({
+                title: "Pemberitahuan",
+                html: `<span style="color: red; font-weight: bold">Yakin batalkan verifikasi data ? </span><br/>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <tbody>
+                                <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                    <td>Perusahaan</td>
+                                    <td>${nama_bumn}</td>
+                                </tr>
+                                <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                    <td>Tahun</td>
+                                    <td>${tahun}</td>
+                                </tr>
+                                <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                    <td>Jumlah Un-Verify</td>
+                                    <td>${countFinish} rows</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                        `,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Ya, batalkan verifikasi data",
+                cancelButtonText: "Tidak"
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                        url: urlbatalverifikasidata,
+                        data:{
+                            "bumn": bumn,
+                            "tahun": tahun
+                        },
+                        type:'post',
+                        dataType:'json',
+                        beforeSend: function(){
+                            $.blockUI();
+                        },
+                        success: function(data){
+                            $.unblockUI();
+
+                            swal.fire({
+                                    title: data.title,
+                                    html: data.msg,
+                                    icon: data.flag,
+
+                                    buttonsStyling: true,
+
+                                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                            });
+
+                            if(data.flag == 'success') {
+                                // datatable.ajax.reload( null, false );
+                                location.reload(); 
+                            }
+                            
+                        },
+                        error: function(jqXHR, exception) {
+                            $.unblockUI();
+                            var msgerror = '';
+                            if (jqXHR.status === 0) {
+                                msgerror = 'jaringan tidak terkoneksi.';
+                            } else if (jqXHR.status == 404) {
+                                msgerror = 'Halaman tidak ditemukan. [404]';
+                            } else if (jqXHR.status == 500) {
+                                msgerror = 'Internal Server Error [500].';
+                            } else if (exception === 'parsererror') {
+                                msgerror = 'Requested JSON parse gagal.';
+                            } else if (exception === 'timeout') {
+                                msgerror = 'RTO.';
+                            } else if (exception === 'abort') {
+                                msgerror = 'Gagal request ajax.';
+                            } else {
+                                msgerror = 'Error.\n' + jqXHR.responseText;
+                            }
+                            swal.fire({
+                                title: "Error System",
+                                html: msgerror+', coba ulangi kembali !!!',
+                                icon: 'error',
+
+                                buttonsStyling: true,
+
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                            });  
+                        }
+                    });
+                }
+            });
+        })
+
+        $(".enable-disable-input-by-superadmin").on('click', function() {
+            const bumn = "{{ $perusahaan_id }}"
+            const tahun = "{{ $tahun }}"
+            const nama_bumn = "{{ $perusahaan_nama }}"
+            const status = $(this).data('status')
+            
+
+            swal.fire({
+                title: "Pemberitahuan",
+                html: `<span style="color: red; font-weight: bold">${status === 'enable' ? 'Enable' : 'Disable'} Admin untuk input data ? </span><br/>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <tbody>
+                                <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                    <td>Perusahaan</td>
+                                    <td>${nama_bumn}</td>
+                                </tr>
+                                <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                    <td>Tahun</td>
+                                    <td>${tahun}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                        `,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: `Ya, ${status} input data`,
+                cancelButtonText: "Tidak"
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                        url: urlenableinputdata,
+                        data:{
+                            "bumn": bumn,
+                            "tahun": tahun,
+                            "status": status
+                        },
+                        type:'post',
+                        dataType:'json',
+                        beforeSend: function(){
+                            $.blockUI();
+                        },
+                        success: function(data){
+                            $.unblockUI();
+
+                            swal.fire({
+                                    title: data.title,
+                                    html: data.msg,
+                                    icon: data.flag,
+
+                                    buttonsStyling: true,
+
+                                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                            });
+
+                            if(data.flag == 'success') {
+                                // datatable.ajax.reload( null, false );
+                                location.reload(); 
+                            }
+                            
+                        },
+                        error: function(jqXHR, exception) {
+                            $.unblockUI();
+                            var msgerror = '';
+                            if (jqXHR.status === 0) {
+                                msgerror = 'jaringan tidak terkoneksi.';
+                            } else if (jqXHR.status == 404) {
+                                msgerror = 'Halaman tidak ditemukan. [404]';
+                            } else if (jqXHR.status == 500) {
+                                msgerror = 'Internal Server Error [500].';
+                            } else if (exception === 'parsererror') {
+                                msgerror = 'Requested JSON parse gagal.';
+                            } else if (exception === 'timeout') {
+                                msgerror = 'RTO.';
+                            } else if (exception === 'abort') {
+                                msgerror = 'Gagal request ajax.';
+                            } else {
+                                msgerror = 'Error.\n' + jqXHR.responseText;
+                            }
+                            swal.fire({
+                                title: "Error System",
+                                html: msgerror+', coba ulangi kembali !!!',
+                                icon: 'error',
+
+                                buttonsStyling: true,
+
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                            });  
+                        }
+                    });
+                }
+            });
+        })        
       
     });
 
-    function verifySelectedData(selectedData) {
-        const jumlahSelected = selectedData.length
-        swal.fire({
-            title: "Pemberitahuan",
-            html: "Yakin verifikasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahSelected+" rows]</span>",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Ya, verifikasi data",
-            cancelButtonText: "Tidak"
-        }).then(function(result) {
-            if (result.value) {
-                $.ajax({
-                url: urlverifikasidata,
-                data:{
-                    "anggaran_verifikasi": selectedData
-                },
-                type:'post',
-                dataType:'json',
-                beforeSend: function(){
-                    $.blockUI();
-                },
-                success: function(data){
-                    $.unblockUI();
+    // function verifySelectedData(selectedData) {
+    //     const jumlahSelected = selectedData.length
+    //     swal.fire({
+    //         title: "Pemberitahuan",
+    //         html: "Yakin verifikasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahSelected+" rows]</span>",
+    //         icon: "warning",
+    //         showCancelButton: true,
+    //         confirmButtonText: "Ya, verifikasi data",
+    //         cancelButtonText: "Tidak"
+    //     }).then(function(result) {
+    //         if (result.value) {
+    //             $.ajax({
+    //             url: urlverifikasidata,
+    //             data:{
+    //                 "anggaran_verifikasi": selectedData
+    //             },
+    //             type:'post',
+    //             dataType:'json',
+    //             beforeSend: function(){
+    //                 $.blockUI();
+    //             },
+    //             success: function(data){
+    //                 $.unblockUI();
 
-                    swal.fire({
-                            title: data.title,
-                            html: data.msg,
-                            icon: data.flag,
+    //                 swal.fire({
+    //                         title: data.title,
+    //                         html: data.msg,
+    //                         icon: data.flag,
 
-                            buttonsStyling: true,
+    //                         buttonsStyling: true,
 
-                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
-                    });
+    //                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+    //                 });
 
-                    if(data.flag == 'success') {
-                        // datatable.ajax.reload( null, false );
-                        location.reload(); 
-                    }
+    //                 if(data.flag == 'success') {
+    //                     // datatable.ajax.reload( null, false );
+    //                     location.reload(); 
+    //                 }
                     
-                },
-                error: function(jqXHR, exception) {
-                    $.unblockUI();
-                    var msgerror = '';
-                    if (jqXHR.status === 0) {
-                        msgerror = 'jaringan tidak terkoneksi.';
-                    } else if (jqXHR.status == 404) {
-                        msgerror = 'Halaman tidak ditemukan. [404]';
-                    } else if (jqXHR.status == 500) {
-                        msgerror = 'Internal Server Error [500].';
-                    } else if (exception === 'parsererror') {
-                        msgerror = 'Requested JSON parse gagal.';
-                    } else if (exception === 'timeout') {
-                        msgerror = 'RTO.';
-                    } else if (exception === 'abort') {
-                        msgerror = 'Gagal request ajax.';
-                    } else {
-                        msgerror = 'Error.\n' + jqXHR.responseText;
-                    }
-                    swal.fire({
-                        title: "Error System",
-                        html: msgerror+', coba ulangi kembali !!!',
-                        icon: 'error',
+    //             },
+    //             error: function(jqXHR, exception) {
+    //                 $.unblockUI();
+    //                 var msgerror = '';
+    //                 if (jqXHR.status === 0) {
+    //                     msgerror = 'jaringan tidak terkoneksi.';
+    //                 } else if (jqXHR.status == 404) {
+    //                     msgerror = 'Halaman tidak ditemukan. [404]';
+    //                 } else if (jqXHR.status == 500) {
+    //                     msgerror = 'Internal Server Error [500].';
+    //                 } else if (exception === 'parsererror') {
+    //                     msgerror = 'Requested JSON parse gagal.';
+    //                 } else if (exception === 'timeout') {
+    //                     msgerror = 'RTO.';
+    //                 } else if (exception === 'abort') {
+    //                     msgerror = 'Gagal request ajax.';
+    //                 } else {
+    //                     msgerror = 'Error.\n' + jqXHR.responseText;
+    //                 }
+    //                 swal.fire({
+    //                     title: "Error System",
+    //                     html: msgerror+', coba ulangi kembali !!!',
+    //                     icon: 'error',
 
-                        buttonsStyling: true,
+    //                     buttonsStyling: true,
 
-                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
-                    });  
-                    }
-                });
-            }
-        });
-    }
+    //                     confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+    //                 });  
+    //                 }
+    //             });
+    //         }
+    //     });
+    // }
 
     function deleteAnggaranSelectedTpb(selectedAnggaran) {
         const jumlahDataDeleted = selectedAnggaran.length
@@ -1322,6 +1825,52 @@
 
         // Redirect the user to the new page
         window.location.href = url;
+    }
+
+    function loadDataPerusahaan(perusahaanId, tahun) {
+        return $.ajax({
+            url: urlgetdataperusahaan,
+            data:{
+                "id": perusahaanId,
+                "tahun": tahun
+            },
+            type:'post',
+            dataType:'json',
+            beforeSend: function(){
+                $.blockUI();
+            },
+            success: function(data){
+                $.unblockUI();                
+            },
+            error: function(jqXHR, exception) {
+                $.unblockUI();
+                var msgerror = '';
+                if (jqXHR.status === 0) {
+                    msgerror = 'jaringan tidak terkoneksi.';
+                } else if (jqXHR.status == 404) {
+                    msgerror = 'Halaman tidak ditemukan. [404]';
+                } else if (jqXHR.status == 500) {
+                    msgerror = 'Internal Server Error [500].';
+                } else if (exception === 'parsererror') {
+                    msgerror = 'Requested JSON parse gagal.';
+                } else if (exception === 'timeout') {
+                    msgerror = 'RTO.';
+                } else if (exception === 'abort') {
+                    msgerror = 'Gagal request ajax.';
+                } else {
+                    msgerror = 'Error.\n' + jqXHR.responseText;
+                }
+                swal.fire({
+                    title: "Error System",
+                    html: msgerror+', coba ulangi kembali !!!',
+                    icon: 'error',
+
+                    buttonsStyling: true,
+
+                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                });  
+            }
+        });
     }
 </script>
 @endsection

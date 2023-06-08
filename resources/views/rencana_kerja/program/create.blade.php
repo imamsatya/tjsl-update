@@ -186,7 +186,7 @@
                         <div class="col-lg-4 mb-20">
                        
                             <label>Jenis Anggaran</label>
-                            <select disabled  id="jenis-anggaran" class="form-select form-select-solid form-select2" name="jenis_anggaran" data-kt-select2="true" data-placeholder="Pilih Jenis Anggaran" >
+                            <select  id="jenis-anggaran" class="form-select form-select-solid form-select2" name="jenis_anggaran" data-kt-select2="true" data-placeholder="Pilih Jenis Anggaran" >
                                 <option></option>
                                 <option value="CID" {{ $jenis_anggaran === 'CID' ? 'selected="selected"' : '' }} >
                                         CID</option>
@@ -198,15 +198,6 @@
                         <form method="POST" id="program-form">
                             @csrf
                             <div class="mb-6 ">
-                                
-                                <div class="row mb-6">
-                                    <div class="col-lg-3">
-                                        <div class="ms-2">Nama Program<span style="color: red">*</span></div>
-                                    </div>
-                                    <div class="col-lg-9">
-                                        <textarea class="form-control" id="nama_program" name="nama_program" style="height: 100px"></textarea>                                        
-                                    </div>
-                                </div>
                                 <div class="row mb-6">
                                     <div class="col-lg-3">
                                         <div class="ms-2">Pilih TPB<span style="color: red">*</span></div>
@@ -218,6 +209,14 @@
                                                 <option data-jenis-anggaran="{{ $p->jenis_anggaran }}" value="{{ $p->id }}" {!! $select !!}>{{ $p->no_tpb }} - {{ $p->nama }} [{{$p->jenis_anggaran}}]</option>
                                             @endforeach
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="row mb-6">
+                                    <div class="col-lg-3">
+                                        <div class="ms-2">Nama Program<span style="color: red">*</span></div>
+                                    </div>
+                                    <div class="col-lg-9">
+                                        <textarea class="form-control" id="nama_program" name="nama_program" style="height: 100px"></textarea>                                        
                                     </div>
                                 </div>
                                 <div class="row mb-6">
@@ -551,23 +550,30 @@
             setTpbOption("{{$jenis_anggaran}}")
                     
             $("#jenis-anggaran").on('change', function(){
-                const jenisAnggaran = $(this).val()
-                $("#tpb_id").val('').trigger('change')
+                // const jenisAnggaran = $(this).val()
+                // $("#tpb_id").val('').trigger('change')
                 
                 
-                $("#tpb_id").select2({    
-                    templateResult: function(data) {
-                        if($(data.element).attr('data-jenis-anggaran') === jenisAnggaran || jenisAnggaran === '') return data.text
-                        return null
-                    },
-                    templateSelection: function(data) {
-                        if($(data.element).attr('data-jenis-anggaran') === jenisAnggaran || jenisAnggaran === '') return data.text
-                        return null
-                    }
-                })            
+                // $("#tpb_id").select2({    
+                //     templateResult: function(data) {
+                //         if($(data.element).attr('data-jenis-anggaran') === jenisAnggaran || jenisAnggaran === '') return data.text
+                //         return null
+                //     },
+                //     templateSelection: function(data) {
+                //         if($(data.element).attr('data-jenis-anggaran') === jenisAnggaran || jenisAnggaran === '') return data.text
+                //         return null
+                //     }
+                // })            
 
-                let textAnggaran = jenisAnggaran ? `- ${jenisAnggaran}` : ''
-                $("#select2-tpb_id-container .select2-selection__placeholder").text('Pilih TPB '+textAnggaran)
+                // let textAnggaran = jenisAnggaran ? `- ${jenisAnggaran}` : ''
+                // $("#select2-tpb_id-container .select2-selection__placeholder").text('Pilih TPB '+textAnggaran)
+
+                const currentUrl = window.location.href
+                const jenisAnggaran = $(this).val().split(' ').join('-')
+                const currentJenisAnggaran = jenisAnggaran === 'CID' ? 'non-CID' : 'CID'
+
+                window.location.href = currentUrl.replace(currentJenisAnggaran, jenisAnggaran)
+                
             })
 
             $(".cls-button-edit").on('click', function() {

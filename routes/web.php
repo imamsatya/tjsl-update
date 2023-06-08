@@ -152,6 +152,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::get('datatable', 'App\Http\Controllers\Referensi\PeriodeLaporanController@datatable')->name('referensi.periode_laporan.datatable');
             //Imam
             Route::get('datatable_tentatif', 'App\Http\Controllers\Referensi\PeriodeLaporanController@datatable_tentatif')->name('referensi.periode_laporan.datatable_tentatif');
+            Route::post('update_status', 'App\Http\Controllers\Referensi\PeriodeLaporanController@updateStatus')->name('referensi.periode_laporan.update_status');
         });
 
         Route::prefix('api_whitelist')->group(function () {
@@ -437,6 +438,9 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
         Route::post('store2', 'App\Http\Controllers\AnggaranTpbController@store2')->name('anggaran_tpb.store2');
         Route::post('delete_by_select', 'App\Http\Controllers\AnggaranTpbController@deleteBySelect')->name('anggaran_tpb.delete_by_select');
         Route::post('verifikasi_data', 'App\Http\Controllers\AnggaranTpbController@verifikasiData')->name('anggaran_tpb.verifikasi_data');
+        Route::post('get_data_perusahaan_tree', 'App\Http\Controllers\AnggaranTpbController@getDataPerusahaanTree')->name('anggaran_tpb.get_data_perusahaan_tree');
+        Route::post('batal_verifikasi_data', 'App\Http\Controllers\AnggaranTpbController@batalVerifikasiData')->name('anggaran_tpb.batal_verifikasi_data');        
+        Route::post('enable_disable_input_data', 'App\Http\Controllers\AnggaranTpbController@enableDisableInputData')->name('anggaran_tpb.enable_disable_input_data');        
     });
 
     Route::prefix('laporan_manajemen')->group(function () {
@@ -553,6 +557,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('log', 'App\Http\Controllers\RencanaKerja\ProgramController@log_status')->name('rencana_kerja.program.log');
             Route::post('verifikasi_data', 'App\Http\Controllers\RencanaKerja\ProgramController@verifikasiData')->name('rencana_kerja.program.verifikasi_data');
             Route::post('export', 'App\Http\Controllers\RencanaKerja\ProgramController@export')->name('rencana_kerja.program.export');
+            Route::post('batal_verifikasi_data', 'App\Http\Controllers\RencanaKerja\ProgramController@batalVerifikasiData')->name('rencana_kerja.program.batal_verifikasi_data');
         });
 
         Route::prefix('laporan_manajemen')->group(function () {
@@ -567,7 +572,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
         Route::prefix('tble')->group(function () {
             Route::get('index', 'App\Http\Controllers\RencanaKerja\TbleController@index')->name('rencana_kerja.tble.index');
             Route::get('datatable', 'App\Http\Controllers\RencanaKerja\TbleController@datatable')->name('rencana_kerja.tble.datatable');
-            
+            Route::get('cetak-data/{id}/{tahun}', 'App\Http\Controllers\RencanaKerja\TbleController@cetakDataById')->name('rencana_kerja.tble.cetak');
         });
 
 
@@ -634,6 +639,8 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
 
         Route::prefix('tble')->group(function () {
             Route::get('index', 'App\Http\Controllers\LaporanRealisasi\TbleRealisasiController@index')->name('laporan_realisasi.tble.index');
+            Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\TbleRealisasiController@datatable')->name('laporan_realisasi.tble.datatable');
+            Route::get('cetak-data/{id}/{tahun}/{periode_id}', 'App\Http\Controllers\LaporanRealisasi\TbleRealisasiController@cetakDataById')->name('laporan_realisasi.tble.cetak');
             // Route::get('datatable', 'App\Http\Controllers\LaporanRealisasi\TbleController@datatable')->name('rencana_kerja.tble.datatable');
             
         });
@@ -655,4 +662,9 @@ Route::get('cc', function () {
     \Artisan::call('cache:clear');
     \Artisan::call('config:clear');
     dd('cache & config clear successfully');
+});
+
+//tes template
+Route::get('/detailtemplate', function () {
+    return view('rencana_kerja.tble.detailtemplate');
 });

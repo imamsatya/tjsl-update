@@ -14,6 +14,7 @@ class PeriodeHasJenis extends Model
 
     public function jenis()
     {
-        return $this->belongsTo('App\Models\JenisLaporan', 'jenis_laporan_id');
+        // return $this->belongsTo('App\Models\JenisLaporan', 'jenis_laporan_id');
+        return $this->belongsTo('App\Models\Menu', 'jenis_laporan_id');
     }
 }

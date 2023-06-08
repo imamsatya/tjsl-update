@@ -20,6 +20,7 @@ use App\Models\LaporanManajemen;
 use App\Models\PeriodeLaporanTentatif;
 use App\Models\PeriodeTentatifHasJenis;
 use App\Models\Perusahaan;
+use App\Models\Menu;
 
 class PeriodeLaporanController extends Controller
 {
@@ -85,7 +86,8 @@ class PeriodeLaporanController extends Controller
                     $label = '<ul class="no-margin">';
                     if (!empty(@$row->has_jenis)) {
                         foreach ($row->has_jenis as $v) {
-                            $label .= '<li>' . @$v->jenis->nama . '</li>';
+                            // $label .= '<li>' . @$v->jenis->nama . '</li>';
+                            $label .= '<li>' . @$v->jenis->label . '</li>';
                         }
                     }
                     $label .= '</ul>';
@@ -166,7 +168,8 @@ class PeriodeLaporanController extends Controller
         return view($this->__route . '.form', [
             'pagetitle' => $this->pagetitle,
             'actionform' => 'insert',
-            'jenis_laporan' => JenisLaporan::get(),
+            // 'jenis_laporan' => JenisLaporan::get(),
+            'jenis_laporan' => Menu::where('status', 1)->where(DB::raw('TRIM(route_name)'), '!=', '')->get(),
             'data' => $periode_laporan
         ]);
     }
@@ -318,7 +321,8 @@ class PeriodeLaporanController extends Controller
             return view($this->__route . '.form', [
                 'pagetitle' => $this->pagetitle,
                 'actionform' => 'update',
-                'jenis_laporan' => JenisLaporan::get(),
+                // 'jenis_laporan' => JenisLaporan::get(),
+                'jenis_laporan' => Menu::where('status', 1)->where(DB::raw('TRIM(route_name)'), '!=', '')->get(),
                 'jenis_laporan_id' => $jenis_laporan_id,
                 'data' => $periode_laporan,
                 'periode' => 'standar'
@@ -367,5 +371,10 @@ class PeriodeLaporanController extends Controller
         $message['nama.required'] = 'Nama wajib diinput';
 
         return Validator::make($request->all(), $required, $message);
+    }
+
+    public function updateStatus(Request $request) {
+        PeriodeLaporan::where('id', $request->id)->update(['is_active' => ($request->finalStatus === 'true')]);
+        echo json_encode(['result' => true]);
     }
 }
