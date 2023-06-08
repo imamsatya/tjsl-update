@@ -21,7 +21,7 @@
                         <!--begin::Search-->
                         <div class="d-flex align-items-center position-relative my-1"
                             data-kt-view-roles-table-toolbar="base">
-                            <button type="button" class="btn btn-danger btn-sm cls-add me-2"
+                            <button type="button" class="btn btn-danger btn-sm cls-button-delete me-2"
                                 data-kt-view-roles-table-select="delete_selected">Hapus</button>
                             <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah Data</button>
@@ -47,6 +47,7 @@
                                     <th>Tanggal Awal</th>
                                     <th>Tanggal Akhir</th>
                                     <th>Keterangan</th>
+                                    <th>Aktif</th>
                                     <th style="text-align:center;">Aksi</th>
                                     <th><label
                                             class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
@@ -105,6 +106,7 @@
                                     <th>Tanggal Awal</th>
                                     <th>Tanggal Akhir</th>
                                     <th>Keterangan</th>
+                                    <th>Aktif</th>
                                     <th style="text-align:center;">Aksi</th>
                                     <th><label
                                             class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
@@ -151,6 +153,42 @@
                 onbtndelete(this);
             });
 
+            $('tbody').on('click', '.is_active-check', function() {
+
+
+                var $row = $(this);
+                var id = $(this).val();
+                var finalStatus = $(this).prop('checked') ? true : false;
+                var nama = $(this).data('nama');
+
+                $.blockUI();
+
+                // Send an AJAX request to set the "selected" attribute in the database
+                $.ajax({
+                    url: '/referensi/periode_laporan/update_status',
+                    type: 'POST',
+                    data: {
+                        id: id,
+                        finalStatus: finalStatus
+                    },
+                    success: function(response) {
+                        $.unblockUI();
+
+                        toastr.success(
+                            `Status data <strong>${nama}</strong> berhasil diubah menjadi <strong>${finalStatus ? 'Aktif' : 'Tidak Aktif'}</strong>!`
+                        );
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        $.unblockUI();
+                        toastr.error(
+                            `Status data <strong>${nama}</strong> gagal diupdate!`
+                        );
+                        $row.prop('checked', !finalStatus)
+                        console.log(errorThrown);
+                    }
+                });
+            });
+
             setDatatable();
         });
 
@@ -188,6 +226,17 @@
                     {
                         data: 'keterangan',
                         name: 'keterangan'
+                    },
+                    {
+                        data: 'is_active',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            const isChecked = data ? 'checked' : ''
+                            return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                    <input class="form-check-input is_active-check" type="checkbox" data-periode="${row.id}" data-nama="${row.nama}"  ${isChecked} value="${row.id}">
+                                    </label>`;
+                        }
                     },
                     {
                         data: 'action',
@@ -244,6 +293,17 @@
                     {
                         data: 'keterangan',
                         name: 'keterangan'
+                    },
+                    {
+                        data: 'is_active',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            const isChecked = data ? 'checked' : ''
+                            return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                    <input class="form-check-input is_active-check" type="checkbox" data-periode="${row.id}" data-nama="${row.nama}"  ${isChecked} value="${row.id}">
+                                    </label>`;
+                        }
                     },
                     {
                         data: 'action',

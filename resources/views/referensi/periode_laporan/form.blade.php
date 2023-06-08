@@ -34,7 +34,7 @@
                     @php
                         $select = $actionform == 'update' && in_array($p->id, $jenis_laporan_id) ? 'selected="selected"' : '';
                     @endphp
-                    <option value="{{ $p->id }}" {{ $select }}>{{ $p->nama }}</option>
+                    <option value="{{ $p->id }}" {{ $select }}>{{ $p->label }}</option>
                 @endforeach
             </select>
         </div>
@@ -42,12 +42,12 @@
     <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>Tanggal Awal</label>
-            <input type="text" class="form-control input-tanggal" name="tanggal_awal" id="tanggal_awal"
+            <input required type="text" class="form-control input-tanggal" name="tanggal_awal" id="tanggal_awal"
                 value="{{ !empty(old('tanggal_awal')) ? old('tanggal_awal') : ($actionform == 'update' && $data->tanggal_awal != '' ? $data->tanggal_awal : old('tanggal_awal')) }}" />
         </div>
         <div class="col-lg-6">
             <label>Tanggal Akhir</label>
-            <input type="text" class="form-control input-tanggal" name="tanggal_akhir" id="tanggal_akhir"
+            <input required type="text" class="form-control input-tanggal" name="tanggal_akhir" id="tanggal_akhir"
                 value="{{ !empty(old('tanggal_akhir')) ? old('tanggal_akhir') : ($actionform == 'update' && $data->tanggal_akhir != '' ? $data->tanggal_akhir : old('tanggal_akhir')) }}" />
         </div>
     </div>
@@ -90,7 +90,11 @@
 
         $('.input-tanggal').flatpickr({
             enableTime: false,
-            dateFormat: "d M Y",
+            // dateFormat: "d M Y",
+            dateFormat: "Y-m-d",
+            altFormat: "d M Y",
+            altInput: true
+
         });
 
         $('#jenis-periode').change(function() {
