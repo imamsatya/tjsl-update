@@ -3,7 +3,27 @@
 	<input type="hidden" name="id_cid" id="id_cid" readonly="readonly" value="{{$actionform == 'update'? ($data_cid ? (int)$data_cid->id : null) : null}}" />
     <input type="hidden" name="id_noncid" id="id_noncid" readonly="readonly" value="{{$actionform == 'update'? ($data_noncid ? (int)$data_noncid->id : null) : null}}" />
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
+    @if(!$isOkToInput && !$isEnableInputBySuperadmin)                       
+    <!--begin::Alert-->
+    <div class="alert alert-danger d-flex align-items-center p-5" style="    border-radius: 0.5em;background-color: #fff5f8;color: #f1416c;border-color: #f1416c">
+        <!--begin::Icon-->
+        <i class=" bi-shield-fill-x fs-2hx text-danger me-4"><span class="path1"></span><span class="path2"></span></i>
+        <!--end::Icon-->
 
+        <!--begin::Wrapper-->
+        <div class="d-flex flex-column">
+            <!--begin::Title-->
+            <h4 class="mb-1 text-danger">PENGUMUMAN</h4>
+            <!--end::Title-->
+
+            <!--begin::Content-->
+            <span>Tidak bisa input data karena diluar periode laporan!</span>
+            <!--end::Content-->
+        </div>
+        <!--end::Wrapper-->
+    </div>
+    <!--end::Alert-->
+    @endif
     <div class="form-group row mb-5">
         <div class="col-lg-6">
             <label>BUMN</label>
@@ -50,11 +70,13 @@
     </div>
     <div class="text-center pt-15">
         <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" data-kt-roles-modal-action="cancel">Discard</button>
+        @if($isOkToInput || $isEnableInputBySuperadmin)
         <button id="submit" type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">
             <span class="indicator-label">Simpan</span>
             <span class="indicator-progress">Please wait...
             <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
         </button>
+        @endif
     </div>
 </form>
 

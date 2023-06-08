@@ -9,14 +9,6 @@
     <div class="mb-6 ">                                
         <div class="row mb-6">
             <div class="col-lg-3">
-                <div class="ms-2">Nama Program<span style="color: red">*</span></div>
-            </div>
-            <div class="col-lg-9">
-                <textarea class="form-control" id="nama_program_edit" name="nama_program_edit" style="height: 100px">{{ $data->program }}</textarea>                
-            </div>
-        </div>
-        <div class="row mb-6">
-            <div class="col-lg-3">
                 <div class="ms-2">Pilih TPB<span style="color: red">*</span></div>
             </div>
             <div class="col-lg-9">
@@ -28,6 +20,14 @@
                 </select>
             </div>
         </div>
+        <div class="row mb-6">
+            <div class="col-lg-3">
+                <div class="ms-2">Nama Program<span style="color: red">*</span></div>
+            </div>
+            <div class="col-lg-9">
+                <textarea class="form-control" id="nama_program_edit" name="nama_program_edit" style="height: 100px">{{ $data->program }}</textarea>                
+            </div>
+        </div>        
         <div class="row mb-6">
             <div class="col-lg-3">
                 <div class="ms-2">Unit Owner</div>
@@ -188,6 +188,7 @@
         
         $('#form-edit').on('submit', function(event) {
             event.preventDefault()
+
             $(this).validate({
                 rules: {     
                     nama_program_edit: 'required',
@@ -253,6 +254,17 @@
                 perusahaan_edit: $("#perusahaan_edit").val()
             }
 
+            if(!data.nama_program_edit.length || !data.tpb_id_edit.length || !data.kriteria_used.length || !data.core_subject_id_edit.length || !data.pelaksanaan_program_edit.length || !data.alokasi_anggaran_edit.length) {
+                swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    html: 'Isian dengan tanda * harus terisi!',
+                    buttonsStyling: true,
+                    confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                })
+                return
+            }
+
             if(data.pelaksanaan_program_edit.toLowerCase() === 'mandiri' && data.mitra_bumn_edit != '') {
                 swal.fire({
                     icon: 'warning',
@@ -264,11 +276,11 @@
                 return
             }
 
-
             $.blockUI({
                 theme: true,
                 baseZ: 2000
             }) 
+            
 
             $.ajax({
                 url: urleditstore,
