@@ -57,7 +57,28 @@
                 
                     
                     <!--begin::Heading-->
-                    <div class="card-px py-10">                        
+                    <div class="card-px py-10"> 
+                        @if(!$isOkToInput && !$isEnableInputBySuperadmin)                       
+                        <!--begin::Alert-->
+                        <div class="alert alert-danger d-flex align-items-center p-5" style="    border-radius: 0.5em;background-color: #fff5f8;color: #f1416c;border-color: #f1416c">
+                            <!--begin::Icon-->
+                            <i class=" bi-shield-fill-x fs-2hx text-danger me-4"><span class="path1"></span><span class="path2"></span></i>
+                            <!--end::Icon-->
+
+                            <!--begin::Wrapper-->
+                            <div class="d-flex flex-column">
+                                <!--begin::Title-->
+                                <h4 class="mb-1 text-danger">PENGUMUMAN</h4>
+                                <!--end::Title-->
+
+                                <!--begin::Content-->
+                                <span>Tidak bisa input data karena diluar periode laporan!</span>
+                                <!--end::Content-->
+                            </div>
+                            <!--end::Wrapper-->
+                        </div>
+                        <!--end::Alert-->
+                        @endif
                         @if ($errors->any())
                     <!-- <div class="alert alert-dismissible bg-danger d-flex flex-column flex-sm-row p-5 mb-10">
 
@@ -308,10 +329,12 @@
 
                         </form>
                         <div class="form-group row mt-2  mb-5 text-end">
-                            <div class="col-lg-12">                                
+                            <div class="col-lg-12">   
                                 <a id="close-btn" href="javascript:void(0)" class="btn btn-light-danger font-weight-bold me-3"><i class="bi bi-x-circle-fill"></i> Close</a>
+                                @if($isOkToInput || $isEnableInputBySuperadmin)
                                 <a id="clear-btn" href="javascript:void(0)" class="btn btn-light-info font-weight-bold me-3"><i class="bi bi-trash-fill"></i> Clear</a>
                                 <button id="simpan-btn" class="btn btn-success font-weight-bold me-3"><i class="bi bi-save-fill"></i> Simpan</button>                                
+                                @endif
                             </div>
                         </div>
 

@@ -298,7 +298,9 @@
         var urlstore = "{{ route('referensi.tpb.store') }}";
         var urlupdate = "{{ route('referensi.tpb.update') }}";
         // var urldatatable = "{{ route('rencana_kerja.laporan_manajemen.datatable') }}";
+        // var urldatatable = "{{ route('laporan_realisasi.tble.datatable') }}";
         var urldatatable = "{{ route('laporan_realisasi.triwulan.laporan_manajemen.datatable') }}";
+        
         var urldelete = "{{ route('referensi.tpb.delete') }}";
         var urllog = "{{route('rencana_kerja.spdpumk_rka.log')}}";
         $(document).ready(function() {
@@ -440,20 +442,31 @@
 
             });
 
+            $('body').on('click','.cls-button-download',function(){
+            // winform(urllog, {'id':$(this).data('id')}, 'Log Status');
+            let id_perusahaan = $(this).data('perusahaan_id')
+            let tahun = $(this).data('tahun')
+            let periode_id = $(this).data('periode_id')
+            console.log('id_perusahaan', id_perusahaan)
+            console.log('tahun', tahun)
+            window.location.href = `/laporan_realisasi/tble/cetak-data/${id_perusahaan}/${tahun}/${periode_id}`
+            });
+        });
+
             $('#proses').on('click', function(event){
             // datatable.ajax.reload()
             console.log($('#status_laporan').val())
-            var url = window.location.origin + '/rencana_kerja/laporan_manajemen/index';
+            var url = window.location.origin + '/laporan_realisasi/tble/index';
             var perusahaan_id = $('#perusahaan_id').val();
             var tahun = $('#tahun').val();
-            var status_laporan = $('#status_laporan').val()
+            var periode_id = $('#periode_laporan').val()
            
 
-            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&status_laporan=' + status_laporan;
+            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&periode_id=' + periode_id;
         });
 
 
-        });
+        
         
 
         function setDatatable() {
@@ -467,7 +480,7 @@
                 data: function (d) {
                     d.perusahaan_id = $("select[name='perusahaan_id']").val(),
                     d.tahun = $("select[name='tahun']").val(),
-                    d.status_laporan = $('#status_laporan').val()
+                    d.periode_laporan = $('#periode_laporan').val()
                     }
                  },
                 columns: [
@@ -526,7 +539,8 @@
                         data: 'action',
                         name: 'action',
                         render: function(data, type, row){
-                            button = `<a rel='tooltip' data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" class="mb-4 jawban-file-st" title="File Jawaban" href="{{ asset('storage/${row.file_name}') }}" target="_blank" rel="noopener noreferrer"><button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button></a>`
+                            console.log(row)
+                            button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-periode_id="${row.periode_laporan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button>`
                             
                             return button
                         }
