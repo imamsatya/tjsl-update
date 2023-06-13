@@ -179,11 +179,22 @@ class ProgramController extends Controller
                 ->orderBy('tpbs.id')
                 ->get(); 
 
+        $countInprogress = $anggaran_program->filter(function($data) {
+            return $data->status_id == 2;
+        })->count();
+
+        $countFinish = $anggaran_program->filter(function($data) {
+            return $data->status_id == 1;
+        })->count();
+
                 // dd($jenis_anggaran);
+        $list_perusahaan = Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get();
+        $currentNamaPerusahaan = $list_perusahaan->where('id', $perusahaan_id)->pluck('nama_lengkap');
+        $currentNamaPerusahaan = count($currentNamaPerusahaan) ? $currentNamaPerusahaan[0] : 'ALL';
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
-            'perusahaan' => Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get(),
+            'perusahaan' => $list_perusahaan,
             'anggaran' => $anggaran,
             'anggaran_pilar' => $anggaran_pilar,
             'anggaran_bumn' => $anggaran_bumn,
@@ -203,7 +214,9 @@ class ProgramController extends Controller
             'pilar_pembangunan_id' => $request->pilar_pembangunan,
             'tpb_id' => $request->tpb,
             'view_only' => $view_only,
-
+            'countInprogress' => $countInprogress,
+            'perusahaan_nama' => $currentNamaPerusahaan,
+            'countFinish' => $countFinish
         ]);
     }
 
@@ -567,17 +580,55 @@ class ProgramController extends Controller
     }
 
     public function verifikasiData(Request $request) {
+        // DB::beginTransaction();
+        // try {
+        //     $list_id = $request->input('program');
+        //     foreach($list_id as $program) {
+        //         $data = TargetTpb::find((int) $program);
+        //         if($data && $data->status_id !== 1) {
+        //             $param['status_id'] = 1;
+        //             $data->update((array)$param);
+        //             ProgramController::store_log($data->id,$data->status_id);
+        //         }
+        //     }
+        //     DB::commit();
+        //     $result = [
+        //         'flag'  => 'success',
+        //         'msg' => 'Sukses verifikasi data',
+        //         'title' => 'Sukses'
+        //     ];
+        // } catch (\Exception $e) {
+        //     DB::rollback();
+        //     $result = [
+        //         'flag'  => 'warning',
+        //         'msg' => 'Gagal verifikasi data',
+        //         'title' => 'Gagal'
+        //     ];
+        // }
+        // return response()->json($result);
+
         DB::beginTransaction();
         try {
-            $list_id = $request->input('program');
-            foreach($list_id as $program) {
-                $data = TargetTpb::find((int) $program);
-                if($data && $data->status_id !== 1) {
-                    $param['status_id'] = 1;
-                    $data->update((array)$param);
-                    ProgramController::store_log($data->id,$data->status_id);
+
+            $id_bumn = $request->input('bumn');
+            $tahun = $request->input('tahun');
+
+            $allDataUpdated = TargetTpb::select('target_tpbs.*')
+                            ->join('anggaran_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                            ->where('target_tpbs.status_id', '!=', 1)
+                            ->where('anggaran_tpbs.tahun', $tahun)
+                            ->when($id_bumn, function($query) use ($id_bumn) {
+                                return $query->where('anggaran_tpbs.perusahaan_id', $id_bumn);
+                            })
+                            ->get();
+            
+            if($allDataUpdated->count()) {
+                foreach($allDataUpdated as $data) {  
+                    TargetTpb::where('id', $data->id)->update(['status_id' => 1]);
+                    ProgramController::store_log($data->id,1);
                 }
-            }
+            } 
+
             DB::commit();
             $result = [
                 'flag'  => 'success',
@@ -612,17 +663,17 @@ class ProgramController extends Controller
             $anggaran_program = $anggaran_program->where('anggaran_tpbs.tahun', $request->tahun);
         }
 
-        if ($request->pilar_pembangunan_id) {
-            $anggaran_program = $anggaran_program->where('pilar_pembangunans.id', $request->pilar_pembangunan_id);
-        }
+        // if ($request->pilar_pembangunan_id) {
+        //     $anggaran_program = $anggaran_program->where('pilar_pembangunans.id', $request->pilar_pembangunan_id);
+        // }
 
-        if($request->jenis_anggaran) {
-            $anggaran_program = $anggaran_program->where('tpbs.jenis_anggaran', $request->jenis_anggaran);
-        }
+        // if($request->jenis_anggaran) {
+        //     $anggaran_program = $anggaran_program->where('tpbs.jenis_anggaran', $request->jenis_anggaran);
+        // }
      
-        if ($request->tpb_id) {
-            $anggaran_program = $anggaran_program->where('tpbs.id', $request->tpb_id);
-        }
+        // if ($request->tpb_id) {
+        //     $anggaran_program = $anggaran_program->where('tpbs.id', $request->tpb_id);
+        // }
 
         // $kriteria_program = explode(',', $request->kriteria_program);
         // if(count($kriteria_program)) {
@@ -654,6 +705,7 @@ class ProgramController extends Controller
             DB::Raw('(case when tpbs.jenis_anggaran = \'non CID\' then anggaran_alokasi end) as anggaran_alokasi_noncid'), 
             DB::Raw('(case when tpbs.jenis_anggaran = \'CID\' then anggaran_alokasi end) as anggaran_alokasi_cid')
         )
+        ->orderBy('pilar_pembangunans.jenis_anggaran')
         ->orderBy('pilar_pembangunans.nama')
         ->orderBy('tpbs.id')
         ->orderBy('target_tpbs.id')
@@ -662,5 +714,46 @@ class ProgramController extends Controller
 
         $namaFile = "Data Program TPB ".date('dmY').".xlsx";
         return Excel::download(new ProgramTpbExport($anggaran_program, $request->tahun), $namaFile);        
+    }
+
+    public function batalVerifikasiData(Request $request) {
+        DB::beginTransaction();
+        try {
+            $id_bumn = $request->input('bumn');
+            $tahun = $request->input('tahun');
+
+
+            $allDataUpdated = TargetTpb::select('target_tpbs.*')
+                            ->join('anggaran_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                            ->where('target_tpbs.status_id', '=', 1)
+                            ->where('anggaran_tpbs.tahun', $tahun)
+                            ->when($id_bumn, function($query) use ($id_bumn) {
+                                return $query->where('anggaran_tpbs.perusahaan_id', $id_bumn);
+                            })
+                            ->get();
+
+            if($allDataUpdated->count()) {
+                foreach($allDataUpdated as $data) {  
+                    TargetTpb::where('id', $data->id)->update(['status_id' => 2]);
+                    ProgramController::store_log($data->id,2);
+                }
+            }                                            
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses batalkan verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
     }
 }

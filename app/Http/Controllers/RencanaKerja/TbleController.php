@@ -12,6 +12,9 @@ use Datatables;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use PDF;
+use Carbon\Carbon;
+use Auth;
 
 class TbleController extends Controller
 {
@@ -160,7 +163,7 @@ class TbleController extends Controller
             for ($i = 2020; $i <= $currentYear; $i++) {    
                 $item = $perusahaan_row;  
                 $item['tahun'] = 'Rencana Kerja '.$i;
-                $newarray[] = $item;
+                array_push($newarray, $item);
             }
         }
         
@@ -194,6 +197,99 @@ class TbleController extends Controller
                 'data'            => []
             ]);
         }
+    }
+
+    public function cetakDataById( $id, $tahun) {
+        
+        $perusahaan = Perusahaan::where('id', $id)->first();
+        $data =  [
+            [
+                'jenis_laporan' => 'Anggaran',
+                'periode' => 'RKA '.$tahun,
+                'tanggal_update' => null,
+                'status' => null,
+            ],
+            [
+                'jenis_laporan' => 'Program',
+                'periode' => 'RKA '.$tahun,
+                'tanggal_update' => null,
+                'status' => null,
+            ],
+            [
+                'jenis_laporan' => 'SPD PUMK',
+                'periode' => 'RKA '.$tahun,
+                'tanggal_update' => null,
+                'status' => null,
+            ],
+            [
+                'jenis_laporan' => 'Laporan Manajemen',
+                'periode' => 'RKA '.$tahun,
+                'tanggal_update' => null,
+                'status' => null,
+            ],
+        ];
+    
+        //cek angaran
+        $anggaran = DB::table('anggaran_tpbs')->where('perusahaan_id', $id)->where('tahun', $tahun)->orderBy('updated_at', 'desc')->get();
+
+        //cek ada atau tidak
+        if($anggaran?->first()){
+            $data[0]['tanggal_update'] = $anggaran->first()->updated_at;
+            $data[0]['status'] = "Finish";
+        }
+        //kalau ada yg inprogress walaupun 1 sudah pasti in progress
+        if ($anggaran?->where('status_id', 2)->first()) {
+            $data[0]['tanggal_update'] = $anggaran->where('status_id', 2)->first()->updated_at;
+            $data[0]['status'] = "In Progress";
+        }
+      
+        //cek program
+        $anggaran = DB::table('anggaran_tpbs')->where('perusahaan_id', $id)->where('tahun', $tahun)->orderBy('target_tpbs.updated_at', 'desc')->join('target_tpbs', 'target_tpbs.anggaran_tpb_id', '=', 'anggaran_tpbs.id')->get();
+         //cek ada atau tidak
+         if($anggaran?->first()){
+            $data[1]['tanggal_update'] = $anggaran->first()->updated_at;
+            $data[1]['status'] = "Finish";
+        }
+        //kalau ada yg inprogress walaupun 1 sudah pasti in progress
+        if ($anggaran?->where('status_id', 2)->first()) {
+            $data[1]['tanggal_update'] = $anggaran->where('status_id', 2)->first()->updated_at;
+            $data[1]['status'] = "In Progress";
+        }
+
+        //cek spd pumk
+        $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
+        $spd_pumk = DB::table('pumk_anggarans')->where('bumn_id', $id)->where('tahun', $tahun)->where('periode_id', $periode_rka_id)->get();
+       
+        if($spd_pumk?->first()){
+            $data[2]['tanggal_update'] = $spd_pumk->first()->updated_at;
+            $data[2]['status'] = "Finish";
+        }
+        //kalau ada yg inprogress walaupun 1 sudah pasti in progress
+        if ($spd_pumk?->where('status_id', 2)->first()) {
+            $data[2]['tanggal_update'] = $spd_pumk->where('status_id', 2)->first()->updated_at;
+            $data[2]['status'] = "In Progress";
+        }
+        //cek laporan manajemen rka
+        $laporan_manajemen = DB::table('laporan_manajemens')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('periode_laporan_id', $periode_rka_id)->get();
+        if($laporan_manajemen?->first() ){
+            $data[3]['tanggal_update'] = $laporan_manajemen->first()->updated_at;
+            $data[3]['status'] = "Finish";
+        }
+        //kalau ada yg inprogress walaupun 1 sudah pasti in progress/unfilled
+        if ($laporan_manajemen?->whereIn('status_id', [2, 3])->first()) {
+            $data[3]['tanggal_update'] = $laporan_manajemen->whereIn('status_id', [2, 3])->first()->updated_at;
+            $data[3]['status'] = "In Progress";
+        }
+        $tanggal_cetak = Carbon::now()->locale('id_ID')->isoFormat('D MMMM YYYY');
+        $user = Auth::user();
+        
+
+        $pdf = PDF::loadView('rencana_kerja.tble.detailtemplate', 
+        ['data' => $data,
+         'perusahaan' => $perusahaan, 
+         'tanggal_cetak' => $tanggal_cetak,
+         'user' => $user])->setPaper('a4', 'portrait');
+        return  $pdf->download($perusahaan->nama_lengkap.'-rka-'.$tahun.'.pdf');
     }
 
 }

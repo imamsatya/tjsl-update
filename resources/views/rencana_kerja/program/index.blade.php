@@ -137,6 +137,7 @@
                             <!--end::Alert-->
                         @endif
                         <!--begin: Datatable -->
+                        
                         <div class="row" id="form-cari">
                             <div class="form-group row  mb-5">
                                 <div class="col-lg-6">
@@ -265,15 +266,24 @@
                         <!--begin::Search-->
                        
                         <div class="d-flex align-items-center position-relative my-1">
+                            @can('view-kegiatan')
                             <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
                             <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                             </button>
                             <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
                             </button>
+                            @endcan
                           
                             @can('view-verify')
+                            @if($countInprogress || !$anggaran_program->count())
                                 <button type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
                                 </button>
+                            @endif
+
+                            @if(!$countInprogress && $anggaran_program->count())
+                            <button type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
+                            </button>  
+                            @endif  
                            @endcan
                         </div>
                         <!--end::Search-->
@@ -350,7 +360,7 @@
                                                 </td>
                                                 <td style="text-align:center;"></td>
                                                 <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                                    <input class="form-check-input is_active-check pilar-check" data-pilar-parent="pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" type="checkbox" data-anggaran="" name="selected-is_active[]" value="${row.id}">
+                                                    <input disabled class="form-check-input  pilar-check" data-pilar-parent="pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" type="checkbox" data-anggaran="" name="selected-is_active[]" value="${row.id}">
                                                     </label></td>
                                             </tr>
                                             @foreach ($anggaran_anak as $key => $a)                                                                                                                                              
@@ -385,7 +395,7 @@
                                                             <td style="text-align:center;"></td>
                                                             
                                                             <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                                                <input class="form-check-input is_active-check tpb-check pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}} pilar-{{str_replace(' ', '-', @$p->pilar_nama)}}" data-tpb-parent="tpb-{{str_replace(' ', '-', @$a->no_tpb)}}-pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" type="checkbox" name="selected-is_active[]" value="${row.id}">
+                                                                <input disabled class="form-check-input  tpb-check pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}} pilar-{{str_replace(' ', '-', @$p->pilar_nama)}}" data-tpb-parent="tpb-{{str_replace(' ', '-', @$a->no_tpb)}}-pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" type="checkbox" name="selected-is_active[]" value="${row.id}">
                                                                 </label></td>
                                                         </tr>
                                                             
@@ -471,8 +481,14 @@
         var urllog = "{{ route('rencana_kerja.program.log') }}";
         var urlverifikasidata = "{{route('rencana_kerja.program.verifikasi_data')}}";
         var urlexport = "{{route('rencana_kerja.program.export')}}";
+        var urlbatalverifikasidata = "{{route('rencana_kerja.program.batal_verifikasi_data')}}";
 
         $(document).ready(function() {
+            const countInprogress = parseInt("{{ $countInprogress }}")
+            const countFinish = parseInt("{{ $countFinish }}")
+            const countDataAnggaran = parseInt("{{ $anggaran_program->count() }}")
+
+            
             $('.tree').treegrid({
                 initialState : 'collapsed',
                 treeColumn : 1,
@@ -587,31 +603,248 @@
             })
             settingOptionOnLoad()
 
+            // $("#verify-data").on('click', function() {
+            //     var selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            //     var selectedData = [];
+
+            //     selectedCheckboxes.forEach(function(checkbox) {
+            //         if(checkbox.getAttribute('data-anggaran')) selectedData.push(checkbox.getAttribute('data-anggaran'));
+            //     });
+
+            //     if(!selectedData.length) {
+            //         swal.fire({
+            //             icon: 'warning',
+            //             title: 'Warning',
+            //             html: 'Tidak ada data terpilih untuk diverifikasi!',
+            //             buttonsStyling: true,
+            //             confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+            //         })
+            //         return
+            //     }
+                
+            //     verifySelectedData(selectedData) 
+                
+            // })
+
             $("#verify-data").on('click', function() {
-                var selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-                var selectedData = [];
-
-                selectedCheckboxes.forEach(function(checkbox) {
-                    if(checkbox.getAttribute('data-anggaran')) selectedData.push(checkbox.getAttribute('data-anggaran'));
-                });
-
-                if(!selectedData.length) {
+                if(!countInprogress || !countDataAnggaran) {
                     swal.fire({
-                        icon: 'warning',
-                        title: 'Warning',
-                        html: 'Tidak ada data terpilih untuk diverifikasi!',
-                        buttonsStyling: true,
-                        confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                        title: "Pemberitahuan",
+                        html: "Tidak ada data yang bisa diverifikasi!",
+                        icon: "warning",
+                        showCancelButton: false,
+                        confirmButtonText: "Close",
                     })
+
                     return
                 }
-                
-                verifySelectedData(selectedData) 
-                
+
+                const bumn = "{{ $perusahaan_id }}"
+                const tahun = "{{ $tahun }}"
+                const nama_bumn = "{{ $perusahaan_nama }}"
+
+                swal.fire({
+                    title: "Pemberitahuan",
+                    html: `<span style="color: red; font-weight: bold">Yakin verifikasi data ? </span><br/>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <tbody>
+                                    <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                        <td>Perusahaan</td>
+                                        <td>${nama_bumn}</td>
+                                    </tr>
+                                    <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                        <td>Tahun</td>
+                                        <td>${tahun}</td>
+                                    </tr>
+                                    <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                        <td>Jumlah Verifikasi</td>
+                                        <td>${countInprogress} rows</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                            `,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Ya, verifikasi data",
+                    cancelButtonText: "Tidak"
+                }).then(function(result) {
+                    if (result.value) {
+                        $.ajax({
+                            url: urlverifikasidata,
+                            data:{
+                                "bumn": bumn,
+                                "tahun": tahun
+                            },
+                            type:'post',
+                            dataType:'json',
+                            beforeSend: function(){
+                                $.blockUI();
+                            },
+                            success: function(data){
+                                $.unblockUI();
+
+                                swal.fire({
+                                        title: data.title,
+                                        html: data.msg,
+                                        icon: data.flag,
+
+                                        buttonsStyling: true,
+
+                                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                                });
+
+                                if(data.flag == 'success') {
+                                    // datatable.ajax.reload( null, false );
+                                    location.reload(); 
+                                }
+                                
+                            },
+                            error: function(jqXHR, exception) {
+                                $.unblockUI();
+                                var msgerror = '';
+                                if (jqXHR.status === 0) {
+                                    msgerror = 'jaringan tidak terkoneksi.';
+                                } else if (jqXHR.status == 404) {
+                                    msgerror = 'Halaman tidak ditemukan. [404]';
+                                } else if (jqXHR.status == 500) {
+                                    msgerror = 'Internal Server Error [500].';
+                                } else if (exception === 'parsererror') {
+                                    msgerror = 'Requested JSON parse gagal.';
+                                } else if (exception === 'timeout') {
+                                    msgerror = 'RTO.';
+                                } else if (exception === 'abort') {
+                                    msgerror = 'Gagal request ajax.';
+                                } else {
+                                    msgerror = 'Error.\n' + jqXHR.responseText;
+                                }
+                                swal.fire({
+                                    title: "Error System",
+                                    html: msgerror+', coba ulangi kembali !!!',
+                                    icon: 'error',
+
+                                    buttonsStyling: true,
+
+                                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                                });  
+                            }
+                        });
+                    }
+                });
             })
 
             $(".rekap-data").on('click', function(){
                 exportExcel();
+            })
+
+            $("#unverify-data").on('click', function() {
+                if(countInprogress || !countDataAnggaran) {
+                    swal.fire({
+                        title: "Pemberitahuan",
+                        html: "Tidak ada data yang bisa di-unverify!",
+                        icon: "warning",
+                        showCancelButton: false,
+                        confirmButtonText: "Close",
+                    })
+
+                    return
+                }
+
+                const bumn = "{{ $perusahaan_id }}"
+                const tahun = "{{ $tahun }}"
+                const nama_bumn = "{{ $perusahaan_nama }}"
+
+                swal.fire({
+                    title: "Pemberitahuan",
+                    html: `<span style="color: red; font-weight: bold">Yakin batalkan verifikasi data ? </span><br/>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <tbody>
+                                    <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                        <td>Perusahaan</td>
+                                        <td>${nama_bumn}</td>
+                                    </tr>
+                                    <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                        <td>Tahun</td>
+                                        <td>${tahun}</td>
+                                    </tr>
+                                    <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                        <td>Jumlah Un-Verify</td>
+                                        <td>${countFinish} rows</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                            `,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Ya, batalkan verifikasi data",
+                    cancelButtonText: "Tidak"
+                }).then(function(result) {
+                    if (result.value) {
+                        $.ajax({
+                            url: urlbatalverifikasidata,
+                            data:{
+                                "bumn": bumn,
+                                "tahun": tahun
+                            },
+                            type:'post',
+                            dataType:'json',
+                            beforeSend: function(){
+                                $.blockUI();
+                            },
+                            success: function(data){
+                                $.unblockUI();
+
+                                swal.fire({
+                                        title: data.title,
+                                        html: data.msg,
+                                        icon: data.flag,
+
+                                        buttonsStyling: true,
+
+                                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                                });
+
+                                if(data.flag == 'success') {
+                                    // datatable.ajax.reload( null, false );
+                                    location.reload(); 
+                                }
+                                
+                            },
+                            error: function(jqXHR, exception) {
+                                $.unblockUI();
+                                var msgerror = '';
+                                if (jqXHR.status === 0) {
+                                    msgerror = 'jaringan tidak terkoneksi.';
+                                } else if (jqXHR.status == 404) {
+                                    msgerror = 'Halaman tidak ditemukan. [404]';
+                                } else if (jqXHR.status == 500) {
+                                    msgerror = 'Internal Server Error [500].';
+                                } else if (exception === 'parsererror') {
+                                    msgerror = 'Requested JSON parse gagal.';
+                                } else if (exception === 'timeout') {
+                                    msgerror = 'RTO.';
+                                } else if (exception === 'abort') {
+                                    msgerror = 'Gagal request ajax.';
+                                } else {
+                                    msgerror = 'Error.\n' + jqXHR.responseText;
+                                }
+                                swal.fire({
+                                    title: "Error System",
+                                    html: msgerror+', coba ulangi kembali !!!',
+                                    icon: 'error',
+
+                                    buttonsStyling: true,
+
+                                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                                });  
+                            }
+                        });
+                    }
+                });
+
             })
 
         });  
@@ -629,78 +862,78 @@
             }
         }
         
-        function verifySelectedData(selectedData) {
-            const jumlahSelected = selectedData.length
-            swal.fire({
-                title: "Pemberitahuan",
-                html: "Yakin verifikasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahSelected+" rows]</span>",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Ya, verifikasi data",
-                cancelButtonText: "Tidak"
-            }).then(function(result) {
-                if (result.value) {
-                    $.ajax({
-                    url: urlverifikasidata,
-                    data:{
-                        "program": selectedData
-                    },
-                    type:'post',
-                    dataType:'json',
-                    beforeSend: function(){
-                        $.blockUI();
-                    },
-                    success: function(data){
-                        $.unblockUI();
+        // function verifySelectedData(selectedData) {
+        //     const jumlahSelected = selectedData.length
+        //     swal.fire({
+        //         title: "Pemberitahuan",
+        //         html: "Yakin verifikasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahSelected+" rows]</span>",
+        //         icon: "warning",
+        //         showCancelButton: true,
+        //         confirmButtonText: "Ya, verifikasi data",
+        //         cancelButtonText: "Tidak"
+        //     }).then(function(result) {
+        //         if (result.value) {
+        //             $.ajax({
+        //             url: urlverifikasidata,
+        //             data:{
+        //                 "program": selectedData
+        //             },
+        //             type:'post',
+        //             dataType:'json',
+        //             beforeSend: function(){
+        //                 $.blockUI();
+        //             },
+        //             success: function(data){
+        //                 $.unblockUI();
 
-                        swal.fire({
-                                title: data.title,
-                                html: data.msg,
-                                icon: data.flag,
+        //                 swal.fire({
+        //                         title: data.title,
+        //                         html: data.msg,
+        //                         icon: data.flag,
 
-                                buttonsStyling: true,
+        //                         buttonsStyling: true,
 
-                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
-                        });
+        //                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+        //                 });
 
-                        if(data.flag == 'success') {
-                            // datatable.ajax.reload( null, false );
-                            location.reload(); 
-                        }
+        //                 if(data.flag == 'success') {
+        //                     // datatable.ajax.reload( null, false );
+        //                     location.reload(); 
+        //                 }
                         
-                    },
-                    error: function(jqXHR, exception) {
-                        $.unblockUI();
-                        var msgerror = '';
-                        if (jqXHR.status === 0) {
-                            msgerror = 'jaringan tidak terkoneksi.';
-                        } else if (jqXHR.status == 404) {
-                            msgerror = 'Halaman tidak ditemukan. [404]';
-                        } else if (jqXHR.status == 500) {
-                            msgerror = 'Internal Server Error [500].';
-                        } else if (exception === 'parsererror') {
-                            msgerror = 'Requested JSON parse gagal.';
-                        } else if (exception === 'timeout') {
-                            msgerror = 'RTO.';
-                        } else if (exception === 'abort') {
-                            msgerror = 'Gagal request ajax.';
-                        } else {
-                            msgerror = 'Error.\n' + jqXHR.responseText;
-                        }
-                        swal.fire({
-                            title: "Error System",
-                            html: msgerror+', coba ulangi kembali !!!',
-                            icon: 'error',
+        //             },
+        //             error: function(jqXHR, exception) {
+        //                 $.unblockUI();
+        //                 var msgerror = '';
+        //                 if (jqXHR.status === 0) {
+        //                     msgerror = 'jaringan tidak terkoneksi.';
+        //                 } else if (jqXHR.status == 404) {
+        //                     msgerror = 'Halaman tidak ditemukan. [404]';
+        //                 } else if (jqXHR.status == 500) {
+        //                     msgerror = 'Internal Server Error [500].';
+        //                 } else if (exception === 'parsererror') {
+        //                     msgerror = 'Requested JSON parse gagal.';
+        //                 } else if (exception === 'timeout') {
+        //                     msgerror = 'RTO.';
+        //                 } else if (exception === 'abort') {
+        //                     msgerror = 'Gagal request ajax.';
+        //                 } else {
+        //                     msgerror = 'Error.\n' + jqXHR.responseText;
+        //                 }
+        //                 swal.fire({
+        //                     title: "Error System",
+        //                     html: msgerror+', coba ulangi kembali !!!',
+        //                     icon: 'error',
 
-                            buttonsStyling: true,
+        //                     buttonsStyling: true,
 
-                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
-                        });  
-                        }
-                    });
-                }
-            });
-        }
+        //                     confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+        //                 });  
+        //                 }
+        //             });
+        //         }
+        //     });
+        // }
 
         //Imam
         function redirectToNewPage() {
