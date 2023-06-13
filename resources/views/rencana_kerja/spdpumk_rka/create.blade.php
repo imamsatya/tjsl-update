@@ -519,7 +519,8 @@
                 formattedValue = "- " + formattedValue;
             }
 
-            element.value = formattedValue;
+            // element.value = formattedValue;
+            element.value = value ? formattedValue : null;
             
         }
 

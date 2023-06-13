@@ -379,9 +379,10 @@
 
 
         $('body').on('click', '.cls-button-edit', function () {
-            const program = $(this).data('id')
-            winform(urledit, {
-                'program': program
+            const bulanan_pumk_id = $(this).data('id')
+            winform(urlcreate, {
+                'bulanan_pumk_id': bulanan_pumk_id,
+                'actionform': 'edit',
             }, 'Ubah Data');
         });
         $('body').on('click', '.cls-log', function () {
@@ -595,9 +596,9 @@
                         // console.log(row)
                         let button = null;
                         if (row.status_id === 2) {
-                            // cls-button-edit, minus
+                            // , minus
                             button =
-                                `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary " data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+                                `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
                         }
 
                         if (row.status_id === 1) {

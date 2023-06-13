@@ -110,7 +110,9 @@ class PumkController extends Controller
     public function create(Request $request)
     {
         try {
-            
+            if ($request->actionform == 'edit') {
+                $pumk_bulan = PumkBulan::where('id', $request->bulanan_pumk_id)->first();
+            }
             // $data = TargetTpb::find((int)$request->input('program'));
             // $anggaran_tpbs = AnggaranTpb::find($data->anggaran_tpb_id ?? 1);
             // $perusahaan_id = $anggaran_tpbs->perusahaan_id;
@@ -118,10 +120,12 @@ class PumkController extends Controller
             // $tpbs_temp = Tpb::find($data->tpb_id);
             return view($this->__route . '.create', [
                 'pagetitle' => $this->pagetitle,
-                'actionform' => 'insert',
+                'actionform' => $request->actionform ?? 'insert',
                 'bulan' => Bulan::all(),
                 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
                 'perusahaan_id' => $request->perusahaan_id,
+                'pumk_bulan_id' => $request->bulanan_pumk_id ?? null,
+                'pumk_bulan' => $pumk_bulan ?? null 
                 // 'tpb' => DB::table('tpbs')->select('*')->whereIn('id', function($query) use($perusahaan_id, $tahun) {
                 //     $query->select('relasi_pilar_tpbs.tpb_id as id')
                 //         ->from('anggaran_tpbs')
@@ -151,46 +155,91 @@ class PumkController extends Controller
         //
 
        
+       if ($request->actionform === 'insert') {
+           
         DB::beginTransaction();
         try {
             
             $pumk_bulan = new PumkBulan();
-        $pumk_bulan->perusahaan_id = $request->perusahaan_id;
-        $pumk_bulan->status_id = 2;//In Progress
-        $pumk_bulan->tahun = $request->tahun;
-        $pumk_bulan->bulan_id = $request->bulan_id_create;
-        $pumk_bulan->nilai_penyaluran = $request->nilai_penyaluran;
-        $pumk_bulan->nilai_penyaluran_melalui_bri = $request->nilai_penyaluran_melalui_bri;
-        $pumk_bulan->jumlah_mb = $request->jumlah_mb;
-        $pumk_bulan->jumlah_mb_naik_kelas = $request->jumlah_mb_naik_kelas;
+            $pumk_bulan->perusahaan_id = $request->perusahaan_id;
+            $pumk_bulan->status_id = 2;//In Progress
+            $pumk_bulan->tahun = $request->tahun;
+            $pumk_bulan->bulan_id = $request->bulan_id_create;
+            $pumk_bulan->nilai_penyaluran = $request->nilai_penyaluran;
+            $pumk_bulan->nilai_penyaluran_melalui_bri = $request->nilai_penyaluran_melalui_bri;
+            $pumk_bulan->jumlah_mb = $request->jumlah_mb;
+            $pumk_bulan->jumlah_mb_naik_kelas = $request->jumlah_mb_naik_kelas;
 
-        $pumk_bulan->kolektabilitas_lancar = $request->kolektabilitas_lancar;
-        $pumk_bulan->kolektabilitas_lancar_jumlah_mb = $request->kolektabilitas_lancar_jumlah_mb;
-        $pumk_bulan->kolektabilitas_kurang_lancar = $request->kolektabilitas_kurang_lancar;
-        $pumk_bulan->kolektabilitas_kurang_lancar_jumlah_mb = $request->kolektabilitas_kurang_lancar_jumlah_mb;
-        $pumk_bulan->kolektabilitas_diragukan = $request->kolektabilitas_diragukan;
-        $pumk_bulan->kolektabilitas_diragukan_jumlah_mb = $request->kolektabilitas_diragukan_jumlah_mb;
-        $pumk_bulan->kolektabilitas_macet = $request->kolektabilitas_macet;
-        $pumk_bulan->kolektabilitas_macet_jumlah_mb = $request->kolektabilitas_macet_jumlah_mb;
-        $pumk_bulan->kolektabilitas_pinjaman_bermasalah = $request->kolektabilitas_pinjaman_bermasalah;
-        $pumk_bulan->kolektabilitas_pinjaman_bermasalah_jumlah_mb = $request->kolektabilitas_pinjaman_bermasalah_jumlah_mb;
-        $pumk_bulan->save();
+            $pumk_bulan->kolektabilitas_lancar = $request->kolektabilitas_lancar;
+            $pumk_bulan->kolektabilitas_lancar_jumlah_mb = $request->kolektabilitas_lancar_jumlah_mb;
+            $pumk_bulan->kolektabilitas_kurang_lancar = $request->kolektabilitas_kurang_lancar;
+            $pumk_bulan->kolektabilitas_kurang_lancar_jumlah_mb = $request->kolektabilitas_kurang_lancar_jumlah_mb;
+            $pumk_bulan->kolektabilitas_diragukan = $request->kolektabilitas_diragukan;
+            $pumk_bulan->kolektabilitas_diragukan_jumlah_mb = $request->kolektabilitas_diragukan_jumlah_mb;
+            $pumk_bulan->kolektabilitas_macet = $request->kolektabilitas_macet;
+            $pumk_bulan->kolektabilitas_macet_jumlah_mb = $request->kolektabilitas_macet_jumlah_mb;
+            $pumk_bulan->kolektabilitas_pinjaman_bermasalah = $request->kolektabilitas_pinjaman_bermasalah;
+            $pumk_bulan->kolektabilitas_pinjaman_bermasalah_jumlah_mb = $request->kolektabilitas_pinjaman_bermasalah_jumlah_mb;
+            $pumk_bulan->save();
 
-        PumkController::store_log($pumk_bulan->id,$pumk_bulan->status_id);
-        DB::commit();
-            Session::flash('success', "Berhasil Menyimpan Data Kegiatan");
-            $result = [
-                        'flag'  => 'success',
-                        'msg' => 'Sukses tambah data',
-                        'title' => 'Sukses'
-            ];
-            echo json_encode(['result' => true]);
-        } catch (\Throwable $th) {
-            //throw $th;
-            DB::rollback();
-            throw $th;
-        }
+            PumkController::store_log($pumk_bulan->id,$pumk_bulan->status_id);
+            DB::commit();
+                Session::flash('success', "Berhasil Menyimpan Data Kegiatan");
+                $result = [
+                            'flag'  => 'success',
+                            'msg' => 'Sukses tambah data',
+                            'title' => 'Sukses'
+                ];
+                echo json_encode(['result' => true, 'data' => $result]);
+            } catch (\Throwable $th) {
+                //throw $th;
+                DB::rollback();
+                throw $th;
+            }
        
+       }
+
+       if ($request->actionform === 'edit') {
+        DB::beginTransaction();
+
+        try {
+            $pumk_bulan = PumkBulan::where('id', $request->pumk_bulan_id)->first();
+            $pumk_bulan->tahun = $request->tahun;
+            $pumk_bulan->bulan_id = $request->bulan_id_create;
+            $pumk_bulan->nilai_penyaluran = $request->nilai_penyaluran;
+            $pumk_bulan->nilai_penyaluran_melalui_bri = $request->nilai_penyaluran_melalui_bri;
+            $pumk_bulan->jumlah_mb = $request->jumlah_mb;
+            $pumk_bulan->jumlah_mb_naik_kelas = $request->jumlah_mb_naik_kelas;
+
+            $pumk_bulan->kolektabilitas_lancar = $request->kolektabilitas_lancar;
+            $pumk_bulan->kolektabilitas_lancar_jumlah_mb = $request->kolektabilitas_lancar_jumlah_mb;
+            $pumk_bulan->kolektabilitas_kurang_lancar = $request->kolektabilitas_kurang_lancar;
+            $pumk_bulan->kolektabilitas_kurang_lancar_jumlah_mb = $request->kolektabilitas_kurang_lancar_jumlah_mb;
+            $pumk_bulan->kolektabilitas_diragukan = $request->kolektabilitas_diragukan;
+            $pumk_bulan->kolektabilitas_diragukan_jumlah_mb = $request->kolektabilitas_diragukan_jumlah_mb;
+            $pumk_bulan->kolektabilitas_macet = $request->kolektabilitas_macet;
+            $pumk_bulan->kolektabilitas_macet_jumlah_mb = $request->kolektabilitas_macet_jumlah_mb;
+            $pumk_bulan->kolektabilitas_pinjaman_bermasalah = $request->kolektabilitas_pinjaman_bermasalah;
+            $pumk_bulan->kolektabilitas_pinjaman_bermasalah_jumlah_mb = $request->kolektabilitas_pinjaman_bermasalah_jumlah_mb;
+            $pumk_bulan->save();
+
+            PumkController::store_log($pumk_bulan->id,$pumk_bulan->status_id);
+            DB::commit();
+                Session::flash('success', "Berhasil Menyimpan Data Kegiatan");
+                $result = [
+                            'flag'  => 'success',
+                            'msg' => 'Sukses mengubah data',
+                            'title' => 'Sukses'
+                ];
+                echo json_encode(['result' => true, 'data' => $result]);
+            } catch (\Throwable $th) {
+                //throw $th;
+                DB::rollback();
+                throw $th;
+            }
+       }
+      
+        
 
     }
 
