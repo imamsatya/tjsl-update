@@ -328,6 +328,12 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             //Imam
             Route::post('update', 'App\Http\Controllers\Referensi\JenisKegiatanController@update')->name('referensi.jenis_kegiatan.update');
             Route::post('update_status', 'App\Http\Controllers\Referensi\JenisKegiatanController@update_status')->name('referensi.jenis_kegiatan.update_status');
+
+            //Sub Kegiatan
+            Route::post('create_subkegiatan', 'App\Http\Controllers\Referensi\JenisKegiatanController@create_subkegiatan')->name('referensi.jenis_kegiatan.create_subkegiatan');
+            Route::post('store_subkegiatan', 'App\Http\Controllers\Referensi\JenisKegiatanController@store_subkegiatan')->name('referensi.jenis_kegiatan.store_subkegiatan');
+            Route::get('datatable_subkegiatan', 'App\Http\Controllers\Referensi\JenisKegiatanController@datatable_subkegiatan')->name('referensi.jenis_kegiatan.datatable_subkegiatan');
+            Route::post('delete_subkegiatan', 'App\Http\Controllers\Referensi\JenisKegiatanController@delete_subkegiatan')->name('referensi.jenis_kegiatan.delete_subkegiatan');
         });
     });
 

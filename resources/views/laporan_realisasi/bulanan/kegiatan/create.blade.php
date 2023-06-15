@@ -267,7 +267,7 @@
                                         <div class="ms-2 required">Jenis Kegiatan</div>
                                     </div>
                                     <div class="col-lg-9">
-                                        <select  id="jenis_kegiatan" class="form-select form-select-solid form-select2" name="jenis_kegiatan" data-kt-select2="true" data-placeholder="Pilih Jenis Kegiatan" data-allow-clear="true">
+                                        <select  id="jenis_kegiatan" class="form-select form-select-solid form-select2" name="jenis_kegiatan" data-kt-select2="true" data-placeholder="Pilih Jenis Kegiatan" data-allow-clear="true" onchange="filterSubkegiatan(this.value)">
                                             <option></option>
                                             @foreach($jenis_kegiatan as $jenis_kegiatan_row)  
                                             {{-- @php
@@ -282,13 +282,16 @@
                                 </div>
                                 <div class="row mb-6">
                                     <div class="col-lg-3">
-                                        <div class="ms-2">Keterangan Kegiatan</div>
+                                        <div class="ms-2">Sub Kegiatan</div>
                                     </div>
                                     <div class="col-lg-9">
-                                        <input type="text" name="keterangan_kegiatan" id="keterangan_kegiatan"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Keterangan Singkat"  
-                                            />
+                                        <select  id="keterangan_kegiatan" class="form-select form-select-solid form-select2" name="keterangan_kegiatan" data-kt-select2="true" data-placeholder="Pilih Sub Kegiatan" data-allow-clear="true">
+                                            {{-- <option></option>
+                                            @foreach($subkegiatan as $subkegiatan_row)  
+                                            
+                                            <option  value="{{ $subkegiatan_row->id }}" {!! $select !!}>{{ $subkegiatan_row->subkegiatan }}</option>
+                                        @endforeach --}}
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="row mb-6">
@@ -338,7 +341,7 @@
 
                                     </div>
                                     <div class="col-lg-9">
-                                        <select  id="satuan_ukur" class="form-select form-select-solid form-select2" name="satuan_ukur" data-kt-select2="true" data-placeholder="Pilih Satuan Ukur" data-allow-clear="true">
+                                        <select  id="satuan_ukur" class="form-select form-select-solid form-select2" name="satuan_ukur" data-kt-select2="true" data-placeholder="Pilih Satuan Ukur"  disabled>
                                             <option></option>
                                             @foreach($satuan_ukur as $satuan_ukur_row)
                                                 <option value="{{ $satuan_ukur_row->id }}" >{{ $satuan_ukur_row->nama }}</option>
@@ -468,6 +471,27 @@
               
             
             })
+
+            $('#keterangan_kegiatan').on('change', function() {
+                var subkegiatanId = $(this).val();
+                if (subkegiatanId) {
+                    // Find the corresponding satuan_ukur_id for the selected subkegiatan
+                    var selectedSubkegiatan = {!! $subkegiatan->toJson() !!}.find(function(subkegiatan) {
+                        return subkegiatan.id == subkegiatanId;
+                    });
+
+                    if (selectedSubkegiatan) {
+                        // Set the selected value in the "satuan_ukur" field
+                        $('#satuan_ukur').val(selectedSubkegiatan.satuan_ukur_id).trigger('change');
+                        // Enable the "satuan_ukur" field
+                        $('#satuan_ukur').prop('disabled', true);
+                    }
+                } else {
+                    // If no subkegiatan is selected, disable the "satuan_ukur" field and reset its value
+                    $('#satuan_ukur').prop('disabled', true).val('').trigger('change');
+                }
+            });
+           
        
         });
 
@@ -688,6 +712,30 @@
 
             
             return {status: true}
+        }
+
+        function filterSubkegiatan(jenisKegiatanId) {
+            // Clear the current options in the "subkegiatan" select field
+            $('#keterangan_kegiatan').empty();
+
+            // If no jenis_kegiatan is selected, exit the function
+            if (!jenisKegiatanId) return;
+
+            // Filter the subkegiatan options based on the selected jenis_kegiatan
+            var filteredSubkegiatan = {!! $subkegiatan->toJson() !!} // Convert $subkegiatan to a JavaScript object
+
+            // Iterate through the filtered subkegiatan options
+            $.each(filteredSubkegiatan, function(index, subkegiatan) {
+                // Check if the jenis_kegiatan_id matches the selected jenis_kegiatan
+                if (subkegiatan.jenis_kegiatan_id == jenisKegiatanId) {
+                    // Create a new option element and append it to the "subkegiatan" select field
+                    var option = $('<option>', { value: subkegiatan.id, text: subkegiatan.subkegiatan });
+                    $('#keterangan_kegiatan').append(option);
+                }
+            });
+
+            // Refresh the Select2 component for the "subkegiatan" select field
+            $('#keterangan_kegiatan').trigger('change');
         }
 
 

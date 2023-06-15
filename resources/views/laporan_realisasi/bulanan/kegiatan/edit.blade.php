@@ -69,7 +69,7 @@
             <div class="col-lg-9">
                 <select id="jenis_kegiatan_edit" class="form-select form-select-solid form-select2"
                     name="jenis_kegiatan_edit" data-kt-select2="true" data-placeholder="Pilih Jenis Kegiatan"
-                    data-allow-clear="true">
+                    data-allow-clear="true" onchange="filterSubkegiatan(this.value)">
                     <option></option>
                     @foreach ($jenis_kegiatan as $jenis_kegiatan_row)
                         @php
@@ -88,9 +88,18 @@
                 <div class="ms-2">Keterangan Kegiatan</div>
             </div>
             <div class="col-lg-9">
-                <input type="text" name="keterangan_kegiatan_edit" id="keterangan_kegiatan_edit"
-                    value="{{ $kegiatan->keterangan_kegiatan }}"
-                    class="form-control form-control-lg form-control-solid" placeholder="Keterangan Singkat" />
+                <select id="keterangan_kegiatan_edit" class="form-select form-select-solid form-select2"
+                    name="keterangan_kegiatan_edit" data-kt-select2="true" data-placeholder="Pilih Sub Kegiatan"
+                    data-allow-clear="true">
+                    <option></option>
+                    @foreach ($subkegiatan as $subkegiatan_row)
+                        @php
+                            $select = $subkegiatan_row->id == $kegiatan->keterangan_kegiatan ? 'selected="selected"' : '';
+                        @endphp
+                        <option value="{{ $subkegiatan_row->id }}" {!! $select ?? '' !!}>
+                            {{ $subkegiatan_row->subkegiatan }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
         <div class="row mb-6">
@@ -217,7 +226,9 @@
     $(document).ready(function() {
         $('.modal-title').html(title);
         $('.form-select').select2();
-
+        // $('.modal').on('shown.bs.modal', function() {
+        //     setFormValidate();
+        // });
         // $(".modal").on('hidden.bs.modal', function() {
         //     const jenisAnggaran = $("#jenis-anggaran").val()
         //     $("#tpb_id").val('').trigger('change')
@@ -437,6 +448,26 @@
         // Trigger the formatCurrency function on the input element's value
         formatCurrency(inputElement);
 
+        $('#keterangan_kegiatan_edit').on('change', function() {
+            var subkegiatanId = $(this).val();
+            if (subkegiatanId) {
+                // Find the corresponding satuan_ukur_id for the selected subkegiatan
+                var selectedSubkegiatan = {!! $subkegiatan->toJson() !!}.find(function(subkegiatan) {
+                    return subkegiatan.id == subkegiatanId;
+                });
+
+                if (selectedSubkegiatan) {
+                    // Set the selected value in the "satuan_ukur" field
+                    $('#satuan_ukur_edit').val(selectedSubkegiatan.satuan_ukur_id).trigger('change');
+                    // Enable the "satuan_ukur" field
+                    $('#satuan_ukur_edit').prop('disabled', true);
+                }
+            } else {
+                // If no subkegiatan is selected, disable the "satuan_ukur" field and reset its value
+                $('#satuan_ukur_edit').prop('disabled', true).val('').trigger('change');
+            }
+        });
+
 
 
 
@@ -508,5 +539,32 @@
         if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
             return false;
         return true;
+    }
+
+    function filterSubkegiatan(jenisKegiatanId) {
+        // Clear the current options in the "subkegiatan" select field
+        $('#keterangan_kegiatan_edit').empty();
+
+        // If no jenis_kegiatan is selected, exit the function
+        if (!jenisKegiatanId) return;
+
+        // Filter the subkegiatan options based on the selected jenis_kegiatan
+        var filteredSubkegiatan = {!! $subkegiatan->toJson() !!} // Convert $subkegiatan to a JavaScript object
+
+        // Iterate through the filtered subkegiatan options
+        $.each(filteredSubkegiatan, function(index, subkegiatan) {
+            // Check if the jenis_kegiatan_id matches the selected jenis_kegiatan
+            if (subkegiatan.jenis_kegiatan_id == jenisKegiatanId) {
+                // Create a new option element and append it to the "subkegiatan" select field
+                var option = $('<option>', {
+                    value: subkegiatan.id,
+                    text: subkegiatan.subkegiatan
+                });
+                $('#keterangan_kegiatan_edit').append(option);
+            }
+        });
+
+        // Refresh the Select2 component for the "subkegiatan" select field
+        $('#keterangan_kegiatan_edit').trigger('change');
     }
 </script>

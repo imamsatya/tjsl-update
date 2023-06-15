@@ -21,6 +21,7 @@ use App\Models\SatuanUkur;
 use App\Models\Kegiatan;
 use App\Models\KegiatanRealisasi;
 use App\Models\LogKegiatan;
+use App\Models\SubKegiatan;
 use Datatables;
 use DB;
 use Session;
@@ -311,6 +312,7 @@ class KegiatanController extends Controller
                 'satuan_ukur' => SatuanUkur::where('is_active', true)->get(),
                 'program' => $program,
                 'bulan_id' =>$bulan ?? 1,
+                'subkegiatan' => SubKegiatan::all(),
                 
            
             ]
@@ -404,6 +406,7 @@ class KegiatanController extends Controller
         
         $kegiatan = DB::table('kegiatans')
         ->join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', 'kegiatans.id')
+        ->join('sub_kegiatans', 'sub_kegiatans.id', '=', DB::raw('CAST(kegiatans.keterangan_kegiatan AS BIGINT)'))
         ->where('kegiatans.id', $request->id)
         ->first();
 
@@ -498,6 +501,7 @@ class KegiatanController extends Controller
                 'provinsi' => Provinsi::where('is_luar_negeri', false)->get(),
                 'kota_kabupaten' => Kota::where('is_luar_negeri', false)->get(),
                 'satuan_ukur' => SatuanUkur::where('is_active', true)->get(),
+                'subkegiatan' => SubKegiatan::all()
             ]);
         } catch (Exception $e) {
         }
