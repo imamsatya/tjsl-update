@@ -15,6 +15,7 @@ use Datatables;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use DateTime;
 
 class SpdPumkRkaController extends Controller
 {
@@ -82,6 +83,29 @@ class SpdPumkRkaController extends Controller
 
         $status = DB::table('statuss')->get();
 
+         // validasi availability untuk input data
+         $menuSPDPUMK_RKA = DB::table('menus')->where('label', 'SPD PUMK - RKA')->first();
+         $start = null;
+         $end = null;
+         $isOkToInput = true;
+         if($menuSPDPUMK_RKA) {
+            
+             $periodeHasJenis = DB::table('periode_has_jenis')->where('jenis_laporan_id', $menuSPDPUMK_RKA->id)->first();
+             if($periodeHasJenis) {
+                 $periodeLaporan = DB::table('periode_laporans')->where('is_active', 1)->where('id', $periodeHasJenis->periode_laporan_id)->first();
+                 if($periodeLaporan) {
+                     $currentDate = new DateTime();                    
+                     $start = new DateTime($periodeLaporan->tanggal_awal);
+                     $end = new DateTime($periodeLaporan->tanggal_akhir);
+ 
+                     if($currentDate < $start || $currentDate > $end) {
+                         $isOkToInput = false;
+                     }
+                 }
+             }
+         }
+
+       
 
 
         return view($this->__route . '.index', [
@@ -94,7 +118,8 @@ class SpdPumkRkaController extends Controller
             'perusahaan_id' => $perusahaan_id,
             'anggaran' => $pumk_anggaran,
             'status' => $status,
-            'status_id' => $request->status_spd ?? ''
+            'status_id' => $request->status_spd ?? '',
+            'isOkToInput' => $isOkToInput
         ]);
     }
 
@@ -443,5 +468,89 @@ class SpdPumkRkaController extends Controller
             'pagetitle' => 'Log Status',
             'log' => $log
         ]);
+    }
+
+    public function verifikasiData(Request $request) {
+        // dd($request->selectedData);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->selectedData as $selectedData) {
+                $current = PumkAnggaran::where('id', $selectedData)->first();
+                if ($current->status_id == 2) {
+                    $current->status_id = 1;
+                    $current->save();
+
+                    $log['pumk_anggaran_id'] = (int)$current->id;
+                    $log['status_id'] = (int)$current->status_id;
+                    $log['nilai_rka'] = (int)$current->saldo_awal;
+                    $log['created_by_id'] = (int)$current->updated_by;
+                    $log['created_at'] = now();
+
+                    SpdPumkRkaController::store_log($log);
+
+                }
+            }
+           
+                               
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function batalVerifikasiData(Request $request) {
+        // dd($request->selectedData);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->selectedData as $selectedData) {
+                $current = PumkAnggaran::where('id', $selectedData)->first();
+                if ($current->status_id == 1) {
+                    $current->status_id = 2;
+                    $current->save();
+
+                    $log['pumk_anggaran_id'] = (int)$current->id;
+                    $log['status_id'] = (int)$current->status_id;
+                    $log['nilai_rka'] = (int)$current->saldo_awal;
+                    $log['created_by_id'] = (int)$current->updated_by;
+                    $log['created_at'] = now();
+
+                    SpdPumkRkaController::store_log($log);
+
+                }
+            }
+           
+                               
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses membatalkan verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
     }
 }

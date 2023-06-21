@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use DateTime;
+
 class LaporanManajemenController extends Controller
 {
 
@@ -108,6 +110,29 @@ class LaporanManajemenController extends Controller
         // $laporan_manajemen = $laporan_manajemen->get();
         
         // dd($laporan_manajemen->pluck('perusahaan_id'));
+
+         // validasi availability untuk input data
+         $menu = DB::table('menus')->where('label', 'Laporan Manajemen - RKA')->first();
+         $start = null;
+         $end = null;
+         $isOkToInput = true;
+         if($menu) {
+            
+             $periodeHasJenis = DB::table('periode_has_jenis')->where('jenis_laporan_id', $menu->id)->first();
+             if($periodeHasJenis) {
+                 $periodeLaporan = DB::table('periode_laporans')->where('is_active', 1)->where('id', $periodeHasJenis->periode_laporan_id)->first();
+                 if($periodeLaporan) {
+                     $currentDate = new DateTime();                    
+                     $start = new DateTime($periodeLaporan->tanggal_awal);
+                     $end = new DateTime($periodeLaporan->tanggal_akhir);
+ 
+                     if($currentDate < $start || $currentDate > $end) {
+                         $isOkToInput = false;
+                     }
+                 }
+             }
+         }
+
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Rencana Kerja - Laporan Manajemen - RKA',
@@ -117,7 +142,8 @@ class LaporanManajemenController extends Controller
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
             'status' => $status,
-            'status_id' => $request->status_laporan ?? ''
+            'status_id' => $request->status_laporan ?? '',
+            'isOkToInput' => $isOkToInput
         ]);
     }
 
@@ -322,5 +348,84 @@ class LaporanManajemenController extends Controller
                 'pagetitle' => 'Log Status',
                 'log' => $log
             ]);
+        }
+
+        public function verifikasiData(Request $request) {
+            
+    
+            DB::beginTransaction();
+            try {
+                foreach ($request->selectedData as $selectedData) {
+                    $current = LaporanManajemen::where('id', $selectedData)->first();
+                    if ($current->status_id == 2) {
+                        $current->status_id = 1;
+                        $current->save();
+    
+                        $log = new LogLaporanManajemen();
+                        $log->laporan_manajemen_id = $current->id;
+                        $log->status_id = 2;//in progress
+                        $log->user_id = \Auth::user()->id;
+                        $log->save();    
+                    }
+                }
+               
+                                   
+                
+                DB::commit();
+    
+                $result = [
+                    'flag' => 'success',
+                    'msg' => 'Sukses verifikasi data',
+                    'title' => 'Sukses'
+                ];
+            } catch (\Exception $e) {
+                DB::rollback();
+                $result = [
+                    'flag' => 'warning',
+                    'msg' => $e->getMessage(),
+                    'title' => 'Gagal'
+                ];
+            }
+            return response()->json($result);
+        }
+    
+        public function batalVerifikasiData(Request $request) {
+            // dd($request->selectedData);
+    
+            DB::beginTransaction();
+            try {
+                foreach ($request->selectedData as $selectedData) {
+                    $current = LaporanManajemen::where('id', $selectedData)->first();
+                    if ($current->status_id == 1) {
+                        $current->status_id = 2;
+                        $current->save();
+    
+                        $log = new LogLaporanManajemen();
+                        $log->laporan_manajemen_id = $current->id;
+                        $log->status_id = 2;//in progress
+                        $log->user_id = \Auth::user()->id;
+                        $log->save();    
+    
+                    }
+                }
+               
+                                   
+                
+                DB::commit();
+    
+                $result = [
+                    'flag' => 'success',
+                    'msg' => 'Sukses membatalkan verifikasi data',
+                    'title' => 'Sukses'
+                ];
+            } catch (\Exception $e) {
+                DB::rollback();
+                $result = [
+                    'flag' => 'warning',
+                    'msg' => $e->getMessage(),
+                    'title' => 'Gagal'
+                ];
+            }
+            return response()->json($result);
         }
 }

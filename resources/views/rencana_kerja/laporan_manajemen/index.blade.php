@@ -228,10 +228,12 @@
                             </button>
                             <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
                             </button> --}}
-                            @role('Super Admin')
-                                <button type="button" class="btn btn-primary btn-sm " >Verify
+                            @can('view-verify')
+                                <button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="verify-data" >Verify
                                 </button>
-                                @endrole
+                                <button {{ $isOkToInput  ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
+                                </button> 
+                            @endcan
                         </div>
                         <!--end::Search-->
                         <!--end::Group actions-->
@@ -252,6 +254,11 @@
                                     <th>Status</th>
                                     
                                     <th style="text-align:center;">Aksi</th>
+                                    <th><label
+                                        class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
+                                            class="form-check-input addCheck" type="checkbox"
+                                            id="select-all"></label>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -289,6 +296,8 @@
         var urldatatable = "{{ route('rencana_kerja.laporan_manajemen.datatable') }}";
         var urldelete = "{{ route('referensi.tpb.delete') }}";
         var urllog = "{{route('rencana_kerja.laporan_manajemen.log')}}";
+        var urlverifikasidata = "{{route('rencana_kerja.laporan_manajemen.verifikasi_data')}}";
+        var urlbatalverifikasidata = "{{route('rencana_kerja.laporan_manajemen.batal_verifikasi_data')}}";
         $(document).ready(function() {
             $('#page-title').html("{{ $pagetitle }}");
             $('#page-breadcrumb').html("{{ $breadcrumb }}");
@@ -337,6 +346,129 @@
             datatable.on('page.dt', function() {
                 // Uncheck the "select all" checkbox
                 $('#select-all').prop('checked', false);
+            });
+
+
+            $('body').on('click', '#verify-data', function() {
+            
+                var selectedData = $('input[name="selected-data[]"]:checked').map(function() {
+                    return $(this).val();
+                }).get();
+                Swal.fire({
+                    title: 'Apakah Anda Yakin?',
+                    html: "Apakah anda yakin akan memverifikasi data yang sudah dipilih? <br/><span style='color: red; font-weight: bold'>[Data selected: "+selectedData.length+" rows]</span>" ,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // If the user confirmed the deletion, do something here
+                        console.log('User confirmed deletion');
+                        // Send an AJAX request to set the "selected" attribute in the database
+                        $.ajax({
+                            url: urlverifikasidata,
+                            type: 'POST',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                                selectedData: selectedData
+                            },
+                            beforeSend: function(){
+                            $.blockUI();
+                        },
+                        success: function(data){
+                            $.unblockUI();
+
+                            swal.fire({
+                                    title: data.title,
+                                    html: data.msg,
+                                    icon: data.flag,
+
+                                    buttonsStyling: true,
+
+                                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                            });
+
+                            if(data.flag == 'success') {
+                                // datatable.ajax.reload( null, false );
+                                location.reload(); 
+                            }
+                            
+                        },
+                            error: function(jqXHR, textStatus, errorThrown) {
+                                console.log(errorThrown);
+                            }
+                        });
+                    } else {
+                        // If the user cancelled the deletion, do something here
+                        console.log('User cancelled deletion');
+                    }
+                })
+                console.log(selectedData)
+
+
+            });
+
+            $('body').on('click', '#unverify-data', function() {
+            
+                var selectedData = $('input[name="selected-data[]"]:checked').map(function() {
+                    return $(this).val();
+                }).get();
+                Swal.fire({
+                    title: 'Apakah Anda Yakin?',
+                    html: "Apakah anda yakin akan membatalkan verifikasi data yang sudah dipilih? <br/><span style='color: red; font-weight: bold'>[Data selected: "+selectedData.length+" rows]</span>" ,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // If the user confirmed the deletion, do something here
+                        console.log('User confirmed deletion');
+                        // Send an AJAX request to set the "selected" attribute in the database
+                        $.ajax({
+                            url: urlbatalverifikasidata,
+                            type: 'POST',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                                selectedData: selectedData
+                            },
+                            beforeSend: function(){
+                            $.blockUI();
+                        },
+                        success: function(data){
+                            $.unblockUI();
+
+                            swal.fire({
+                                    title: data.title,
+                                    html: data.msg,
+                                    icon: data.flag,
+
+                                    buttonsStyling: true,
+
+                                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                            });
+
+                            if(data.flag == 'success') {
+                                // datatable.ajax.reload( null, false );
+                                location.reload(); 
+                            }
+                            
+                        },
+                            error: function(jqXHR, textStatus, errorThrown) {
+                                console.log(errorThrown);
+                            }
+                        });
+                    } else {
+                        // If the user cancelled the deletion, do something here
+                        console.log('User cancelled deletion');
+                    }
+                })
+                console.log(selectedData)
+
+
             });
 
             $('tbody').on('click', '.is_active-check', function() {
@@ -502,12 +634,12 @@
                             
                             let button = null;
                             if (row.status_id === 3) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-upload text-center" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Upload data "><i class="bi bi-upload fs-3"></i></button>`
+                                button = `<button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-upload text-center" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Upload data "><i class="bi bi-upload fs-3"></i></button>`
                             }
                             if (row.status_id === 2) {
 
                                 // <a rel='tooltip' data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" class="mb-4 jawban-file-st" title="File Jawaban" href="{{ asset('storage/${row.file_name}') }}" target="_blank" rel="noopener noreferrer"></a>
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit text-center me-2" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+                                button = `<button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit text-center me-2" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
 
                                 // button2 = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button>`
                                 button2 = `<a rel='tooltip' data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" class="mb-4 jawban-file-st" title="File Jawaban" href="{{ asset('storage/${row.file_name}') }}" target="_blank" rel="noopener noreferrer"><button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button></a>`
@@ -521,6 +653,14 @@
                                 // button = button + button2
                             }
                             return button
+                        }
+                    },
+                    {
+                        data: null,
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input class="form-check-input row-check" type="checkbox" name="selected-data[]" value="${row.id}"></label>`;
                         }
                     }
                 ],

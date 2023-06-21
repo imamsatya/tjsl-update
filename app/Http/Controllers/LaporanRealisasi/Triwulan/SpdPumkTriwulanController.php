@@ -15,7 +15,7 @@ use Datatables;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-
+use DateTime;
 class SpdPumkTriwulanController extends Controller
 {
 
@@ -50,7 +50,7 @@ class SpdPumkTriwulanController extends Controller
                 }
             }
         }
-        $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->get();
+        $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->orderBy('urutan')->get();
         $anggaran = DB::table('pumk_anggarans')
             ->selectRaw('pumk_anggarans.*,
              perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap,
@@ -364,10 +364,18 @@ class SpdPumkTriwulanController extends Controller
         $anggaran = DB::table('pumk_anggarans')
             ->selectRaw('pumk_anggarans.*,
              perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap,
-             periode_laporans.id as periode_laporans_id, periode_laporans.nama as periode_laporans_nama')
+             periode_laporans.id as periode_laporans_id, periode_laporans.nama as periode_laporans_nama, 
+             CASE
+                WHEN CURRENT_DATE BETWEEN periode_laporans.tanggal_awal AND periode_laporans.tanggal_akhir
+                OR periode_laporans.is_active = FALSE
+                THEN TRUE
+             ELSE FALSE
+             END AS isoktoinput'
+             )
             ->leftJoin('perusahaans', 'perusahaans.id', '=', 'pumk_anggarans.bumn_id')
             ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'pumk_anggarans.periode_id')
             ->whereIn('periode_id', $periode->pluck('id')->toArray());
+       
         if ($request->perusahaan_id) {
 
             $anggaran = $anggaran->where('bumn_id', $request->perusahaan_id);
@@ -434,6 +442,89 @@ class SpdPumkTriwulanController extends Controller
             'pagetitle' => 'Log Status',
             'log' => $log
         ]);
+    }
+
+    public function verifikasiData(Request $request) {
+        // dd($request->selectedData);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->selectedData as $selectedData) {
+                $current = PumkAnggaran::where('id', $selectedData)->first();
+                if ($current->status_id == 2) {
+                    $current->status_id = 1;
+                    $current->save();
+
+                    $log['pumk_anggaran_id'] = (int)$current->id;
+                    $log['status_id'] = (int)$current->status_id;
+                    $log['nilai_rka'] = (int)$current->saldo_awal;
+                    $log['created_by_id'] = (int)$current->updated_by;
+                    $log['created_at'] = now();
+                    SpdPumkTriwulanController::store_log($log);
+
+                }
+            }
+           
+                               
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function batalVerifikasiData(Request $request) {
+        // dd($request->selectedData);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->selectedData as $selectedData) {
+                $current = PumkAnggaran::where('id', $selectedData)->first();
+                if ($current->status_id == 1) {
+                    $current->status_id = 2;
+                    $current->save();
+
+                    $log['pumk_anggaran_id'] = (int)$current->id;
+                    $log['status_id'] = (int)$current->status_id;
+                    $log['nilai_rka'] = (int)$current->saldo_awal;
+                    $log['created_by_id'] = (int)$current->updated_by;
+                    $log['created_at'] = now();
+
+                    SpdPumkTriwulanController::store_log($log);
+
+                }
+            }
+           
+                               
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses membatalkan verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
     }
 
 }
