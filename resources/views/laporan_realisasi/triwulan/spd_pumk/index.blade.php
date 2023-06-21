@@ -337,6 +337,7 @@
 
         var urlverifikasidata = "{{route('laporan_realisasi.triwulan.spd_pumk.verifikasi_data')}}";
         var urlbatalverifikasidata = "{{route('laporan_realisasi.triwulan.spd_pumk.batal_verifikasi_data')}}";
+        var urlshow = "{{route('laporan_realisasi.triwulan.spd_pumk.show')}}";
         $(document).ready(function() {
             $('#page-title').html("{{ $pagetitle }}");
             $('#page-breadcrumb').html("{{ $breadcrumb }}");
@@ -373,8 +374,12 @@
             });
 
             $('body').on('click','.cls-log',function(){
-            winform(urllog, {'id':$(this).data('id')}, 'Log Data');
-        });
+                winform(urllog, {'id':$(this).data('id')}, 'Log Data');
+            });
+
+            $('body').on('click','.cls-button-show',function(){
+                winform(urlshow, {'id':$(this).data('id')}, 'Detail Data');
+            });
 
 
             setDatatable();
@@ -743,7 +748,7 @@
                             }
 
                             if (row.status_id === 1) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-show" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                             }
                             return button
                         }

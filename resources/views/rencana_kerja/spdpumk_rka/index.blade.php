@@ -315,6 +315,7 @@
         var urllog = "{{route('rencana_kerja.spdpumk_rka.log')}}";
         var urlverifikasidata = "{{route('rencana_kerja.spdpumk_rka.verifikasi_data')}}";
         var urlbatalverifikasidata = "{{route('rencana_kerja.spdpumk_rka.batal_verifikasi_data')}}";
+        var urlshow = "{{route('rencana_kerja.spdpumk_rka.show')}}";
         $(document).ready(function() {
             $('#page-title').html("{{ $pagetitle }}");
             $('#page-breadcrumb').html("{{ $breadcrumb }}");
@@ -352,6 +353,10 @@
 
             $('body').on('click','.cls-log',function(){
                 winform(urllog, {'id':$(this).data('id')}, 'Log Data');
+            });
+
+            $('body').on('click','.cls-button-show',function(){
+                winform(urlshow, {'id':$(this).data('id')}, 'Detail Data');
             });
 
 
@@ -409,7 +414,7 @@
 
             //body
             $('body').on('click', '.delete-selected-data', function() {
-                console.log('halo x')
+                
                 var selectedData = $('input[name="selected-data[]"]:checked').map(function() {
                     return $(this).val();
                 }).get();
@@ -449,7 +454,7 @@
                         console.log('User cancelled deletion');
                     }
                 })
-                console.log(selectedData)
+                
 
 
             });
@@ -510,7 +515,7 @@
                         console.log('User cancelled deletion');
                     }
                 })
-                console.log(selectedData)
+                
 
 
             });
@@ -571,7 +576,7 @@
                         console.log('User cancelled deletion');
                     }
                 })
-                console.log(selectedData)
+            
 
 
             });
@@ -656,7 +661,7 @@
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row) {
-                            console.log(row)
+                         
                             let status = null
                             if (data === 1) {
                                  status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Finish</span>`
@@ -691,7 +696,7 @@
                             }
 
                             if (row.status_id === 1) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-show" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                             }
                             return button
                         }

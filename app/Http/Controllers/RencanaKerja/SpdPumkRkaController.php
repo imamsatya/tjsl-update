@@ -333,9 +333,19 @@ class SpdPumkRkaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        //
+        $pumk_anggaran = DB::table('pumk_anggarans')
+        ->selectRaw('pumk_anggarans.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')
+        ->leftJoin('perusahaans', 'perusahaans.id', '=', 'pumk_anggarans.bumn_id')
+        ->where('pumk_anggarans.id', $request->id)->first();
+        // dd($pumk_anggaran);
+
+        return view($this->__route . '.show', [
+            'pagetitle' => $this->pagetitle,
+            'pumk_anggaran' => $pumk_anggaran
+            
+        ]);
     }
 
     /**
