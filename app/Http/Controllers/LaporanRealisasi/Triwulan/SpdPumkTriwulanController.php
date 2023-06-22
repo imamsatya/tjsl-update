@@ -126,6 +126,9 @@ class SpdPumkTriwulanController extends Controller
         //     }
         // }
         $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->get();
+        $selectedPeriode = DB::table('periode_laporans')->where('id', $periode_id)
+        ->selectRaw("*, ((DATE(NOW()) BETWEEN tanggal_awal AND tanggal_akhir) OR periode_laporans.is_active = false) AS isOkToInput")
+        ->first();
         $current = PumkAnggaran::where('bumn_id', $perusahaan_id)
             ->where('tahun', $tahun)
             ->where('periode_id', $periode_id)
@@ -154,6 +157,7 @@ class SpdPumkTriwulanController extends Controller
                 'admin_bumn' => $admin_bumn,
                 'periode'=>$periode,
                 'periode_id' => $periode_id,
+                'selectedPeriode' => $selectedPeriode
                 // 'perusahaan_id' => $perusahaan_id,
                 // 'data' => $anggaran_tpb
             ]

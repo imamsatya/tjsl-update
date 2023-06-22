@@ -144,10 +144,14 @@ class SpdPumkRkaController extends Controller
         //         }
         //     }
         // }
-        $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
+        $currentDate = date('Y-m-d');
+        $periode = DB::table('periode_laporans')
+                ->selectRaw("*, ((DATE(NOW()) BETWEEN tanggal_awal AND tanggal_akhir) OR periode_laporans.is_active = false) AS isOkToInput")
+                ->where('nama', 'RKA')
+                ->first();
         $current = PumkAnggaran::where('bumn_id', $perusahaan_id)
             ->where('tahun', $tahun)
-            ->where('periode_id', $periode_rka_id)
+            ->where('periode_id', $periode->id)
             ->first();
 
 
@@ -171,6 +175,7 @@ class SpdPumkRkaController extends Controller
                 // 'versi_pilar_id' => $versi_pilar_id,
                 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
                 'admin_bumn' => $admin_bumn,
+                'periode' => $periode
                 // 'perusahaan_id' => $perusahaan_id,
                 // 'data' => $anggaran_tpb
             ]

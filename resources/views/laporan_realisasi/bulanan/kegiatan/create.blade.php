@@ -386,7 +386,7 @@
                         </form>
                         <div class="form-group row mt-8  mb-5 text-center">
                             <div class="col-lg-offset-3 col-lg-9">
-                                <button id="proses" class="btn btn-danger me-3">Close</button>
+                                <button id="close-btn" class="btn btn-danger me-3">Close</button>
                                 <button id="clear-btn" class="btn btn-info me-3">Clear</button>
                                 <button id="simpan-btn" class="btn btn-success me-3">Simpan</button>
                             </div>
@@ -491,6 +491,14 @@
                     $('#satuan_ukur').prop('disabled', true).val('').trigger('change');
                 }
             });
+
+            $("#close-btn").on('click', function() {
+                var url = window.location.pathname;
+                var segments = url.split('/');
+                console.log(segments)
+                let routeTo = "{{route('laporan_realisasi.bulanan.kegiatan.index')}}"+"?perusahaan_id="+segments[5]+"&tahun="+segments[6]+"&bulan_id="+segments[7]                
+                window.location.href = routeTo
+            })
            
        
         });
