@@ -311,9 +311,9 @@
 
 
                         </form>
-                        <div class="form-group row mt-2  mb-5 text-end">
+                        <div class="form-group row mt-2 mb-5 text-end">
                             <div class="col-lg-12">   
-                                <a id="close-btn" href="javascript:void(0)" class="btn btn-light-danger font-weight-bold me-3"><i class="bi bi-x-circle-fill"></i> Close</a>
+                                <a id="close-btn" href="javascript:void(0);" class="btn btn-light-danger font-weight-bold me-3"><i class="bi bi-x-circle-fill"></i> Close</a>
                                 @if($isOkToInput || $isEnableInputBySuperadmin)
                                 @if(!$isFinish)
                                 <a id="clear-btn" href="javascript:void(0)" class="btn btn-light-info font-weight-bold me-3"><i class="bi bi-trash-fill"></i> Clear</a>
@@ -356,11 +356,10 @@
                 $(this).find(".accordion-icon-on").toggleClass("d-none");
             });
             
-            $("#close-btn").on('click', function() {
+            $("#close-btn").on('click', function(e) {                
                 var url = window.location.pathname;
-                var segments = url.split('/');
-                console.log(segments)
-                let routeTo = "{{route('anggaran_tpb.index')}}"+"?perusahaan_id="+segments[3]+"&tahun="+segments[4]                
+                var segments = url.split('/');                
+                let routeTo = "{{route('anggaran_tpb.rka')}}"+"?perusahaan_id="+segments[4]+"&tahun="+segments[5] 
                 window.location.href = routeTo
             })
 
@@ -472,10 +471,6 @@
 
                             $.unblockUI();
                         
-                            // console.log(`success : ${response}`)
-                            // toastr.success(
-                            //     `Berhasil menyimpan data!`
-                            // );
                             swal.fire({                    
                                 icon: 'success',
                                 title: 'Sukses!',
@@ -490,7 +485,7 @@
                             var url = window.location.pathname;
                             var segments = url.split('/');
                             console.log(segments)
-                            let routeTo = "{{route('anggaran_tpb.index')}}"+"?perusahaan_id="+segments[3]+"&tahun="+segments[4]                
+                            let routeTo = "{{route('anggaran_tpb.rka')}}"+"?perusahaan_id="+segments[4]+"&tahun="+segments[5]
                             window.location.href = routeTo
                             
                                                 
@@ -648,8 +643,5 @@
             }
         }
 
-        
-
-        
     </script>
 @endsection

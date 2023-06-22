@@ -756,4 +756,69 @@ class ProgramController extends Controller
         }
         return response()->json($result);
     }
+
+    public function index2(Request $request)
+    {
+        // dd($request->kriteria_program);
+        $id_users = \Auth::user()->id;
+        $users = User::where('id', $id_users)->first();
+        
+
+        $admin_bumn = false;
+        $view_only = false;
+        $perusahaan_id = $request->perusahaan_id;
+        if (!empty($users->getRoleNames())) {
+            foreach ($users->getRoleNames() as $v) {
+                if ($v == 'Admin BUMN' || $v == 'Verifikator BUMN') {
+                    $admin_bumn = true;
+                    $perusahaan_id = \Auth::user()->id_bumn;
+                }
+                if ($v == 'Admin Stakeholder') {
+                    $view_only = true;
+                }
+            }
+        }
+
+        $tahun = $request->tahun ? $request->tahun : (int) date('Y');
+
+        // $data = DB::table('anggaran_tpbs as atpb')
+        //     ->select('perusahaan_id', 'perusahaans.nama_lengkap', 
+        //     DB::raw("sum(case when pp.jenis_anggaran = 'CID' then tt.anggaran_alokasi end) as sum_cid"),
+        //     DB::raw("sum(case when pp.jenis_anggaran = 'non CID' then tt.anggaran_alokasi end) as sum_noncid"),
+        //     DB::raw("count(case when status_id = 1 then 1 end) finish"),
+        //     DB::raw("count(case when status_id = 2 then 1 end) inprogress"),
+        //     DB::raw("count(case when atpb.is_enable_input_by_superadmin = true then 1 end) enable_by_admin"),
+        //     DB::raw("count(case when atpb.is_enable_input_by_superadmin = false then 1 end) disable_by_admin")
+        //     )
+        //     ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
+        //     ->join('perusahaans', 'perusahaans.id', '=', 'atpb.perusahaan_id')
+        //     ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+        //     ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+        //     ->join('target_tpbs as tt', 'tt.anggaran_tpb_id', '=', 'atpb.id');            
+
+        $jenis_anggaran = $request->jenis_anggaran ?? 'CID';
+        $kriteria_program = explode(',', $request->kriteria_program);
+        
+        $list_perusahaan = Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get();
+        $currentNamaPerusahaan = $list_perusahaan->where('id', $perusahaan_id)->pluck('nama_lengkap');
+        $currentNamaPerusahaan = count($currentNamaPerusahaan) ? $currentNamaPerusahaan[0] : 'ALL';
+        return view($this->__route . '.index2', [
+            'pagetitle' => $this->pagetitle,
+            'breadcrumb' => '',
+            'perusahaan' => $list_perusahaan,
+            'pilar' => PilarPembangunan::get(),
+            'tpb' => Tpb::get(),
+            'admin_bumn' => $admin_bumn,
+            'perusahaan_id' => $perusahaan_id,
+            'tahun' => $tahun,
+            'jenis_anggaran' => $jenis_anggaran,
+            'kriteria_program' => $kriteria_program ?? [],
+            'pilar_pembangunan_id' => $request->pilar_pembangunan,
+            'tpb_id' => $request->tpb,
+            'view_only' => $view_only,
+            'countInprogress' => 1,
+            'perusahaan_nama' => $currentNamaPerusahaan,
+            'countFinish' => 0
+        ]);
+    }
 }
