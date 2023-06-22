@@ -195,9 +195,23 @@ class AnggaranTpbController extends Controller
             }
         }
 
-        $isEnableInputBySuperadmin = $anggaran->filter(function($data) {
-            return $data->is_enable_input_by_superadmin == true;
-        })->count();
+        $isEnableInputBySuperadmin = false;
+        if($perusahaan_id) {
+            $isEnableInputBySuperadmin = $anggaran->filter(function($data) {
+                return $data->is_enable_input_by_superadmin == true;
+            })->count();
+        } else {
+            $countEnable = $anggaran->filter(function($data) {
+                return $data->is_enable_input_by_superadmin == true;
+            })->count();
+
+            $countDisable = $anggaran->filter(function($data) {
+                return $data->is_enable_input_by_superadmin == false;
+            })->count();
+
+            if($countEnable == 0) $isEnableInputBySuperadmin = false;
+            if($countDisable == 0) $isEnableInputBySuperadmin = true;
+        }
 
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
@@ -234,12 +248,12 @@ class AnggaranTpbController extends Controller
      */
 
     public function log_status(Request $request)
-    {        
-        $log_anggaran_tpb_cid = LogAnggaranTpb::where('anggaran_tpb_id', (int)$request->input('id_cid'))
+    {    
+        $log_anggaran_tpb_cid = LogAnggaranTpb::where('anggaran_tpb_id', (int) $request->input('id_cid'))
             ->orderBy('created_at')
             ->get();
 
-        $log_anggaran_tpb_noncid = LogAnggaranTpb::where('anggaran_tpb_id', (int)$request->input('id_noncid'))
+        $log_anggaran_tpb_noncid = LogAnggaranTpb::where('anggaran_tpb_id', (int) $request->input('id_noncid'))
             ->orderBy('created_at')
             ->get();
 
@@ -319,16 +333,16 @@ class AnggaranTpbController extends Controller
         //     ->where('tahun', $tahun)
         //     ->get();
 
-        $pilars = DB::table('relasi_pilar_tpbs')
-            ->join('pilar_pembangunans', 'pilar_pembangunans.id', '=', 'relasi_pilar_tpbs.pilar_pembangunan_id')
-            ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
-            ->leftJoin('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun){
-                $join->on('anggaran_tpbs.relasi_pilar_tpb_id', '=', 'relasi_pilar_tpbs.id')
-                    ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
-                    ->where('anggaran_tpbs.tahun', $tahun);
-            })
-            ->where('versi_pilar_id', $versi->id)            
-            ->get(['relasi_pilar_tpbs.id', 'pilar_pembangunans.nama as pilar_name', 'pilar_pembangunans.jenis_anggaran as pilar_jenis_anggaran', 'tpbs.nama as tpb_name', 'tpbs.jenis_anggaran as tpb_jenis_anggaran', 'anggaran_tpbs.anggaran', 'tpbs.no_tpb as tpb_no_tpb']);
+        // $pilars = DB::table('relasi_pilar_tpbs')
+        //     ->join('pilar_pembangunans', 'pilar_pembangunans.id', '=', 'relasi_pilar_tpbs.pilar_pembangunan_id')
+        //     ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
+        //     ->leftJoin('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun){
+        //         $join->on('anggaran_tpbs.relasi_pilar_tpb_id', '=', 'relasi_pilar_tpbs.id')
+        //             ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
+        //             ->where('anggaran_tpbs.tahun', $tahun);
+        //     })
+        //     ->where('versi_pilar_id', $versi->id)            
+        //     ->get(['relasi_pilar_tpbs.id', 'pilar_pembangunans.nama as pilar_name', 'pilar_pembangunans.jenis_anggaran as pilar_jenis_anggaran', 'tpbs.nama as tpb_name', 'tpbs.jenis_anggaran as tpb_jenis_anggaran', 'anggaran_tpbs.anggaran', 'tpbs.no_tpb as tpb_no_tpb']);
 
         // if (count($current) > 0) {
         //     $actionform = 'update';
@@ -347,14 +361,56 @@ class AnggaranTpbController extends Controller
         //         }
         //     }
         // }
-        $pilars = $pilars->groupBy([
-            'pilar_name',
-            function ($item) {
-                return $item->tpb_name;
-            }
-        ])->sortByDesc(null);
+        // $pilars = $pilars->groupBy([
+        //     'pilar_name',
+        //     function ($item) {
+        //         return $item->tpb_name;
+        //     }
+        // ])->sortByDesc(null);
 
         // dd($pilars);
+
+        $pilarMaster = DB::table('pilar_pembangunans')->select('nama', 'order_pilar')
+            ->groupBy('nama', 'order_pilar')
+            ->orderBy('order_pilar')
+            ->get();
+
+        $pilarTpbMaster = DB::table('relasi_pilar_tpbs as rpt')
+            ->select('rpt.id', 'pp.nama as nama_pilar', 'tpbs.no_tpb', 
+                'tpbs.nama as nama_tpb', 'pp.jenis_anggaran as ja_pilar',
+                'tpbs.jenis_anggaran as ja_tpbs'
+            )
+            ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+            ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+            ->where('versi_pilar_id', $versi->id)
+            ->where('tpbs.is_active', true)
+            ->where('pp.is_active', true)
+            ->orderBy('pp.nama', 'asc')
+            ->orderBy('tpb_id')
+            ->get();
+
+        $dataInput = [];
+        foreach($pilarMaster as $pm) {
+            $dataInput[$pm->nama] = [];
+            $tempDataPilar = $pilarTpbMaster->where('nama_pilar', $pm->nama);
+            foreach($tempDataPilar as $tdp) {
+
+                $tempResult = DB::table('anggaran_tpbs')
+                    ->where('relasi_pilar_tpb_id', $tdp->id)
+                    ->where('perusahaan_id', $perusahaan_id)
+                    ->where('tahun', $tahun)
+                    ->first();
+
+                if($tdp->ja_pilar == 'CID') {
+                    $dataInput[$pm->nama][$tdp->no_tpb.' - '.$tdp->nama_tpb]['CID'] = $tempResult ? ['relasi_pilar_tpb_id' => $tdp->id, 'anggaran' => $tempResult->anggaran] : ['relasi_pilar_tpb_id' => $tdp->id, 'anggaran' => null];
+                }
+
+                if($tdp->ja_pilar == 'non CID') {
+                    $dataInput[$pm->nama][$tdp->no_tpb.' - '.$tdp->nama_tpb]['non CID'] = $tempResult ? ['relasi_pilar_tpb_id' => $tdp->id, 'anggaran' => $tempResult->anggaran] : ['relasi_pilar_tpb_id' => $tdp->id, 'anggaran' => null];
+                }
+                
+            }
+        }
 
         // validasi availability untuk input data
         $menuRKA = DB::table('menus')->where('label', 'RKA')->first();
@@ -382,18 +438,27 @@ class AnggaranTpbController extends Controller
             return $data->is_enable_input_by_superadmin == true;
         })->count();
 
+        $countStatus = $anggaran->groupBy('status_id')->map(function($data) {
+            return $data->count();
+        });
+
+        $isFinish = isset($countStatus['1']) && !isset($countStatus['2']);
+        
+
         return view(
             $this->__route . '.create2',
             [
                 'pagetitle' => $this->pagetitle,
                 'breadcrumb' => '',
-                'pilars' => $pilars,
+                // 'pilars' => $pilars,
                 'perusahaan_id' => $perusahaan_id,
                 'tahun' => $tahun,
                 'actionform' => '-',
                 'nama_perusahaan' => Perusahaan::find($perusahaan_id)->nama_lengkap,
                 'isOkToInput' => $isOkToInput,
-                'isEnableInputBySuperadmin' => $isEnableInputBySuperadmin
+                'isEnableInputBySuperadmin' => $isEnableInputBySuperadmin,
+                'isFinish' => $isFinish,
+                'dataInput' => $dataInput
                 // 'pilar' => PilarPembangunan::get(),
                 // 'versi_pilar_id' => $versi_pilar_id,
                 // 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
@@ -1140,20 +1205,40 @@ class AnggaranTpbController extends Controller
     public function getDataPerusahaanTree(Request $request) {
         $perusahaan_id = $request->input('id');
         $tahun = $request->input('tahun');
-        $summary = DB::table('anggaran_tpbs as atpbs')
-            ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpbs.relasi_pilar_tpb_id')
-            ->select('pilar_pembangunan_id', DB::raw('SUM(anggaran) as total'))
+
+        $result = DB::table('anggaran_tpbs as atpb')
+            ->select('pp.order_pilar', 'pp.nama as nama_pilar', 
+                DB::raw("sum(case when pp.jenis_anggaran = 'CID' then atpb.anggaran else 0 end) sum_cid"),
+                DB::raw("sum(case when pp.jenis_anggaran = 'non CID' then atpb.anggaran else 0 end) sum_noncid"),
+                DB::raw("count(case when status_id = 1 then 1 end) finish"),
+                DB::raw("count(case when status_id = 2 then 1 end) inprogress")
+            )
+            ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
+            ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+            ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
             ->where('perusahaan_id', $perusahaan_id)
             ->where('anggaran', '>', 0)
-            ->where('tahun', $tahun)
-            ->groupBy('pilar_pembangunan_id');            
+            ->where('tahun', $tahun);
 
-        $result = DB::table('pilar_pembangunans as pp')
-            ->joinSub($summary, 'sub', function($join) {
-                $join->on('pp.id', '=', 'sub.pilar_pembangunan_id');
-            })
-            ->select('pp.*', 'total')
+        if ($request->input('pilar_pembangunan')) {
+            $result = $result->where('pp.nama', $request->pilar_pembangunan);
+        }
+
+        if($request->input('tpb')) {
+            $result = $result->where('tpbs.no_tpb', $request->tpb);
+        }
+
+        if($request->status){
+            $statusId = DB::table('statuss')->where('nama', $request->status)->first();
+            if($statusId) {
+                $result = $result->where('atpb.status_id', $statusId->id);
+            }
+        } 
+
+        $result = $result->groupBy('pp.nama', 'pp.order_pilar')
+            ->orderBy('pp.order_pilar')
             ->get();
+
         echo json_encode(array('result' => $result));
     }
 
@@ -1207,7 +1292,38 @@ class AnggaranTpbController extends Controller
             ->when($id_bumn, function($query) use ($id_bumn) {
                 return $query->where('perusahaan_id', $id_bumn);
             })
-            ->update(['is_enable_input_by_superadmin' => $status]);                                                        
+            ->update(['is_enable_input_by_superadmin' => $status]);
+
+            // update log 
+            $currentTime = date('Y-m-d H:i:s');
+            if($id_bumn) {
+                DB::table('log_enable_disable_input_datas')->insert([
+                    'tipe' => 'RKA',
+                    'status' => $status ? 'enable' : 'disable',
+                    'perusahaan_id' => $id_bumn,
+                    'tahun' => $tahun,
+                    'created_at' => $currentTime,
+                    'updated_at' => $currentTime
+                ]);
+            } else {
+                $getAllPerusahaanOK = DB::table('anggaran_tpbs')->select('perusahaan_id')
+                    ->where('tahun', $tahun)
+                    ->groupBy('perusahaan_id')
+                    ->havingRaw('COUNT(CASE WHEN anggaran > 0 THEN 1 END) > 0')
+                    ->orderBy('perusahaan_id')
+                    ->get();
+                
+                foreach($getAllPerusahaanOK as $perusahaan) {
+                    DB::table('log_enable_disable_input_datas')->insert([
+                        'tipe' => 'RKA',
+                        'status' => $status ? 'enable' : 'disable',
+                        'perusahaan_id' => $perusahaan->perusahaan_id,
+                        'tahun' => $tahun,
+                        'created_at' => $currentTime,
+                        'updated_at' => $currentTime
+                    ]);
+                }
+            }
             
             DB::commit();
 
@@ -1225,5 +1341,503 @@ class AnggaranTpbController extends Controller
             ];
         }
         return response()->json($result);
+    }    
+
+    public function index2(Request $request) {
+        $id_users = \Auth::user()->id;
+        $users = User::where('id', $id_users)->first();
+        $perusahaan_id = $request->perusahaan_id;
+
+        $admin_bumn = false;
+        $view_only = false;
+        $isSuperAdmin = false;
+        if (!empty($users->getRoleNames())) {
+            foreach ($users->getRoleNames() as $v) {
+                if ($v == 'Admin BUMN' || $v == 'Verifikator BUMN') {
+                    $admin_bumn = true;
+                    $perusahaan_id = \Auth::user()->id_bumn;
+                }
+                if ($v == 'Admin Stakeholder') {
+                    $view_only = true;
+                }
+                if($v == 'Super Admin') {
+                    $isSuperAdmin = true;
+                }
+            }
+        }   
+        
+        $tahun = $request->tahun ? $request->tahun : (int)date('Y');
+        
+        $data = DB::table('anggaran_tpbs as atpb')
+            ->select('perusahaan_id', 'perusahaans.nama_lengkap', DB::raw("sum(case when pp.jenis_anggaran = 'CID' then atpb.anggaran end) as sum_cid"),
+            DB::raw("sum(case when pp.jenis_anggaran = 'non CID' then atpb.anggaran end) as sum_noncid"),
+            DB::raw("count(case when status_id = 1 then 1 end) finish"),
+            DB::raw("count(case when status_id = 2 then 1 end) inprogress"),
+            DB::raw("count(case when atpb.is_enable_input_by_superadmin = true then 1 end) enable_by_admin"),
+            DB::raw("count(case when atpb.is_enable_input_by_superadmin = false then 1 end) disable_by_admin")
+            )
+            ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
+            ->join('perusahaans', 'perusahaans.id', '=', 'atpb.perusahaan_id')
+            ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+            ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+            ->where('anggaran', '>', 0);
+            
+        
+        if($perusahaan_id) {
+            $data = $data->where('atpb.perusahaan_id', $perusahaan_id);
+        }
+
+        if ($tahun) {
+            $data = $data->where('atpb.tahun', $tahun);
+        }
+        
+        if ($request->pilar_pembangunan) {
+            $data = $data->where('pp.nama', $request->pilar_pembangunan);
+        }
+
+        if ($request->tpb) {
+            $data = $data->where('tpbs.no_tpb', $request->tpb);
+        }
+
+        if($request->status){
+            $statusId = DB::table('statuss')->where('nama', $request->status)->first();
+            if($statusId) {
+                $data = $data->where('atpb.status_id', $statusId->id);
+            }
+        } 
+
+        $data = $data->groupBy('perusahaan_id', 'perusahaans.nama_lengkap')
+            ->orderBy('perusahaan_id')
+            ->get();
+
+        $countInprogress = $data->filter(function($row) {
+            return $row->inprogress > 0;
+        })->count();
+        
+        $countFinish = $data->filter(function($row) {
+            return $row->finish > 0;
+        })->count();
+                
+        $list_perusahaan = Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get();
+        $currentNamaPerusahaan = $list_perusahaan->where('id', $perusahaan_id)->pluck('nama_lengkap');
+        $currentNamaPerusahaan = count($currentNamaPerusahaan) ? $currentNamaPerusahaan[0] : 'ALL';
+
+        // validasi availability untuk input data
+        $menuRKA = DB::table('menus')->where('label', 'RKA')->first();
+        $start = null;
+        $end = null;
+        $isOkToInput = true;
+        if($menuRKA) {
+            $periodeHasJenis = DB::table('periode_has_jenis')->where('jenis_laporan_id', $menuRKA->id)->first();
+            if($periodeHasJenis) {
+                $periodeLaporan = DB::table('periode_laporans')->where('is_active', 1)->where('id', $periodeHasJenis->periode_laporan_id)->first();
+                if($periodeLaporan) {
+                    $currentDate = new DateTime();                    
+                    $start = new DateTime($periodeLaporan->tanggal_awal);
+                    $end = new DateTime($periodeLaporan->tanggal_akhir);
+
+                    if($currentDate < $start || $currentDate > $end) {
+                        $isOkToInput = false;
+                    }
+                }
+            }
+        }
+
+        $isEnableInputBySuperadmin = false;
+        if($perusahaan_id) {
+            // kalo ada satu aja yg enable -> status = ENABLE
+            $isEnableInputBySuperadmin = $data->filter(function($row) {
+                return $row->enable_by_admin > 0;
+            })->count();
+        } else {
+            $countEnable = $data->filter(function($row) {
+                return $row->enable_by_admin > 0;
+            })->count();
+
+            $countDisable = $data->filter(function($row) {
+                return $row->disable_by_admin > 0;
+            })->count();
+
+            if($countEnable == 0) $isEnableInputBySuperadmin = false;
+            if($countDisable == 0) $isEnableInputBySuperadmin = true;
+        }
+        
+        return view($this->__route . '.index2', [
+            'pagetitle' => $this->pagetitle,
+            'breadcrumb' => '',
+            'perusahaan' => $list_perusahaan,
+            'pilar' => PilarPembangunan::select(DB::raw('DISTINCT ON (nama) *'))->where('is_active', true)->orderBy('nama')->orderBy('id')->get(),
+            'tpb' => Tpb::select('no_tpb', 'nama')->groupBy('no_tpb', 'nama')->orderBy(DB::raw("substring(no_tpb, '^[^0-9]*'), (substring(no_tpb, '[0-9]+'))::int"))->get(),            
+            'admin_bumn' => $admin_bumn,
+            'perusahaan_id' => $perusahaan_id,
+            'tahun' => $tahun,
+            'pilar_pembangunan_id' => $request->pilar_pembangunan ?? 0,
+            'tpb_id' => $request->tpb ?? 0,
+            'view_only' => $view_only,
+            'countInprogress' => $countInprogress,
+            'perusahaan_nama' => $currentNamaPerusahaan,
+            'countFinish' => $countFinish,
+            'isOkToInput' => $isOkToInput,
+            'isEnableInputBySuperadmin' => $isEnableInputBySuperadmin,
+            'isSuperAdmin' => $isSuperAdmin,
+            'data' => $data
+        ]);
+    }
+
+    public function getDataPerusahaanPilarTree(Request $request) {
+        $perusahaan_id = $request->input('id');
+        $tahun = $request->input('tahun');
+        $pilar = $request->input('pilar');
+
+        $result = DB::table('anggaran_tpbs as atpb')
+            ->select('tpbs.no_tpb', 'tpbs.nama as nama_tpb',
+                DB::raw("sum(case when tpbs.jenis_anggaran = 'CID' then anggaran end) sum_cid"),
+                DB::raw("sum(case when tpbs.jenis_anggaran = 'non CID' then anggaran end) sum_noncid"),
+                DB::raw("count(case when status_id = 1 then 1 end) finish"),
+                DB::raw("count(case when status_id = 2 then 1 end) inprogress"),
+                DB::raw("count(case when atpb.is_enable_input_by_superadmin = true then 1 end) enable_by_admin"),
+                DB::raw("count(case when atpb.is_enable_input_by_superadmin = false then 1 end) disable_by_admin")
+            )
+            ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
+            ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+            ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+            ->where('perusahaan_id', $perusahaan_id)
+            ->where('anggaran', '>', 0)
+            ->where('tahun', $tahun)
+            ->where('pp.nama', str_replace("-", " ", $pilar));
+
+
+        if($request->input('tpb')) {
+            $result = $result->where('tpbs.no_tpb', $request->tpb);
+        }
+
+        if($request->status){
+            $statusId = DB::table('statuss')->where('nama', $request->status)->first();
+            if($statusId) {
+                $result = $result->where('atpb.status_id', $statusId->id);
+            }
+        }    
+        $result = $result->groupBy('tpbs.no_tpb', 'tpbs.nama')            
+            ->orderBy(DB::raw("substring(tpbs.no_tpb, '^[^0-9]*'), (substring(tpbs.no_tpb, '[0-9]+'))::int"))
+            ->get();
+
+        echo json_encode(array('result' => $result));
+    }
+
+    public function log_status2(Request $request)
+    {    
+        $no_tpb = $request->no_tpb;
+        $nama_pilar = str_replace("-", " ", $request->nama_pilar);
+        $id_perusahaan = $request->perusahaan;
+        $tahun = $request->tahun;
+
+        $data = DB::table('anggaran_tpbs as atpb')
+            ->select('atpb.id as id_anggaran', 'tpbs.jenis_anggaran')
+            ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
+            ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+            ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+            ->where('tpbs.no_tpb', $no_tpb)
+            ->where('pp.nama', $nama_pilar)
+            ->where('atpb.perusahaan_id', $id_perusahaan)
+            ->where('atpb.tahun', $tahun)
+            ->get();
+        
+        $id_cid = null;
+        $id_noncid = null;
+        foreach($data as $anggaran) {
+            if($anggaran->jenis_anggaran == 'CID') $id_cid = $anggaran->id_anggaran;
+            if($anggaran->jenis_anggaran == 'non CID') $id_noncid = $anggaran->id_anggaran;
+        }
+
+        $log_anggaran_tpb_cid = LogAnggaranTpb::where('anggaran_tpb_id', $id_cid)
+            ->orderBy('created_at')
+            ->get();
+
+        $log_anggaran_tpb_noncid = LogAnggaranTpb::where('anggaran_tpb_id', $id_noncid)
+            ->orderBy('created_at')
+            ->get();
+
+        return view($this->__route . '.log_status', [
+            'pagetitle' => 'Log Status',
+            'log_cid' => $log_anggaran_tpb_cid,
+            'log_noncid' => $log_anggaran_tpb_noncid
+        ]);
+    }
+
+    public function edit2(Request $request)
+    {
+
+        try {
+
+            $no_tpb = $request->no_tpb;
+            $nama_pilar = str_replace("-", " ", $request->nama_pilar);
+            $id_perusahaan = $request->perusahaan;
+            $tahun = $request->tahun;
+
+            $data = DB::table('anggaran_tpbs as atpb')
+                ->select('atpb.id as id_anggaran', 'tpbs.jenis_anggaran')
+                ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
+                ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+                ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+                ->where('tpbs.no_tpb', $no_tpb)
+                ->where('pp.nama', $nama_pilar)
+                ->where('atpb.perusahaan_id', $id_perusahaan)
+                ->where('atpb.tahun', $tahun)
+                ->get();
+            
+            $anggaran_tpb_cid = null;
+            $anggaran_tpb_noncid = null;
+
+            foreach($data as $anggaran) {
+                if($anggaran->jenis_anggaran == 'CID') $anggaran_tpb_cid = AnggaranTpb::find($anggaran->id_anggaran);
+                if($anggaran->jenis_anggaran == 'non CID') $anggaran_tpb_noncid = AnggaranTpb::find($anggaran->id_anggaran);
+            }
+                    
+
+            // validasi availability untuk input data
+            $menuRKA = DB::table('menus')->where('label', 'RKA')->first();
+            $start = null;
+            $end = null;
+            $isOkToInput = true;
+            if($menuRKA) {
+                $periodeHasJenis = DB::table('periode_has_jenis')->where('jenis_laporan_id', $menuRKA->id)->first();
+                if($periodeHasJenis) {
+                    $periodeLaporan = DB::table('periode_laporans')->where('is_active', 1)->where('id', $periodeHasJenis->periode_laporan_id)->first();
+                    if($periodeLaporan) {
+                        $currentDate = new DateTime();                    
+                        $start = new DateTime($periodeLaporan->tanggal_awal);
+                        $end = new DateTime($periodeLaporan->tanggal_akhir);
+
+                        if($currentDate < $start || $currentDate > $end) {
+                            $isOkToInput = false;
+                        }
+                    }
+                }
+            }
+
+            if($anggaran_tpb_cid) {
+                $isEnableInputBySuperadmin = $anggaran_tpb_cid->is_enable_input_by_superadmin; 
+            } else if($anggaran_tpb_noncid) {
+                $isEnableInputBySuperadmin = $anggaran_tpb_noncid->is_enable_input_by_superadmin; 
+            } else {
+                $isEnableInputBySuperadmin = false;
+            }
+
+
+            return view($this->__route . '.edit2', [
+                'pagetitle' => $this->pagetitle,
+                'actionform' => 'update',
+                // 'tpb' => Tpb::get(),
+                'tpb_selected' => Tpb::where('no_tpb', $no_tpb)->first(),
+                // 'pilar' => PilarPembangunan::get(),
+                // 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
+                'perusahaan_selected' => Perusahaan::find($id_perusahaan),
+                'data_cid' => $anggaran_tpb_cid,
+                'data_noncid' => $anggaran_tpb_noncid,
+                'isOkToInput' => $isOkToInput,
+                'isEnableInputBySuperadmin' => $isEnableInputBySuperadmin
+            ]);
+        } catch (Exception $e) {
+        }
+    }
+
+    public function updateAnggaran(Request $request) {
+        $result = [
+            'flag' => 'error',
+            'msg' => 'Error System',
+            'title' => 'Error'
+        ];
+
+        switch ($request->input('actionform')) {
+            case 'update':
+                DB::beginTransaction();
+                try {
+                    $anggaran_tpb_cid = AnggaranTpb::find((int) $request->input('id_cid'));
+                    $anggaran_tpb_noncid = AnggaranTpb::find((int) $request->input('id_noncid'));
+
+                    if($anggaran_tpb_cid) {
+                        $param_cid['anggaran'] = str_replace(',', '', $request->input('anggaran_cid'));
+                        $anggaran_tpb_cid->update((array)$param_cid);
+                        AnggaranTpbController::store_log($anggaran_tpb_cid->id, $anggaran_tpb_cid->status_id, $param_cid['anggaran'], 'RKA Revisi');
+                    }
+
+                    if($anggaran_tpb_noncid) {
+                        $param_noncid['anggaran'] = str_replace(',', '', $request->input('anggaran_noncid'));
+                        $anggaran_tpb_noncid->update((array)$param_noncid);
+                        AnggaranTpbController::store_log($anggaran_tpb_noncid->id, $anggaran_tpb_noncid->status_id, $param_noncid['anggaran'], 'RKA Revisi');
+                    }
+
+                    DB::commit();
+                    $result = [
+                        'flag'  => 'success',
+                        'msg' => 'Sukses ubah data',
+                        'title' => 'Sukses'
+                    ];
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    $result = [
+                        'flag'  => 'warning',
+                        'msg' => $e->getMessage(),
+                        'title' => 'Gagal'
+                    ];
+                }
+
+                break;
+        }
+
+        return response()->json($result);
+    }
+
+    public function deleteBySelect2(Request $request) {
+        DB::beginTransaction();
+        try {
+            $list_data = $request->input('anggaran_deleted');
+            foreach($list_data as $data) {
+                $no_tpb = $data['no_tpb'];
+                $nama_pilar = str_replace("-", " ", $data['nama_pilar']);
+                $id_perusahaan = $data['perusahaan'];
+                $tahun = $data['tahun'];
+
+                $data_anggaran = DB::table('anggaran_tpbs as atpb')
+                    ->select('atpb.id as id_anggaran', 'tpbs.jenis_anggaran')
+                    ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
+                    ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+                    ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+                    ->where('tpbs.no_tpb', $no_tpb)
+                    ->where('pp.nama', $nama_pilar)
+                    ->where('atpb.perusahaan_id', $id_perusahaan)
+                    ->where('atpb.tahun', $tahun)
+                    ->get();
+                
+                $anggaran_tpb_cid = null;
+                $anggaran_tpb_noncid = null;
+    
+                foreach($data_anggaran as $anggaran) {
+                    if($anggaran->jenis_anggaran == 'CID') $anggaran_tpb_cid = AnggaranTpb::find($anggaran->id_anggaran);
+                    if($anggaran->jenis_anggaran == 'non CID') $anggaran_tpb_noncid = AnggaranTpb::find($anggaran->id_anggaran);
+                }
+                
+                if($anggaran_tpb_cid) {
+                    $anggaran_tpb_cid->update(['anggaran' => 0]);
+                    AnggaranTpbController::store_log($anggaran_tpb_cid->id, $anggaran_tpb_cid->status_id, 0, 'RKA Revisi - Delete');   
+                }
+
+                if($anggaran_tpb_noncid) {
+                    $anggaran_tpb_noncid->update(['anggaran' => 0]);
+                    AnggaranTpbController::store_log($anggaran_tpb_noncid->id, $anggaran_tpb_noncid->status_id, 0, 'RKA Revisi - Delete');   
+                }
+            }
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses hapus data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal hapus data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function createRKA($perusahaan_id, $tahun)
+    {
+        $versi = VersiPilar::whereNull('tanggal_akhir')->orWhere('tanggal_akhir', '>=', date('Y-m-d'))->first();
+        $versi_pilar_id = $versi->id;
+
+        $pilarMaster = DB::table('pilar_pembangunans')->select('nama', 'order_pilar')
+            ->groupBy('nama', 'order_pilar')
+            ->orderBy('order_pilar')
+            ->get();
+
+        $pilarTpbMaster = DB::table('relasi_pilar_tpbs as rpt')
+            ->select('rpt.id', 'pp.nama as nama_pilar', 'tpbs.no_tpb', 
+                'tpbs.nama as nama_tpb', 'pp.jenis_anggaran as ja_pilar',
+                'tpbs.jenis_anggaran as ja_tpbs'
+            )
+            ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+            ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+            ->where('versi_pilar_id', $versi->id)
+            ->where('tpbs.is_active', true)
+            ->where('pp.is_active', true)
+            ->orderBy('pp.nama', 'asc')
+            ->orderBy('tpb_id')
+            ->get();
+
+        $dataInput = [];
+        foreach($pilarMaster as $pm) {
+            $dataInput[$pm->nama] = [];
+            $tempDataPilar = $pilarTpbMaster->where('nama_pilar', $pm->nama);
+            foreach($tempDataPilar as $tdp) {
+
+                $tempResult = DB::table('anggaran_tpbs')
+                    ->where('relasi_pilar_tpb_id', $tdp->id)
+                    ->where('perusahaan_id', $perusahaan_id)
+                    ->where('tahun', $tahun)
+                    ->first();
+
+                if($tdp->ja_pilar == 'CID') {
+                    $dataInput[$pm->nama][$tdp->no_tpb.' - '.$tdp->nama_tpb]['CID'] = $tempResult ? ['relasi_pilar_tpb_id' => $tdp->id, 'anggaran' => $tempResult->anggaran] : ['relasi_pilar_tpb_id' => $tdp->id, 'anggaran' => null];
+                }
+
+                if($tdp->ja_pilar == 'non CID') {
+                    $dataInput[$pm->nama][$tdp->no_tpb.' - '.$tdp->nama_tpb]['non CID'] = $tempResult ? ['relasi_pilar_tpb_id' => $tdp->id, 'anggaran' => $tempResult->anggaran] : ['relasi_pilar_tpb_id' => $tdp->id, 'anggaran' => null];
+                }
+                
+            }
+        }
+
+        // validasi availability untuk input data
+        $menuRKA = DB::table('menus')->where('label', 'RKA')->first();
+        $start = null;
+        $end = null;
+        $isOkToInput = true;
+        if($menuRKA) {
+            $periodeHasJenis = DB::table('periode_has_jenis')->where('jenis_laporan_id', $menuRKA->id)->first();
+            if($periodeHasJenis) {
+                $periodeLaporan = DB::table('periode_laporans')->where('is_active', 1)->where('id', $periodeHasJenis->periode_laporan_id)->first();
+                if($periodeLaporan) {
+                    $currentDate = new DateTime();                    
+                    $start = new DateTime($periodeLaporan->tanggal_awal);
+                    $end = new DateTime($periodeLaporan->tanggal_akhir);
+
+                    if($currentDate < $start || $currentDate > $end) {
+                        $isOkToInput = false;
+                    }
+                }
+            }
+        }
+
+        $anggaran = DB::table('anggaran_tpbs')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->get();
+        $isEnableInputBySuperadmin = $anggaran->filter(function($data) {
+            return $data->is_enable_input_by_superadmin == true;
+        })->count();
+
+        $countStatus = $anggaran->groupBy('status_id')->map(function($data) {
+            return $data->count();
+        });
+
+        $isFinish = isset($countStatus['1']) && !isset($countStatus['2']);
+        
+
+        return view(
+            $this->__route . '.create_rka',
+            [
+                'pagetitle' => $this->pagetitle,
+                'breadcrumb' => '',
+                'perusahaan_id' => $perusahaan_id,
+                'tahun' => $tahun,
+                'actionform' => '-',
+                'nama_perusahaan' => Perusahaan::find($perusahaan_id)->nama_lengkap,
+                'isOkToInput' => $isOkToInput,
+                'isEnableInputBySuperadmin' => $isEnableInputBySuperadmin,
+                'isFinish' => $isFinish,
+                'dataInput' => $dataInput
+            ]
+        );
     }
 }

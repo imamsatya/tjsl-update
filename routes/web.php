@@ -447,6 +447,13 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
         Route::post('get_data_perusahaan_tree', 'App\Http\Controllers\AnggaranTpbController@getDataPerusahaanTree')->name('anggaran_tpb.get_data_perusahaan_tree');
         Route::post('batal_verifikasi_data', 'App\Http\Controllers\AnggaranTpbController@batalVerifikasiData')->name('anggaran_tpb.batal_verifikasi_data');        
         Route::post('enable_disable_input_data', 'App\Http\Controllers\AnggaranTpbController@enableDisableInputData')->name('anggaran_tpb.enable_disable_input_data');        
+        Route::get('/rka', 'App\Http\Controllers\AnggaranTpbController@index2')->name('anggaran_tpb.rka');
+        Route::get('rka/create/{perusahaan_id}/{tahun}', 'App\Http\Controllers\AnggaranTpbController@createRKA')->name('anggaran_tpb.rka.create');
+        Route::post('get_data_perusahaan_pilar_tree', 'App\Http\Controllers\AnggaranTpbController@getDataPerusahaanPilarTree')->name('anggaran_tpb.get_data_perusahaan_pilar_tree');        
+        Route::post('log_status2', 'App\Http\Controllers\AnggaranTpbController@log_status2')->name('anggaran_tpb.log_status2');
+        Route::post('edit2', 'App\Http\Controllers\AnggaranTpbController@edit2')->name('anggaran_tpb.edit2');
+        Route::post('update_anggaran', 'App\Http\Controllers\AnggaranTpbController@updateAnggaran')->name('anggaran_tpb.update_anggaran');
+        Route::post('delete_by_select2', 'App\Http\Controllers\AnggaranTpbController@deleteBySelect2')->name('anggaran_tpb.delete_by_select2');
     });
 
     Route::prefix('laporan_manajemen')->group(function () {
@@ -567,6 +574,9 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('verifikasi_data', 'App\Http\Controllers\RencanaKerja\ProgramController@verifikasiData')->name('rencana_kerja.program.verifikasi_data');
             Route::post('export', 'App\Http\Controllers\RencanaKerja\ProgramController@export')->name('rencana_kerja.program.export');
             Route::post('batal_verifikasi_data', 'App\Http\Controllers\RencanaKerja\ProgramController@batalVerifikasiData')->name('rencana_kerja.program.batal_verifikasi_data');
+
+            Route::get('/', 'App\Http\Controllers\RencanaKerja\ProgramController@index2')->name('rencana_kerja.program.index2');
+
         });
 
         Route::prefix('laporan_manajemen')->group(function () {
