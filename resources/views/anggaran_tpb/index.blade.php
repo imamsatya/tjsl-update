@@ -1680,6 +1680,52 @@
         // Redirect the user to the new page
         window.location.href = url;
     }
+
+    function loadDataPerusahaan(perusahaanId, tahun) {
+        return $.ajax({
+            url: urlgetdataperusahaan,
+            data:{
+                "id": perusahaanId,
+                "tahun": tahun
+            },
+            type:'post',
+            dataType:'json',
+            beforeSend: function(){
+                $.blockUI();
+            },
+            success: function(data){
+                $.unblockUI();                
+            },
+            error: function(jqXHR, exception) {
+                $.unblockUI();
+                var msgerror = '';
+                if (jqXHR.status === 0) {
+                    msgerror = 'jaringan tidak terkoneksi.';
+                } else if (jqXHR.status == 404) {
+                    msgerror = 'Halaman tidak ditemukan. [404]';
+                } else if (jqXHR.status == 500) {
+                    msgerror = 'Internal Server Error [500].';
+                } else if (exception === 'parsererror') {
+                    msgerror = 'Requested JSON parse gagal.';
+                } else if (exception === 'timeout') {
+                    msgerror = 'RTO.';
+                } else if (exception === 'abort') {
+                    msgerror = 'Gagal request ajax.';
+                } else {
+                    msgerror = 'Error.\n' + jqXHR.responseText;
+                }
+                swal.fire({
+                    title: "Error System",
+                    html: msgerror+', coba ulangi kembali !!!',
+                    icon: 'error',
+
+                    buttonsStyling: true,
+
+                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                });  
+            }
+        });
+    }
 </script>
 @endsection
 
