@@ -132,6 +132,8 @@ class KegiatanController extends Controller
             'satuan_ukur.nama as satuan_ukur_nama'
         )
         ->get();
+
+        
         // dd($kegiatan);
         // $pilar_pembangunan_id = $request->pilar_pembangunan ?? '';
         //     dd($pilar_pembangunan_id);
@@ -289,7 +291,6 @@ class KegiatanController extends Controller
         //     ->select('target_tpbs.*', 'tpbs.jenis_anggaran')
         //     ->get();
         // dd($targetTpbs);
-       
        
         return view(
             $this->__route . '.create',
@@ -824,5 +825,54 @@ class KegiatanController extends Controller
             ];
         }
         return response()->json($result);
+    }
+
+    public function detail(Request $request)
+    {
+        
+        // try{
+          
+            // $kegiatan  = Kegiatan::find((int)$request->input('id'));
+            $kegiatan = DB::table('kegiatans')->where('kegiatans.id', (int)$request->input('id'))
+            ->join('target_tpbs', 'target_tpbs.id', 'kegiatans.target_tpb_id')
+            ->join('tpbs', 'tpbs.id', 'target_tpbs.tpb_id')
+            ->join('provinsis', 'provinsis.id', 'kegiatans.provinsi_id')
+            ->join('kotas', 'kotas.id', 'kegiatans.kota_id')
+            ->join('satuan_ukur', 'satuan_ukur.id', 'kegiatans.satuan_ukur_id')
+            ->select('kegiatans.*','provinsis.nama as provinsi', 'kotas.nama as kota'
+            ,'satuan_ukur.nama as satuan_ukur','target_tpbs.program as program', 'tpbs.jenis_anggaran as jenis_anggaran', 'tpbs.no_tpb as no_tpb', 'tpbs.nama as nama_tpb')->first();
+        //   dd($kegiatan);
+            $tahun     = KegiatanRealisasi::select('tahun')->where('kegiatan_id', $kegiatan->id)->groupBy('tahun')->orderBy('tahun')->get();
+            $realisasi = KegiatanRealisasi::select('kegiatan_realisasis.*','kegiatans.target_tpb_id','kegiatans.kegiatan')->leftjoin('kegiatans','kegiatans.id','kegiatan_realisasis.kegiatan_id')->where('kegiatan_realisasis.kegiatan_id', $kegiatan->id)->get();
+            $realisasi_total = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->select(DB::Raw('sum(anggaran) as total'))->first();
+
+
+            $realisasi_by_api = [];
+            if($realisasi){
+                if($realisasi[0]->sumber_data !== null){
+                    //akumulasi nilai realisasi sebelumnya
+                    $realisasi_by_api = Kegiatan::leftjoin('kegiatan_realisasis','kegiatan_realisasis.kegiatan_id','kegiatans.id')
+                                    ->where('kegiatans.kegiatan',$realisasi[0]->kegiatan)
+                                    ->where('kegiatans.target_tpb_id',$realisasi[0]->target_tpb_id)
+                                    ->where('kegiatan_realisasis.bulan','<=',(int)$realisasi[0]->bulan)
+                                    ->where('kegiatan_realisasis.tahun',(int)$realisasi[0]->tahun)
+                                    ->where('kegiatan_realisasis.is_invalid_aplikasitjsl',false);  
+
+                     $realisasi = $realisasi_by_api->get();
+                     $realisasi_total['total'] = $realisasi_by_api->sum('kegiatan_realisasis.anggaran');
+                }
+
+            }
+
+                return view($this->__route.'.detail',[
+                    'pagetitle' => $this->pagetitle,
+                    'actionform' => 'update',
+                    'data' => $kegiatan,
+                    'tahun' => $tahun,
+                    'anggaran_total' => $realisasi_total->total,
+                    'realisasi' => $realisasi,
+                ]);
+        // }catch(Exception $e){}
+
     }
 }

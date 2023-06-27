@@ -362,6 +362,7 @@
             <!--end::Card body-->
         </div>
     </div>
+    
 </div>
 @endsection
 
@@ -379,6 +380,7 @@
     var urllog = "{{route('laporan_realisasi.bulanan.kegiatan.log')}}";
     var urledit = "{{route('laporan_realisasi.bulanan.kegiatan.edit')}}";  
     var urlverifikasidata = "{{route('laporan_realisasi.bulanan.kegiatan.verifikasi_data')}}";
+    var urldetail = "{{route('laporan_realisasi.bulanan.kegiatan.detail')}}";
 
     $(document).ready(function () {
         $('.tree').treegrid({
@@ -408,6 +410,10 @@
 
         $('body').on('click','.cls-log',function(){
                 winform(urllog, {'id':$(this).data('id')}, 'Log Data');
+        });
+
+        $('body').on('click','.cls-button-detail',function(){
+            winform(urldetail, {'id':$(this).data('id')}, 'Ubah Data');
         });
 
 
@@ -650,7 +656,12 @@
                 },
                 {
                     data: 'kegiatan',
-                    name: 'kegiatan'
+                    name: 'kegiatan',
+                    render: function (data, type, row){
+                        
+                        detailKegiatan = `<a href="javascript:void(0)"><div class="cls-button-detail" data-id=${row.id}>${data}</div></a>`
+                        return detailKegiatan;
+                    }
                 },
                 {
                     data: 'jenis_kegiatan_nama',

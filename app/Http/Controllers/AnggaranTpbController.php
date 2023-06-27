@@ -212,7 +212,8 @@ class AnggaranTpbController extends Controller
             if($countEnable == 0) $isEnableInputBySuperadmin = false;
             if($countDisable == 0) $isEnableInputBySuperadmin = true;
         }
-
+       
+        // dd($anggaran_bumn[0]);
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',

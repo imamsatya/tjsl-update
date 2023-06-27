@@ -626,6 +626,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('delete', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@delete')->name('laporan_realisasi.bulanan.kegiatan.delete');
                 Route::post('log', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@log_status')->name('laporan_realisasi.bulanan.kegiatan.log');
                 Route::post('verifikasi_data', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@verifikasiData')->name('laporan_realisasi.bulanan.kegiatan.verifikasi_data');
+                Route::post('detail', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@detail')->name('laporan_realisasi.bulanan.kegiatan.detail');
             });
 
             Route::prefix('pumk')->group(function () {

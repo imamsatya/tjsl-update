@@ -16,21 +16,21 @@
         <tbody>
             <tr>
                 <td><b>Program</b></td>
-                <td>{{ @$data->target_tpb->program }}</td>
+                <td>{{ @$data->program }}</td>
                 <td><b>Kegiatan</b></td>
                 <td>{{ @$data->kegiatan }}</td>
             </tr>
             <tr>
                 <td><b>Provinsi</b></td>
-                <td>{{ @$data->provinsi->nama }}</td>
+                <td>{{ @$data->provinsi }}</td>
                 <td><b>Kota</b></td>
-                <td>{{ @$data->kota->nama }}</td>
+                <td>{{ @$data->kota }}</td>
             </tr>
             <tr>
                 <td><b>Indikator Capaian Kegiatan</b></td>
                 <td>{{ @$data->indikator }}</td>
                 <td><b>Satuan Ukur</b></td>
-                <td>{{ @$data->satuan_ukur->nama }}</td>
+                <td>{{ @$data->satuan_ukur }}</td>
             </tr>
             <tr>
                 <td><b>Alokasi Anggaran</b></td>
@@ -39,321 +39,15 @@
                 <td>Rp. {{ number_format($anggaran_total, 0, ',', ',') }}</td>
             </tr>
             <tr>
-                <td><b>Sumber Data</b></td>
-                <td>{{ @$data->sumber_data ? 'Sinkronisasi Aplikasi TJSL' : 'Portal TJSL' }}</td>
-                <td><b>Owner Program</b></td>
-                <td>{{ @$data->target_tpb->id_owner == 1 ? 'TJSL' : 'Non-TJSL' }}</td>
+                <td><b>TPB</b></td>
+                <td>{{ @$data->no_tpb }} - {{ @$data->nama_tpb }}</td>
+                <td><b>Jenis Anggaran</b></td>
+                <td>{{ @$data->jenis_anggaran }}</td>
             </tr>
         </tbody>
     </table>
 
-    <table class="table table-striped- table-bordered table-hover table-checkable" style="border: 1px solid #cfd1d4;"
-        id="datatable_target">
-        <thead>
-            <tr>
-                <td colspan="14" style="border: 1px solid #cfd1d4;text-align:center;font-weight:bold;">Target</td>
-            </tr>
-            <tr>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Tahun</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Jan</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Feb</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Mar</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Apr</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Mei</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Jun</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Jul</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Agus</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Sep</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Okt</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Nov</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Des</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Total</th>
-            </tr>
-        </thead>
-        <tbody id="tb-target">
-            @foreach ($tahun as $i)
-                @php
-                    $realisasi_1 = $realisasi
-                        ->where('bulan', 1)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_2 = $realisasi
-                        ->where('bulan', 2)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_3 = $realisasi
-                        ->where('bulan', 3)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_4 = $realisasi
-                        ->where('bulan', 4)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_5 = $realisasi
-                        ->where('bulan', 5)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_6 = $realisasi
-                        ->where('bulan', 6)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_7 = $realisasi
-                        ->where('bulan', 7)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_8 = $realisasi
-                        ->where('bulan', 8)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_9 = $realisasi
-                        ->where('bulan', 9)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_10 = $realisasi
-                        ->where('bulan', 10)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_11 = $realisasi
-                        ->where('bulan', 11)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_12 = $realisasi
-                        ->where('bulan', 12)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    
-                    $status_1 = $status_2 = $status_3 = $status_4 = $status_5 = $status_6 = $status_7 = $status_8 = $status_9 = $status_10 = $status_11 = $status_12 = null;
-                    if (@$realisasi_1->status_id == 1) {
-                        $status_1 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_2->status_id == 1) {
-                        $status_2 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_3->status_id == 1) {
-                        $status_3 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_4->status_id == 1) {
-                        $status_4 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_5->status_id == 1) {
-                        $status_5 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_6->status_id == 1) {
-                        $status_6 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_7->status_id == 1) {
-                        $status_7 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_8->status_id == 1) {
-                        $status_8 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_9->status_id == 1) {
-                        $status_9 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_10->status_id == 1) {
-                        $status_10 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_11->status_id == 1) {
-                        $status_11 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_12->status_id == 1) {
-                        $status_12 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    
-                    $total = @$realisasi_1->target + @$realisasi_2->target + @$realisasi_3->target + @$realisasi_4->target + @$realisasi_5->target + @$realisasi_6->target + @$realisasi_7->target + @$realisasi_8->target + @$realisasi_9->target + @$realisasi_10->target + @$realisasi_11->target + @$realisasi_12->target;
-                @endphp
-                <tr>
-                    <td class="vtahunTarget" style="border: 1px solid #cfd1d4;text-align:right;">{{ $i->tahun }}
-                    </td>
-                    <td class="vTarget t1" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_1 !!}{{ @$realisasi_1->target }}</td>
-                    <td class="vTarget t2" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_2 !!}{{ @$realisasi_2->target }}</td>
-                    <td class="vTarget t3" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_3 !!}{{ @$realisasi_3->target }}</td>
-                    <td class="vTarget t4" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_4 !!}{{ @$realisasi_4->target }}</td>
-                    <td class="vTarget t5" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_5 !!}{{ @$realisasi_5->target }}</td>
-                    <td class="vTarget t6" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_6 !!}{{ @$realisasi_6->target }}</td>
-                    <td class="vTarget t7" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_7 !!}{{ @$realisasi_7->target }}</td>
-                    <td class="vTarget t8" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_8 !!}{{ @$realisasi_8->target }}</td>
-                    <td class="vTarget t9" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_9 !!}{{ @$realisasi_9->target }}</td>
-                    <td class="vTarget t10" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_10 !!}{{ @$realisasi_10->target }}</td>
-                    <td class="vTarget t11" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_11 !!}{{ @$realisasi_11->target }}</td>
-                    <td class="vTarget t12" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_12 !!}{{ @$realisasi_12->target }}</td>
-                    <td class="totalTarget" style="border: 1px solid #cfd1d4;text-align:right;">{{ $total }}
-                    </td>
-                </tr>
-            @endforeach
-            @if ($tahun->count() == 0)
-                <tr>
-                    <td colspan="14" style="border: 1px solid #cfd1d4;text-align:center;"><i>Data Kosong</i></td>
-                </tr>
-            @endif
-        </tbody>
-    </table>
 
-    <table class="table table-striped- table-bordered table-hover table-checkable" style="border: 1px solid #cfd1d4;"
-        id="datatable_target">
-        <thead>
-            <tr>
-                <td colspan="14" style="border: 1px solid #cfd1d4;text-align:center;font-weight:bold;">Realisasi</td>
-            </tr>
-            <tr>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Tahun</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Jan</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Feb</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Mar</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Apr</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Mei</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Jun</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Jul</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Agus</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Sep</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Okt</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Nov</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Des</th>
-                <th style="border: 1px solid #cfd1d4;font-weight:bold;">Total</th>
-            </tr>
-        </thead>
-        <tbody id="tb-realisasi">
-            @foreach ($tahun as $i)
-                @php
-                    $realisasi_1 = $realisasi
-                        ->where('bulan', 1)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_2 = $realisasi
-                        ->where('bulan', 2)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_3 = $realisasi
-                        ->where('bulan', 3)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_4 = $realisasi
-                        ->where('bulan', 4)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_5 = $realisasi
-                        ->where('bulan', 5)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_6 = $realisasi
-                        ->where('bulan', 6)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_7 = $realisasi
-                        ->where('bulan', 7)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_8 = $realisasi
-                        ->where('bulan', 8)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_9 = $realisasi
-                        ->where('bulan', 9)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_10 = $realisasi
-                        ->where('bulan', 10)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_11 = $realisasi
-                        ->where('bulan', 11)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    $realisasi_12 = $realisasi
-                        ->where('bulan', 12)
-                        ->where('tahun', $i->tahun)
-                        ->first();
-                    
-                    $status_1 = $status_2 = $status_3 = $status_4 = $status_5 = $status_6 = $status_7 = $status_8 = $status_9 = $status_10 = $status_11 = $status_12 = null;
-                    if (@$realisasi_1->status_id == 1) {
-                        $status_1 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_2->status_id == 1) {
-                        $status_2 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_3->status_id == 1) {
-                        $status_3 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_4->status_id == 1) {
-                        $status_4 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_5->status_id == 1) {
-                        $status_5 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_6->status_id == 1) {
-                        $status_6 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_7->status_id == 1) {
-                        $status_7 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_8->status_id == 1) {
-                        $status_8 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_9->status_id == 1) {
-                        $status_9 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_10->status_id == 1) {
-                        $status_10 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_11->status_id == 1) {
-                        $status_11 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    if (@$realisasi_12->status_id == 1) {
-                        $status_12 = '<i style="color:green;" class="bi bi-check fs-3"></i>';
-                    }
-                    
-                    $total = @$realisasi_1->realisasi + @$realisasi_2->realisasi + @$realisasi_3->realisasi + @$realisasi_4->realisasi + @$realisasi_5->realisasi + @$realisasi_6->realisasi + @$realisasi_7->realisasi + @$realisasi_8->realisasi + @$realisasi_9->realisasi + @$realisasi_10->realisasi + @$realisasi_11->realisasi + @$realisasi_12->realisasi;
-                @endphp
-                <tr>
-                    <td class="vtahunRealisasi " style="border: 1px solid #cfd1d4;text-align:right;">
-                        {{ $i->tahun }}</td>
-                    <td class="vTarget t1" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_1 !!}{{ @$realisasi_1->realisasi }}</td>
-                    <td class="vTarget t2" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_2 !!}{{ @$realisasi_2->realisasi }}</td>
-                    <td class="vTarget t3" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_3 !!}{{ @$realisasi_3->realisasi }}</td>
-                    <td class="vTarget t4" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_4 !!}{{ @$realisasi_4->realisasi }}</td>
-                    <td class="vTarget t5" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_5 !!}{{ @$realisasi_5->realisasi }}</td>
-                    <td class="vTarget t6" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_6 !!}{{ @$realisasi_6->realisasi }}</td>
-                    <td class="vTarget t7" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_7 !!}{{ @$realisasi_7->realisasi }}</td>
-                    <td class="vTarget t8" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_8 !!}{{ @$realisasi_8->realisasi }}</td>
-                    <td class="vTarget t9" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_9 !!}{{ @$realisasi_9->realisasi }}</td>
-                    <td class="vTarget t10" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_10 !!}{{ @$realisasi_10->realisasi }}</td>
-                    <td class="vTarget t11" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_11 !!}{{ @$realisasi_11->realisasi }}</td>
-                    <td class="vTarget t12" style="border: 1px solid #cfd1d4;text-align:right;">
-                        {!! $status_12 !!}{{ @$realisasi_12->realisasi }}</td>
-                    <td class="totalTarget" style="border: 1px solid #cfd1d4;text-align:right;">{{ $total }}
-                    </td>
-                </tr>
-            @endforeach
-            @if ($tahun->count() == 0)
-                <tr>
-                    <td colspan="14" style="border: 1px solid #cfd1d4; text-align:center;"><i>Data Kosong</i></td>
-                </tr>
-            @endif
-        </tbody>
-    </table>
 
     <table class="table table-striped- table-bordered table-hover table-checkable" style="border: 1px solid #cfd1d4;"
         id="datatable_target">
