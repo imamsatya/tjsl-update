@@ -11,6 +11,7 @@ use App\Models\LogLaporanManajemen;
 use DB;
 use Session;
 use Datatables;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -131,6 +132,9 @@ class LaporanManajemenController extends Controller
                      }
                  }
              }
+         }
+         if(Auth::user()->getRoleNames()->contains('Super Admin') || Auth::user()->getRoleNames()->contains('Admin TJSL')){
+            $isOkToInput = true;
          }
 
         return view($this->__route . '.index', [

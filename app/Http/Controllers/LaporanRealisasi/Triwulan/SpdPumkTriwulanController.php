@@ -376,7 +376,20 @@ class SpdPumkTriwulanController extends Controller
         // dd($request);
 
         $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->get();
-        $anggaran = DB::table('pumk_anggarans')
+        
+        if(Auth::user()->getRoleNames()->contains('Super Admin') || Auth::user()->getRoleNames()->contains('Admin TJSL')){
+            $anggaran = DB::table('pumk_anggarans')
+            ->selectRaw('pumk_anggarans.*,
+             perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap,
+             periode_laporans.id as periode_laporans_id, periode_laporans.nama as periode_laporans_nama, 
+             TRUE AS isoktoinput'
+             )
+            ->leftJoin('perusahaans', 'perusahaans.id', '=', 'pumk_anggarans.bumn_id')
+            ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'pumk_anggarans.periode_id')
+            ->whereIn('periode_id', $periode->pluck('id')->toArray());
+         }
+         else{
+            $anggaran = DB::table('pumk_anggarans')
             ->selectRaw('pumk_anggarans.*,
              perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap,
              periode_laporans.id as periode_laporans_id, periode_laporans.nama as periode_laporans_nama, 
@@ -390,6 +403,8 @@ class SpdPumkTriwulanController extends Controller
             ->leftJoin('perusahaans', 'perusahaans.id', '=', 'pumk_anggarans.bumn_id')
             ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'pumk_anggarans.periode_id')
             ->whereIn('periode_id', $periode->pluck('id')->toArray());
+         }
+        
        
         if ($request->perusahaan_id) {
 

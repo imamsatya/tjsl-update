@@ -306,13 +306,13 @@ class KegiatanController extends Controller
                 // 'versi_pilar_id' => $versi_pilar_id,
                 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
                 'admin_bumn' => $admin_bumn,
-                'jenis_kegiatan' => JenisKegiatan::all(),
+                'jenis_kegiatan' => JenisKegiatan::where('is_active', true)->get(),
                 'provinsi' => Provinsi::where('is_luar_negeri', false)->get(),
                 'kota_kabupaten' => Kota::where('is_luar_negeri', false)->get(),
                 'satuan_ukur' => SatuanUkur::where('is_active', true)->get(),
                 'program' => $program,
                 'bulan_id' =>$bulan ?? 1,
-                'subkegiatan' => SubKegiatan::all(),
+                'subkegiatan' => SubKegiatan::where('is_active', true)->get(),
                 
            
             ]

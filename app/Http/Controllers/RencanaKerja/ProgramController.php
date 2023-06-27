@@ -654,7 +654,7 @@ class ProgramController extends Controller
             ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
             ->leftJoin('target_tpbs', 'target_tpbs.anggaran_tpb_id', 'anggaran_tpbs.id');
 
-        
+       //temp comment 
         if ($request->perusahaan_id) {            
             $anggaran_program = $anggaran_program->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
         }
@@ -663,6 +663,8 @@ class ProgramController extends Controller
             $anggaran_program = $anggaran_program->where('anggaran_tpbs.tahun', $request->tahun);
         }
 
+
+        //commented
         // if ($request->pilar_pembangunan_id) {
         //     $anggaran_program = $anggaran_program->where('pilar_pembangunans.id', $request->pilar_pembangunan_id);
         // }
@@ -705,6 +707,7 @@ class ProgramController extends Controller
             DB::Raw('(case when tpbs.jenis_anggaran = \'non CID\' then anggaran_alokasi end) as anggaran_alokasi_noncid'), 
             DB::Raw('(case when tpbs.jenis_anggaran = \'CID\' then anggaran_alokasi end) as anggaran_alokasi_cid')
         )
+        ->orderBy('perusahaans.id')
         ->orderBy('pilar_pembangunans.jenis_anggaran')
         ->orderBy('pilar_pembangunans.nama')
         ->orderBy('tpbs.id')

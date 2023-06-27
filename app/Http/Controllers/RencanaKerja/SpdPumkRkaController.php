@@ -105,6 +105,10 @@ class SpdPumkRkaController extends Controller
              }
          }
 
+         if(Auth::user()->getRoleNames()->contains('Super Admin') || Auth::user()->getRoleNames()->contains('Admin TJSL')){
+            $isOkToInput = true;
+         }
+
        
 
 

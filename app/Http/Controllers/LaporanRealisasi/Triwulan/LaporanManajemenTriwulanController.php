@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 class LaporanManajemenTriwulanController extends Controller
 {
 
@@ -241,18 +242,30 @@ class LaporanManajemenTriwulanController extends Controller
     {
         // dd($request);
         $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->get();
-        $laporan_manajemen = DB::table('laporan_manajemens')
-          ->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap, periode_laporans.nama as periode_laporan_nama,
-             CASE
-                WHEN CURRENT_DATE BETWEEN periode_laporans.tanggal_awal AND periode_laporans.tanggal_akhir
-                OR periode_laporans.is_active = FALSE
-                THEN TRUE
-             ELSE FALSE
-             END AS isoktoinput')
-          ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')
-          ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'laporan_manajemens.periode_laporan_id')
-          ->whereIn('periode_laporan_id', $periode->pluck('id')->toArray())
-          ->where('perusahaans.induk', 0);
+        if(Auth::user()->getRoleNames()->contains('Super Admin') || Auth::user()->getRoleNames()->contains('Admin TJSL')){
+            $laporan_manajemen = DB::table('laporan_manajemens')
+            ->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap, periode_laporans.nama as periode_laporan_nama,
+              TRUE AS isoktoinput')
+            ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')
+            ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'laporan_manajemens.periode_laporan_id')
+            ->whereIn('periode_laporan_id', $periode->pluck('id')->toArray())
+            ->where('perusahaans.induk', 0);
+        }
+        else{
+            $laporan_manajemen = DB::table('laporan_manajemens')
+            ->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap, periode_laporans.nama as periode_laporan_nama,
+               CASE
+                  WHEN CURRENT_DATE BETWEEN periode_laporans.tanggal_awal AND periode_laporans.tanggal_akhir
+                  OR periode_laporans.is_active = FALSE
+                  THEN TRUE
+               ELSE FALSE
+               END AS isoktoinput')
+            ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')
+            ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'laporan_manajemens.periode_laporan_id')
+            ->whereIn('periode_laporan_id', $periode->pluck('id')->toArray())
+            ->where('perusahaans.induk', 0);
+        }
+       
         $perusahaan_id = $request->perusahaan_id ?? 1; //default id 1
           if ($perusahaan_id) {
 
