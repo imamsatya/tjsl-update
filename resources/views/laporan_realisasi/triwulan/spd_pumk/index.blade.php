@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+
+<input type="hidden" name="isOkToInput" id="isOkToInput" readonly="readonly" value="{{$isOkToInput}}" />
     <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
         <!--begin::Container-->
         <div id="kt_content_container" class="container">
@@ -10,7 +12,7 @@
                 <div class="card-header pt-5">
                     <!--begin::Card title-->
                     <div class="card-title">
-                        <h2 class="d-flex align-items-center">{{ $pagetitle }}
+                        <h2 class="d-flex align-items-center">{{ $pagetitle }} {{$isOkToInput}}
                             <span class="text-gray-600 fs-6 ms-1"></span>
                         </h2>
                     </div>
@@ -496,6 +498,7 @@
 
             $('#periode_laporan').change(function() {
                 console.log('periode')
+                console.log('isoktoinput', $( '#isOkToInput').val())
                 var selectedOption = $(this).find(':selected');
                 var isOptionActive = selectedOption.data('is_active');
                 let is_active = selectedOption.data('is_active')
@@ -510,7 +513,7 @@
                 let dateAkhir = new Date(tanggal_akhir);
 
                 // Check if the current date is between tanggal_awal and tanggal_akhir
-                if (currentDate >= dateAwal && currentDate <= dateAkhir || is_active == false) {
+                if (currentDate >= dateAwal && currentDate <= dateAkhir || is_active == false || $('#isOkToInput').val() ) {
                     $('.btn-action').prop('disabled', false);
                 } else {
                     $('.btn-action').prop('disabled', true);

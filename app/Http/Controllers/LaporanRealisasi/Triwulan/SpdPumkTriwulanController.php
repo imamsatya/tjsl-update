@@ -86,7 +86,13 @@ class SpdPumkTriwulanController extends Controller
 
         $status = DB::table('statuss')->get();
 
+           // validasi availability untuk input data Super Admin dan Admin TJSL
+           $isOkToInput = false;
 
+           if(Auth::user()->getRoleNames()->contains('Super Admin') || Auth::user()->getRoleNames()->contains('Admin TJSL')){
+              $isOkToInput = true;
+           }
+     
 
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
@@ -101,6 +107,7 @@ class SpdPumkTriwulanController extends Controller
             'status_id' => $request->status_spd ?? '',
             'periode'=>$periode,
             'periode_id' => $request->periode_laporan ?? '',
+            'isOkToInput' => $isOkToInput
         ]);
     }
 
@@ -141,6 +148,13 @@ class SpdPumkTriwulanController extends Controller
         } else {
             $actionform = 'insert';
         }
+        
+        // validasi availability untuk input data Super Admin dan Admin TJSL
+        $isOkToInput = false;
+
+        if(Auth::user()->getRoleNames()->contains('Super Admin') || Auth::user()->getRoleNames()->contains('Admin TJSL')){
+           $isOkToInput = true;
+        }
 
         return view(
             $this->__route . '.create',
@@ -157,7 +171,8 @@ class SpdPumkTriwulanController extends Controller
                 'admin_bumn' => $admin_bumn,
                 'periode'=>$periode,
                 'periode_id' => $periode_id,
-                'selectedPeriode' => $selectedPeriode
+                'selectedPeriode' => $selectedPeriode,
+                'isOkToInput' => $isOkToInput
                 // 'perusahaan_id' => $perusahaan_id,
                 // 'data' => $anggaran_tpb
             ]

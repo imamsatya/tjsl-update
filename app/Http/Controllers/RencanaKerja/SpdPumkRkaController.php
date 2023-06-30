@@ -166,6 +166,13 @@ class SpdPumkRkaController extends Controller
             $actionform = 'insert';
         }
 
+        // validasi availability untuk input data Super Admin dan Admin TJSL
+        $isOkToInput = false;
+
+        if(Auth::user()->getRoleNames()->contains('Super Admin') || Auth::user()->getRoleNames()->contains('Admin TJSL')){
+           $isOkToInput = true;
+        }
+
         return view(
             $this->__route . '.create',
             [
@@ -179,7 +186,8 @@ class SpdPumkRkaController extends Controller
                 // 'versi_pilar_id' => $versi_pilar_id,
                 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
                 'admin_bumn' => $admin_bumn,
-                'periode' => $periode
+                'periode' => $periode,
+                'isOkToInput' => $isOkToInput
                 // 'perusahaan_id' => $perusahaan_id,
                 // 'data' => $anggaran_tpb
             ]
@@ -316,6 +324,7 @@ class SpdPumkRkaController extends Controller
                         'msg' => 'Sukses ubah data',
                         'title' => 'Sukses'
                     ];
+                    echo json_encode(['result' => true]);
                 } catch (\Exception $e) {
                     DB::rollback();
                     $result = [

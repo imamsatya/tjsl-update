@@ -436,7 +436,7 @@
                             <div class="col-lg-12">
                                 <button id="close-btn" class="btn btn-danger me-3">Close</button>
                                 <button id="clear-btn" class="btn btn-info me-3">Clear</button>
-                                <button id="{{$selectedPeriode->isoktoinput ? 'simpan-btn' : ''}} "  {{$selectedPeriode->isoktoinput ? '' : 'disabled'}} class="btn btn-success me-3">Simpan</button>
+                                <button id="{{$selectedPeriode->isoktoinput || $isOkToInput ? 'simpan-btn' : ''}}"  {{$selectedPeriode->isoktoinput || $isOkToInput ? '' : 'disabled'}} class="btn btn-success me-3">Simpan</button>
                             </div>
                         </div>
 
