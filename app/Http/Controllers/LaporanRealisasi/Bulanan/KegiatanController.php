@@ -843,7 +843,14 @@ class KegiatanController extends Controller
             ,'satuan_ukur.nama as satuan_ukur','target_tpbs.program as program', 'tpbs.jenis_anggaran as jenis_anggaran', 'tpbs.no_tpb as no_tpb', 'tpbs.nama as nama_tpb')->first();
         //   dd($kegiatan);
             $tahun     = KegiatanRealisasi::select('tahun')->where('kegiatan_id', $kegiatan->id)->groupBy('tahun')->orderBy('tahun')->get();
-            $realisasi = KegiatanRealisasi::select('kegiatan_realisasis.*','kegiatans.target_tpb_id','kegiatans.kegiatan')->leftjoin('kegiatans','kegiatans.id','kegiatan_realisasis.kegiatan_id')->where('kegiatan_realisasis.kegiatan_id', $kegiatan->id)->get();
+            $realisasi = KegiatanRealisasi::select('kegiatan_realisasis.*','kegiatans.target_tpb_id','kegiatans.kegiatan', 'bulans.nama as bulan_nama', 'jenis_kegiatans.nama as jenis_kegiatan_nama', 'sub_kegiatans.subkegiatan as sub_kegiatan_nama')
+                        ->leftjoin('kegiatans','kegiatans.id','kegiatan_realisasis.kegiatan_id')
+                        ->join('bulans', 'bulans.id', 'kegiatan_realisasis.bulan')->where('kegiatan_realisasis.kegiatan_id', $kegiatan->id)
+                        ->leftjoin('jenis_kegiatans', 'jenis_kegiatans.id', '=', 'kegiatans.jenis_kegiatan_id')
+                        ->leftJoin('sub_kegiatans', function ($join) {
+                            $join->on('sub_kegiatans.id', '=', DB::raw("CAST(kegiatans.keterangan_kegiatan AS bigint)"));
+                        })
+                        ->get();
             $realisasi_total = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->select(DB::Raw('sum(anggaran) as total'))->first();
 
 

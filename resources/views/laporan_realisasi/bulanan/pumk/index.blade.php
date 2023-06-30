@@ -191,20 +191,14 @@
                             </div>
 
                         </div>
-                        <div class="form-group row  mb-5">
+                        {{-- <div class="form-group row  mb-5">
                             <div class="col-lg-6">
                                 <label>Kolektibilitas</label>
                                 <select id="pilar_pembangunan_id" class="form-select form-select-solid form-select2"
                                     name="pilar_pembangunan_id" data-kt-select2="true"
                                     data-placeholder="Pilih Kolektibilitas" data-allow-clear="true">
                                     <option></option>
-                                    {{-- @foreach($pilar as $p)
-                                    @php
-                                    $select = (($p->id == $pilar_pembangunan_id) ? 'selected="selected"' : '');
-                                    @endphp
-                                    <option data-jenis-anggaran="{{ $p->jenis_anggaran }}" value="{{ $p->id }}" {!!
-                                        $select !!}>{{ $p->nama }} - {{$p->jenis_anggaran}}</option>
-                                    @endforeach --}}
+                                    
                                     <option value="lancar">Lancar</option>
                                     <option value="kurang_lancar">Kurang Lancar</option>
                                     <option value="diragukan">Diragukan</option>
@@ -215,16 +209,12 @@
                             <div class="col-lg-6">
                                 <label>Kriteria Program</label>
                                 <div class="row mb-6 mt-2">
-                                    <!--begin::Label-->
-                                    {{-- <label class="col-lg-4 col-form-label required fw-semibold fs-6">Kriteria Program</label> --}}
-                                    <!--end::Label-->
-                                    <!--begin::Col-->
+                                    
                                     <div class="col-lg-12 fv-row d-flex align-items-center justify-content-start">
                                         <div style="display:flex; flex-direction: row;">
                                             <div
                                                 class="form-check form-check-custom form-check-solid form-check-sm me-8">
-                                                {{-- {{ in_array('prioritas', $kriteria_program) ? 'checked' : '' }}
-                                                --}}
+                                                
                                                 <input class="form-check-input" type="checkbox" name="kriteria_program"
                                                     value="prioritas" id="checkboxPrioritas" />
                                                 <label class="form-check-label" for="checkboxPrioritas">
@@ -233,7 +223,7 @@
                                             </div>
 
                                             <div class="form-check form-check-custom form-check-solid form-check-sm">
-                                                {{-- {{ in_array('umum', $kriteria_program) ? 'checked' : '' }} --}}
+                                                
                                                 <input class="form-check-input" type="checkbox" name="kriteria_program"
                                                     value="umum" id="checkboxUmum" />
                                                 <label class="form-check-label" for="checkboxUmum">
@@ -242,10 +232,10 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!--end::Col-->
+                                   
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="form-group row  mb-5">
                             <div class="col-lg-6">

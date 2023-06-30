@@ -341,7 +341,7 @@
 
                                     </div>
                                     <div class="col-lg-9">
-                                        <select  id="satuan_ukur" class="form-select form-select-solid form-select2" name="satuan_ukur" data-kt-select2="true" data-placeholder="Pilih Satuan Ukur"  disabled>
+                                        <select  id="satuan_ukur" class="form-select form-select-solid form-select2" name="satuan_ukur" data-kt-select2="true" data-placeholder="Pilih Satuan Ukur"  >
                                             <option></option>
                                             @foreach($satuan_ukur as $satuan_ukur_row)
                                                 <option value="{{ $satuan_ukur_row->id }}" >{{ $satuan_ukur_row->nama }}</option>
@@ -487,8 +487,8 @@
                         $('#satuan_ukur').prop('disabled', true);
                     }
                 } else {
-                    // If no subkegiatan is selected, disable the "satuan_ukur" field and reset its value
-                    $('#satuan_ukur').prop('disabled', true).val('').trigger('change');
+                    // If no subkegiatan is selected, enable the "satuan_ukur" field and reset its value
+                    $('#satuan_ukur').prop('disabled', false).val('').trigger('change');
                 }
             });
 
@@ -620,6 +620,7 @@
             console.log(`perusahaan_id : ${perusahaan_id} | tahun : ${tahun} | jenis_anggaran : ${jenis_anggaran} | actionform : ${actionform}`)
             
             //data kegiatan
+
             let program_id = document.getElementById('program_id').value
 
             let nama_kegiatan = document.getElementById('nama_kegiatan').value
@@ -711,7 +712,7 @@
             //     realisasi_indikator : realisasi_indikator 
             if(data.program_id === '') return {status: false, message: 'Program harus terisi!'}
             if(data.nama_kegiatan === '') return {status: false, message: 'Nama Kegiatan harus terisi!'}
-            if(data.keterangan_kegiatan === '') return {status: false, message: 'Keterangan harus terisi!'}
+            // if(data.keterangan_kegiatan === '') return {status: false, message: 'Sub Kegiatan harus terisi!'}
             if(data.provinsi === '') return {status: false, message: 'Provinsi harus terisi!'}
             if(data.kota_kabupaten === '') return {status: false, message: 'Kota/Kabupaten harus terisi!'}
             if(data.realisasi_anggaran === '' ) return {status: false, message: 'Realisasi Anggaran anggaran harus terisi!'}

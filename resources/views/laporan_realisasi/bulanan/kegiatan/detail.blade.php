@@ -15,6 +15,13 @@
     <table class="table table-striped- table-bordered table-hover table-checkable" id="datatable_log">
         <tbody>
             <tr>
+                <td><b>Jenis Anggaran</b></td>
+                <td>{{ @$data->jenis_anggaran }}</td>
+                <td><b>TPB</b></td>
+                <td>{{ @$data->no_tpb }} - {{ @$data->nama_tpb }}</td>
+
+            </tr>
+            <tr>
                 <td><b>Program</b></td>
                 <td>{{ @$data->program }}</td>
                 <td><b>Kegiatan</b></td>
@@ -27,6 +34,18 @@
                 <td>{{ @$data->kota }}</td>
             </tr>
             <tr>
+                <td><b>Realisasi Anggaran</b></td>
+                <td>Rp. {{ number_format($anggaran_total, 0, ',', ',') }}</td>
+                <td><b>Bulan</b></td>
+                <td>{{ $realisasi[0]->bulan_nama . ' ' . $realisasi[0]->tahun }}</td>
+            </tr>
+            <tr>
+                <td><b>Jenis Kegiatan</b></td>
+                <td>{{ $realisasi[0]->jenis_kegiatan_nama }}</td>
+                <td><b>Sub Kegiatan</b></td>
+                <td>{{ $realisasi[0]->sub_kegiatan_nama }}</td>
+            </tr>
+            {{-- <tr>
                 <td><b>Indikator Capaian Kegiatan</b></td>
                 <td>{{ @$data->indikator }}</td>
                 <td><b>Satuan Ukur</b></td>
@@ -37,13 +56,8 @@
                 <td>Rp. {{ number_format($data->anggaran_alokasi, 0, ',', ',') }}</td>
                 <td><b>Realisasi Anggaran</b></td>
                 <td>Rp. {{ number_format($anggaran_total, 0, ',', ',') }}</td>
-            </tr>
-            <tr>
-                <td><b>TPB</b></td>
-                <td>{{ @$data->no_tpb }} - {{ @$data->nama_tpb }}</td>
-                <td><b>Jenis Anggaran</b></td>
-                <td>{{ @$data->jenis_anggaran }}</td>
-            </tr>
+            </tr> --}}
+
         </tbody>
     </table>
 
