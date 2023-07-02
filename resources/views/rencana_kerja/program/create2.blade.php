@@ -530,7 +530,7 @@
     <script type="text/javascript" src="{{ asset('plugins/jquery-treegrid-master/js/jquery.treegrid.js') }}"></script>
 
     <script>
-        var urledit = "{{route('rencana_kerja.program.edit')}}";
+        var urledit = "{{route('rencana_kerja.program.edit2')}}";
         var urlprogram = "{{ route('rencana_kerja.program.index') }}"     
         var urldelete = "{{ route('rencana_kerja.program.delete') }}";
 

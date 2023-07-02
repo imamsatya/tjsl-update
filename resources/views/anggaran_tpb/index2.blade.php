@@ -27,7 +27,7 @@
                 </div>
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
-                <div class="card-toolbar">
+                <div class="card-toolbar" style="display: none">
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
                         <button type="button" class="btn btn-active btn-info btn-sm btn-icon btn-search cls-search btn-search-active" style="margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
@@ -1034,7 +1034,7 @@
         const jumlahDataDeleted = selectedAnggaran.length
         swal.fire({
             title: "Pemberitahuan",
-            html: "Yakin hapus data ? <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahDataDeleted+" rows]</span>",
+            html: "Yakin hapus data ? (Data terkait akan ikut terhapus juga: <strong>Program</strong>, <strong>Kegiatan</strong>, dan <strong>Kegiatan Realisasi</strong>) <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahDataDeleted+" rows]</span>",
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, hapus data",
