@@ -277,7 +277,8 @@
                         </div>
                         <div class="form-group row  mb-5">
                             <div class="col-lg-6">
-                                <button id="proses" class="btn btn-success me-3">Proses</button>
+                                <button id="proses" class="btn btn-success me-3">Proses</button>                                
+                                <button id="download" class="btn btn-sm btn-primary me-3"><i class="bi bi-download fs-3"></i>Download Template</button>                                
                             </div>
                         </div>
                         <div class="separator border-gray-200 mb-10"></div>
@@ -379,6 +380,7 @@
     var urllog = "{{route('laporan_realisasi.bulanan.kegiatan.log')}}";
     var urledit = "{{route('laporan_realisasi.bulanan.kegiatan.edit')}}";  
     var urlverifikasidata = "{{route('laporan_realisasi.bulanan.kegiatan.verifikasi_data')}}";
+    var urldownloadtemplate = "{{route('laporan_realisasi.bulanan.kegiatan.download_template')}}";
 
     $(document).ready(function () {
         $('.tree').treegrid({
@@ -408,6 +410,10 @@
 
         $('body').on('click','.cls-log',function(){
                 winform(urllog, {'id':$(this).data('id')}, 'Log Data');
+        });
+
+        $('body').on('click','#download',function(){
+            downloadTemplate();
         });
 
 
@@ -996,6 +1002,94 @@
                 });
             }
         });
+    }    
+
+    function downloadTemplate()
+    {
+        var filter_perusahaan_id = $("select[name='perusahaan_id']").val();
+        var filter_tahun = $("select[name='tahun']").val();
+        var filter_bulan = $("select[name='bulan_id']").val();
+
+        if(filter_perusahaan_id == '' || filter_tahun == '' || filter_bulan == ''){
+            onbtndisablevalidasi();
+        }else{
+            $.ajax({
+                type: 'post',
+                data: {
+                    'perusahaan_id' : filter_perusahaan_id,
+                    'tahun' : filter_tahun,
+                    'target_tpb_id' : $("select[name='program_id']").val(),
+                    'pilar_pembangunan_id' : $("select[name='pilar_pembangunan_id']").val(),
+                    'tpb_id' : $("select[name='tpb_id']").val(),
+                    'bulan' : filter_bulan,
+                },
+                beforeSend: function () {
+                    $.blockUI();
+                },
+                url: urldownloadtemplate,
+                xhrFields: {
+                    responseType: 'blob',
+                },
+                success: function(data){
+                    $.unblockUI();
+                    var filename = 'Template Input Data Laporan Realisasi Bulan '+ $("#bulan_id option:selected").text() +" Tahun "+$("#tahun").val()+'.xlsx';
+
+                    var blob = new Blob([data], {
+                        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    });
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = filename;
+
+                    document.body.appendChild(link);
+
+                    link.click();
+                    document.body.removeChild(link);
+                },
+                error: function(jqXHR, exception){
+                    $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                });      
+                    
+                }
+            });
+        }
+        return false;
+    }
+
+    function onbtndisablevalidasi(){
+        swal.fire({
+            title: "Gagal",
+            html: 'Pilihan BUMN, Bulan dan Tahun wajib diisi!',
+            icon: 'error',
+
+            buttonsStyling: true,
+
+            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+        }); 
     }
 
 </script>
