@@ -17,6 +17,28 @@
     <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
         <!--begin::Container-->
         <div id="kt_content_container" class="container">
+            <div class="card" style="margin-bottom: 10px">
+                <div class="card-header pt-5">
+                    <div class="card-title">
+                        <h2 class="d-flex align-items-center">Upload Data Kegiatan</h2>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="card-px py-10">
+                        <form class="kt-form kt-form--label-right" method="POST" id="form-upload-excel">
+                            <div class="form-group row mb-5">
+                                <div class="col-lg-6 ">
+                                    <label>File (*.xlsx)</label>
+                                    <input class="form-control" type="file" name="file_name" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" required/>
+                                </div>
+                                <div class="col-lg-4 pt-6">
+                                    <button value="upload-excel" id="submit-upload-excel" type="submit" class="btn btn-success me-3">Proses</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
             <!--begin::Card-->
             <div class="card">
 
@@ -362,27 +384,7 @@
                                             />
                                     </div>
                                 </div>
-                                
-                                
-
-                               
-
-                                
-
-                                
-
-                              
-                                
-
-                              
-                            
-                                
                             </div>
-                        
-
-                        
-
-
                         </form>
                         <div class="form-group row mt-8  mb-5 text-center">
                             <div class="col-lg-offset-3 col-lg-9">
@@ -408,7 +410,10 @@
     <script type="text/javascript" src="{{ asset('plugins/jquery-treegrid-master/js/jquery.treegrid.js') }}"></script>
 
     <script>
+        var urluploadstore = "{{route('laporan_realisasi.bulanan.kegiatan.upload_excel')}}";
+
         $(document).ready(function() {
+            setFormValidateUpload();
             $('.tree').treegrid({
                 initialState : 'collapsed',
                 treeColumn : 1,
@@ -747,6 +752,87 @@
             $('#keterangan_kegiatan').trigger('change');
         }
 
+    function setFormValidateUpload(){
+        $('#form-upload-excel').validate({
+            rules: {            		               		                              		               		               
+            },
+            messages: {                                   		                   		                   
+            },	        
+            highlight: function(element) {
+                $(element).closest('.form-control').addClass('is-invalid');
+            },
+            unhighlight: function(element) {
+                $(element).closest('.form-control').removeClass('is-invalid');
+            },
+            errorElement: 'div',
+            errorClass: 'invalid-feedback',
+            errorPlacement: function(error, element) {
+                if(element.parent('.validated').length) {
+                    error.insertAfter(element.parent());
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+        submitHandler: function(form){
+                var typesubmit = $("input[type=submit][clicked=true]").val();
+                
+                $(form).ajaxSubmit({
+                    type: 'post',
+                    url: urluploadstore,
+                    data: {source : typesubmit},
+                    dataType : 'json',
+                    beforeSend: function(){
+                        $.blockUI({
+                            theme: true,
+                            baseZ: 2000
+                        })    
+                    },
+                    success: function(data){
+                        $.unblockUI();
+
+                        swal.fire({
+                                title: data.title,
+                                html: data.msg,
+                                icon: data.flag,
+
+                                buttonsStyling: true,
+
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                        });                        
+                    },
+                    error: function(jqXHR, exception){
+                        $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = '';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                        swal.fire({
+                                title: "Gagal Upload",
+                                html: msgerror+'Pastikan file excel tidak mengandung formula(rumus) dan format telah sesuai template dari portal TJSL !!!',
+                                icon: 'error',
+
+                                buttonsStyling: true,
+
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                        });                               
+                    }
+                });
+                return false;
+        }
+        });		
+    }
 
         
 

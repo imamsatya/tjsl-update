@@ -145,7 +145,7 @@
                                     @php
                                         $disabled = (($admin_bumn) ? 'disabled="true"' : '');
                                     @endphp
-                                    <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }} >
+                                    <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }} data-allow-clear="true" >
                                         <option></option>
                                         @foreach($perusahaan as $p)  
                                             @php
@@ -263,22 +263,38 @@
                         <div class="d-flex align-items-center position-relative my-1">
                             @can('view-kegiatan')
                             <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
-                            <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
+                            <button {{ $isOkToInput || $isEnableInputBySuperadmin ? '' : 'disabled' }} type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                             </button>
-                            <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
+                            <button {{ $isOkToInput || $isEnableInputBySuperadmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
                             </button>
                             @endcan
                           
                             @can('view-verify')
-                            @if($countInprogress)
-                                <button type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
+                            @if($countInprogress || !$data->count())
+                                <button {{ $isOkToInput || $isEnableInputBySuperadmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
                                 </button>
                             @endif
 
-                            @if(!$countInprogress)
-                            <button type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
+                            @if(!$countInprogress && $data->count())
+                            <button {{ $isOkToInput || $isEnableInputBySuperadmin ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
                             </button>  
                             @endif  
+                            @if(!$isOkToInput && $isSuperAdmin)
+                                @if($perusahaan_id)
+                                    @if($isEnableInputBySuperadmin)
+                                    <button type="button" class="btn btn-outline btn-outline-dark btn-active-dark btn-sm ms-2 enable-disable-input-by-superadmin" data-status="disable" >Disable Input Data
+                                    </button> 
+                                    @else
+                                    <button type="button" class="btn btn-outline btn-outline-danger btn-active-danger btn-sm ms-2 enable-disable-input-by-superadmin" data-status="enable" >Enable Input Data
+                                    </button> 
+                                    @endif
+                                @else                                        
+                                <button type="button" class="btn btn-outline btn-outline-dark btn-active-dark btn-sm ms-2 enable-disable-input-by-superadmin" data-status="disable" >Disable Input Data - ALL                                        
+                                    </button> 
+                                <button type="button" class="btn btn-outline btn-outline-danger btn-active-danger btn-sm ms-2 enable-disable-input-by-superadmin" data-status="enable" >Enable Input Data - ALL
+                                    </button>                                         
+                                @endif
+                            @endif
                            @endcan
                         </div>
                         <!--end::Search-->
@@ -292,7 +308,7 @@
                     <div class="card-px py-10">
                         <!--begin: Datatable -->
                         <div class="table-responsive">
-                            <table class="table table-striped table-bordered table-hover tree  table-checkable">
+                            <table class="table table-striped table-bordered table-hover tree-new  table-checkable">
                                 <thead>
                                     <tr>
                                         <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No.</th>
@@ -308,18 +324,47 @@
                                     </th>
                                     </tr>
                                 </thead>
-                                <tbody>                                           
-                                     <tr>
-                                        
-                                     </tr>                              
+                                <tbody>
+                                    @php
+                                        $total = 0;
+                                    @endphp
+                                    @foreach($data as $perusahaan)
+                                        @php
+                                            $total += $perusahaan->total;
+                                            if($perusahaan->inprogress) $status_class = 'primary';
+                                            else if($perusahaan->finish) $status_class = 'success';
+                                            else $status_class = 'danger';
+                                        @endphp
+                                    <tr class="treegrid-perusahaan-{{ $perusahaan->perusahaan_id }}" id="perusahaan-{{ $perusahaan->perusahaan_id }}" data-type="perusahaan" data-value="{{ $perusahaan->perusahaan_id }}">
+                                        <td style="text-align:center"></td>
+                                        <td style="display: flex"><div style="flex:1">{{ $perusahaan->nama_lengkap }}</div></td>
+                                        <td style="text-align: right">
+                                            {{ number_format($perusahaan->total, 0, ',', ',') }}
+                                        </td>
+                                        <td></td>
+                                        <td style="text-align: center">
+                                            <a class="badge badge-light-{{ $status_class }} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{ $perusahaan->inprogress ? 'In Progress' : ($perusahaan->finish ? 'Finish' : 'Unfilled') }}</a>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr class="treegrid-parent-perusahaan-{{ $perusahaan->perusahaan_id }}" id="treegrid-parent-perusahaan-{{ $perusahaan->perusahaan_id }}" style="visibility: hidden"><td style="text-align: center;"></td></tr>
+                                    @endforeach
+                                    @if(!$data->count())
+                                    <tr>
+                                        <td colspan="7" style="text-align:center; color: #696969; text-transform: uppercase">Data tidak tersedia!</td>
+                                    </tr>
+                                    @endif
                                 </tbody>
                                 <tfoot>
-                                    <tr>                                       
+                                    <tr>
+                                        @if($total > 0)                                       
+                                        <th style="text-align: right; font-weight: bold; border-top: 1px solid #c8c7c7;"></th>
+                                        <th style="text-align: right; font-weight: bold; border-top: 1px solid #c8c7c7;">Total</th>
+                                        <th style="text-align: right; font-weight: bold; border-top: 1px solid #c8c7c7;">{{ number_format($total, 0, ',', ',') }}</th>
+                                        @endif
                                     </tr>
                                 </tfoot>
                             </table>
-    
-    
                         </div>
                     </div>
                 </div>
@@ -333,16 +378,247 @@
     <script type="text/javascript" src="{{asset('plugins/jquery-treegrid-master/js/jquery.treegrid.js')}}"></script>
     <script>
         var datatable;
-        var urledit = "{{route('rencana_kerja.program.edit')}}";        
+        var urledit = "{{route('rencana_kerja.program.edit2')}}";        
         var urldelete = "{{ route('rencana_kerja.program.delete') }}";
         var urllog = "{{ route('rencana_kerja.program.log') }}";
         var urlverifikasidata = "{{route('rencana_kerja.program.verifikasi_data')}}";
         var urlexport = "{{route('rencana_kerja.program.export')}}";
         var urlbatalverifikasidata = "{{route('rencana_kerja.program.batal_verifikasi_data')}}";
+        var urlgetdataperusahaan = "{{ route('rencana_kerja.program.get_data_perusahaan_tree') }}";
+        var urlgetdataperusahaanpilar = "{{ route('rencana_kerja.program.get_data_perusahaan_pilar_tree') }}";
+        var urlgetdataperusahaanpilartpb = "{{ route('rencana_kerja.program.get_data_perusahaan_pilar_tpb_tree') }}";
+        var urlenableinputdata = "{{route('rencana_kerja.program.enable_disable_input_data')}}";
 
         $(document).ready(function() {
+
+            const viewOnly = "{{ $view_only }}";
+            const isOkToInput = "{{ $isOkToInput }}";  
             const countInprogress = parseInt("{{ $countInprogress }}")
             const countFinish = parseInt("{{ $countFinish }}")
+
+
+            $(".tree-new").treegrid({            
+                initialState : 'collapsed',
+                treeColumn : 1,
+            });
+
+            var dataPerusahaanLoading = new Map();
+            var dataPilarLoading = new Map();
+            var dataTpbLoading = new Map();
+            var expandedTree = [];
+
+            $('.tree-new').on('click', 'tbody tr .treegrid-expander', async function() {
+                let $arrow = $(this);
+                let $row = $(this).closest('tr');
+                let typeRow = $row.data('type');
+                let value = $row.data('value');
+                let isExpanded = $row.hasClass('treegrid-expanded');
+                let selectedYear = $("#tahun").val();
+
+                if(isExpanded) {
+                    expandedTree.push(`#${$row.prop('id')}`)
+                } else {
+                    expandedTree = expandedTree.filter(index => index != `#${$row.prop('id')}`)
+                }
+
+                if(typeRow === 'perusahaan' && isExpanded) {
+                    let selectedClassTree = $row.attr('class').split(' ').filter((cls) => cls.startsWith('treegrid-perusahaan-'))[0]
+
+                    // get current url parameter
+                    const url = new URL(window.location.href) 
+                    const queryParams = url.searchParams
+                    const pilar_pembangunan = queryParams.get('pilar_pembangunan')
+                    const tpb = queryParams.get('tpb')
+                    const jenis_anggaran = queryParams.get('jenis_anggaran')
+                    const kriteria = queryParams.get('kriteria_program')
+                    
+                    
+                    let dataPerusahaanLoaded = dataPerusahaanLoading.get(parseInt(value))
+                    if(!dataPerusahaanLoaded) {
+                        // value == id perusahaan
+                        let data = await loadDataPerusahaan(value, selectedYear, pilar_pembangunan, tpb, jenis_anggaran, kriteria)
+                        dataPerusahaanLoading.set(value, true)
+
+                        // populate tree
+                        let pilarRow = '';
+                        let pilar = data.result;
+                        let parentClass = selectedClassTree.replace('treegrid-', 'treegrid-parent-')
+                        for(let i=0; i < pilar.length; i++) {
+
+                            // defining progress status
+                            let status_class = ''
+                            if(pilar[i].inprogress) status_class = 'primary'
+                            else if(pilar[i].finish) status_class = 'success'
+                            else status_class = 'danger'
+
+                            let tempPilarRow = `
+                            <tr class="treegrid-bumn-${value}-pilar-${pilar[i].id_pilar} ${parentClass}" data-type="pilar" data-value="${pilar[i].id_pilar}" data-perusahaan="${value}" id="perusahaan-${value}-pilar-${pilar[i].id_pilar}">
+                                <td style="text-align:center;">${i+1}</td>
+                                <td style="display: flex"><div style="flex: 1">${pilar[i].nama_pilar}</div></td>
+                                <td style="text-align:right;">${ pilar[i].total ? parseInt(pilar[i].total).toLocaleString() : 0}</td>
+                                <td></td>
+                                <td style="text-align:center;">
+                                    <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${pilar[i].inprogress ? 'In Progress' : (pilar[i].finish ? 'Finish' : 'Unfilled')}</a>
+                                </td>
+                                <td style="text-align:center;">                                            
+                                </td>                                
+                                <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                    <input disabled class="form-check-input pilar-check perusahaan-${value}" data-pilar-parent="pilar-${value}-${pilar[i].id_pilar}" type="checkbox">
+                                    </label></td>
+                            </tr>
+                            <tr class="treegrid-parent-bumn-${value}-pilar-${pilar[i].id_pilar}" id="treegrid-parent-bumn-${value}-pilar-${pilar[i].id_pilar}" style="visibility: hidden"><td style="text-align:center;"></td></tr>
+                            `;
+                            pilarRow += tempPilarRow;
+                        }
+
+                        $("#"+parentClass).before(pilarRow);
+
+                        // refresh treegrid
+                        $(".tree-new").treegrid({
+                            initialState : 'inherit',
+                            treeColumn : 1,
+                        })
+
+                        // expand all tree that previously expanded
+                        $(`${expandedTree.join(',')}`).treegrid('expand')
+
+                    }
+                } else if(typeRow === 'pilar' && isExpanded) {
+                    let selectedClassTree = $row.attr('class').split(' ').filter((cls) => cls.startsWith('treegrid-bumn-'))[0]
+
+                    // get current url parameter
+                    const url = new URL(window.location.href);
+                    const queryParams = url.searchParams;
+                    const tpb_filter = queryParams.get('tpb')
+                    const kriteria = queryParams.get('kriteria_program')
+
+                    // key: id perusahaan + id pilar
+                    // value == id pilar
+                    let tempPerusahaan = $row.data('perusahaan')
+                    let key = `${tempPerusahaan}-${value}`
+                    let dataPilarLoaded = dataPilarLoading.get(key)
+                    if(!dataPilarLoaded) {
+                        let data = await loadDataPerusahaanPilar(value, tempPerusahaan, selectedYear, tpb_filter, kriteria);
+                        dataPilarLoading.set(key, true);
+
+                        // populate tree
+                        let tpbRow = '';
+                        let tpb = data.result;
+                        let parentClass = selectedClassTree.replace('treegrid-', 'treegrid-parent-')
+                        for(let i=0; i<tpb.length; i++) {
+                            // defining progress status
+                            let status_class = ''
+                            if(tpb[i].inprogress) status_class = 'primary'
+                            else if(tpb[i].finish) status_class = 'success'
+                            else status_class = 'danger'
+
+                            let tempTpbRow = `
+                            <tr class="treegrid-bumn-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i].id_tpb} ${parentClass}" data-type="tpb" data-value="${tpb[i].id_tpb}" data-perusahaan="${tempPerusahaan}" data-pilar="${value}" id="perusahaan-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i].id_tpb}">
+                                <td style="text-align:center;"></td>
+                                <td style="display: flex"><div style="flex: 1">${tpb[i].no_tpb} - ${tpb[i].nama_tpb}</div></td>
+                                <td style="text-align:right;">${tpb[i].total ? parseInt(tpb[i].total).toLocaleString() : 0}</td>
+                                <td></td>
+                                <td style="text-align:center;">
+                                    <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${tpb[i].inprogress ? 'In Progress' : (tpb[i].finish ? 'Finish' : 'Unfilled')}</a>
+                                </td>
+                                <td style="text-align:center;">                                   
+                                </td> 
+                                <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                    <input disabled class="form-check-input tpb-check perusahaan-${tempPerusahaan}" data-pilar-parent="pilar-${tempPerusahaan}-${value}" type="checkbox">
+                                    </label></td>                                
+                            </tr>
+                            `;
+                            if(tpb[i].total) {
+                                tempTpbRow += `<tr class="treegrid-parent-bumn-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i].id_tpb}" id="treegrid-parent-bumn-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i].id_tpb}" style="visibility: hidden"><td style="text-align:center;"></td></tr>`
+                            }
+                            
+                            tpbRow += tempTpbRow;
+                        }
+
+                        $("#"+parentClass).before(tpbRow);
+
+                        // refresh treegrid
+                        $(".tree-new").treegrid({
+                            initialState : 'inherit',
+                            treeColumn : 1,
+                        })
+
+                        // expand all tree that previously expanded
+                        $(`${expandedTree.join(',')}`).treegrid('expand')
+                    }
+                } else if(typeRow === 'tpb' && isExpanded) {
+                    let selectedClassTree = $row.attr('class').split(' ').filter((cls) => cls.startsWith('treegrid-bumn-'))[0]
+
+                    // get current url parameter
+                    const url = new URL(window.location.href);
+                    const queryParams = url.searchParams;
+                    const kriteria = queryParams.get('kriteria_program');
+
+                    // key: id perusahaan + id pilar + id tpb
+                    // value == id tpb
+                    let tempPerusahaan = $row.data('perusahaan')
+                    let tempPilar = $row.data('pilar')
+                    let key = `${tempPerusahaan}-${tempPilar}-${value}`
+                    let dataTpbLoaded = dataTpbLoading.get(key)
+                    if(!dataTpbLoaded) {
+                        let data = await loadDataPerusahaanPilarTpb(value, tempPerusahaan, tempPilar, selectedYear, kriteria)
+                        dataTpbLoading.set(key, true)
+
+                        // populate tree
+                        let targetRow = '';
+                        let target = data.result;
+                        let parentClass = selectedClassTree.replace('treegrid-', 'treegrid-parent-')
+                        for(let i=0; i<target.length; i++) {
+                            // defining progres status
+                            let status_class = ''
+                            if(target[i].inprogress) status_class = 'primary'
+                            else if(target[i].finish) status_class = 'success'
+                            else status_class = 'danger'
+
+                            let btnEdit = `<button ${isOkToInput || target[i].enable_by_admin > 0 ? '' : 'disabled'} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${target[i].id_target}" data-toggle="tooltip" title="Ubah data ${target[i].program}"><i class="bi bi-pencil fs-3"></i></button>`;
+
+                            let tempTargetRow = `
+                            <tr class="${parentClass}" data-type="target" data-value="${target[i].id_target}" data-perusahaan="${tempPerusahaan}" data-pilar="${tempPilar}" data-tpb="${value}">
+                                <td style="text-align:center;"></td>
+                                <td style="display: flex"><div style="flex: 1">${target[i].program}</div></td>
+                                <td style="text-align:right;">${target[i].total ? parseInt(target[i].total).toLocaleString() : '-'}</td>
+                                <td style="text-align: center;">
+                                    ${target[i].kriteria_program_umum ? 'Umum; ' : ''}
+                                    ${target[i].kriteria_program_prioritas ? 'Prioritas; ' : ''}
+                                    ${target[i].kriteria_program_csv ? 'CSV; ' : ''}
+                                    ${!target[i].kriteria_program_csv && !target[i].kriteria_program_prioritas && !target[i].kriteria_program_umum ? '-' : ''}
+                                </td>
+                                <td style="text-align:center;">
+                                    <span class="btn cls-log badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-id="${target[i].id_target}">${target[i].inprogress ? 'In Progress' : (target[i].finish ? 'Finish' : '-')}</span>
+                                </td>
+                                <td style="text-align:center;">    
+                                    ${!viewOnly && target[i].inprogress ? btnEdit : ''}
+                                </td>
+                                
+                                <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                    <input ${isOkToInput || target[i].enable_by_admin > 0 ? '' : 'disabled'} class="form-check-input is_active-check target-check perusahaan-${tempPerusahaan} pilar-${tempPerusahaan}-${tempPilar}" data-anggaran="${target[i].id_target}" type="checkbox">
+                                    </label></td>
+                            </tr>
+                            `;
+
+                            targetRow += tempTargetRow;
+                        }
+                        
+                        $("#"+parentClass).before(targetRow);
+
+                        // refresh treegrid
+                        $(".tree-new").treegrid({
+                            initialState : 'inherit',
+                            treeColumn : 1,
+                        })
+
+                        // expand all tree that previously expanded
+                        $(`${expandedTree.join(',')}`).treegrid('expand')
+                    }
+
+                }
+
+            });
 
                         
             $('#page-title').html("{{ $pagetitle }}");
@@ -360,7 +636,7 @@
 
             $('#proses').on('click', function(event){
                 // datatable.ajax.reload()
-                var url = window.location.origin + '/rencana_kerja/program/index';
+                var url = window.location.origin + '/rencana_kerja/program';
                 var perusahaan_id = $('#perusahaan_id').val();
                 var tahun = $('#tahun').val();
                 var pilar_pembangunan_id = $('#pilar_pembangunan_id').val();
@@ -371,9 +647,9 @@
                 const selectedKriteriaProgram = []; // deklarasi array untuk menyimpan nilai dari checkbox yang dipilih
 
                 for (let i = 0; i < kriteria_program_checkboxes.length; i++) { // iterasi semua checkbox
-                if (kriteria_program_checkboxes[i].checked) { // jika checkbox terpilih
-                    selectedKriteriaProgram.push(kriteria_program_checkboxes[i].value); // tambahkan nilai checkbox ke dalam array
-                }
+                    if (kriteria_program_checkboxes[i].checked) { // jika checkbox terpilih
+                        selectedKriteriaProgram.push(kriteria_program_checkboxes[i].value); // tambahkan nilai checkbox ke dalam array
+                    }
                 }         
 
                 window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&pilar_pembangunan=' + pilar_pembangunan_id + '&tpb=' + tpb_id + '&jenis_anggaran=' +jenisAnggaran + '&kriteria_program=' +selectedKriteriaProgram;
@@ -645,6 +921,101 @@
 
             })
 
+            $(".enable-disable-input-by-superadmin").on('click', function() {
+                const bumn = "{{ $perusahaan_id }}"
+                const tahun = "{{ $tahun }}"
+                const nama_bumn = "{{ $perusahaan_nama }}"
+                const status = $(this).data('status')
+                
+
+                swal.fire({
+                    title: "Pemberitahuan",
+                    html: `<span style="color: red; font-weight: bold">${status === 'enable' ? 'Enable' : 'Disable'} Admin untuk input data ? </span><br/>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <tbody>
+                                    <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                        <td>Perusahaan</td>
+                                        <td>${nama_bumn}</td>
+                                    </tr>
+                                    <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                        <td>Tahun</td>
+                                        <td>${tahun}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                            `,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: `Ya, ${status} input data`,
+                    cancelButtonText: "Tidak"
+                }).then(function(result) {
+                    if (result.value) {
+                        $.ajax({
+                            url: urlenableinputdata,
+                            data:{
+                                "bumn": bumn,
+                                "tahun": tahun,
+                                "status": status,
+                            },
+                            type:'post',
+                            dataType:'json',
+                            beforeSend: function(){
+                                $.blockUI();
+                            },
+                            success: function(data){
+                                $.unblockUI();
+
+                                swal.fire({
+                                        title: data.title,
+                                        html: data.msg,
+                                        icon: data.flag,
+
+                                        buttonsStyling: true,
+
+                                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                                });
+
+                                if(data.flag == 'success') {
+                                    // datatable.ajax.reload( null, false );
+                                    location.reload(); 
+                                }
+                                
+                            },
+                            error: function(jqXHR, exception) {
+                                $.unblockUI();
+                                var msgerror = '';
+                                if (jqXHR.status === 0) {
+                                    msgerror = 'jaringan tidak terkoneksi.';
+                                } else if (jqXHR.status == 404) {
+                                    msgerror = 'Halaman tidak ditemukan. [404]';
+                                } else if (jqXHR.status == 500) {
+                                    msgerror = 'Internal Server Error [500].';
+                                } else if (exception === 'parsererror') {
+                                    msgerror = 'Requested JSON parse gagal.';
+                                } else if (exception === 'timeout') {
+                                    msgerror = 'RTO.';
+                                } else if (exception === 'abort') {
+                                    msgerror = 'Gagal request ajax.';
+                                } else {
+                                    msgerror = 'Error.\n' + jqXHR.responseText;
+                                }
+                                swal.fire({
+                                    title: "Error System",
+                                    html: msgerror+', coba ulangi kembali !!!',
+                                    icon: 'error',
+
+                                    buttonsStyling: true,
+
+                                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                                });  
+                            }
+                        });
+                    }
+                });
+            })
+
         });  
         
         function settingOptionOnLoad() {
@@ -679,7 +1050,7 @@
             selectedJenisAnggaran = selectedJenisAnggaran.split(' ').join('-')
 
             // Use the Laravel's built-in route function to generate the new URL
-            var url = "{{ route('rencana_kerja.program.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'jenis_anggaran' => ':jenis_anggaran']) }}";
+            var url = "{{ route('rencana_kerja.program.input', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'jenis_anggaran' => ':jenis_anggaran']) }}";
             url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(':jenis_anggaran', selectedJenisAnggaran);
 
             // Redirect the user to the new page
@@ -690,7 +1061,7 @@
             const jumlahDataDeleted = selectedProgram.length
             swal.fire({
                 title: "Pemberitahuan",
-                html: "Yakin hapus data ? <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahDataDeleted+" rows]</span>",
+                html: "Yakin hapus data ? (Data terkait akan ikut terhapus juga: <strong>kegiatan</strong> dan <strong>kegiatan realisasi</strong>)<br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahDataDeleted+" rows]</span>",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Ya, hapus data",
@@ -829,5 +1200,155 @@
             });
             return false;
         }
+
+        function loadDataPerusahaan(perusahaanId, tahun, pilar_pembangunan, tpb, jenis_anggaran, kriteria) {
+            return $.ajax({
+                url: urlgetdataperusahaan,
+                data:{
+                    "id": perusahaanId,
+                    "tahun": tahun,
+                    "pilar_pembangunan": pilar_pembangunan,
+                    "tpb": tpb,
+                    "jenis_anggaran": jenis_anggaran,
+                    "kriteria_program": kriteria
+                },
+                type:'post',
+                dataType:'json',
+                beforeSend: function(){
+                    $.blockUI();
+                },
+                success: function(data){
+                    $.unblockUI();                
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });  
+                }
+            });
+        }
+
+        function loadDataPerusahaanPilar(idPilar, perusahaanId, tahun, tpb, kriteria) {
+            return $.ajax({
+                url: urlgetdataperusahaanpilar,
+                data:{
+                    "id": perusahaanId,
+                    "tahun": tahun,
+                    "pilar": idPilar,
+                    "tpb": tpb,
+                    "kriteria_program": kriteria
+                },
+                type:'post',
+                dataType:'json',
+                beforeSend: function(){
+                    $.blockUI();
+                },
+                success: function(data){
+                    $.unblockUI();                
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });  
+                }
+            });
+        }
+
+        function loadDataPerusahaanPilarTpb(idTpb, perusahaanId, idPilar, tahun, kriteria) {
+            return $.ajax({
+                url: urlgetdataperusahaanpilartpb,
+                data:{
+                    "id": perusahaanId,
+                    "tahun": tahun,
+                    "pilar": idPilar,
+                    "tpb": idTpb,
+                    "kriteria_program": kriteria
+                },
+                type:'post',
+                dataType:'json',
+                beforeSend: function(){
+                    $.blockUI();
+                },
+                success: function(data){
+                    $.unblockUI();                
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });  
+                }
+            });
+        }
+
+        
     </script>
 @endsection

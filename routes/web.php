@@ -576,7 +576,12 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('batal_verifikasi_data', 'App\Http\Controllers\RencanaKerja\ProgramController@batalVerifikasiData')->name('rencana_kerja.program.batal_verifikasi_data');
 
             Route::get('/', 'App\Http\Controllers\RencanaKerja\ProgramController@index2')->name('rencana_kerja.program.index2');
-
+            Route::post('get_data_perusahaan_tree', 'App\Http\Controllers\RencanaKerja\ProgramController@getDataPerusahaanTree')->name('rencana_kerja.program.get_data_perusahaan_tree');
+            Route::post('get_data_perusahaan_pilar_tree', 'App\Http\Controllers\RencanaKerja\ProgramController@getDataPerusahaanPilarTree')->name('rencana_kerja.program.get_data_perusahaan_pilar_tree');
+            Route::post('get_data_perusahaan_pilar_tpb_tree', 'App\Http\Controllers\RencanaKerja\ProgramController@getDataPerusahaanPilarTpbTree')->name('rencana_kerja.program.get_data_perusahaan_pilar_tpb_tree');
+            Route::post('edit2', 'App\Http\Controllers\RencanaKerja\ProgramController@edit2')->name('rencana_kerja.program.edit2');
+            Route::get('input/{perusahaan_id}/{tahun}/{jenis_anggaran}', 'App\Http\Controllers\RencanaKerja\ProgramController@create2')->name('rencana_kerja.program.input');
+            Route::post('enable_disable_input_data', 'App\Http\Controllers\RencanaKerja\ProgramController@enableDisableInputData')->name('rencana_kerja.program.enable_disable_input_data');
         });
 
         Route::prefix('laporan_manajemen')->group(function () {
@@ -627,6 +632,8 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('log', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@log_status')->name('laporan_realisasi.bulanan.kegiatan.log');
                 Route::post('verifikasi_data', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@verifikasiData')->name('laporan_realisasi.bulanan.kegiatan.verifikasi_data');
                 Route::post('detail', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@detail')->name('laporan_realisasi.bulanan.kegiatan.detail');
+                Route::post('download_template', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@downloadTemplate')->name('laporan_realisasi.bulanan.kegiatan.download_template');
+                Route::post('upload_excel', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@uploadExcel')->name('laporan_realisasi.bulanan.kegiatan.upload_excel');
             });
 
             Route::prefix('pumk')->group(function () {

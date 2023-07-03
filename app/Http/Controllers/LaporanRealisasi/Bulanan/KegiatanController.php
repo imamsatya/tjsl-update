@@ -22,6 +22,7 @@ use App\Models\Kegiatan;
 use App\Models\KegiatanRealisasi;
 use App\Models\LogKegiatan;
 use App\Models\SubKegiatan;
+use App\Models\LaporanRealisasiBulananUpload;
 use Datatables;
 use DB;
 use Session;
@@ -30,6 +31,11 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Excel;
+use App\Exports\LaporanRealisasiTemplateExcelSheet;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use App\Imports\LaporanRealisasiBulananImport;
+
 class KegiatanController extends Controller
 {
 
@@ -879,7 +885,66 @@ class KegiatanController extends Controller
                     'anggaran_total' => $realisasi_total->total,
                     'realisasi' => $realisasi,
                 ]);
+            }
         // }catch(Exception $e){}
 
+    public function downloadTemplate(Request $request) {
+        $perusahaan_id = ($request->perusahaan_id?$request->perusahaan_id:1);
+        $bulan = ($request->bulan?$request->bulan:date('m'));
+        $tahun = ($request->tahun?$request->tahun:date('Y'));
+        $perusahaan = Perusahaan::where('id', $perusahaan_id)->first();
+        $namaFile = "Template Laporan Realisasi.xlsx";
+
+        return Excel::download(new LaporanRealisasiTemplateExcelSheet($perusahaan,$bulan,$tahun), $namaFile);
+    }
+
+    public function uploadExcel(Request $request) {
+        $result = [
+            'flag' => 'error',
+            'msg' => 'Error System',
+            'title' => 'Error'
+        ];
+
+        $param['file_name'] = $request->input('file_name');
+
+        try {
+            $realisasi = LaporanRealisasiBulananUpload::create((array)$param);
+
+            $dataUpload = $this->uploadFile($request->file('file_name'), $realisasi->id);
+            Excel::import(new LaporanRealisasiBulananImport($dataUpload->fileRaw, $realisasi->id), public_path('file_upload/laporan_realisasi/kegiatan/bulanan/'.$dataUpload->fileRaw));
+
+            $param2['file_name']  = $dataUpload->fileRaw;
+            $param2['user_id']  = \Auth::user()->id;
+            $realisasi->update((array)$param2);
+
+            Session::flash('success', "Berhasil Upload Data");
+
+            DB::commit();
+            $result = [
+            'flag'  => 'success',
+            'msg' => 'Sukses tambah data',
+            'title' => 'Sukses'
+            ];
+        }catch(\Exception $e){
+            DB::rollback();
+            $result = [
+            'flag'  => 'warning',
+            'msg' => $e->getMessage(),
+            'title' => 'Gagal'
+            ];
+        }
+
+        return response()->json($result);        
+    }    
+
+    protected function uploadFile(UploadedFile $file, $id)
+    {
+        $fileName = $file->getClientOriginalName();
+        $fileRaw  =$fileName = $id.'_'.$fileName;
+        $filePath = 'file_upload'.DIRECTORY_SEPARATOR.'laporan_realisasi'.DIRECTORY_SEPARATOR.'kegiatan'.DIRECTORY_SEPARATOR.'bulanan'.DIRECTORY_SEPARATOR.$fileName;
+        $destinationPath = public_path().DIRECTORY_SEPARATOR.'file_upload'.DIRECTORY_SEPARATOR.'laporan_realisasi'.DIRECTORY_SEPARATOR.'kegiatan'.DIRECTORY_SEPARATOR.'bulanan'.DIRECTORY_SEPARATOR;
+        $fileUpload      = $file->move($destinationPath, $fileRaw);
+        $data = (object) array('fileName' => $fileName, 'fileRaw' => $fileRaw, 'filePath' => $filePath);
+        return $data;
     }
 }
