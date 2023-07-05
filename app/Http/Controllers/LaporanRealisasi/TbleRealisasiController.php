@@ -51,7 +51,7 @@ class TbleRealisasiController extends Controller
             }
         }
         $status = DB::table('statuses')->get();
-        $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->get();
+        $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->where('jenis_periode', 'standar')->orderBy('urutan')->get();
         $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')
         ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')->whereIn('periode_laporan_id', $periode->pluck('id')->toArray());
         if ($request->perusahaan_id) {
@@ -75,7 +75,7 @@ class TbleRealisasiController extends Controller
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Rencana Kerja - Tanda Bukti Lapor Elektronik - RKA',
             // 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
-            'tahun' => ($request->tahun ?? ''),
+            'tahun' => ($request->tahun ?? Carbon::now()->year),
             'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,

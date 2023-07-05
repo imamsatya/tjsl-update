@@ -141,7 +141,7 @@ class LaporanManajemenController extends Controller
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Rencana Kerja - Laporan Manajemen - RKA',
             // 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
-            'tahun' => ($request->tahun ?? ''),
+            'tahun' => ($request->tahun ?? Carbon::now()->year),
             'perusahaan' => Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
@@ -307,7 +307,7 @@ class LaporanManajemenController extends Controller
             $laporan_manajemen = $laporan_manajemen->where('status_id', $request->status_laporan);
         }
 
-        $laporan_manajemen = $laporan_manajemen->get();
+        $laporan_manajemen = $laporan_manajemen->orderBy('laporan_manajemens.tahun', 'desc')->get();
         // $all_perusahaan_id =$laporan_manajemen->pluck('perusahaan_id');
         // dd();
         try {
@@ -326,7 +326,7 @@ class LaporanManajemenController extends Controller
                     $button .= '</div>';
                     return $button;
                 })
-                ->rawColumns(['id',  'tahun', 'nama_lengkap',  'status_id', 'action'])
+                ->rawColumns(['id',  'nama_lengkap', 'tahun',  'status_id', 'action'])
                 ->toJson();
         } catch (Exception $e) {
             return response([

@@ -209,83 +209,83 @@
                             </div>
                             <!--begin::Accordion-->
                             <div class="accordion accordion-icon-collapse" id="kt_accordion_4">
-                            <?php $i = 0;
-                            $j = 0; ?>
-                            @foreach ($dataInput as $index => $tpbs)
-                                {{-- {{ $i }} --}}
-                                <!--begin::Item-->
-                                <div class="mb-5">
-                                    <!--begin::Header-->
-                                    <div class="accordion-header py-3 d-flex" data-bs-toggle="collapse" data-bs-target="#kt_accordion_4_item_{{$i}}">
-                                        
-                                        <div class="row mb-4" style="width: 100%">
-                                            <div class="col-1" style="text-align: center">
-                                                <span class="accordion-icon">
-                                                    <i class="bi-duotone bi-plus-square fs-3 accordion-icon-on d-none"></i>
-                                                    <i class="bi-duotone bi-dash-square fs-3 accordion-icon-off"></i>
-                                                </span>
-                                            </div>
-                                            <div class="col-lg-5" style="padding-left:0">
-                                                <h3>{{ $index }}</h3>
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <input style="background-color: #d8efe2; color: #01863e; text-align:right; font-weight: bold" type="text" name="cid_total[{{ $i }}]" disabled
-                                                    class="form-control form-control-lg form-control-solid"
-                                                    placeholder="Rp ... (total)" value="" />
+                                <?php $i = 0;
+                                $j = 0; ?>
+                                @foreach ($dataInput as $index => $tpbs)
+                                    {{-- {{ $i }} --}}
+                                    <!--begin::Item-->
+                                    <div class="mb-5">
+                                        <!--begin::Header-->
+                                        <div class="accordion-header py-3 d-flex" data-bs-toggle="collapse" data-bs-target="#kt_accordion_4_item_{{$i}}">
+                                            
+                                            <div class="row mb-4" style="width: 100%">
+                                                <div class="col-1" style="text-align: center">
+                                                    <span class="accordion-icon">
+                                                        <i class="bi-duotone bi-plus-square fs-3 accordion-icon-on d-none"></i>
+                                                        <i class="bi-duotone bi-dash-square fs-3 accordion-icon-off"></i>
+                                                    </span>
+                                                </div>
+                                                <div class="col-lg-5" style="padding-left:0">
+                                                    <h3>{{ $index }}</h3>
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <input style="background-color: #d8efe2; color: #01863e; text-align:right; font-weight: bold" type="text" name="cid_total[{{ $i }}]" disabled
+                                                        class="form-control form-control-lg form-control-solid"
+                                                        placeholder="Rp ... (total)" value="" />
 
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <input style="background-color: #d8efe2; color: #01863e; text-align:right; font-weight: bold" type="text" disabled name="noncid_total[{{ $i }}]"
-                                                    class="form-control form-control-lg form-control-solid"
-                                                    placeholder="Rp ... (total)" value="" />
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    <input style="background-color: #d8efe2; color: #01863e; text-align:right; font-weight: bold" type="text" disabled name="noncid_total[{{ $i }}]"
+                                                        class="form-control form-control-lg form-control-solid"
+                                                        placeholder="Rp ... (total)" value="" />
 
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <!--end::Header-->
+                                        <!--end::Header-->
 
-                                    <!--begin::Body-->
-                                    <div id="kt_accordion_4_item_{{$i}}" class="fs-6 collapse show" >
-                                        @foreach ($tpbs as $indexTPB => $tpb)
-                                        {{-- {{ $j }} --}}
-                                        <div class="row mb-4" style="width: 100%">
-                                            <div class="col-1"></div>
-                                            <div class="col-lg-5">
-                                                <!-- <div class="ms-8">{{ $indexTPB }}</div> -->
-                                           {{ $indexTPB }}
+                                        <!--begin::Body-->
+                                        <div id="kt_accordion_4_item_{{$i}}" class="fs-6 collapse show" >
+                                            @foreach ($tpbs as $indexTPB => $tpb)
+                                            {{-- {{ $j }} --}}
+                                            <div class="row mb-4" style="width: 100%">
+                                                <div class="col-1"></div>
+                                                <div class="col-lg-5">
+                                                    <!-- <div class="ms-8">{{ $indexTPB }}</div> -->
+                                            {{ $indexTPB }}
 
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    @if (isset($tpb['CID']))
+                                                        <input type="text" data-idrelasi="{{ $tpb['CID']['relasi_pilar_tpb_id'] }}" 
+                                                            name="cid_tpb[{{ $i }}][{{ $j }}]" value="{{ $tpb['CID']['anggaran'] }}"
+                                                            class="form-control form-control-lg form-control-solid"
+                                                            placeholder="Rp ..." style="text-align:right;"
+                                                            oninput="formatCurrency(this)"
+                                                            onkeypress="return onlyNumbers(event)" />
+                                                    @endif
+                                                </div>
+                                                <div class="col-lg-3">
+                                                    @if (isset($tpb['non CID']))
+                                                        <input type="text" data-idrelasi="{{ $tpb['non CID']['relasi_pilar_tpb_id'] }}" 
+                                                            name="noncid_tpb[{{ $i }}][{{ $j }}]" value="{{ $tpb['non CID']['anggaran'] }}"
+                                                            class="form-control form-control-lg form-control-solid"
+                                                            placeholder="Rp ..." style="text-align:right;"
+                                                            oninput="formatCurrency(this)"
+                                                            onkeypress="return onlyNumbers(event)" />
+                                                    @endif
+                                                </div>
                                             </div>
-                                            <div class="col-lg-3">
-                                                @if (isset($tpb['CID']))
-                                                    <input type="text" data-idrelasi="{{ $tpb['CID']['relasi_pilar_tpb_id'] }}" 
-                                                        name="cid_tpb[{{ $i }}][{{ $j }}]" value="{{ $tpb['CID']['anggaran'] }}"
-                                                        class="form-control form-control-lg form-control-solid"
-                                                        placeholder="Rp ..." style="text-align:right;"
-                                                        oninput="formatCurrency(this)"
-                                                        onkeypress="return onlyNumbers(event)" />
-                                                @endif
-                                            </div>
-                                            <div class="col-lg-3">
-                                                @if (isset($tpb['non CID']))
-                                                    <input type="text" data-idrelasi="{{ $tpb['non CID']['relasi_pilar_tpb_id'] }}" 
-                                                        name="noncid_tpb[{{ $i }}][{{ $j }}]" value="{{ $tpb['non CID']['anggaran'] }}"
-                                                        class="form-control form-control-lg form-control-solid"
-                                                        placeholder="Rp ..." style="text-align:right;"
-                                                        oninput="formatCurrency(this)"
-                                                        onkeypress="return onlyNumbers(event)" />
-                                                @endif
-                                            </div>
+                                            <?php $j++; ?>
+                                        @endforeach
+                                        <br><br>
+
+                                        <?php $i++; ?>
                                         </div>
-                                        <?php $j++; ?>
-                                    @endforeach
-                                    <br><br>
-
-                                    <?php $i++; ?>
+                                        <!--end::Body-->
                                     </div>
-                                    <!--end::Body-->
-                                </div>
-                                <!--end::Item-->                                                                 
-                            @endforeach                     
+                                    <!--end::Item-->                                                                 
+                                @endforeach                     
                             </div>
                             <!--end::Accordion-->
                             
@@ -486,7 +486,7 @@
                             var segments = url.split('/');
                             console.log(segments)
                             let routeTo = "{{route('anggaran_tpb.rka')}}"+"?perusahaan_id="+segments[4]+"&tahun="+segments[5]
-                            window.location.href = routeTo
+                            // window.location.href = routeTo
                             
                                                 
                             // window.location.reload();
@@ -633,7 +633,8 @@
                 maximumFractionDigits: 0
             });
             const formattedValue = formatter.format(value);
-            element.value = formattedValue.replace(/,/g, ".");
+            // element.value = formattedValue.replace(/,/g, ".");
+             element.value = value ? formattedValue.replace(/,/g, ".") : null;
         }
 
         function onlyNumbers(event) {

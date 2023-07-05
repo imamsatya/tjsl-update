@@ -588,7 +588,7 @@ class AnggaranTpbController extends Controller
 
     public function store2(Request $request)
     {
-
+        // dd($request);
         $result = [
             'flag' => 'error',
             'msg' => 'Error System',
@@ -1122,7 +1122,7 @@ class AnggaranTpbController extends Controller
         //     $anggaran = $anggaran->where('relasi_pilar_tpbs.tpb_id', $request->tpb_id);
         // }
 
-        $anggaran = $anggaran->orderBy('anggaran_tpbs.perusahaan_id')->orderBy('pilar_pembangunans.jenis_anggaran')->orderBy('pilar_pembangunans.nama')->orderBy('tpbs.id')->get();
+        $anggaran = $anggaran->whereNotNull('anggaran')->orderBy('anggaran_tpbs.perusahaan_id')->orderBy('pilar_pembangunans.jenis_anggaran')->orderBy('pilar_pembangunans.nama')->orderBy('tpbs.id')->get();
         $namaFile = "Data Anggaran TPB " . date('dmY') . ".xlsx";
         return Excel::download(new AnggaranTpbExport($anggaran, $request->tahun), $namaFile);
     }

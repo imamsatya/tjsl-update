@@ -179,18 +179,19 @@
                                 <div class="col-md-6">
                                     <div class="row mb-6">
                                         <!--begin::Label-->
-                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Tahun</label>
+                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">Tahun </label>
                                         <!--end::Label-->
                                         <!--begin::Col-->
                                         <div class="col-lg-8 fv-row">
                                             <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true" data-placeholder="Pilih Tahun" data-allow-clear="true">
                                                 <option></option>
-                                            @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
-                                                    @php
+                                            @php 
+                                                for($i = date("Y")+1; $i>=2020; $i--){ 
                                                         $select = (($i == $tahun) ? 'selected="selected"' : '');
                                                     @endphp
                                                     <option value="{{$i}}" {!! $select !!}>{{$i}}</option>
-                                                @php } @endphp
+                                                @php } 
+                                            @endphp
                                             </select>
 
                                         </div>
@@ -270,7 +271,7 @@
                                     <th>Dana Tersalurkan</th>
                                     <th>Saldo Akhir</th>
                                     <th>Status</th>
-                                    <th style="text-align:center;">Aksi</th>
+                                    <th style="text-align:center; width: 10%;">Aksi</th>
                                     <th><label
                                             class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
                                                 class="form-check-input addCheck" type="checkbox"
@@ -692,7 +693,8 @@
                             // console.log(row.status_id)
                             let button = null;
                             if (row.status_id === 2) {
-                                button = `<button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+                                button = `<button  {{ $isOkToInput ? '' : 'disabled' }} type="button" style="margin-right: 8px;" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+                                button = button+`<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-show" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                             }
 
                             if (row.status_id === 1) {

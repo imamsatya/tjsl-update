@@ -54,7 +54,7 @@ class LaporanManajemenTriwulanController extends Controller
               }
           }
           $status = DB::table('statuses')->get();
-          $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->orderBy('urutan')->get();
+          $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->where('jenis_periode', 'standar')->orderBy('urutan')->get();
           //cek laporan
           $all_perusahaan_id =Perusahaan::where('is_active', true)->where('induk', 0)->pluck('id');
           $currentYear = Carbon::now()->year;
@@ -74,7 +74,7 @@ class LaporanManajemenTriwulanController extends Controller
                             $latest_id = LaporanManajemen::max('id');
                             $laporan_manajemen_new = new LaporanManajemen();
                             $laporan_manajemen_new->id = $latest_id + 1;
-                            $laporan_manajemen_new->perusahaan_id = $perusahaan_id2;
+                            $laporan_manajemen_new->perusahaan_id = $perusahaan_id;
                             $laporan_manajemen_new->periode_laporan_id = $periode_row->id;
                             $laporan_manajemen_new->status_id = 3; //unfilled
                             $laporan_manajemen_new->tahun = $year;
@@ -94,7 +94,7 @@ class LaporanManajemenTriwulanController extends Controller
               'pagetitle' => $this->pagetitle,
               'breadcrumb' => 'Rencana Kerja - Tanda Bukti Lapor Elektronik - RKA',
               // 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
-              'tahun' => ($request->tahun ?? ''),
+              'tahun' => ($request->tahun ?? Carbon::now()->year),
               'perusahaan' => Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get(),
               'admin_bumn' => $admin_bumn,
               'perusahaan_id' => $perusahaan_id ?? 1,

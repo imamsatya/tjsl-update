@@ -75,7 +75,7 @@ class TbleController extends Controller
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Rencana Kerja - Tanda Bukti Lapor Elektronik - RKA',
             // 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
-            'tahun' => ($request->tahun ?? ''),
+            'tahun' => ($request->tahun ?? Carbon::now()->year),
             'perusahaan' => Perusahaan::where('induk', 0)->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
@@ -187,7 +187,7 @@ class TbleController extends Controller
                     $button .= '</div>';
                     return $button;
                 })
-                ->rawColumns(['id',  'nama_lengkap', 'tahunx', 'action'])
+                ->rawColumns(['id',  'nama_lengkap', 'tahun', 'action'])
                 ->toJson();
         } catch (Exception $e) {
             return response([

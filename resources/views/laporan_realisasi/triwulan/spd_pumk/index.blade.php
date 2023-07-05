@@ -293,7 +293,7 @@
                                     <th>Saldo Akhir</th>
                                     <th>Periode</th>
                                     <th>Status</th>
-                                    <th style="text-align:center;">Aksi</th>
+                                    <th style="text-align:center;width: 10%;">Aksi</th>
                                     <th><label
                                             class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
                                                 class="form-check-input addCheck" type="checkbox"
@@ -747,7 +747,8 @@
                             let button = null;
                             if (row.status_id === 2) {
                                 
-                                button = `<button type="button" ${row.isoktoinput ? '' : 'disabled'} class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+                                button = `<button style="margin-right: 8px;" type="button" ${row.isoktoinput ? '' : 'disabled'} class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+                                button = button + `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-show" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                             }
 
                             if (row.status_id === 1) {

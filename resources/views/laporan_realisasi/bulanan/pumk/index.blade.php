@@ -589,6 +589,8 @@
                             // , minus
                             button =
                                 `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+
+                                // button = button + `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info" data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                         }
 
                         if (row.status_id === 1) {

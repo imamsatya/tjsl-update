@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use DateTime;
+use Carbon\Carbon;
 class SpdPumkTriwulanController extends Controller
 {
 
@@ -50,7 +51,7 @@ class SpdPumkTriwulanController extends Controller
                 }
             }
         }
-        $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->orderBy('urutan')->get();
+        $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->where('jenis_periode', 'standar')->orderBy('urutan')->get();
         $anggaran = DB::table('pumk_anggarans')
             ->selectRaw('pumk_anggarans.*,
              perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap,
@@ -98,7 +99,7 @@ class SpdPumkTriwulanController extends Controller
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Rencana Kerja - SPD PUMK - RKA',
             // 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
-            'tahun' => ($request->tahun ?? ''),
+            'tahun' => ($request->tahun ?? Carbon::now()->year),
             'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,

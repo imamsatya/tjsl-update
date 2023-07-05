@@ -40,10 +40,15 @@
                 <td>{{ $realisasi[0]->bulan_nama . ' ' . $realisasi[0]->tahun }}</td>
             </tr>
             <tr>
+                <td><b>Indikator Capaian</b></td>
+                <td>{{ $data->indikator . ' ' . $data->satuan_ukur }}</td>
+
+            </tr>
+            <tr>
                 <td><b>Jenis Kegiatan</b></td>
-                <td>{{ $realisasi[0]->jenis_kegiatan_nama }}</td>
+                <td>{{ $realisasi[0]->jenis_kegiatan_nama ?? '-' }}</td>
                 <td><b>Sub Kegiatan</b></td>
-                <td>{{ $realisasi[0]->sub_kegiatan_nama }}</td>
+                <td>{{ $realisasi[0]->sub_kegiatan_nama ?? '-' }}</td>
             </tr>
             {{-- <tr>
                 <td><b>Indikator Capaian Kegiatan</b></td>

@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use DateTime;
-
+use Carbon\Carbon;
 class SpdPumkRkaController extends Controller
 {
 
@@ -116,7 +116,7 @@ class SpdPumkRkaController extends Controller
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Rencana Kerja - SPD PUMK - RKA',
             // 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
-            'tahun' => ($request->tahun ?? ''),
+            'tahun' => ($request->tahun ?? Carbon::now()->year),
             'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
@@ -249,7 +249,7 @@ class SpdPumkRkaController extends Controller
                     // }else{
                     $param['status_id'] = DB::table('statuses')->where('nama', 'ilike', '%In Progress%')->pluck('id')->first();
                     // } 
-                    // dd($param);
+                    
                     $data = PumkAnggaran::create($param);
 
                     if ($validasi) {

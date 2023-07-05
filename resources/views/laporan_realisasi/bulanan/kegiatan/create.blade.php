@@ -20,7 +20,7 @@
             <div class="card" style="margin-bottom: 10px">
                 <div class="card-header pt-5">
                     <div class="card-title">
-                        <h2 class="d-flex align-items-center">Upload Data Kegiatan</h2>
+                        <h2 class="d-flex align-items-center">Upload Data Kegiatan Melalui Template</h2>
                     </div>
                 </div>
                 <div class="card-body p-0">
@@ -48,7 +48,7 @@
                     <div class="card-title">
                         <h2 class="d-flex align-items-center">
                             {{-- {{ $pagetitle }}  --}}
-                            Data Kegiatan 
+                            Input Data Kegiatan Melalui Form
                             <span class="text-gray-600 fs-6 ms-1"></span>
                         </h2>
                     </div>
@@ -286,7 +286,7 @@
                                 </div>
                                 <div class="row mb-6">
                                     <div class="col-lg-3 ">
-                                        <div class="ms-2 required">Jenis Kegiatan</div>
+                                        <div class="ms-2 ">Jenis Kegiatan</div>
                                     </div>
                                     <div class="col-lg-9">
                                         <select  id="jenis_kegiatan" class="form-select form-select-solid form-select2" name="jenis_kegiatan" data-kt-select2="true" data-placeholder="Pilih Jenis Kegiatan" data-allow-clear="true" onchange="filterSubkegiatan(this.value)">

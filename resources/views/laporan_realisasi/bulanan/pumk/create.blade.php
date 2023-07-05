@@ -1,6 +1,5 @@
 <form class="kt-form kt-form--label-right" method="POST" id="form-edit">
     @csrf
-    
     <input type="hidden" name="perusahaan_id" id="perusahaan_id" readonly="readonly"
         value="{{ $perusahaan_id }}" />
     <input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{ $actionform }}" />
@@ -46,7 +45,7 @@
         </div>
         <div class="row mb-6">
             <div class="col-lg-3">
-                <div class="ms-2 bulan-label">Nilai Penyaluran Bulan melalui BRI<span style="color: red">*</span></div>
+                <div class="ms-2 bulan-label">Nilai Penyaluran melalui BRI pada Bulan <span style="color: red">*</span></div>
             </div>
             <div class="col-lg-9">
                 <input type="text" name="nilai_penyaluran_melalui_bri" oninput="formatCurrency(this)"
@@ -78,7 +77,7 @@
                 
             </div>
             <div class="col-lg-6">
-          
+                <div class="ms-2">Kolektabilitas<span style="color: red">*</span></div>
             </div>
             <div class="col-lg-3">
                 <div class="ms-2">Jumlah MB<span style="color: red">*</span></div>

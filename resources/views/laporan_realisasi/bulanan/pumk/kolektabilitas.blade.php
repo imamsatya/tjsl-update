@@ -8,39 +8,44 @@
     </thead>
     <tbody>
         <tr>
+
             <td>Lancar</td>
-            <td style="text-align: right;"><span
-                    id="kolektabilitas_lancar">{{ $pumk_bulan->kolektabilitas_lancar }}</span></td>
-            <td style="text-align: right;"><span
-                    id="kolektabilitas_lancar_jumlah_mb">{{ $pumk_bulan->kolektabilitas_lancar_jumlah_mb }}</span></td>
+            <td style="text-align: right;"><span id="kolektabilitas_lancar">Rp
+                    {{ number_format($pumk_bulan->kolektabilitas_lancar, 0, ',', ',') }}</span>
+            </td>
+            <td style="text-align: right;"><span id="kolektabilitas_lancar_jumlah_mb">Rp
+                    {{ $pumk_bulan->kolektabilitas_lancar_jumlah_mb }}</span></td>
         </tr>
         <tr>
             <td>Kurang Lancar</td>
-            <td style="text-align: right;"><span
-                    id="kolektabilitas_kurang_lancar">{{ $pumk_bulan->kolektabilitas_kurang_lancar }}</span></td>
+            <td style="text-align: right;"><span id="kolektabilitas_kurang_lancar">Rp
+                    {{ number_format($pumk_bulan->kolektabilitas_kurang_lancar, 0, ',', ',') }}</span>
+            </td>
             <td style="text-align: right;"><span
                     id="kolektabilitas_kurang_lancar_jumlah_mb">{{ $pumk_bulan->kolektabilitas_kurang_lancar_jumlah_mb }}</span>
             </td>
         </tr>
         <tr>
             <td>Diragukan</td>
-            <td style="text-align: right;"><span
-                    id="kolektabilitas_diragukan">{{ $pumk_bulan->kolektabilitas_diragukan }}</span></td>
+            <td style="text-align: right;"><span id="kolektabilitas_diragukan">Rp
+                    {{ number_format($pumk_bulan->kolektabilitas_diragukan, 0, ',', ',') }}</span>
+            </td>
             <td style="text-align: right;"><span
                     id="kolektabilitas_diragukan_jumlah_mb">{{ $pumk_bulan->kolektabilitas_diragukan_jumlah_mb }}</span>
             </td>
         </tr>
         <tr>
             <td>Macet</td>
-            <td style="text-align: right;"><span
-                    id="kolektabilitas_macet">{{ $pumk_bulan->kolektabilitas_macet }}</span></td>
+            <td style="text-align: right;"><span id="kolektabilitas_macet">Rp
+                    {{ number_format($pumk_bulan->kolektabilitas_macet, 0, ',', ',') }}</span>
+            </td>
             <td style="text-align: right;"><span
                     id="kolektabilitas_macet_jumlah_mb">{{ $pumk_bulan->kolektabilitas_macet_jumlah_mb }}</span></td>
         </tr>
         <tr>
             <td>Pinjaman Bermasalah</td>
-            <td style="text-align: right;"><span
-                    id="kolektabilitas_pinjaman_bermasalah">{{ $pumk_bulan->kolektabilitas_pinjaman_bermasalah }}</span>
+            <td style="text-align: right;"><span id="kolektabilitas_pinjaman_bermasalah">Rp
+                    {{ number_format($pumk_bulan->kolektabilitas_pinjaman_bermasalah, 0, ',', ',') }}</span>
             </td>
             <td style="text-align: right;"><span
                     id="kolektabilitas_pinjaman_bermasalah_jumlah_mb">{{ $pumk_bulan->kolektabilitas_pinjaman_bermasalah_jumlah_mb }}</span>
@@ -56,11 +61,16 @@
         <tr>
             <td><strong>Total</strong></td>
             <td style="text-align: right;"><strong id="total_nilai">
-                    {{ $pumk_bulan->kolektabilitas_lancar +
-                        $pumk_bulan->kolektabilitas_kurang_lancar +
-                        $pumk_bulan->kolektabilitas_diragukan +
-                        $pumk_bulan->kolektabilitas_macet +
-                        $pumk_bulan->kolektabilitas_pinjaman_bermasalah }}
+                    Rp{{ number_format(
+                        $pumk_bulan->kolektabilitas_lancar +
+                            $pumk_bulan->kolektabilitas_kurang_lancar +
+                            $pumk_bulan->kolektabilitas_diragukan +
+                            $pumk_bulan->kolektabilitas_macet +
+                            $pumk_bulan->kolektabilitas_pinjaman_bermasalah,
+                        0,
+                        ',',
+                        ',',
+                    ) }}
                 </strong></td>
             <td style="text-align: right;"><strong id="total_jumlah_mb">
                     {{ $pumk_bulan->kolektabilitas_lancar_jumlah_mb +

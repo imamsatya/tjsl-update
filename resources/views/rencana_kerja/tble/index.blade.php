@@ -489,7 +489,7 @@
                 ],
                 order: [
                     [1, 'asc'], // set initial sorting by the second column (no_tpb)
-                    [3, 'asc']
+                    [3, 'desc']
                 ],
                 drawCallback: function(settings) {
                     var info = datatable.page.info();
