@@ -320,15 +320,19 @@
                                 data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
                         {{-- <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
+                        @can('delete-kegiatan')
                         <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                         </button>
+                        @endcan
+                        @can('edit-kegiatan')
                         <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input
                             Data
                         </button>
-                        @role('Super Admin')
+                        @endcan
+                        @can('view-verify')
                         <button type="button" class="btn btn-primary btn-sm " id="verify-data">Verify
                         </button>
-                        @endrole
+                        @endcan
                     </div>
                     <!--end::Search-->
                     <!--end::Group actions-->
@@ -676,7 +680,7 @@
                     name: 'jenis_kegiatan_nama',
                     render: function (data, type, row){
                         
-                        jenisKegiatan = data ? `${data}` : `-`
+                        jenisKegiatan = data ? `${data}` : `--`
                         return jenisKegiatan;
                     }
                 },
@@ -728,7 +732,7 @@
                             // console.log(row)
                             let button = null;
                             if (row.kegiatan_realisasi_status_id === 2) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+                                button = `@can('edit-kegiatan')<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>@endcan`
                             }
 
                             if (row.kegiatan_realisasi_status_id === 1) {

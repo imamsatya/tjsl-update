@@ -259,10 +259,14 @@
                                 data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
                             {{-- <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
+                            @can('delete-kegiatan')
                             <button type="button" class="btn btn-danger btn-action btn-sm delete-selected-data me-2">Hapus Data
                             </button>
+                            @endcan
+                            @can('edit-kegiatan')
                             <button type="button" class="btn btn-primary btn-action btn-sm me-2" id="input-data" onclick="redirectToNewPage()">Input Data
                             </button>
+                            @endcan
                             @can('view-verify')
                             {{-- @if($countInprogress || !$anggaran->count()) --}}
                             <button  type="button" class="btn btn-primary btn-action btn-sm me-2" id="verify-data" >Verify
@@ -747,7 +751,7 @@
                             let button = null;
                             if (row.status_id === 2) {
                                 
-                                button = `<button style="margin-right: 8px;" type="button" ${row.isoktoinput ? '' : 'disabled'} class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+                                button = `@can('edit-kegiatan')<button style="margin-right: 8px;" type="button" ${row.isoktoinput ? '' : 'disabled'} class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>@endcan`
                                 button = button + `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-show" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                             }
 

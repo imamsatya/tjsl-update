@@ -634,12 +634,12 @@
                             
                             let button = null;
                             if (row.status_id === 3) {
-                                button = `<button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-upload text-center" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Upload data "><i class="bi bi-upload fs-3"></i></button>`
+                                button = `@can('edit-kegiatan')<button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-upload text-center" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Upload data "><i class="bi bi-upload fs-3"></i></button>@endcan`
                             }
                             if (row.status_id === 2) {
 
                                 // <a rel='tooltip' data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" class="mb-4 jawban-file-st" title="File Jawaban" href="{{ asset('storage/${row.file_name}') }}" target="_blank" rel="noopener noreferrer"></a>
-                                button = `<button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit text-center me-2" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+                                button = `@can('edit-kegiatan')<button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit text-center me-2" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>@endcan`
 
                                 // button2 = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button>`
                                 button2 = `<a rel='tooltip' data-bs-toggle="tooltip" data-bs-custom-class="tooltip-inverse" data-bs-placement="top" class="mb-4 jawban-file-st" title="File Jawaban" href="{{ asset('storage/${row.file_name}') }}" target="_blank" rel="noopener noreferrer"><button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-download text-center" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Download data "><i class="bi bi-download fs-3"></i></button></a>`

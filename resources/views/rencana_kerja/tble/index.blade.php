@@ -207,10 +207,10 @@
                         </button>
                         <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
                         </button> --}}
-                        @role('Super Admin')
+                        {{-- @role('Super Admin')
                             <button type="button" class="btn btn-primary btn-sm " >Verify
                             </button>
-                            @endrole
+                            @endrole --}}
                     </div>
                     <!--end::Card toolbar-->
                 </div>

@@ -266,10 +266,14 @@
                     <!--begin::Search-->
 
                     <div class="d-flex align-items-center position-relative my-1">
+                        @can('delete-kegiatan')
                         <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                         </button>
+                        @endcan
+                        @can('edit-kegiatan')
                         <button type="button" class="btn btn-primary btn-sm input-data">Input Data
                         </button>
+                        @endcan
                     </div>
                     <!--end::Search-->
                     <!--end::Group actions-->
@@ -588,7 +592,7 @@
                         if (row.status_id === 2) {
                             // , minus
                             button =
-                                `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+                                `@can('edit-kegiatan')<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>@endcan`
 
                                 // button = button + `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info" data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                         }
