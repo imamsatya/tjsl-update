@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 class LaporanManajemenTriwulanController extends Controller
 {
 
@@ -53,7 +54,7 @@ class LaporanManajemenTriwulanController extends Controller
               }
           }
           $status = DB::table('statuses')->get();
-          $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->get();
+          $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->where('jenis_periode', 'standar')->orderBy('urutan')->get();
           //cek laporan
           $all_perusahaan_id =Perusahaan::where('is_active', true)->where('induk', 0)->pluck('id');
           $currentYear = Carbon::now()->year;
@@ -73,7 +74,7 @@ class LaporanManajemenTriwulanController extends Controller
                             $latest_id = LaporanManajemen::max('id');
                             $laporan_manajemen_new = new LaporanManajemen();
                             $laporan_manajemen_new->id = $latest_id + 1;
-                            $laporan_manajemen_new->perusahaan_id = $perusahaan_id2;
+                            $laporan_manajemen_new->perusahaan_id = $perusahaan_id;
                             $laporan_manajemen_new->periode_laporan_id = $periode_row->id;
                             $laporan_manajemen_new->status_id = 3; //unfilled
                             $laporan_manajemen_new->tahun = $year;
@@ -93,7 +94,7 @@ class LaporanManajemenTriwulanController extends Controller
               'pagetitle' => $this->pagetitle,
               'breadcrumb' => 'Rencana Kerja - Tanda Bukti Lapor Elektronik - RKA',
               // 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
-              'tahun' => ($request->tahun ?? ''),
+              'tahun' => ($request->tahun ?? Carbon::now()->year),
               'perusahaan' => Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get(),
               'admin_bumn' => $admin_bumn,
               'perusahaan_id' => $perusahaan_id ?? 1,
@@ -241,11 +242,30 @@ class LaporanManajemenTriwulanController extends Controller
     {
         // dd($request);
         $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->get();
-        $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap, periode_laporans.nama as periode_laporan_nama')
-          ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')
-          ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'laporan_manajemens.periode_laporan_id')
-          ->whereIn('periode_laporan_id', $periode->pluck('id')->toArray())
-          ->where('perusahaans.induk', 0);
+        if(Auth::user()->getRoleNames()->contains('Super Admin') || Auth::user()->getRoleNames()->contains('Admin TJSL')){
+            $laporan_manajemen = DB::table('laporan_manajemens')
+            ->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap, periode_laporans.nama as periode_laporan_nama,
+              TRUE AS isoktoinput')
+            ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')
+            ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'laporan_manajemens.periode_laporan_id')
+            ->whereIn('periode_laporan_id', $periode->pluck('id')->toArray())
+            ->where('perusahaans.induk', 0);
+        }
+        else{
+            $laporan_manajemen = DB::table('laporan_manajemens')
+            ->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap, periode_laporans.nama as periode_laporan_nama,
+               CASE
+                  WHEN CURRENT_DATE BETWEEN periode_laporans.tanggal_awal AND periode_laporans.tanggal_akhir
+                  OR periode_laporans.is_active = FALSE
+                  THEN TRUE
+               ELSE FALSE
+               END AS isoktoinput')
+            ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')
+            ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'laporan_manajemens.periode_laporan_id')
+            ->whereIn('periode_laporan_id', $periode->pluck('id')->toArray())
+            ->where('perusahaans.induk', 0);
+        }
+       
         $perusahaan_id = $request->perusahaan_id ?? 1; //default id 1
           if ($perusahaan_id) {
 
@@ -312,5 +332,86 @@ class LaporanManajemenTriwulanController extends Controller
             'log' => $log
         ]);
     }
+
+    public function verifikasiData(Request $request) {
+            
+    
+        DB::beginTransaction();
+        try {
+            foreach ($request->selectedData as $selectedData) {
+                $current = LaporanManajemen::where('id', $selectedData)->first();
+                if ($current->status_id == 2) {
+                    $current->status_id = 1;
+                    $current->save();
+
+                    $log = new LogLaporanManajemen();
+                    $log->laporan_manajemen_id = $current->id;
+                    $log->status_id = 2;//in progress
+                    $log->user_id = \Auth::user()->id;
+                    $log->save();    
+                }
+            }
+           
+                               
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function batalVerifikasiData(Request $request) {
+        // dd($request->selectedData);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->selectedData as $selectedData) {
+                $current = LaporanManajemen::where('id', $selectedData)->first();
+                if ($current->status_id == 1) {
+                    $current->status_id = 2;
+                    $current->save();
+
+                    $log = new LogLaporanManajemen();
+                    $log->laporan_manajemen_id = $current->id;
+                    $log->status_id = 2;//in progress
+                    $log->user_id = \Auth::user()->id;
+                    $log->save();    
+
+                }
+            }
+           
+                               
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses membatalkan verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    
 
 }

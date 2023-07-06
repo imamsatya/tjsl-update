@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+
+<input type="hidden" name="isOkToInput" id="isOkToInput" readonly="readonly" value="{{$isOkToInput}}" />
     <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
         <!--begin::Container-->
         <div id="kt_content_container" class="container">
@@ -10,7 +12,7 @@
                 <div class="card-header pt-5">
                     <!--begin::Card title-->
                     <div class="card-title">
-                        <h2 class="d-flex align-items-center">{{ $pagetitle }}
+                        <h2 class="d-flex align-items-center">{{ $pagetitle }} {{$isOkToInput}}
                             <span class="text-gray-600 fs-6 ms-1"></span>
                         </h2>
                     </div>
@@ -166,8 +168,9 @@
                                                 @foreach($periode as $p)  
                                                 @php
                                                     $select = (($p->id == $periode_id) ? 'selected="selected"' : '');
+                                                    
                                                 @endphp
-                                                <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
+                                                <option data-is_active="{{$p->is_active}}" data-tanggal_awal="{{$p->tanggal_awal}}" data-tanggal_akhir="{{$p->tanggal_akhir}}" value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
                                             @endforeach
                                             </select>
 
@@ -256,10 +259,22 @@
                                 data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
                             {{-- <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
-                            <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
+                            @can('delete-kegiatan')
+                            <button type="button" class="btn btn-danger btn-action btn-sm delete-selected-data me-2">Hapus Data
                             </button>
-                            <button type="button" class="btn btn-primary btn-sm " onclick="redirectToNewPage()">Input Data
+                            @endcan
+                            @can('edit-kegiatan')
+                            <button type="button" class="btn btn-primary btn-action btn-sm me-2" id="input-data" onclick="redirectToNewPage()">Input Data
                             </button>
+                            @endcan
+                            @can('view-verify')
+                            {{-- @if($countInprogress || !$anggaran->count()) --}}
+                            <button  type="button" class="btn btn-primary btn-action btn-sm me-2" id="verify-data" >Verify
+                            </button>    
+                            <button  type="button" class="btn btn-warning btn-action btn-sm" id="unverify-data" >Un-Verify
+                            </button> 
+                            {{-- @endif --}}
+                            @endcan
                         </div>
                         <!--end::Search-->
                         <!--end::Group actions-->
@@ -282,7 +297,7 @@
                                     <th>Saldo Akhir</th>
                                     <th>Periode</th>
                                     <th>Status</th>
-                                    <th style="text-align:center;">Aksi</th>
+                                    <th style="text-align:center;width: 10%;">Aksi</th>
                                     <th><label
                                             class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
                                                 class="form-check-input addCheck" type="checkbox"
@@ -325,6 +340,10 @@
         var urldatatable = "{{ route('laporan_realisasi.triwulan.spd_pumk.datatable') }}";
         var urldelete = "{{ route('referensi.tpb.delete') }}";
         var urllog = "{{route('laporan_realisasi.triwulan.spd_pumk.log')}}";
+
+        var urlverifikasidata = "{{route('laporan_realisasi.triwulan.spd_pumk.verifikasi_data')}}";
+        var urlbatalverifikasidata = "{{route('laporan_realisasi.triwulan.spd_pumk.batal_verifikasi_data')}}";
+        var urlshow = "{{route('laporan_realisasi.triwulan.spd_pumk.show')}}";
         $(document).ready(function() {
             $('#page-title').html("{{ $pagetitle }}");
             $('#page-breadcrumb').html("{{ $breadcrumb }}");
@@ -361,8 +380,12 @@
             });
 
             $('body').on('click','.cls-log',function(){
-            winform(urllog, {'id':$(this).data('id')}, 'Log Data');
-        });
+                winform(urllog, {'id':$(this).data('id')}, 'Log Data');
+            });
+
+            $('body').on('click','.cls-button-show',function(){
+                winform(urlshow, {'id':$(this).data('id')}, 'Detail Data');
+            });
 
 
             setDatatable();
@@ -425,7 +448,7 @@
                 }).get();
                 Swal.fire({
                     title: 'Apakah Anda Yakin?',
-                    text: 'Apakah anda yakin akang menghapus data yang sudah dipilih?',
+                    html: "Apakah anda yakin akan menghapus data yang sudah dipilih? <br/><span style='color: red; font-weight: bold'>[Data selected: "+selectedData.length+" rows]</span>" ,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Ya',
@@ -465,20 +488,168 @@
             });
 
             $('#proses').on('click', function(event){
-            // datatable.ajax.reload()
-            console.log($('#status_spd').val())
-            var url = window.location.origin + '/laporan_realisasi/triwulan/spd_pumk/index';
-            var perusahaan_id = $('#perusahaan_id').val();
-            var tahun = $('#tahun').val();
-            var status_spd = $('#status_spd').val()
-            var periode_laporan = $('#periode_laporan') .val()
-           
+                // datatable.ajax.reload()
+                console.log($('#status_spd').val())
+                var url = window.location.origin + '/laporan_realisasi/triwulan/spd_pumk/index';
+                var perusahaan_id = $('#perusahaan_id').val();
+                var tahun = $('#tahun').val();
+                var status_spd = $('#status_spd').val()
+                var periode_laporan = $('#periode_laporan') .val()
+            
 
-            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&status_spd=' + status_spd + '&periode_laporan=' + periode_laporan ;
-        });
+                window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&status_spd=' + status_spd + '&periode_laporan=' + periode_laporan ;
+            });
+
+            $('#periode_laporan').change(function() {
+                console.log('periode')
+                console.log('isoktoinput', $( '#isOkToInput').val())
+                var selectedOption = $(this).find(':selected');
+                var isOptionActive = selectedOption.data('is_active');
+                let is_active = selectedOption.data('is_active')
+                let tanggal_awal = selectedOption.data('tanggal_awal')
+                let tanggal_akhir = selectedOption.data('tanggal_akhir')
+                
+                // Get the current date
+                let currentDate = new Date();
+
+                // Convert the tanggal_awal and tanggal_akhir strings to Date objects
+                let dateAwal = new Date(tanggal_awal);
+                let dateAkhir = new Date(tanggal_akhir);
+
+                // Check if the current date is between tanggal_awal and tanggal_akhir
+                if (currentDate >= dateAwal && currentDate <= dateAkhir || is_active == false || $('#isOkToInput').val() ) {
+                    $('.btn-action').prop('disabled', false);
+                } else {
+                    $('.btn-action').prop('disabled', true);
+                }
+                
+                  
+            });
+
+            $('body').on('click', '#verify-data', function() {
+            
+                var selectedData = $('input[name="selected-data[]"]:checked').map(function() {
+                    return $(this).val();
+                }).get();
+                Swal.fire({
+                    title: 'Apakah Anda Yakin?',
+                    html: "Apakah anda yakin akan memverifikasi data yang sudah dipilih? <br/><span style='color: red; font-weight: bold'>[Data selected: "+selectedData.length+" rows]</span>" ,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // If the user confirmed the deletion, do something here
+                        console.log('User confirmed deletion');
+                        // Send an AJAX request to set the "selected" attribute in the database
+                        $.ajax({
+                            url: urlverifikasidata,
+                            type: 'POST',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                                selectedData: selectedData
+                            },
+                            beforeSend: function(){
+                            $.blockUI();
+                        },
+                        success: function(data){
+                            $.unblockUI();
+
+                            swal.fire({
+                                    title: data.title,
+                                    html: data.msg,
+                                    icon: data.flag,
+
+                                    buttonsStyling: true,
+
+                                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                            });
+
+                            if(data.flag == 'success') {
+                                // datatable.ajax.reload( null, false );
+                                location.reload(); 
+                            }
+                            
+                        },
+                            error: function(jqXHR, textStatus, errorThrown) {
+                                console.log(errorThrown);
+                            }
+                        });
+                    } else {
+                        // If the user cancelled the deletion, do something here
+                        console.log('User cancelled deletion');
+                    }
+                })
+                console.log(selectedData)
 
 
-        });
+            });
+
+            $('body').on('click', '#unverify-data', function() {
+                
+                    var selectedData = $('input[name="selected-data[]"]:checked').map(function() {
+                        return $(this).val();
+                    }).get();
+                    Swal.fire({
+                        title: 'Apakah Anda Yakin?',
+                        html: "Apakah anda yakin akan membatalkan verifikasi data yang sudah dipilih? <br/><span style='color: red; font-weight: bold'>[Data selected: "+selectedData.length+" rows]</span>" ,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // If the user confirmed the deletion, do something here
+                            console.log('User confirmed deletion');
+                            // Send an AJAX request to set the "selected" attribute in the database
+                            $.ajax({
+                                url: urlbatalverifikasidata,
+                                type: 'POST',
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                    selectedData: selectedData
+                                },
+                                beforeSend: function(){
+                                $.blockUI();
+                            },
+                            success: function(data){
+                                $.unblockUI();
+
+                                swal.fire({
+                                        title: data.title,
+                                        html: data.msg,
+                                        icon: data.flag,
+
+                                        buttonsStyling: true,
+
+                                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                                });
+
+                                if(data.flag == 'success') {
+                                    // datatable.ajax.reload( null, false );
+                                    location.reload(); 
+                                }
+                                
+                            },
+                                error: function(jqXHR, textStatus, errorThrown) {
+                                    console.log(errorThrown);
+                                }
+                            });
+                        } else {
+                            // If the user cancelled the deletion, do something here
+                            console.log('User cancelled deletion');
+                        }
+                    })
+                    console.log(selectedData)
+
+
+                });
+
+
+            });
         
 
         function setDatatable() {
@@ -579,11 +750,13 @@
                             console.log(row.status_id)
                             let button = null;
                             if (row.status_id === 2) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+                                
+                                button = `@can('edit-kegiatan')<button style="margin-right: 8px;" type="button" ${row.isoktoinput ? '' : 'disabled'} class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>@endcan`
+                                button = button + `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-show" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                             }
 
                             if (row.status_id === 1) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-show" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                             }
                             return button
                         }
@@ -594,7 +767,13 @@
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row) {
-                            return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input class="form-check-input row-check" type="checkbox" name="selected-data[]" value="${row.id}"></label>`;
+                            let checkbox = null
+                            if (row.isoktoinput) {
+                               checkbox = `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input  class="form-check-input row-check" type="checkbox" name="selected-data[]" value="${row.id}"></label>`
+                            }else {
+                                checkbox =  `<div style="display: flex; justify-content: center; align-items: center; width: 1.5rem; height: 1.5rem; background-color: gray;margin-top: 10px;"></div>`;
+                            }
+                            return checkbox;
                         }
                     }
                 ],

@@ -423,7 +423,7 @@
                             <div class="col-lg-12">
                                 <button id="close-btn" class="btn btn-danger me-3">Close</button>
                                 <button id="clear-btn" class="btn btn-info me-3">Clear</button>
-                                <button id="simpan-btn" class="btn btn-success me-3">Simpan</button>
+                                <button id="{{$periode->isoktoinput || $isOkToInput ? 'simpan-btn' : ''}}" {{$periode->isoktoinput || $isOkToInput ? '' : 'disabled'}} class="btn btn-success me-3">Simpan</button>
                             </div>
                         </div>
 
@@ -520,6 +520,7 @@
             }
 
             element.value = formattedValue;
+            // element.value = value ? formattedValue : null;
             
         }
 
@@ -695,7 +696,7 @@
                     toastr.success(
                         `Berhasil!`
                     );
-                    window.location.reload();
+                    // window.location.reload();
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     console.log(errorThrown);

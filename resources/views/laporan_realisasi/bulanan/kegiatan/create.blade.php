@@ -20,7 +20,7 @@
             <div class="card" style="margin-bottom: 10px">
                 <div class="card-header pt-5">
                     <div class="card-title">
-                        <h2 class="d-flex align-items-center">Upload Data Kegiatan</h2>
+                        <h2 class="d-flex align-items-center">Upload Data Kegiatan Melalui Template</h2>
                     </div>
                 </div>
                 <div class="card-body p-0">
@@ -48,7 +48,7 @@
                     <div class="card-title">
                         <h2 class="d-flex align-items-center">
                             {{-- {{ $pagetitle }}  --}}
-                            Data Kegiatan 
+                            Input Data Kegiatan Melalui Form
                             <span class="text-gray-600 fs-6 ms-1"></span>
                         </h2>
                     </div>
@@ -286,10 +286,10 @@
                                 </div>
                                 <div class="row mb-6">
                                     <div class="col-lg-3 ">
-                                        <div class="ms-2 required">Jenis Kegiatan</div>
+                                        <div class="ms-2 ">Jenis Kegiatan</div>
                                     </div>
                                     <div class="col-lg-9">
-                                        <select  id="jenis_kegiatan" class="form-select form-select-solid form-select2" name="jenis_kegiatan" data-kt-select2="true" data-placeholder="Pilih Jenis Kegiatan" data-allow-clear="true">
+                                        <select  id="jenis_kegiatan" class="form-select form-select-solid form-select2" name="jenis_kegiatan" data-kt-select2="true" data-placeholder="Pilih Jenis Kegiatan" data-allow-clear="true" onchange="filterSubkegiatan(this.value)">
                                             <option></option>
                                             @foreach($jenis_kegiatan as $jenis_kegiatan_row)  
                                             {{-- @php
@@ -304,13 +304,16 @@
                                 </div>
                                 <div class="row mb-6">
                                     <div class="col-lg-3">
-                                        <div class="ms-2">Keterangan Kegiatan</div>
+                                        <div class="ms-2">Sub Kegiatan</div>
                                     </div>
                                     <div class="col-lg-9">
-                                        <input type="text" name="keterangan_kegiatan" id="keterangan_kegiatan"
-                                            class="form-control form-control-lg form-control-solid"
-                                            placeholder="Keterangan Singkat"  
-                                            />
+                                        <select  id="keterangan_kegiatan" class="form-select form-select-solid form-select2" name="keterangan_kegiatan" data-kt-select2="true" data-placeholder="Pilih Sub Kegiatan" data-allow-clear="true">
+                                            {{-- <option></option>
+                                            @foreach($subkegiatan as $subkegiatan_row)  
+                                            
+                                            <option  value="{{ $subkegiatan_row->id }}" {!! $select !!}>{{ $subkegiatan_row->subkegiatan }}</option>
+                                        @endforeach --}}
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="row mb-6">
@@ -360,7 +363,7 @@
 
                                     </div>
                                     <div class="col-lg-9">
-                                        <select  id="satuan_ukur" class="form-select form-select-solid form-select2" name="satuan_ukur" data-kt-select2="true" data-placeholder="Pilih Satuan Ukur" data-allow-clear="true">
+                                        <select  id="satuan_ukur" class="form-select form-select-solid form-select2" name="satuan_ukur" data-kt-select2="true" data-placeholder="Pilih Satuan Ukur"  >
                                             <option></option>
                                             @foreach($satuan_ukur as $satuan_ukur_row)
                                                 <option value="{{ $satuan_ukur_row->id }}" >{{ $satuan_ukur_row->nama }}</option>
@@ -385,7 +388,7 @@
                         </form>
                         <div class="form-group row mt-8  mb-5 text-center">
                             <div class="col-lg-offset-3 col-lg-9">
-                                <button id="proses" class="btn btn-danger me-3">Close</button>
+                                <button id="close-btn" class="btn btn-danger me-3">Close</button>
                                 <button id="clear-btn" class="btn btn-info me-3">Clear</button>
                                 <button id="simpan-btn" class="btn btn-success me-3">Simpan</button>
                             </div>
@@ -473,6 +476,35 @@
               
             
             })
+
+            $('#keterangan_kegiatan').on('change', function() {
+                var subkegiatanId = $(this).val();
+                if (subkegiatanId) {
+                    // Find the corresponding satuan_ukur_id for the selected subkegiatan
+                    var selectedSubkegiatan = {!! $subkegiatan->toJson() !!}.find(function(subkegiatan) {
+                        return subkegiatan.id == subkegiatanId;
+                    });
+
+                    if (selectedSubkegiatan) {
+                        // Set the selected value in the "satuan_ukur" field
+                        $('#satuan_ukur').val(selectedSubkegiatan.satuan_ukur_id).trigger('change');
+                        // Enable the "satuan_ukur" field
+                        $('#satuan_ukur').prop('disabled', true);
+                    }
+                } else {
+                    // If no subkegiatan is selected, enable the "satuan_ukur" field and reset its value
+                    $('#satuan_ukur').prop('disabled', false).val('').trigger('change');
+                }
+            });
+
+            $("#close-btn").on('click', function() {
+                var url = window.location.pathname;
+                var segments = url.split('/');
+                console.log(segments)
+                let routeTo = "{{route('laporan_realisasi.bulanan.kegiatan.index')}}"+"?perusahaan_id="+segments[5]+"&tahun="+segments[6]+"&bulan_id="+segments[7]                
+                window.location.href = routeTo
+            })
+           
        
         });
 
@@ -593,6 +625,7 @@
             console.log(`perusahaan_id : ${perusahaan_id} | tahun : ${tahun} | jenis_anggaran : ${jenis_anggaran} | actionform : ${actionform}`)
             
             //data kegiatan
+
             let program_id = document.getElementById('program_id').value
 
             let nama_kegiatan = document.getElementById('nama_kegiatan').value
@@ -684,7 +717,7 @@
             //     realisasi_indikator : realisasi_indikator 
             if(data.program_id === '') return {status: false, message: 'Program harus terisi!'}
             if(data.nama_kegiatan === '') return {status: false, message: 'Nama Kegiatan harus terisi!'}
-            if(data.keterangan_kegiatan === '') return {status: false, message: 'Keterangan harus terisi!'}
+            // if(data.keterangan_kegiatan === '') return {status: false, message: 'Sub Kegiatan harus terisi!'}
             if(data.provinsi === '') return {status: false, message: 'Provinsi harus terisi!'}
             if(data.kota_kabupaten === '') return {status: false, message: 'Kota/Kabupaten harus terisi!'}
             if(data.realisasi_anggaran === '' ) return {status: false, message: 'Realisasi Anggaran anggaran harus terisi!'}
@@ -693,6 +726,30 @@
 
             
             return {status: true}
+        }
+
+        function filterSubkegiatan(jenisKegiatanId) {
+            // Clear the current options in the "subkegiatan" select field
+            $('#keterangan_kegiatan').empty();
+
+            // If no jenis_kegiatan is selected, exit the function
+            if (!jenisKegiatanId) return;
+
+            // Filter the subkegiatan options based on the selected jenis_kegiatan
+            var filteredSubkegiatan = {!! $subkegiatan->toJson() !!} // Convert $subkegiatan to a JavaScript object
+
+            // Iterate through the filtered subkegiatan options
+            $.each(filteredSubkegiatan, function(index, subkegiatan) {
+                // Check if the jenis_kegiatan_id matches the selected jenis_kegiatan
+                if (subkegiatan.jenis_kegiatan_id == jenisKegiatanId) {
+                    // Create a new option element and append it to the "subkegiatan" select field
+                    var option = $('<option>', { value: subkegiatan.id, text: subkegiatan.subkegiatan });
+                    $('#keterangan_kegiatan').append(option);
+                }
+            });
+
+            // Refresh the Select2 component for the "subkegiatan" select field
+            $('#keterangan_kegiatan').trigger('change');
         }
 
     function setFormValidateUpload(){

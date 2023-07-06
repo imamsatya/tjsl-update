@@ -21,6 +21,7 @@ use App\Models\SatuanUkur;
 use App\Models\Kegiatan;
 use App\Models\KegiatanRealisasi;
 use App\Models\LogKegiatan;
+use App\Models\SubKegiatan;
 use App\Models\LaporanRealisasiBulananUpload;
 use Datatables;
 use DB;
@@ -42,7 +43,7 @@ class KegiatanController extends Controller
     {
 
         $this->__route = 'laporan_realisasi.bulanan.kegiatan';
-        $this->pagetitle = 'Laporan Realisasi Kegiatan TPB';
+        $this->pagetitle = 'Laporan Realisasi Kegiatan';
     }
     /**
      * Display a listing of the resource.
@@ -96,8 +97,9 @@ class KegiatanController extends Controller
             'tpbs.jenis_anggaran'
         )
         ->get();
-        
-        $bulan = $request->bulan_id ?? 1;
+        // $currentMonth = (int) date('n');
+
+        $bulan = $request->bulan_id ??  (int) date('n');
         $tahun = $request->tahun ?? date('Y');
         
         $kegiatan = DB::table('kegiatans')
@@ -136,6 +138,8 @@ class KegiatanController extends Controller
             'satuan_ukur.nama as satuan_ukur_nama'
         )
         ->get();
+
+        
         // dd($kegiatan);
         // $pilar_pembangunan_id = $request->pilar_pembangunan ?? '';
         //     dd($pilar_pembangunan_id);
@@ -163,7 +167,7 @@ class KegiatanController extends Controller
             'program' => $program,
             'jenis_kegiatan' => $jenis_kegiatan,
             'jenis_kegiatan_id' => $jenis_kegiatan_id,
-            'bulan_id' => $request->bulan_id ?? 1,
+            'bulan_id' =>  $bulan,
             'program_id' => $request->program_id ?? '',
             'jenis_kegiatan_id' => $request->jenis_kegiatan ?? ''
 
@@ -293,7 +297,6 @@ class KegiatanController extends Controller
         //     ->select('target_tpbs.*', 'tpbs.jenis_anggaran')
         //     ->get();
         // dd($targetTpbs);
-
        
         return view(
             $this->__route . '.create',
@@ -310,12 +313,13 @@ class KegiatanController extends Controller
                 // 'versi_pilar_id' => $versi_pilar_id,
                 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
                 'admin_bumn' => $admin_bumn,
-                'jenis_kegiatan' => JenisKegiatan::all(),
+                'jenis_kegiatan' => JenisKegiatan::where('is_active', true)->get(),
                 'provinsi' => Provinsi::where('is_luar_negeri', false)->get(),
                 'kota_kabupaten' => Kota::where('is_luar_negeri', false)->get(),
                 'satuan_ukur' => SatuanUkur::where('is_active', true)->get(),
                 'program' => $program,
                 'bulan_id' =>$bulan ?? 1,
+                'subkegiatan' => SubKegiatan::where('is_active', true)->get(),
                 
            
             ]
@@ -409,6 +413,7 @@ class KegiatanController extends Controller
         
         $kegiatan = DB::table('kegiatans')
         ->join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', 'kegiatans.id')
+        ->join('sub_kegiatans', 'sub_kegiatans.id', '=', DB::raw('CAST(kegiatans.keterangan_kegiatan AS BIGINT)'))
         ->where('kegiatans.id', $request->id)
         ->first();
 
@@ -503,6 +508,7 @@ class KegiatanController extends Controller
                 'provinsi' => Provinsi::where('is_luar_negeri', false)->get(),
                 'kota_kabupaten' => Kota::where('is_luar_negeri', false)->get(),
                 'satuan_ukur' => SatuanUkur::where('is_active', true)->get(),
+                'subkegiatan' => SubKegiatan::all()
             ]);
         } catch (Exception $e) {
         }
@@ -826,6 +832,61 @@ class KegiatanController extends Controller
         }
         return response()->json($result);
     }
+
+    public function detail(Request $request)
+    {
+        
+        // try{
+          
+            // $kegiatan  = Kegiatan::find((int)$request->input('id'));
+            $kegiatan = DB::table('kegiatans')->where('kegiatans.id', (int)$request->input('id'))
+            ->join('target_tpbs', 'target_tpbs.id', 'kegiatans.target_tpb_id')
+            ->join('tpbs', 'tpbs.id', 'target_tpbs.tpb_id')
+            ->join('provinsis', 'provinsis.id', 'kegiatans.provinsi_id')
+            ->join('kotas', 'kotas.id', 'kegiatans.kota_id')
+            ->join('satuan_ukur', 'satuan_ukur.id', 'kegiatans.satuan_ukur_id')
+            ->select('kegiatans.*','provinsis.nama as provinsi', 'kotas.nama as kota'
+            ,'satuan_ukur.nama as satuan_ukur','target_tpbs.program as program', 'tpbs.jenis_anggaran as jenis_anggaran', 'tpbs.no_tpb as no_tpb', 'tpbs.nama as nama_tpb')->first();
+        //   dd($kegiatan);
+            $tahun     = KegiatanRealisasi::select('tahun')->where('kegiatan_id', $kegiatan->id)->groupBy('tahun')->orderBy('tahun')->get();
+            $realisasi = KegiatanRealisasi::select('kegiatan_realisasis.*','kegiatans.target_tpb_id','kegiatans.kegiatan', 'bulans.nama as bulan_nama', 'jenis_kegiatans.nama as jenis_kegiatan_nama', 'sub_kegiatans.subkegiatan as sub_kegiatan_nama')
+                        ->leftjoin('kegiatans','kegiatans.id','kegiatan_realisasis.kegiatan_id')
+                        ->join('bulans', 'bulans.id', 'kegiatan_realisasis.bulan')->where('kegiatan_realisasis.kegiatan_id', $kegiatan->id)
+                        ->leftjoin('jenis_kegiatans', 'jenis_kegiatans.id', '=', 'kegiatans.jenis_kegiatan_id')
+                        ->leftJoin('sub_kegiatans', function ($join) {
+                            $join->on('sub_kegiatans.id', '=', DB::raw("CAST(kegiatans.keterangan_kegiatan AS bigint)"));
+                        })
+                        ->get();
+            $realisasi_total = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->select(DB::Raw('sum(anggaran) as total'))->first();
+
+
+            $realisasi_by_api = [];
+            if($realisasi){
+                if($realisasi[0]->sumber_data !== null){
+                    //akumulasi nilai realisasi sebelumnya
+                    $realisasi_by_api = Kegiatan::leftjoin('kegiatan_realisasis','kegiatan_realisasis.kegiatan_id','kegiatans.id')
+                                    ->where('kegiatans.kegiatan',$realisasi[0]->kegiatan)
+                                    ->where('kegiatans.target_tpb_id',$realisasi[0]->target_tpb_id)
+                                    ->where('kegiatan_realisasis.bulan','<=',(int)$realisasi[0]->bulan)
+                                    ->where('kegiatan_realisasis.tahun',(int)$realisasi[0]->tahun)
+                                    ->where('kegiatan_realisasis.is_invalid_aplikasitjsl',false);  
+
+                     $realisasi = $realisasi_by_api->get();
+                     $realisasi_total['total'] = $realisasi_by_api->sum('kegiatan_realisasis.anggaran');
+                }
+
+            }
+
+                return view($this->__route.'.detail',[
+                    'pagetitle' => $this->pagetitle,
+                    'actionform' => 'update',
+                    'data' => $kegiatan,
+                    'tahun' => $tahun,
+                    'anggaran_total' => $realisasi_total->total,
+                    'realisasi' => $realisasi,
+                ]);
+            }
+        // }catch(Exception $e){}
 
     public function downloadTemplate(Request $request) {
         $perusahaan_id = ($request->perusahaan_id?$request->perusahaan_id:1);

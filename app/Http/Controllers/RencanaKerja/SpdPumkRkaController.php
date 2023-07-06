@@ -15,7 +15,8 @@ use Datatables;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-
+use DateTime;
+use Carbon\Carbon;
 class SpdPumkRkaController extends Controller
 {
 
@@ -82,19 +83,47 @@ class SpdPumkRkaController extends Controller
 
         $status = DB::table('statuss')->get();
 
+         // validasi availability untuk input data
+         $menuSPDPUMK_RKA = DB::table('menus')->where('label', 'SPD PUMK - RKA')->first();
+         $start = null;
+         $end = null;
+         $isOkToInput = true;
+         if($menuSPDPUMK_RKA) {
+            
+             $periodeHasJenis = DB::table('periode_has_jenis')->where('jenis_laporan_id', $menuSPDPUMK_RKA->id)->first();
+             if($periodeHasJenis) {
+                 $periodeLaporan = DB::table('periode_laporans')->where('is_active', 1)->where('id', $periodeHasJenis->periode_laporan_id)->first();
+                 if($periodeLaporan) {
+                     $currentDate = new DateTime();                    
+                     $start = new DateTime($periodeLaporan->tanggal_awal);
+                     $end = new DateTime($periodeLaporan->tanggal_akhir);
+ 
+                     if($currentDate < $start || $currentDate > $end) {
+                         $isOkToInput = false;
+                     }
+                 }
+             }
+         }
+
+         if(Auth::user()->getRoleNames()->contains('Super Admin') || Auth::user()->getRoleNames()->contains('Admin TJSL')){
+            $isOkToInput = true;
+         }
+
+       
 
 
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Rencana Kerja - SPD PUMK - RKA',
             // 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
-            'tahun' => ($request->tahun ?? ''),
+            'tahun' => ($request->tahun ?? Carbon::now()->year),
             'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
             'anggaran' => $pumk_anggaran,
             'status' => $status,
-            'status_id' => $request->status_spd ?? ''
+            'status_id' => $request->status_spd ?? '',
+            'isOkToInput' => $isOkToInput
         ]);
     }
 
@@ -119,10 +148,14 @@ class SpdPumkRkaController extends Controller
         //         }
         //     }
         // }
-        $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
+        $currentDate = date('Y-m-d');
+        $periode = DB::table('periode_laporans')
+                ->selectRaw("*, ((DATE(NOW()) BETWEEN tanggal_awal AND tanggal_akhir) OR periode_laporans.is_active = false) AS isOkToInput")
+                ->where('nama', 'RKA')
+                ->first();
         $current = PumkAnggaran::where('bumn_id', $perusahaan_id)
             ->where('tahun', $tahun)
-            ->where('periode_id', $periode_rka_id)
+            ->where('periode_id', $periode->id)
             ->first();
 
 
@@ -131,6 +164,13 @@ class SpdPumkRkaController extends Controller
             $actionform = 'update';
         } else {
             $actionform = 'insert';
+        }
+
+        // validasi availability untuk input data Super Admin dan Admin TJSL
+        $isOkToInput = false;
+
+        if(Auth::user()->getRoleNames()->contains('Super Admin') || Auth::user()->getRoleNames()->contains('Admin TJSL')){
+           $isOkToInput = true;
         }
 
         return view(
@@ -146,6 +186,8 @@ class SpdPumkRkaController extends Controller
                 // 'versi_pilar_id' => $versi_pilar_id,
                 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
                 'admin_bumn' => $admin_bumn,
+                'periode' => $periode,
+                'isOkToInput' => $isOkToInput
                 // 'perusahaan_id' => $perusahaan_id,
                 // 'data' => $anggaran_tpb
             ]
@@ -207,7 +249,7 @@ class SpdPumkRkaController extends Controller
                     // }else{
                     $param['status_id'] = DB::table('statuses')->where('nama', 'ilike', '%In Progress%')->pluck('id')->first();
                     // } 
-                    // dd($param);
+                    
                     $data = PumkAnggaran::create($param);
 
                     if ($validasi) {
@@ -282,6 +324,7 @@ class SpdPumkRkaController extends Controller
                         'msg' => 'Sukses ubah data',
                         'title' => 'Sukses'
                     ];
+                    echo json_encode(['result' => true]);
                 } catch (\Exception $e) {
                     DB::rollback();
                     $result = [
@@ -308,9 +351,19 @@ class SpdPumkRkaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        //
+        $pumk_anggaran = DB::table('pumk_anggarans')
+        ->selectRaw('pumk_anggarans.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')
+        ->leftJoin('perusahaans', 'perusahaans.id', '=', 'pumk_anggarans.bumn_id')
+        ->where('pumk_anggarans.id', $request->id)->first();
+        // dd($pumk_anggaran);
+
+        return view($this->__route . '.show', [
+            'pagetitle' => $this->pagetitle,
+            'pumk_anggaran' => $pumk_anggaran
+            
+        ]);
     }
 
     /**
@@ -443,5 +496,89 @@ class SpdPumkRkaController extends Controller
             'pagetitle' => 'Log Status',
             'log' => $log
         ]);
+    }
+
+    public function verifikasiData(Request $request) {
+        // dd($request->selectedData);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->selectedData as $selectedData) {
+                $current = PumkAnggaran::where('id', $selectedData)->first();
+                if ($current->status_id == 2) {
+                    $current->status_id = 1;
+                    $current->save();
+
+                    $log['pumk_anggaran_id'] = (int)$current->id;
+                    $log['status_id'] = (int)$current->status_id;
+                    $log['nilai_rka'] = (int)$current->saldo_awal;
+                    $log['created_by_id'] = (int)$current->updated_by;
+                    $log['created_at'] = now();
+
+                    SpdPumkRkaController::store_log($log);
+
+                }
+            }
+           
+                               
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function batalVerifikasiData(Request $request) {
+        // dd($request->selectedData);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->selectedData as $selectedData) {
+                $current = PumkAnggaran::where('id', $selectedData)->first();
+                if ($current->status_id == 1) {
+                    $current->status_id = 2;
+                    $current->save();
+
+                    $log['pumk_anggaran_id'] = (int)$current->id;
+                    $log['status_id'] = (int)$current->status_id;
+                    $log['nilai_rka'] = (int)$current->saldo_awal;
+                    $log['created_by_id'] = (int)$current->updated_by;
+                    $log['created_at'] = now();
+
+                    SpdPumkRkaController::store_log($log);
+
+                }
+            }
+           
+                               
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses membatalkan verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
     }
 }

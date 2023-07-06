@@ -39,7 +39,7 @@
         <div class="topbar-item cursor-pointer symbol px-15 px-lg-15 me-n3 me-lg-n5 symbol-30px symbol-md-35px"
             data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end"
             data-kt-menu-flip="bottom">
-            {{-- @if (auth()->user()->name)
+            @if (auth()->user()->name)
                 @php
                     $initialname = explode(' ', auth()->user()->name);
                     $count = count($initialname);
@@ -55,7 +55,7 @@
             @else
                 <img src="{{ asset('/assets/media/avatars/blank2.png') }}" alt="metronic"
                     style="border-radius: 50%;margin-right:20px;" />
-            @endif --}}
+            @endif
         </div>
         <!--layout-partial:layout/topbar/partials/_user-menu.html-->
         @include('layouts.layout.topbar.partials._user-menu')

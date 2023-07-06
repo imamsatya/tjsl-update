@@ -155,6 +155,15 @@ return [
         'nama_pilar'  => [
             'required' => 'Nama Pilar harus terisi',
         ],
+        'kegiatan_utama'  => [
+            'required' => 'Kegiatan Utama harus terisi',
+        ],
+        'subkegiatan'  => [
+            'required' => 'Sub Kegiatan harus terisi',
+        ],
+        'satuan_ukur'  => [
+            'required' => 'Satuan Ukur harus terisi',
+        ],
     ],
 
     /*

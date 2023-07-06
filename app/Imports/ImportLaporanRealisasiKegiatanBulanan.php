@@ -26,6 +26,7 @@ use App\Models\KegiatanRealisasi;
 use App\Models\TargetMitra;
 use App\Models\RealisasiUpload;
 use App\Models\JenisKegiatan;
+use App\Models\SubKegiatan;
 use App\Models\RealisasiUploadGagal;
 use App\Models\LaporanRealisasiBulananUpload;
 use App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController;
@@ -57,21 +58,24 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
         $range_jenis_anggaran = ['1', '2', 'CID', 'non CID'];
         foreach ($row as $ar) {
             $is_gagal = false;
-
+            
             $no = (int) rtrim($ar['no']);
             $val_jenis_anggaran = rtrim($ar['jenis_anggaran_1_cid_2_non_cid']);            
             $val_program = (int) rtrim($ar['id_program_sheet_referensi_program']);
             $val_nama_kegiatan = rtrim($ar['nama_kegiatan']);
             $val_jenis_kegiatan = (int) rtrim($ar['id_jenis_kegiatan_sheet_referensi_jenis_kegiatan']);
-            $val_keterangan_kegiatan = rtrim($ar['keterangan_kegiatan']);
+            $val_sub_kegiatan = (int) rtrim($ar['id_sub_kegiatan_sheet_referensi_sub_kegiatan']);
+            // $val_keterangan_kegiatan = rtrim($ar['keterangan_kegiatan']);
             $val_provinsi = (int) rtrim($ar['id_provinsi_sheet_referensi_provinsi']);
             $val_kabupaten = (int) rtrim($ar['id_kabupatenkota_sheet_referensi_kota']);
             $val_realisasi_anggaran = (int) rtrim($ar['realisasi_anggaran']);
             $val_satuan_ukur = (int) rtrim($ar['id_satuan_ukur_sheet_referensi_satuan_ukur']);
-            $val_realisasi_indikator = rtrim($ar['realisasi_indikator']);        
+            $val_realisasi_indikator = rtrim($ar['realisasi_indikator']);  
+               
 
             // eksekusi data kalau kolom nomornya terisi angka
-            if(is_int($no)) {
+         
+            if( $no > 0) {
                 // cek jenis anggaran
                 try {
                     if(!in_array($val_jenis_anggaran, $range_jenis_anggaran)) {
@@ -101,18 +105,21 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
                 }
 
                 // cek jenis kegiatan
-                try {
-                    $jenis_kegiatan = JenisKegiatan::find($val_jenis_kegiatan);
-                    if(!$jenis_kegiatan) {
+                if ($val_jenis_kegiatan) {
+                    try {
+                        $jenis_kegiatan = JenisKegiatan::find($val_jenis_kegiatan);
+                        if(!$jenis_kegiatan) {
+                            DB::rollback();
+                            $is_gagal = true;
+                            $keterangan .= 'Baris '.$no.' Data Jenis Kegiatan tidak sesuai referensi<br>';
+                        }
+                    } catch (\Exception $e) {
                         DB::rollback();
                         $is_gagal = true;
                         $keterangan .= 'Baris '.$no.' Data Jenis Kegiatan tidak sesuai referensi<br>';
                     }
-                } catch (\Exception $e) {
-                    DB::rollback();
-                    $is_gagal = true;
-                    $keterangan .= 'Baris '.$no.' Data Jenis Kegiatan tidak sesuai referensi<br>';
                 }
+               
 
                 // cek provinsi 
                 if(!$is_gagal){
@@ -214,6 +221,7 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
                 // } 
 
                 // save data
+               
                 if(!$is_gagal){
                     try{
                         
@@ -226,7 +234,7 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
                         $kegiatan->satuan_ukur_id = $ukur->id;
                         $kegiatan->anggaran_alokasi = $val_realisasi_anggaran;
                         $kegiatan->jenis_kegiatan_id = $jenis_kegiatan->id;
-                        $kegiatan->keterangan_kegiatan = $val_keterangan_kegiatan;
+                        $kegiatan->keterangan_kegiatan = $val_sub_kegiatan;
                         $kegiatan->save();
 
                         $kegiatanGroup = Kegiatan::where('kegiatan', $val_nama_kegiatan)
@@ -234,10 +242,15 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
                         ->join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
                         ->orderBy('kegiatan_realisasis.bulan', 'desc')
                         ->first();
+
                         $kumulatif_anggaran = $val_realisasi_anggaran;
                         if ($kegiatanGroup) {
                             $kumulatif_anggaran = $kumulatif_anggaran + $kegiatanGroup->anggaran_total;
                         }
+
+                        // $tes = Kegiatan::find($kegiatan->id);
+                        // dd($tes);
+
                         $kegiatanRealisasi = new KegiatanRealisasi();
                         $kegiatanRealisasi->kegiatan_id = $kegiatan->id;
                         $kegiatanRealisasi->bulan = $this->bulan;
@@ -248,9 +261,12 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
                         $kegiatanRealisasi->status_id = 2;//in progress
                         $kegiatanRealisasi->save();
 
+                        
+
                         KegiatanController::store_log($kegiatanRealisasi->id,$kegiatanRealisasi->status_id);
                         $berhasil++;
-                        DB::commit();                    
+                        DB::commit();  
+                        // dd($kegiatanRealisasi);                  
 
                     } catch(\Exception $e){
                         dd($e->getMessage());

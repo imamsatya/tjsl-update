@@ -392,72 +392,151 @@ class HomeController extends Controller
 
     public function chartrealisasi(Request $request)
     {
+        // dd($request);
         try {
-            $pilar[0] = PilarPembangunan::where('nama', 'Pilar Pembangunan Sosial')->first();
-            $pilar[1] = PilarPembangunan::where('nama', 'Pilar Pembangunan Ekonomi')->first();
-            $pilar[2] = PilarPembangunan::where('nama', 'Pilar Pembangunan Lingkungan')->first();
-            $pilar[3] = PilarPembangunan::where('nama', 'Pilar Pembangunan Hukum dan Tata Kelola')->first();
+            
+            $jenis_anggaran = $request->owner_id;
+            if ($request->owner_id == 'all') {
+                $jenis_anggaran = ['CID', 'non CID'];
+                $pilar[0] = PilarPembangunan::where('nama', 'Pilar Pembangunan Sosial')->whereIn('jenis_anggaran', $jenis_anggaran)->get();
+                $pilar[1] = PilarPembangunan::where('nama', 'Pilar Pembangunan Ekonomi')->whereIn('jenis_anggaran', $jenis_anggaran)->get();
+                $pilar[2] = PilarPembangunan::where('nama', 'Pilar Pembangunan Lingkungan')->whereIn('jenis_anggaran', $jenis_anggaran)->get();
+                $pilar[3] = PilarPembangunan::where('nama', 'Pilar Pembangunan Hukum dan Tata Kelola')->whereIn('jenis_anggaran', $jenis_anggaran)->get();
 
-            for ($i = 0; $i < 4; $i++) {
-                $kegiatan[$i] = Kegiatan::Select(DB::Raw('sum(kegiatan_realisasis.anggaran) as realisasi'))
-                    ->leftJoin('target_tpbs', 'target_tpbs.id', '=', 'kegiatans.target_tpb_id')
-                    ->leftJoin('anggaran_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
-                    ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
-                    ->leftJoin('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
-                    ->where('relasi_pilar_tpbs.pilar_pembangunan_id', $pilar[$i]->id)
-                    ->where('kegiatans.is_invalid_aplikasitjsl', false)
-                    ->where('kegiatan_realisasis.is_invalid_aplikasitjsl', false);
-
-                $anggaran[$i] = AnggaranTpb::Select(DB::Raw('sum(anggaran_tpbs.anggaran) as anggaran'))
-                    ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
-                    // ->leftJoin('target_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
-                    ->where('relasi_pilar_tpbs.pilar_pembangunan_id', $pilar[$i]->id);
-
-                if ($request->perusahaan_id && $request->perusahaan_id != 'all') {
-                    $kegiatan[$i] = $kegiatan[$i]->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
-                    $anggaran[$i] = $anggaran[$i]->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
+                for ($i = 0; $i < 4; $i++) {
+                    $pilarIds = $pilar[$i]->pluck('id')->toArray();
+                    $kegiatan[$i] = Kegiatan::Select(DB::Raw('sum(kegiatan_realisasis.anggaran) as realisasi'))
+                        ->leftJoin('target_tpbs', 'target_tpbs.id', '=', 'kegiatans.target_tpb_id')
+                        ->leftJoin('anggaran_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                        ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                        ->leftJoin('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
+                        ->whereIn('relasi_pilar_tpbs.pilar_pembangunan_id', $pilarIds)
+                        ->where('kegiatans.is_invalid_aplikasitjsl', false)
+                        ->where('kegiatan_realisasis.is_invalid_aplikasitjsl', false);
+    
+                    $anggaran[$i] = AnggaranTpb::Select(DB::Raw('sum(anggaran_tpbs.anggaran) as anggaran'))
+                        ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                        // ->leftJoin('target_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                        ->whereIn('relasi_pilar_tpbs.pilar_pembangunan_id', $pilarIds);
+    
+                    if ($request->perusahaan_id && $request->perusahaan_id != 'all') {
+                        $kegiatan[$i] = $kegiatan[$i]->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
+                        $anggaran[$i] = $anggaran[$i]->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
+                    }
+                    if ($request->tahun && $request->tahun != 'all') {
+                        $kegiatan[$i] = $kegiatan[$i]->where('kegiatan_realisasis.tahun', $request->tahun);
+                        $anggaran[$i] = $anggaran[$i]->where('anggaran_tpbs.tahun', $request->tahun);
+                    }
+                    // if ($request->owner_id && $request->owner_id != 'all') {
+                    //     $kegiatan[$i] = $kegiatan[$i]->where('target_tpbs.id_owner', (int)$request->owner_id);
+                    //     // $anggaran[$i] = $anggaran[$i]->where('target_tpbs.id_owner',(int)$request->owner_id);
+                    // }
+                    // dd($anggaran[$i]->get());
+                    // dd($kegiatan[$i]->get());
+                    $kegiatan[$i] = $kegiatan[$i]->first();
+                    $anggaran[$i] = $anggaran[$i]->first();
+    
+                    $arr['realisasi'][$i] = 0;
+                    $arr['target'][$i] = 0;
+                    $arr['sisa'][$i] = 0;
+                    $arr['pilar'][$i] = 0;
+    
+                    if ($anggaran[$i]->anggaran > 0) {
+                        $arr['realisasi'][$i] = number_format($kegiatan[$i]->realisasi, 0, '.', '.');
+                        $arr['target'][$i] = number_format($anggaran[$i]->anggaran, 0, '.', '.');
+                        $arr['sisa'][$i] = number_format(($anggaran[$i]->anggaran - $kegiatan[$i]->realisasi), 0, '.', '.');
+                        $arr['pilar'][$i] = $kegiatan[$i]->realisasi / $anggaran[$i]->anggaran * 100;
+                    }
                 }
-                if ($request->tahun && $request->tahun != 'all') {
-                    $kegiatan[$i] = $kegiatan[$i]->where('kegiatan_realisasis.tahun', $request->tahun);
-                    $anggaran[$i] = $anggaran[$i]->where('anggaran_tpbs.tahun', $request->tahun);
-                }
-                if ($request->owner_id && $request->owner_id != 'all') {
-                    $kegiatan[$i] = $kegiatan[$i]->where('target_tpbs.id_owner', (int)$request->owner_id);
-                    // $anggaran[$i] = $anggaran[$i]->where('target_tpbs.id_owner',(int)$request->owner_id);
-                }
-
-                $kegiatan[$i] = $kegiatan[$i]->first();
-                $anggaran[$i] = $anggaran[$i]->first();
-
-                $arr['realisasi'][$i] = 0;
-                $arr['target'][$i] = 0;
-                $arr['sisa'][$i] = 0;
-                $arr['pilar'][$i] = 0;
-
-                if ($anggaran[$i]->anggaran > 0) {
-                    $arr['realisasi'][$i] = number_format($kegiatan[$i]->realisasi, 0, '.', '.');
-                    $arr['target'][$i] = number_format($anggaran[$i]->anggaran, 0, '.', '.');
-                    $arr['sisa'][$i] = number_format(($anggaran[$i]->anggaran - $kegiatan[$i]->realisasi), 0, '.', '.');
-                    $arr['pilar'][$i] = $kegiatan[$i]->realisasi / $anggaran[$i]->anggaran * 100;
-                }
+    
+                $json['realisasi1'] = $arr['realisasi'][0];
+                $json['realisasi2'] = $arr['realisasi'][1];
+                $json['realisasi3'] = $arr['realisasi'][2];
+                $json['realisasi4'] = $arr['realisasi'][3];
+                $json['target1'] = $arr['target'][0];
+                $json['target2'] = $arr['target'][1];
+                $json['target3'] = $arr['target'][2];
+                $json['target4'] = $arr['target'][3];
+                $json['sisa1'] = $arr['sisa'][0];
+                $json['sisa2'] = $arr['sisa'][1];
+                $json['sisa3'] = $arr['sisa'][2];
+                $json['sisa4'] = $arr['sisa'][3];
+                $json['pilar1'] = $arr['pilar'][0];
+                $json['pilar2'] = $arr['pilar'][1];
+                $json['pilar3'] = $arr['pilar'][2];
+                $json['pilar4'] = $arr['pilar'][3];
             }
+            else{
+                //bukan All
+                $pilar[0] = PilarPembangunan::where('nama', 'Pilar Pembangunan Sosial')->where('jenis_anggaran', $jenis_anggaran)->first();
+                $pilar[1] = PilarPembangunan::where('nama', 'Pilar Pembangunan Ekonomi')->where('jenis_anggaran', $jenis_anggaran)->first();
+                $pilar[2] = PilarPembangunan::where('nama', 'Pilar Pembangunan Lingkungan')->where('jenis_anggaran', $jenis_anggaran)->first();
+                $pilar[3] = PilarPembangunan::where('nama', 'Pilar Pembangunan Hukum dan Tata Kelola')->where('jenis_anggaran', $jenis_anggaran)->first();
 
-            $json['realisasi1'] = $arr['realisasi'][0];
-            $json['realisasi2'] = $arr['realisasi'][1];
-            $json['realisasi3'] = $arr['realisasi'][2];
-            $json['realisasi4'] = $arr['realisasi'][3];
-            $json['target1'] = $arr['target'][0];
-            $json['target2'] = $arr['target'][1];
-            $json['target3'] = $arr['target'][2];
-            $json['target4'] = $arr['target'][3];
-            $json['sisa1'] = $arr['sisa'][0];
-            $json['sisa2'] = $arr['sisa'][1];
-            $json['sisa3'] = $arr['sisa'][2];
-            $json['sisa4'] = $arr['sisa'][3];
-            $json['pilar1'] = $arr['pilar'][0];
-            $json['pilar2'] = $arr['pilar'][1];
-            $json['pilar3'] = $arr['pilar'][2];
-            $json['pilar4'] = $arr['pilar'][3];
+                for ($i = 0; $i < 4; $i++) {
+                    $kegiatan[$i] = Kegiatan::Select(DB::Raw('sum(kegiatan_realisasis.anggaran) as realisasi'))
+                        ->leftJoin('target_tpbs', 'target_tpbs.id', '=', 'kegiatans.target_tpb_id')
+                        ->leftJoin('anggaran_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                        ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                        ->leftJoin('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
+                        ->where('relasi_pilar_tpbs.pilar_pembangunan_id', $pilar[$i]->id)
+                        ->where('kegiatans.is_invalid_aplikasitjsl', false)
+                        ->where('kegiatan_realisasis.is_invalid_aplikasitjsl', false);
+    
+                    $anggaran[$i] = AnggaranTpb::Select(DB::Raw('sum(anggaran_tpbs.anggaran) as anggaran'))
+                        ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                        // ->leftJoin('target_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                        ->where('relasi_pilar_tpbs.pilar_pembangunan_id', $pilar[$i]->id);
+    
+                    if ($request->perusahaan_id && $request->perusahaan_id != 'all') {
+                        $kegiatan[$i] = $kegiatan[$i]->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
+                        $anggaran[$i] = $anggaran[$i]->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
+                    }
+                    if ($request->tahun && $request->tahun != 'all') {
+                        $kegiatan[$i] = $kegiatan[$i]->where('kegiatan_realisasis.tahun', $request->tahun);
+                        $anggaran[$i] = $anggaran[$i]->where('anggaran_tpbs.tahun', $request->tahun);
+                    }
+                    // if ($request->owner_id && $request->owner_id != 'all') {
+                    //     $kegiatan[$i] = $kegiatan[$i]->where('target_tpbs.id_owner', (int)$request->owner_id);
+                    //     // $anggaran[$i] = $anggaran[$i]->where('target_tpbs.id_owner',(int)$request->owner_id);
+                    // }
+    
+                    $kegiatan[$i] = $kegiatan[$i]->first();
+                    $anggaran[$i] = $anggaran[$i]->first();
+    
+                    $arr['realisasi'][$i] = 0;
+                    $arr['target'][$i] = 0;
+                    $arr['sisa'][$i] = 0;
+                    $arr['pilar'][$i] = 0;
+    
+                    if ($anggaran[$i]->anggaran > 0) {
+                        $arr['realisasi'][$i] = number_format($kegiatan[$i]->realisasi, 0, '.', '.');
+                        $arr['target'][$i] = number_format($anggaran[$i]->anggaran, 0, '.', '.');
+                        $arr['sisa'][$i] = number_format(($anggaran[$i]->anggaran - $kegiatan[$i]->realisasi), 0, '.', '.');
+                        $arr['pilar'][$i] = $kegiatan[$i]->realisasi / $anggaran[$i]->anggaran * 100;
+                    }
+                }
+    
+                $json['realisasi1'] = $arr['realisasi'][0];
+                $json['realisasi2'] = $arr['realisasi'][1];
+                $json['realisasi3'] = $arr['realisasi'][2];
+                $json['realisasi4'] = $arr['realisasi'][3];
+                $json['target1'] = $arr['target'][0];
+                $json['target2'] = $arr['target'][1];
+                $json['target3'] = $arr['target'][2];
+                $json['target4'] = $arr['target'][3];
+                $json['sisa1'] = $arr['sisa'][0];
+                $json['sisa2'] = $arr['sisa'][1];
+                $json['sisa3'] = $arr['sisa'][2];
+                $json['sisa4'] = $arr['sisa'][3];
+                $json['pilar1'] = $arr['pilar'][0];
+                $json['pilar2'] = $arr['pilar'][1];
+                $json['pilar3'] = $arr['pilar'][2];
+                $json['pilar4'] = $arr['pilar'][3];
+            }
+           
+
+            
 
             return response()->json($json);
         } catch (\Exception $e) {

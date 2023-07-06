@@ -14,6 +14,8 @@ use Illuminate\Support\Str;
 use Datatables;
 
 use App\Models\JenisKegiatan;
+use App\Models\SatuanUkur;
+use App\Models\SubKegiatan;
 use Session;
 
 class JenisKegiatanController extends Controller
@@ -35,6 +37,27 @@ class JenisKegiatanController extends Controller
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Referensi - Jenis Kegiatan'
+        ]);
+    }
+
+    public function create_subkegiatan(Request $request)
+    {
+        
+        $main_kegiatan = JenisKegiatan::get();
+        if ($request->id) {
+            $subkegiatan = SubKegiatan::where('id', $request->id)->first();
+        }
+      
+
+        return view($this->__route . '.create_subkegiatan', [
+            'pagetitle' => $this->pagetitle,
+            'actionform' => $request->actionform ?? 'insert',
+            'main_kegiatan' => $main_kegiatan,
+            'satuan_ukur' => SatuanUkur::where('is_active', true)->get(),
+            'subkegiatan' => $request->id ? $subkegiatan : null
+            // 'jenis_laporan' => JenisLaporan::get(),
+            // 'jenis_laporan' => Menu::where('status', 1)->where(DB::raw('TRIM(route_name)'), '!=', '')->get(),
+            // 'data' => $periode_laporan
         ]);
     }
 
@@ -67,6 +90,46 @@ class JenisKegiatanController extends Controller
             ]);
         }
     }
+
+    public function datatable_subkegiatan(Request $request)
+    {
+        $subkegiatan = SubKegiatan::orderBy('jenis_kegiatan_id')
+        ->join('jenis_kegiatans', 'jenis_kegiatans.id', '=', 'sub_kegiatans.jenis_kegiatan_id')
+        ->join('satuan_ukur', 'satuan_ukur.id', '=', 'sub_kegiatans.satuan_ukur_id')
+        ->select(
+            'sub_kegiatans.*',
+            'jenis_kegiatans.nama as jenis_kegiatan_nama',
+            'satuan_ukur.nama as satuan_ukur_nama'
+           
+        )
+        ->get();
+        try {
+            return datatables()->of($subkegiatan)
+                ->addColumn('action', function ($row) {
+                    $id = (int)$row->id;
+                    $button = '<div align="center">';
+
+                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit2" data-id="' . $id . '" data-toggle="tooltip" title="Ubah data ' . $row->nama . '"><i class="bi bi-pencil fs-3"></i></button>';
+
+                    $button .= '&nbsp;';
+
+                    // $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="' . $id . '" data-nama="' . $row->nama . '" data-toggle="tooltip" title="Hapus data ' . $row->nama . '"><i class="bi bi-trash fs-3"></i></button>';
+
+                    $button .= '</div>';
+                    return $button;
+                })
+                ->rawColumns(['jenis_kegiatan_nama', 'subkegiatan', 'satuan_ukur_nama', 'action', 'is_active'])
+                ->toJson();
+        } catch (Exception $e) {
+            return response([
+                'draw'            => 0,
+                'recordsTotal'    => 0,
+                'recordsFiltered' => 0,
+                'data'            => []
+            ]);
+        }
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -104,6 +167,78 @@ class JenisKegiatanController extends Controller
             $jenis_kegiatan->save();
             return redirect()->back()->with('success', 'Berhasil menyimpan Jenis Kegiatan');
         }
+    }
+
+    public function store_subkegiatan(Request $request)
+    {
+        //
+        
+        if ($request->actionform === "insert") {
+            $validated = $request->validate([
+                'kegiatan_utama' => 'required',
+                'subkegiatan' => 'required',
+                'satuan_ukur' => 'required'
+            ]);
+            if (!$validated) {
+                return redirect()->back()->withErrors($validated)->withInput();
+            }
+            DB::beginTransaction();
+            try {
+                $subkegiatan = new SubKegiatan();
+                $subkegiatan->jenis_kegiatan_id = $request->kegiatan_utama;
+                $subkegiatan->subkegiatan = $request->subkegiatan;
+                $subkegiatan->satuan_ukur_id = $request->satuan_ukur;
+                $subkegiatan->save();
+                DB::commit();
+
+                Session::flash('success', "Berhasil Menyimpan Data Sub Kegiatan");
+                $result = [
+                            'flag'  => 'success',
+                            'msg' => 'Sukses tambah data',
+                            'title' => 'Sukses'
+                ];
+                echo json_encode(['result' => true, 'data' => $result]);
+               
+            } catch (\Throwable $th) {
+                //throw $th;
+                DB::rollback();
+                throw $th;
+            }
+        }
+
+        if ($request->actionform === "update") {
+            $validated = $request->validate([
+                'kegiatan_utama' => 'required',
+                'subkegiatan' => 'required',
+                'satuan_ukur' => 'required'
+            ]);
+            if (!$validated) {
+                return redirect()->back()->withErrors($validated)->withInput();
+            }
+            DB::beginTransaction();
+            try {
+                $subkegiatan = SubKegiatan::where('id', $request->id)->first();
+                $subkegiatan->jenis_kegiatan_id = $request->kegiatan_utama;
+                $subkegiatan->subkegiatan = $request->subkegiatan;
+                $subkegiatan->satuan_ukur_id = $request->satuan_ukur;
+                $subkegiatan->save();
+                DB::commit();
+
+                Session::flash('success', "Berhasil Mengubah Data Sub Kegiatan");
+                $result = [
+                            'flag'  => 'success',
+                            'msg' => 'Sukses mengubah data',
+                            'title' => 'Sukses'
+                ];
+                echo json_encode(['result' => true, 'data' => $result]);
+               
+            } catch (\Throwable $th) {
+                //throw $th;
+                DB::rollback();
+                throw $th;
+            }
+        }
+       
     }
 
     public function update(Request $request)
@@ -200,5 +335,16 @@ class JenisKegiatanController extends Controller
             $jenis_kegiatan = $jenis_kegiatan->where('id', $value)->delete();
         }
         Session::flash('success', "Berhasil menghapus Jenis Kegiatan yang dipilih");
+    }
+
+    public function delete_subkegiatan(Request $request)
+    {
+
+        foreach ($request->selectedData as $key => $value) {
+
+            $subkegiatan = new SubKegiatan();
+            $subkegiatan = $subkegiatan->where('id', $value)->delete();
+        }
+        Session::flash('success', "Berhasil menghapus Sub Kegiatan yang dipilih");
     }
 }

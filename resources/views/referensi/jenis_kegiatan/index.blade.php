@@ -223,7 +223,70 @@
                                     <th><label
                                             class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
                                                 class="form-check-input addCheck" type="checkbox"
-                                                id="select-all"></label>
+                                                id="select-all2"></label>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!--end::Card body-->
+            </div>
+
+            <br><br>
+            {{-- Sub Kegiatan --}}
+            <!--begin::Card-->
+            <div class="card">
+
+                <!--begin::Card header-->
+                <div class="card-header pt-5">
+                    <!--begin::Card title-->
+                    <div class="card-title">
+                        <h2 class="d-flex align-items-center">Sub Kegiatan
+                            <span class="text-gray-600 fs-6 ms-1"></span>
+                        </h2>
+                    </div>
+                    <!--end::Card title-->
+                    <!--begin::Card toolbar-->
+                    <div class="card-toolbar">
+                        <!--begin::Search-->
+                        <div class="d-flex align-items-center position-relative my-1"
+                            data-kt-view-roles-table-toolbar="base">
+                            {{-- <button type="button" class="btn btn-success me-2 btn-sm cls-add"
+                                data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
+                            {{-- <button type="button" class="btn btn-danger btn-sm cls-add"
+                                data-kt-view-roles-table-select="delete_selected">Hapus Data</button> --}}
+                            <button type="button" class="btn btn-danger btn-sm me-2 delete-selected-data2">Hapus Data
+                            </button>
+                            <button type="button" class="btn btn-primary cls-add btn-sm input-data me-2"
+                                onclick="redirectToNewPage()">Input Data
+                            </button>
+
+                        </div>
+                        <!--end::Search-->
+                        <!--end::Group actions-->
+                    </div>
+                    <!--end::Card toolbar-->
+                </div>
+                <!--begin::Card body-->
+                <div class="card-body p-0">
+                    <!--begin::Heading-->
+                    <div class="card-px py-10">
+                        <!--begin: Datatable -->
+                        <table class="table table-striped- table-bordered table-hover table-checkable" id="datatable2">
+                            <thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Kategori</th>
+                                    <th>Sub Kategori</th>
+                                    <th>Satuan Ukur</th>
+                                    <th>Aktif</th>
+                                    <th style="text-align:center;">Aksi</th>
+                                    <th><label
+                                            class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
+                                                class="form-check-input addCheck2" type="checkbox"
+                                                id="select-all2"></label>
                                     </th>
                                 </tr>
                             </thead>
@@ -240,6 +303,7 @@
 @section('addafterjs')
     <script>
         var datatable;
+        var datatable2;
         var urlcreate = "{{ route('referensi.jenis_kegiatan.create') }}";
         var urledit = "{{ route('referensi.jenis_kegiatan.edit') }}";
         var urlstore = "{{ route('referensi.jenis_kegiatan.store') }}";
@@ -247,17 +311,28 @@
         var urldatatable = "{{ route('referensi.jenis_kegiatan.datatable') }}";
         var urldelete = "{{ route('referensi.jenis_kegiatan.delete') }}";
 
+        //Sub Kegiatan
+        var urlcreate_subkegiatan = "{{ route('referensi.jenis_kegiatan.create_subkegiatan') }}";
+        var urlstore_subkegiatan = "{{ route('referensi.jenis_kegiatan.store_subkegiatan') }}";
+        var urldatatable2 = "{{ route('referensi.jenis_kegiatan.datatable_subkegiatan') }}";
         $(document).ready(function() {
             $('#page-title').html("{{ $pagetitle }}");
             $('#page-breadcrumb').html("{{ $breadcrumb }}");
 
             $('body').on('click', '.cls-add', function() {
-                winform(urlcreate, {}, 'Tambah Data');
+                winform(urlcreate_subkegiatan, {}, 'Tambah Data');
             });
 
             $('body').on('click', '.cls-button-edit', function() {
                 winform(urledit, {
                     'id': $(this).data('id')
+                }, 'Ubah Data');
+            });
+
+            $('body').on('click', '.cls-button-edit2', function() {
+                winform(urlcreate_subkegiatan, {
+                    'id': $(this).data('id'),
+                    'actionform': 'update'
                 }, 'Ubah Data');
             });
 
@@ -267,12 +342,20 @@
 
 
             setDatatable();
+            setDatatable2();
 
             //Imam
             // Add event listener for the "select all" checkbox in the table header
             $('#select-all').on('click', function() {
                 // Get all checkboxes in the table body
                 var checkboxes = $('.row-check');
+                // Set the "checked" property of all checkboxes to the same as the "checked" property of the "select all" checkbox
+                checkboxes.prop('checked', $(this).prop('checked'));
+            });
+
+            $('#select-all2').on('click', function() {
+                // Get all checkboxes in the table body
+                var checkboxes = $('.row-check2');
                 // Set the "checked" property of all checkboxes to the same as the "checked" property of the "select all" checkbox
                 checkboxes.prop('checked', $(this).prop('checked'));
             });
@@ -289,6 +372,11 @@
             datatable.on('page.dt', function() {
                 // Uncheck the "select all" checkbox
                 $('#select-all').prop('checked', false);
+            });
+
+            datatable2.on('page.dt', function() {
+                // Uncheck the "select all" checkbox
+                $('#select-all2').prop('checked', false);
             });
 
             $('tbody').on('click', '.is_active-check', function() {
@@ -336,6 +424,52 @@
                         // Send an AJAX request to set the "selected" attribute in the database
                         $.ajax({
                             url: '/referensi/jenis_kegiatan/delete',
+                            type: 'POST',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                                selectedData: selectedData
+                            },
+                            success: function(response) {
+                                window.location.reload();
+                                // console.log(`success : ${response}`)
+                                // toastr.success(
+                                //     `Status data <strong>${nama_tpb}</strong> dengan ID TPB <strong>${no_tpb}</strong> dan jenis anggaran <strong>${jenis_anggaran}</strong> berhasil diubah menjadi <strong>${finalStatus}</strong>!`
+                                // );
+                            },
+                            error: function(jqXHR, textStatus, errorThrown) {
+                                console.log(errorThrown);
+                            }
+                        });
+                    } else {
+                        // If the user cancelled the deletion, do something here
+                        console.log('User cancelled deletion');
+                    }
+                })
+                console.log(selectedData)
+
+
+            });
+
+            $('body').on('click', '.delete-selected-data2', function() {
+                console.log('halo')
+                var selectedData = $('input[name="selected-data2[]"]:checked').map(function() {
+                    return $(this).val();
+                }).get();
+                Swal.fire({
+                    title: 'Apakah Anda Yakin?',
+                    text: 'Apakah anda yakin akang menghapus data yang sudah dipilih?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // If the user confirmed the deletion, do something here
+                        console.log('User confirmed deletion');
+                        // Send an AJAX request to set the "selected" attribute in the database
+                        $.ajax({
+                            url: '/referensi/jenis_kegiatan/delete_subkegiatan',
                             type: 'POST',
                             data: {
                                 "_token": "{{ csrf_token() }}",
@@ -422,6 +556,77 @@
                     var info = datatable.page.info();
                     $('[data-toggle="tooltip"]').tooltip();
                     datatable.column(0, {
+                        search: 'applied',
+                        order: 'applied'
+                    }).nodes().each(function(cell, i) {
+                        cell.innerHTML = info.start + i + 1;
+                    });
+                }
+            });
+        }
+
+        function setDatatable2() {
+            datatable2 = $('#datatable2').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: urldatatable2,
+                columns: [{
+                        data: 'id',
+                        orderable: false,
+                        searchable: false
+                    },
+                    // {
+                    //     data: 'no_tpb',
+                    //     name: 'no_tpb',
+                    //     orderable: true,
+                    // },
+                    {
+                        data: 'jenis_kegiatan_nama',
+                        name: 'jenis_kegiatan_nama'
+                    },
+
+                    {
+                        data: 'subkegiatan',
+                        name: 'subkegiatan'
+                    },
+                    {
+                        data: 'satuan_ukur_nama',
+                        name: 'satuan_ukur_nama'
+                    },
+
+                    {
+                        data: 'is_active',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            const isChecked = data ? 'checked' : '';
+                            return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                    <input class="form-check-input is_active-check2" type="checkbox"  data-id="${row.id}"   ${isChecked} name="selected-is_active2[]" value="${row.id}">
+                                    </label>`;
+                        }
+                    },
+                    {
+                        data: 'action',
+                        name: 'action'
+                    },
+
+                    {
+                        data: null,
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input class="form-check-input row-check2" type="checkbox" name="selected-data2[]" value="${row.id}"></label>`;
+                        }
+                    }
+                ],
+                order: [
+                    [0, 'asc'],
+
+                ],
+                drawCallback: function(settings) {
+                    var info = datatable2.page.info();
+                    $('[data-toggle="tooltip"]').tooltip();
+                    datatable2.column(0, {
                         search: 'applied',
                         order: 'applied'
                     }).nodes().each(function(cell, i) {

@@ -15,7 +15,8 @@ use Datatables;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-
+use DateTime;
+use Carbon\Carbon;
 class SpdPumkTriwulanController extends Controller
 {
 
@@ -50,7 +51,7 @@ class SpdPumkTriwulanController extends Controller
                 }
             }
         }
-        $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->get();
+        $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->where('jenis_periode', 'standar')->orderBy('urutan')->get();
         $anggaran = DB::table('pumk_anggarans')
             ->selectRaw('pumk_anggarans.*,
              perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap,
@@ -86,13 +87,19 @@ class SpdPumkTriwulanController extends Controller
 
         $status = DB::table('statuss')->get();
 
+           // validasi availability untuk input data Super Admin dan Admin TJSL
+           $isOkToInput = false;
 
+           if(Auth::user()->getRoleNames()->contains('Super Admin') || Auth::user()->getRoleNames()->contains('Admin TJSL')){
+              $isOkToInput = true;
+           }
+     
 
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Rencana Kerja - SPD PUMK - RKA',
             // 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
-            'tahun' => ($request->tahun ?? ''),
+            'tahun' => ($request->tahun ?? Carbon::now()->year),
             'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
@@ -101,6 +108,7 @@ class SpdPumkTriwulanController extends Controller
             'status_id' => $request->status_spd ?? '',
             'periode'=>$periode,
             'periode_id' => $request->periode_laporan ?? '',
+            'isOkToInput' => $isOkToInput
         ]);
     }
 
@@ -126,6 +134,9 @@ class SpdPumkTriwulanController extends Controller
         //     }
         // }
         $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->get();
+        $selectedPeriode = DB::table('periode_laporans')->where('id', $periode_id)
+        ->selectRaw("*, ((DATE(NOW()) BETWEEN tanggal_awal AND tanggal_akhir) OR periode_laporans.is_active = false) AS isOkToInput")
+        ->first();
         $current = PumkAnggaran::where('bumn_id', $perusahaan_id)
             ->where('tahun', $tahun)
             ->where('periode_id', $periode_id)
@@ -137,6 +148,13 @@ class SpdPumkTriwulanController extends Controller
             $actionform = 'update';
         } else {
             $actionform = 'insert';
+        }
+        
+        // validasi availability untuk input data Super Admin dan Admin TJSL
+        $isOkToInput = false;
+
+        if(Auth::user()->getRoleNames()->contains('Super Admin') || Auth::user()->getRoleNames()->contains('Admin TJSL')){
+           $isOkToInput = true;
         }
 
         return view(
@@ -154,6 +172,8 @@ class SpdPumkTriwulanController extends Controller
                 'admin_bumn' => $admin_bumn,
                 'periode'=>$periode,
                 'periode_id' => $periode_id,
+                'selectedPeriode' => $selectedPeriode,
+                'isOkToInput' => $isOkToInput
                 // 'perusahaan_id' => $perusahaan_id,
                 // 'data' => $anggaran_tpb
             ]
@@ -317,9 +337,20 @@ class SpdPumkTriwulanController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        //
+        $pumk_anggaran = DB::table('pumk_anggarans')
+        ->selectRaw('pumk_anggarans.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap, periode_laporans.nama as nama_periode')
+        ->leftJoin('perusahaans', 'perusahaans.id', '=', 'pumk_anggarans.bumn_id')
+        ->join('periode_laporans', 'periode_laporans.id', 'pumk_anggarans.periode_id')
+        ->where('pumk_anggarans.id', $request->id)->first();
+        // dd($pumk_anggaran);
+
+        return view($this->__route . '.show', [
+            'pagetitle' => $this->pagetitle,
+            'pumk_anggaran' => $pumk_anggaran
+            
+        ]);
     }
 
     /**
@@ -361,13 +392,36 @@ class SpdPumkTriwulanController extends Controller
         // dd($request);
 
         $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->get();
-        $anggaran = DB::table('pumk_anggarans')
+        
+        if(Auth::user()->getRoleNames()->contains('Super Admin') || Auth::user()->getRoleNames()->contains('Admin TJSL')){
+            $anggaran = DB::table('pumk_anggarans')
             ->selectRaw('pumk_anggarans.*,
              perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap,
-             periode_laporans.id as periode_laporans_id, periode_laporans.nama as periode_laporans_nama')
+             periode_laporans.id as periode_laporans_id, periode_laporans.nama as periode_laporans_nama, 
+             TRUE AS isoktoinput'
+             )
             ->leftJoin('perusahaans', 'perusahaans.id', '=', 'pumk_anggarans.bumn_id')
             ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'pumk_anggarans.periode_id')
             ->whereIn('periode_id', $periode->pluck('id')->toArray());
+         }
+         else{
+            $anggaran = DB::table('pumk_anggarans')
+            ->selectRaw('pumk_anggarans.*,
+             perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap,
+             periode_laporans.id as periode_laporans_id, periode_laporans.nama as periode_laporans_nama, 
+             CASE
+                WHEN CURRENT_DATE BETWEEN periode_laporans.tanggal_awal AND periode_laporans.tanggal_akhir
+                OR periode_laporans.is_active = FALSE
+                THEN TRUE
+             ELSE FALSE
+             END AS isoktoinput'
+             )
+            ->leftJoin('perusahaans', 'perusahaans.id', '=', 'pumk_anggarans.bumn_id')
+            ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'pumk_anggarans.periode_id')
+            ->whereIn('periode_id', $periode->pluck('id')->toArray());
+         }
+        
+       
         if ($request->perusahaan_id) {
 
             $anggaran = $anggaran->where('bumn_id', $request->perusahaan_id);
@@ -434,6 +488,89 @@ class SpdPumkTriwulanController extends Controller
             'pagetitle' => 'Log Status',
             'log' => $log
         ]);
+    }
+
+    public function verifikasiData(Request $request) {
+        // dd($request->selectedData);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->selectedData as $selectedData) {
+                $current = PumkAnggaran::where('id', $selectedData)->first();
+                if ($current->status_id == 2) {
+                    $current->status_id = 1;
+                    $current->save();
+
+                    $log['pumk_anggaran_id'] = (int)$current->id;
+                    $log['status_id'] = (int)$current->status_id;
+                    $log['nilai_rka'] = (int)$current->saldo_awal;
+                    $log['created_by_id'] = (int)$current->updated_by;
+                    $log['created_at'] = now();
+                    SpdPumkTriwulanController::store_log($log);
+
+                }
+            }
+           
+                               
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function batalVerifikasiData(Request $request) {
+        // dd($request->selectedData);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->selectedData as $selectedData) {
+                $current = PumkAnggaran::where('id', $selectedData)->first();
+                if ($current->status_id == 1) {
+                    $current->status_id = 2;
+                    $current->save();
+
+                    $log['pumk_anggaran_id'] = (int)$current->id;
+                    $log['status_id'] = (int)$current->status_id;
+                    $log['nilai_rka'] = (int)$current->saldo_awal;
+                    $log['created_by_id'] = (int)$current->updated_by;
+                    $log['created_at'] = now();
+
+                    SpdPumkTriwulanController::store_log($log);
+
+                }
+            }
+           
+                               
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses membatalkan verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
     }
 
 }

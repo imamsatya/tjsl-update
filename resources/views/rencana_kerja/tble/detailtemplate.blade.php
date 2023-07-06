@@ -91,7 +91,8 @@
     </footer>
 
     <main>
-        <h4 style="text-align: center; margin-bottom: 0;">TANDA BUKTI PELAPORAN ELEKTRONIK<br>PORTAL TJSL</h4><br>
+        <h4 style="text-align: center; margin-bottom: 0;">TANDA BUKTI PELAPORAN ELEKTRONIK<br>PORTAL TJSL PERIODE
+            {{ $data[0]['periode'] }}</h4><br>
         <p style="text-align: center;margin-top: 0;">{{ $perusahaan->nama_lengkap }}</p>
         <table style="border: 1px solid black;
         border-collapse: collapse;width: 100%;
@@ -138,10 +139,7 @@
         {{-- align right --}}
         <div>
             <div style="text-align: center;margin-left:45%;">
-                <p>Mengetahui</p>
-                <br><br><br><br>
-                <p>{{ $user->name }} <br>
-                </p>
+                <img src="qrcode.png" height="100">
 
             </div>
         </div>

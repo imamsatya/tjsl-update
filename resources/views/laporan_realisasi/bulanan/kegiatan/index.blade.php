@@ -278,6 +278,9 @@
                         <div class="form-group row  mb-5">
                             <div class="col-lg-6">
                                 <button id="proses" class="btn btn-success me-3">Proses</button>                                
+                                
+                            </div>
+                            <div class="col-lg-6 text-end">
                                 <button id="download" class="btn btn-sm btn-primary me-3"><i class="bi bi-download fs-3"></i>Download Template</button>                                
                             </div>
                         </div>
@@ -317,15 +320,19 @@
                                 data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
                         {{-- <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
+                        @can('delete-kegiatan')
                         <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                         </button>
+                        @endcan
+                        @can('edit-kegiatan')
                         <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input
                             Data
                         </button>
-                        @role('Super Admin')
+                        @endcan
+                        @can('view-verify')
                         <button type="button" class="btn btn-primary btn-sm " id="verify-data">Verify
                         </button>
-                        @endrole
+                        @endcan
                     </div>
                     <!--end::Search-->
                     <!--end::Group actions-->
@@ -363,6 +370,7 @@
             <!--end::Card body-->
         </div>
     </div>
+    
 </div>
 @endsection
 
@@ -380,6 +388,7 @@
     var urllog = "{{route('laporan_realisasi.bulanan.kegiatan.log')}}";
     var urledit = "{{route('laporan_realisasi.bulanan.kegiatan.edit')}}";  
     var urlverifikasidata = "{{route('laporan_realisasi.bulanan.kegiatan.verifikasi_data')}}";
+    var urldetail = "{{route('laporan_realisasi.bulanan.kegiatan.detail')}}";
     var urldownloadtemplate = "{{route('laporan_realisasi.bulanan.kegiatan.download_template')}}";
 
     $(document).ready(function () {
@@ -412,6 +421,9 @@
                 winform(urllog, {'id':$(this).data('id')}, 'Log Data');
         });
 
+        $('body').on('click','.cls-button-detail',function(){
+            winform(urldetail, {'id':$(this).data('id')}, 'Ubah Data');
+        });
         $('body').on('click','#download',function(){
             downloadTemplate();
         });
@@ -656,11 +668,21 @@
                 },
                 {
                     data: 'kegiatan',
-                    name: 'kegiatan'
+                    name: 'kegiatan',
+                    render: function (data, type, row){
+                        
+                        detailKegiatan = `<a href="javascript:void(0)"><div class="cls-button-detail" data-id=${row.id}>${data}</div></a>`
+                        return detailKegiatan;
+                    }
                 },
                 {
                     data: 'jenis_kegiatan_nama',
-                    name: 'jenis_kegiatan_nama'
+                    name: 'jenis_kegiatan_nama',
+                    render: function (data, type, row){
+                        
+                        jenisKegiatan = data ? `${data}` : `--`
+                        return jenisKegiatan;
+                    }
                 },
 
                 {
@@ -710,7 +732,7 @@
                             // console.log(row)
                             let button = null;
                             if (row.kegiatan_realisasi_status_id === 2) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>`
+                                button = `@can('edit-kegiatan')<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>@endcan`
                             }
 
                             if (row.kegiatan_realisasi_status_id === 1) {

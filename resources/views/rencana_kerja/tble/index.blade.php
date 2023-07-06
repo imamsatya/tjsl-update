@@ -207,10 +207,10 @@
                         </button>
                         <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
                         </button> --}}
-                        @role('Super Admin')
+                        {{-- @role('Super Admin')
                             <button type="button" class="btn btn-primary btn-sm " >Verify
                             </button>
-                            @endrole
+                            @endrole --}}
                     </div>
                     <!--end::Card toolbar-->
                 </div>
@@ -311,7 +311,7 @@
             let tahun = $(this).data('tahun')
             console.log('id_perusahaan', id_perusahaan)
             console.log('tahun', tahun)
-            window.location.href = `/laporan_realisasi/tble/cetak-data/${id_perusahaan}/${tahun}`
+            window.location.href = `/rencana_kerja/tble/cetak-data/${id_perusahaan}/${tahun}`
             });
 
 
@@ -489,7 +489,7 @@
                 ],
                 order: [
                     [1, 'asc'], // set initial sorting by the second column (no_tpb)
-                    [3, 'asc']
+                    [3, 'desc']
                 ],
                 drawCallback: function(settings) {
                     var info = datatable.page.info();

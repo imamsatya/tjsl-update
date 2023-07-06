@@ -21,7 +21,7 @@
                         <!--begin::Search-->
                         <div class="d-flex align-items-center position-relative my-1"
                             data-kt-view-roles-table-toolbar="base">
-                            <button type="button" class="btn btn-danger btn-sm cls-button-delete me-2"
+                            <button type="button" data-type="standar" class="btn btn-danger btn-sm cls-button-delete me-2"
                                 data-kt-view-roles-table-select="delete_selected">Hapus</button>
                             <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah Data</button>
@@ -51,7 +51,7 @@
                                     <th style="text-align:center;">Aksi</th>
                                     <th><label
                                             class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
-                                                class="form-check-input addCheck" type="checkbox" id="select-all"></label>
+                                                data-type="standar" class="form-check-input select-all" type="checkbox"></label>
                                     </th>
                                 </tr>
                             </thead>
@@ -79,7 +79,7 @@
                         <!--begin::Search-->
                         <div class="d-flex align-items-center position-relative my-1"
                             data-kt-view-roles-table-toolbar="base">
-                            <button type="button" class="btn btn-danger btn-sm cls-add me-2"
+                            <button type="button" data-type="tentatif" class="btn btn-danger btn-sm cls-button-delete me-2"
                                 data-kt-view-roles-table-select="delete_selected">Hapus</button>
                             {{-- <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah Data</button> --}}
@@ -110,7 +110,7 @@
                                     <th style="text-align:center;">Aksi</th>
                                     <th><label
                                             class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
-                                                class="form-check-input addCheck" type="checkbox" id="select-all"></label>
+                                             data-type="tentatif" class="form-check-input select-all" type="checkbox"></label>
                                     </th>
                                 </tr>
                             </thead>
@@ -190,6 +190,27 @@
             });
 
             setDatatable();
+
+            $('.select-all').on('click', function() {
+                const type = $(this).data('type');
+                $(`.check-${type}`).prop('checked', $(this).prop('checked'))
+            })
+
+            $("#datatable").on('click', '.check-standar', function() {
+                let isAllSelected = true;
+                $(`.check-standar`).each( function () {
+                    if(!$(this).prop('checked')) isAllSelected = false;
+                }) 
+                $('.select-all[data-type="standar"]').prop('checked', isAllSelected)
+            })
+
+            $("#datatable_tentatif").on('click', '.check-tentatif', function() {
+                let isAllSelected = true;
+                $(`.check-tentatif`).each( function () {
+                    if(!$(this).prop('checked')) isAllSelected = false;
+                }) 
+                $('.select-all[data-type="tentatif"]').prop('checked', isAllSelected)
+            })
         });
 
         function setDatatable() {
@@ -247,7 +268,7 @@
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row) {
-                            return ' <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input class="form-check-input selectCheck" type="checkbox" name="selected[]" value="' +
+                            return ' <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input class="form-check-input selectCheck check-standar" type="checkbox" name="selected[]" value="' +
                                 row.id + '"></label>';
                         }
                     }
@@ -314,7 +335,7 @@
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row) {
-                            return ' <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input class="form-check-input selectCheck" type="checkbox" name="selected[]" value="' +
+                            return ' <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input class="form-check-input selectCheck check-tentatif" type="checkbox" name="selected[]" value="' +
                                 row.id + '"></label>';
                         }
                     }
@@ -339,10 +360,27 @@
             });
         }
 
-        function onbtndelete(element) {
+        function onbtndelete(element) {            
+            const type = $(element).data('type');
+            const selectedValue = $(`.check-${type}:checked`);
+            const deletedPeriode = []            
+
+            selectedValue.each( function () {
+                deletedPeriode.push($(this).val())
+            })         
+
+            if(!deletedPeriode.length) {
+                swal.fire({
+                    title: "Pemberitahuan",
+                    text: "Tidak ada data terpilih untuk dihapus",
+                    icon: "warning",
+                });
+                return
+            }
+
             swal.fire({
                 title: "Pemberitahuan",
-                text: "Yakin hapus data " + $(element).data('nama') + " ?",
+                html: `Yakin hapus data Periode ${type.toUpperCase()}? <br/> <strong>[${deletedPeriode.length} data akan dihapus]</strong>`,
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Ya, hapus data",
@@ -352,7 +390,7 @@
                     $.ajax({
                         url: urldelete,
                         data: {
-                            "id": $(element).data('id')
+                            "id": deletedPeriode
                         },
                         type: 'post',
                         dataType: 'json',
@@ -373,8 +411,8 @@
                             });
 
                             if (data.flag == 'success') {
-                                datatable.ajax.reload(null, false);
-                                datatable_tentatif.ajax.reload(null, false);
+                                if(type === 'standar') datatable.ajax.reload(null, false);
+                                if(type === 'tentatif') datatable_tentatif.ajax.reload(null, false);
                             }
 
                         },

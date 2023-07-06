@@ -18,7 +18,10 @@ use App\Models\JenisKegiatan;
 use App\Models\Provinsi;
 use App\Models\Kota;
 use App\Models\SatuanUkur;
+use App\Models\PumkBulan;
+use App\Models\LogPumkBulan;
 
+use Datatables;
 use DB;
 use Session;
 class PumkController extends Controller
@@ -72,6 +75,8 @@ class PumkController extends Controller
             }
         }
 
+        $bulan = $request->bulan ??  (int) date('n');
+
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
@@ -85,6 +90,7 @@ class PumkController extends Controller
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
             'tahun' => ($request->tahun ? $request->tahun : date('Y')),
+            'bulan_id' =>  $bulan,
             // 'jenis_anggaran' => $jenis_anggaran,
             // 'kriteria_program' => $kriteria_program ?? [],
             // 'pilar_pembangunan_id' => $request->pilar_pembangunan,
@@ -104,6 +110,9 @@ class PumkController extends Controller
     public function create(Request $request)
     {
         try {
+            if ($request->actionform == 'edit') {
+                $pumk_bulan = PumkBulan::where('id', $request->bulanan_pumk_id)->first();
+            }
             // $data = TargetTpb::find((int)$request->input('program'));
             // $anggaran_tpbs = AnggaranTpb::find($data->anggaran_tpb_id ?? 1);
             // $perusahaan_id = $anggaran_tpbs->perusahaan_id;
@@ -111,9 +120,12 @@ class PumkController extends Controller
             // $tpbs_temp = Tpb::find($data->tpb_id);
             return view($this->__route . '.create', [
                 'pagetitle' => $this->pagetitle,
-                'actionform' => 'insert',
+                'actionform' => $request->actionform ?? 'insert',
                 'bulan' => Bulan::all(),
                 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
+                'perusahaan_id' => $request->perusahaan_id,
+                'pumk_bulan_id' => $request->bulanan_pumk_id ?? null,
+                'pumk_bulan' => $pumk_bulan ?? null 
                 // 'tpb' => DB::table('tpbs')->select('*')->whereIn('id', function($query) use($perusahaan_id, $tahun) {
                 //     $query->select('relasi_pilar_tpbs.tpb_id as id')
                 //         ->from('anggaran_tpbs')
@@ -141,6 +153,94 @@ class PumkController extends Controller
     public function store(Request $request)
     {
         //
+
+       
+       if ($request->actionform === 'insert') {
+           
+        DB::beginTransaction();
+        try {
+            
+            $pumk_bulan = new PumkBulan();
+            $pumk_bulan->perusahaan_id = $request->perusahaan_id;
+            $pumk_bulan->status_id = 2;//In Progress
+            $pumk_bulan->tahun = $request->tahun;
+            $pumk_bulan->bulan_id = $request->bulan_id_create;
+            $pumk_bulan->nilai_penyaluran = $request->nilai_penyaluran;
+            $pumk_bulan->nilai_penyaluran_melalui_bri = $request->nilai_penyaluran_melalui_bri;
+            $pumk_bulan->jumlah_mb = $request->jumlah_mb;
+            $pumk_bulan->jumlah_mb_naik_kelas = $request->jumlah_mb_naik_kelas;
+
+            $pumk_bulan->kolektabilitas_lancar = $request->kolektabilitas_lancar;
+            $pumk_bulan->kolektabilitas_lancar_jumlah_mb = $request->kolektabilitas_lancar_jumlah_mb;
+            $pumk_bulan->kolektabilitas_kurang_lancar = $request->kolektabilitas_kurang_lancar;
+            $pumk_bulan->kolektabilitas_kurang_lancar_jumlah_mb = $request->kolektabilitas_kurang_lancar_jumlah_mb;
+            $pumk_bulan->kolektabilitas_diragukan = $request->kolektabilitas_diragukan;
+            $pumk_bulan->kolektabilitas_diragukan_jumlah_mb = $request->kolektabilitas_diragukan_jumlah_mb;
+            $pumk_bulan->kolektabilitas_macet = $request->kolektabilitas_macet;
+            $pumk_bulan->kolektabilitas_macet_jumlah_mb = $request->kolektabilitas_macet_jumlah_mb;
+            $pumk_bulan->kolektabilitas_pinjaman_bermasalah = $request->kolektabilitas_pinjaman_bermasalah;
+            $pumk_bulan->kolektabilitas_pinjaman_bermasalah_jumlah_mb = $request->kolektabilitas_pinjaman_bermasalah_jumlah_mb;
+            $pumk_bulan->save();
+
+            PumkController::store_log($pumk_bulan->id,$pumk_bulan->status_id);
+            DB::commit();
+                Session::flash('success', "Berhasil Menyimpan Data Kegiatan");
+                $result = [
+                            'flag'  => 'success',
+                            'msg' => 'Sukses tambah data',
+                            'title' => 'Sukses'
+                ];
+                echo json_encode(['result' => true, 'data' => $result]);
+            } catch (\Throwable $th) {
+                //throw $th;
+                DB::rollback();
+                throw $th;
+            }
+       
+       }
+
+       if ($request->actionform === 'edit') {
+        DB::beginTransaction();
+
+        try {
+            $pumk_bulan = PumkBulan::where('id', $request->pumk_bulan_id)->first();
+            $pumk_bulan->tahun = $request->tahun;
+            $pumk_bulan->bulan_id = $request->bulan_id_create;
+            $pumk_bulan->nilai_penyaluran = $request->nilai_penyaluran;
+            $pumk_bulan->nilai_penyaluran_melalui_bri = $request->nilai_penyaluran_melalui_bri;
+            $pumk_bulan->jumlah_mb = $request->jumlah_mb;
+            $pumk_bulan->jumlah_mb_naik_kelas = $request->jumlah_mb_naik_kelas;
+
+            $pumk_bulan->kolektabilitas_lancar = $request->kolektabilitas_lancar;
+            $pumk_bulan->kolektabilitas_lancar_jumlah_mb = $request->kolektabilitas_lancar_jumlah_mb;
+            $pumk_bulan->kolektabilitas_kurang_lancar = $request->kolektabilitas_kurang_lancar;
+            $pumk_bulan->kolektabilitas_kurang_lancar_jumlah_mb = $request->kolektabilitas_kurang_lancar_jumlah_mb;
+            $pumk_bulan->kolektabilitas_diragukan = $request->kolektabilitas_diragukan;
+            $pumk_bulan->kolektabilitas_diragukan_jumlah_mb = $request->kolektabilitas_diragukan_jumlah_mb;
+            $pumk_bulan->kolektabilitas_macet = $request->kolektabilitas_macet;
+            $pumk_bulan->kolektabilitas_macet_jumlah_mb = $request->kolektabilitas_macet_jumlah_mb;
+            $pumk_bulan->kolektabilitas_pinjaman_bermasalah = $request->kolektabilitas_pinjaman_bermasalah;
+            $pumk_bulan->kolektabilitas_pinjaman_bermasalah_jumlah_mb = $request->kolektabilitas_pinjaman_bermasalah_jumlah_mb;
+            $pumk_bulan->save();
+
+            PumkController::store_log($pumk_bulan->id,$pumk_bulan->status_id);
+            DB::commit();
+                Session::flash('success', "Berhasil Menyimpan Data Kegiatan");
+                $result = [
+                            'flag'  => 'success',
+                            'msg' => 'Sukses mengubah data',
+                            'title' => 'Sukses'
+                ];
+                echo json_encode(['result' => true, 'data' => $result]);
+            } catch (\Throwable $th) {
+                //throw $th;
+                DB::rollback();
+                throw $th;
+            }
+       }
+      
+        
+
     }
 
     /**
@@ -186,5 +286,152 @@ class PumkController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function delete(Request $request) {
+        
+      
+        
+         
+       
+        DB::beginTransaction();
+        try {
+            $requestIds = $request->data_deleted;
+            PumkBulan::whereIn('id', $requestIds)->delete();
+           
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses hapus data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal hapus data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function datatable(Request $request)
+    {
+        // dd($request);
+        
+        // $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
+        // $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')
+        // ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')->where('periode_laporan_id', $periode_rka_id)->where('perusahaans.induk', 0);
+
+        $perusahaan_id = $request->perusahaan_id ?? 1;
+        $bulan = $request->bulan ?? (int) date('n');
+        $tahun = $request->tahun ?? date('Y');
+        $pumk_bulan = DB::table('pumk_bulans')
+        ->where('perusahaan_id', $perusahaan_id)
+        ->where('bulan_id', $bulan)
+        ->where('tahun', $tahun)
+        ->join('bulans', 'bulans.id', '=', 'pumk_bulans.bulan_id')
+        ->join('statuses', 'statuses.id', '=', 'pumk_bulans.status_id')
+        ->select(
+            'pumk_bulans.*',
+            'statuses.nama as status',
+            'bulans.nama as bulan'
+           
+        );
+
+   
+
+    
+        // if ($request->pilar_pembangunan_id) {
+
+        //     $kegiatan = $kegiatan->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
+        // }
+
+        // if ($request->tpb_id) {
+
+        //     $kegiatan = $kegiatan->where('tpbs.id', $request->tpb_id);
+        // }
+
+        // if ($request->program_id) {
+
+        //     $kegiatan = $kegiatan->where('target_tpbs.id', $request->program_id);
+        // }
+
+        // if ($request->jenis_kegiatan) {
+
+        //     $kegiatan = $kegiatan->where('jenis_kegiatans.id', $request->jenis_kegiatan);
+        // }
+
+        $pumk_bulan = $pumk_bulan->get();
+       
+        try {
+            return datatables()->of($pumk_bulan)
+                ->addColumn('action', function ($row) {
+                    $id = (int)$row->id;
+                    $button = '<div align="center">';
+
+                    // $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="' . $id . '" data-toggle="tooltip" title="Ubah data ' . $row->nama . '"><i class="bi bi-pencil fs-3"></i></button>';
+                    $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="' . $id . '" data-toggle="tooltip" title="Ubah data '  . '"><i class="bi bi-pencil fs-3"></i></button>';
+
+                    $button .= '&nbsp;';
+
+                    // $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="' . $id . '" data-nama="' . $row->nama . '" data-toggle="tooltip" title="Hapus data ' . $row->nama . '"><i class="bi bi-trash fs-3"></i></button>';
+
+                    $button .= '</div>';
+                    return $button;
+                })
+                ->rawColumns(['id', 'bulan_id',  'action'])
+                ->toJson();
+        } catch (Exception $e) {
+            return response([
+                'draw'            => 0,
+                'recordsTotal'    => 0,
+                'recordsFiltered' => 0,
+                'data'            => []
+            ]);
+        }
+    }
+
+    public static function store_log($pumk_bulan_id, $status_id)
+    {  
+        $param['pumk_bulan_id'] = $pumk_bulan_id;
+        $param['status_id'] = $status_id;
+        $param['user_id'] = \Auth::user()->id;
+        LogPumkBulan::create((array)$param);
+    }
+
+    public function log_status(Request $request)
+    {
+        $pumk_bulan = PumkBulan::where('id', (int)$request->input('id'))->first();
+
+        $log = LogPumkBulan::select('log_pumk_bulans.*', 'users.name AS user', 'statuses.nama AS status')
+            ->leftjoin('users', 'users.id', '=', 'log_pumk_bulans.user_id')
+            ->leftjoin('statuses', 'statuses.id', '=', 'log_pumk_bulans.status_id')
+            ->where('pumk_bulan_id', $pumk_bulan->id)
+            ->orderBy('created_at')
+            ->get();
+
+        return view($this->__route . '.log_status', [
+            'pagetitle' => 'Log Status',
+            'log' => $log
+        ]);
+    }
+
+    public function kolektabilitas_view(Request $request)
+    {   
+        $pumk_bulan = PumkBulan::join('bulans', 'bulans.id', '=', 'pumk_bulans.bulan_id')
+            ->join('statuses', 'statuses.id', '=', 'pumk_bulans.status_id')
+            ->select(
+                'pumk_bulans.*',
+                'statuses.nama as status',
+                'bulans.nama as bulan'
+            )
+            ->where('pumk_bulans.id', (int)$request->input('id'))
+            ->first();
+        return view($this->__route . '.kolektabilitas', [
+            'pagetitle' => 'Data Kolektabilitas',
+            'pumk_bulan' => $pumk_bulan
+        ]);
     }
 }

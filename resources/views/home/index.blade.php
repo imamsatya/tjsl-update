@@ -114,15 +114,22 @@
                             </select>
                         </div>
                         <div class="col-lg-3">
-                            <label>Owner Program</label>
+                            <label> Jenis Anggaran</label>
                             <select class="form-select form-select-solid form-select2" id="owner_id" name="owner_id" data-kt-select2="true" data-placeholder="Pilih">
-                                   @php
+                                   {{-- @php
                                         $select = ($filter_owner_id ? 'selected="selected"' : '');
                                     @endphp
-                                <option value="all" {!! $select !!}>Semua Owner</option>
-                                @foreach($owner as $p)  
+                                <option value="all" {!! $select !!}>Semua Owner</option> --}}
+                                <option value="all" >Semua Jenis Anggaran</option>
+                                {{-- @foreach($owner as $p)  
                                     <option value="{{ $p->id }}" >{{ $p->nama }}</option>
-                                @endforeach
+                                @endforeach --}}
+
+                                <option value="CID">
+                                    CID</option>
+                                <option value="non CID"
+                                    >
+                                    non CID</option>
                             </select>
                         </div>
                         <div class="col-lg-3">
@@ -212,7 +219,7 @@
                                     @php
                                         $select = (($p->id == $tpb_id) ? 'selected="selected"' : '');
                                     @endphp
-                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->no_tpb }} - {{ $p->nama }}</option>
+                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->no_tpb }} - {{ $p->nama }} - {{$p->jenis_anggaran}}</option>
                                 @endforeach
                             </select>
                         </div>
