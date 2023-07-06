@@ -318,7 +318,7 @@
                                         <th style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">Status</th>
                                         <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
                                         <th style="width: 5%"><label
-                                            class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input disabled 
+                                            class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input  
                                                 class="form-check-input addCheck" type="checkbox"
                                                 id="select-all"></label>
                                     </th>
@@ -328,28 +328,30 @@
                                     @php
                                         $total = 0;
                                     @endphp
-                                    @foreach($data as $perusahaan)
+                                    @foreach($joinData as $perusahaan)
                                         @php
-                                            $total += $perusahaan->total;
-                                            if($perusahaan->inprogress) $status_class = 'primary';
-                                            else if($perusahaan->finish) $status_class = 'success';
+                                            $total += $perusahaan[0]->total;
+                                            if($perusahaan[0]->inprogress) $status_class = 'primary';
+                                            else if($perusahaan[0]->finish) $status_class = 'success';
                                             else $status_class = 'danger';
                                         @endphp
-                                    <tr class="treegrid-perusahaan-{{ $perusahaan->perusahaan_id }}" id="perusahaan-{{ $perusahaan->perusahaan_id }}" data-type="perusahaan" data-value="{{ $perusahaan->perusahaan_id }}">
+                                    <tr class="treegrid-perusahaan-{{ $perusahaan[0]->perusahaan_id }}" id="perusahaan-{{ $perusahaan[0]->perusahaan_id }}" data-type="perusahaan" data-value="{{ $perusahaan[0]->perusahaan_id }}">
                                         <td style="text-align:center"></td>
-                                        <td style="display: flex"><div style="flex:1">{{ $perusahaan->nama_lengkap }}</div></td>
+                                        <td style="display: flex"><div style="flex:1">{{ $perusahaan[0]->nama_lengkap }}</div></td>
                                         <td style="text-align: right">
-                                            {{ number_format($perusahaan->total, 0, ',', ',') }}
+                                            {{ number_format($perusahaan[0]->total, 0, ',', ',') }}                                                                                        
+                                            <br/> 
+                                            <span style="color: {{ $perusahaan[0]->total <= $perusahaan[1]->total_rka ? 'green' : 'red'}}; font-size: smaller">RKA: {{number_format($perusahaan[1]->total_rka,0,',',',')}}</span>
                                         </td>
                                         <td></td>
                                         <td style="text-align: center">
-                                            <a class="badge badge-light-{{ $status_class }} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{ $perusahaan->inprogress ? 'In Progress' : ($perusahaan->finish ? 'Finish' : 'Unfilled') }}</a>
+                                            <a class="badge badge-light-{{ $status_class }} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{ $perusahaan[0]->inprogress ? 'In Progress' : ($perusahaan[0]->finish ? 'Finish' : 'Unfilled') }}</a>
                                         </td>
                                         <td></td>
                                     </tr>
-                                    <tr class="treegrid-parent-perusahaan-{{ $perusahaan->perusahaan_id }}" id="treegrid-parent-perusahaan-{{ $perusahaan->perusahaan_id }}" style="visibility: hidden"><td style="text-align: center;"></td></tr>
+                                    <tr class="treegrid-parent-perusahaan-{{ $perusahaan[0]->perusahaan_id }}" id="treegrid-parent-perusahaan-{{ $perusahaan[0]->perusahaan_id }}" style="visibility: hidden"><td style="text-align: center;"></td></tr>
                                     @endforeach
-                                    @if(!$data->count())
+                                    @if(!$joinData->count())
                                     <tr>
                                         <td colspan="7" style="text-align:center; color: #696969; text-transform: uppercase">Data tidak tersedia!</td>
                                     </tr>
@@ -575,7 +577,19 @@
                             else if(target[i].finish) status_class = 'success'
                             else status_class = 'danger'
 
+                            let isCheckAll = $("#select-all").prop('checked');
+
                             let btnEdit = `<button ${isOkToInput || target[i].enable_by_admin > 0 ? '' : 'disabled'} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${target[i].id_target}" data-toggle="tooltip" title="Ubah data ${target[i].program}"><i class="bi bi-pencil fs-3"></i></button>`;
+
+                            let checkboxData = '';                            
+
+                            if((isOkToInput || target[i].enable_by_admin > 0) && (target[i].inprogress)) {
+                                checkboxData = `
+                                    <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                        <input class="form-check-input is_active-check target-check perusahaan-${tempPerusahaan} pilar-${tempPerusahaan}-${tempPilar}" data-anggaran="${target[i].id_target}" type="checkbox" ${isCheckAll ? 'checked' : ''}>
+                                    </label>
+                                `;
+                            }
 
                             let tempTargetRow = `
                             <tr class="${parentClass}" data-type="target" data-value="${target[i].id_target}" data-perusahaan="${tempPerusahaan}" data-pilar="${tempPilar}" data-tpb="${value}">
@@ -595,9 +609,9 @@
                                     ${!viewOnly && target[i].inprogress ? btnEdit : ''}
                                 </td>
                                 
-                                <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                    <input ${isOkToInput || target[i].enable_by_admin > 0 ? '' : 'disabled'} class="form-check-input is_active-check target-check perusahaan-${tempPerusahaan} pilar-${tempPerusahaan}-${tempPilar}" data-anggaran="${target[i].id_target}" type="checkbox">
-                                    </label></td>
+                                <td>
+                                    ${checkboxData}
+                                </td>
                             </tr>
                             `;
 
@@ -660,7 +674,7 @@
                 var selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
                 var selectedProgram = []
                 selectedCheckboxes.forEach(function(checkbox) {
-                    if(checkbox.getAttribute('data-anggaran')) selectedProgram.push(checkbox.getAttribute('data-anggaran'));
+                    selectedProgram.push(checkbox.getAttribute('data-anggaran'));
                 });
                 if(!selectedProgram.length) {
                     swal.fire({
@@ -1016,6 +1030,21 @@
                 });
             })
 
+            $("#select-all").on('click', function(){
+                var checkboxes = $('.is_active-check');         
+                checkboxes.prop('checked', $(this).prop('checked'));
+            }) 
+
+            $("body").on('click', '.is_active-check', function() {
+                $('.is_active-check').each(function () {
+                    if(!$(this).prop('checked')) {
+                        $('#select-all').prop('checked', false)
+                        return
+                    }
+                })
+                
+            })
+
         });  
         
         function settingOptionOnLoad() {
@@ -1058,7 +1087,20 @@
         }
 
         function deleteSelectedProgram(selectedProgram) {
-            const jumlahDataDeleted = selectedProgram.length
+            let isSelectAll = $("#select-all").prop('checked');
+            let parameterSelectAll = {};
+            if(isSelectAll) {
+                const queryParams = new URLSearchParams(window.location.search)            
+                parameterSelectAll = {
+                    'perusahaan_id' : queryParams.get('perusahaan_id'),
+                    'tahun' : queryParams.get('tahun'),
+                    'pilar_pembangunan' : queryParams.get('pilar_pembangunan'),
+                    'tpb' : queryParams.get('tpb'),
+                    'jenis_anggaran': queryParams.get('jenis_anggaran'),
+                    'kriteria_program': queryParams.get('kriteria_program')
+                }
+            } 
+            const jumlahDataDeleted = isSelectAll ? 'ALL' : selectedProgram.length
             swal.fire({
                 title: "Pemberitahuan",
                 html: "Yakin hapus data ? (Data terkait akan ikut terhapus juga: <strong>kegiatan</strong> dan <strong>kegiatan realisasi</strong>)<br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahDataDeleted+" rows]</span>",
@@ -1071,7 +1113,9 @@
                     $.ajax({
                     url: urldelete,
                     data:{
-                        "program_deleted": selectedProgram
+                        "program_deleted": selectedProgram,
+                        "isDeleteAll": isSelectAll,
+                        "parameterSelectAll": parameterSelectAll
                     },
                     type:'post',
                     dataType:'json',

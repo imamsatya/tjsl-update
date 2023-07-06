@@ -308,7 +308,7 @@
                                     <th style="text-align:center;font-weight:bold;width:10%;border-bottom: 1px solid #c8c7c7;">Status</th>
                                     <th style="text-align:center;width:5%;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
                                     <th style="width: 5%"><label
-                                        class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input disabled
+                                        class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input 
                                             class="form-check-input" type="checkbox" id="select-all"></label>
                                     </th>
                                 </tr>
@@ -545,6 +545,17 @@
                         let btnEdit = `<button ${isOkToInput || tpb[i].enable_by_admin > 0 ? '' : 'disabled'} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${selectedYear}" data-notpb="${tpb[i].no_tpb}" data-namapilar="${value}" data-perusahaan="${tempPerusahaan}" data-toggle="tooltip" title="Ubah data ${tpb[i].no_tpb}"><i class="bi bi-pencil fs-3"></i></button>`;
                         let totalTpb = (tpb[i].sum_cid ? parseInt(tpb[i].sum_cid) : 0) + (tpb[i].sum_noncid ? parseInt(tpb[i].sum_noncid) : 0)
                         
+                        let isCheckAll = $("#select-all").prop('checked');
+
+                        let checkboxData = '';
+
+                        if((isOkToInput || tpb[i].enable_by_admin > 0) && (tpb[i].inprogress)) {
+                            checkboxData = `
+                                <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                    <input class="form-check-input is_active-check tpb-check perusahaan-${tempPerusahaan} pilar-${tempPerusahaan}-${value}" data-tahun="${selectedYear}" data-notpb="${tpb[i].no_tpb}" data-namapilar="${value}" data-perusahaan="${tempPerusahaan}" type="checkbox" ${isCheckAll ? 'checked' : ''}>
+                                </label>
+                            `;
+                        }
 
                         let tempTpbRow = `
                         <tr class="treegrid-bumn-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i].no_tpb.split(' ').join('-')} ${parentClass}" data-type="tpb" data-value="${tpb[i].no_tpb.split(' ').join('-')}" data-perusahaan="${tempPerusahaan}" data-pilar="${value}">
@@ -560,9 +571,9 @@
                                 ${!viewOnly && tpb[i].inprogress ? btnEdit : ''}
                             </td>
                             
-                            <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                <input ${isOkToInput || tpb[i].enable_by_admin > 0 ? '' : 'disabled'} class="form-check-input is_active-check tpb-check perusahaan-${tempPerusahaan} pilar-${tempPerusahaan}-${value}" data-tahun="${selectedYear}" data-notpb="${tpb[i].no_tpb}" data-namapilar="${value}" data-perusahaan="${tempPerusahaan}" type="checkbox">
-                                </label></td>
+                            <td>
+                                ${checkboxData}
+                            </td>
                         </tr>                        
                         `;
                         tpbRow += tempTpbRow;
@@ -664,7 +675,8 @@
             showValidasi();
         }   
 
-        $('.delete-selected-data').on('click', function(){
+        $('.delete-selected-data').on('click', function(){            
+
             var selectedCheckboxes = document.querySelectorAll('input[type="checkbox"]:checked');
             const selectedData = [];
 
@@ -691,10 +703,19 @@
         })
 
         $("#select-all").on('click', function(){
-            // disable this feature since using ajax to load tree,
-            // var checkboxes = $('.is_active-check');            
-            // checkboxes.prop('checked', $(this).prop('checked'));
+            var checkboxes = $('.is_active-check');         
+            checkboxes.prop('checked', $(this).prop('checked'));
         }) 
+
+        $("body").on('click', '.is_active-check', function() {
+            $('.is_active-check').each(function () {
+                if(!$(this).prop('checked')) {
+                    $('#select-all').prop('checked', false)
+                    return
+                }
+            })
+            
+        })
 
         $(".pilar-check").on('click', function() {
             const parentPilar = $(this).data('pilar-parent')
@@ -1031,10 +1052,28 @@
     });    
 
     function deleteAnggaranSelectedTpb(selectedAnggaran) {
-        const jumlahDataDeleted = selectedAnggaran.length
+        let isSelectAll = $("#select-all").prop('checked');  
+        let parameterSelectAll = {};
+        if(isSelectAll) {
+            const queryParams = new URLSearchParams(window.location.search)            
+            parameterSelectAll = {
+                'perusahaan_id' : queryParams.get('perusahaan_id'),
+                'tahun' : queryParams.get('tahun'),
+                'pilar_pembangunan' : queryParams.get('pilar_pembangunan'),
+                'tpb' : queryParams.get('tpb')
+            }
+        }  
+        const jumlahDataDeleted = isSelectAll ? 'ALL' : selectedAnggaran.length 
+        let pesanHapus = `
+            Yakin hapus data ? (Data terkait akan ikut terhapus juga: <strong>Program</strong>, <strong>Kegiatan</strong>, dan <strong>Kegiatan Realisasi</strong>) 
+            <br/>
+            <span style='color: red; font-weight: bold'>
+                [Data selected: ${jumlahDataDeleted} rows]
+            </span>
+        `
         swal.fire({
             title: "Pemberitahuan",
-            html: "Yakin hapus data ? (Data terkait akan ikut terhapus juga: <strong>Program</strong>, <strong>Kegiatan</strong>, dan <strong>Kegiatan Realisasi</strong>) <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahDataDeleted+" rows]</span>",
+            html: pesanHapus,
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, hapus data",
@@ -1044,7 +1083,9 @@
                 $.ajax({
                 url: urldeletebyselect,
                 data:{
-                    "anggaran_deleted": selectedAnggaran
+                    "anggaran_deleted": selectedAnggaran,
+                    "isDeleteAll": isSelectAll,
+                    "parameterSelectAll": parameterSelectAll
                 },
                 type:'post',
                 dataType:'json',

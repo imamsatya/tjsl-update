@@ -531,7 +531,7 @@
 
     <script>
         var urledit = "{{route('rencana_kerja.program.edit2')}}";
-        var urlprogram = "{{ route('rencana_kerja.program.index') }}"     
+        var urlprogram = "{{ route('rencana_kerja.program.index2') }}"     
         var urldelete = "{{ route('rencana_kerja.program.delete') }}";
 
         $(document).ready(function() {
