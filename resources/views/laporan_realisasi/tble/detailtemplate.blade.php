@@ -99,21 +99,48 @@
         <table style="border: 1px solid black;
         border-collapse: collapse;width: 100%;
         ">
-            <tr>
-                <th style="width: 4%;border: 1px solid black;
-                border-collapse: collapse;">No</th>
-                <th style="width: 24%;border: 1px solid black;
-                border-collapse: collapse;">Jenis Laporan
-                </th>
-                <th style="width: 24%;border: 1px solid black;
-                border-collapse: collapse;">Periode</th>
-                <th style="width: 24%;border: 1px solid black;
-                border-collapse: collapse;">Tanggal
-                    Update
-                </th>
-                <th style="width: 24%;border: 1px solid black;
-                border-collapse: collapse;">Status</th>
-            </tr>
+            @if (isset($data[0]['bulan']))
+                <tr>
+                    <th style="width: 5%;border: 1px solid black;
+            border-collapse: collapse;">No</th>
+                    <th style="width: 19%;border: 1px solid black;
+            border-collapse: collapse;">Jenis
+                        Laporan
+                    </th>
+                    <th style="width: 19%;border: 1px solid black;
+            border-collapse: collapse;">Periode
+                    </th>
+                    <th style="width: 15%;border: 1px solid black;
+            border-collapse: collapse;">Bulan
+                    </th>
+                    <th style="width: 24%;border: 1px solid black;
+            border-collapse: collapse;">Tanggal
+                        Update
+                    </th>
+                    <th style="width: 19%;border: 1px solid black;
+            border-collapse: collapse;">Status
+                    </th>
+                </tr>
+            @else
+                <tr>
+                    <th style="width: 4%;border: 1px solid black;
+            border-collapse: collapse;">No</th>
+                    <th style="width: 24%;border: 1px solid black;
+            border-collapse: collapse;">Jenis
+                        Laporan
+                    </th>
+                    <th style="width: 24%;border: 1px solid black;
+            border-collapse: collapse;">Periode
+                    </th>
+                    <th style="width: 24%;border: 1px solid black;
+            border-collapse: collapse;">Tanggal
+                        Update
+                    </th>
+                    <th style="width: 24%;border: 1px solid black;
+            border-collapse: collapse;">Status
+                    </th>
+                </tr>
+            @endif
             @foreach ($data as $index => $item)
                 <tr>
                     <td style="border: 1px solid black;
@@ -125,22 +152,30 @@
                     <td style="border: 1px solid black;
             border-collapse: collapse;">
                         {{ $item['periode'] }}</td>
+                    @if (isset($data[0]['bulan']))
+                        <td style="border: 1px solid black;
+            border-collapse: collapse;">
+                            {{ $item['bulan'] ?? null }}</td>
+                    @endif
                     <td style="border: 1px solid black;
             border-collapse: collapse;">
                         {{ $item['tanggal_update'] }}</td>
                     <td style="border: 1px solid black;
-            border-collapse: collapse;"> {{ $item['status'] }}
+            border-collapse: collapse;">
+                        {{ $item['status'] }}
                     </td>
                 </tr>
             @endforeach
         </table>
         <p>Tanggal cetak : {{ $tanggal_cetak }}</p>
-        <br><br><br><br><br>
-        <br><br><br><br><br>
-        <br><br><br><br><br>
+        {{-- @if ($data[0]['bulan'])
+            <br><br><br><br><br>
+            <br><br><br><br><br>
+            <br><br><br><br><br>
+        @endif --}}
         {{-- align right --}}
         <div>
-            <div style="text-align: center;margin-left:45%;">
+            <div style="text-align: center;margin-left:45%;margin-top:50px;">
                 <img src="qrcode.png" height="100">
 
             </div>

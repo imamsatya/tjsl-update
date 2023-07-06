@@ -202,105 +202,205 @@ class TbleRealisasiController extends Controller
     }
 
     public function cetakDataById( $id, $tahun, $periode_id) {
-        $periode_laporan = DB::table('periode_laporans')->where('id', $periode_id)->first();
-
         $perusahaan = Perusahaan::where('id', $id)->first();
-        $data =  [
-           
-            [
-                'jenis_laporan' => 'Kegiatan',
-                'periode' => $periode_laporan->nama.'-'.$tahun,
-                'tanggal_update' => null,
-                'status' => null,
-            ],
-            [
-                'jenis_laporan' => 'SPD PUMK',
-                'periode' => $periode_laporan->nama.'-'.$tahun,
-                'tanggal_update' => null,
-                'status' => null,
-            ],
-            [
-                'jenis_laporan' => 'Laporan Manajemen',
-                'periode' => $periode_laporan->nama.'-'.$tahun,
-                'tanggal_update' => null,
-                'status' => null,
-            ],
-        ];
-    
-        //cek kegiatan
-
         $kegiatan =  $kegiatan = DB::table('kegiatans')
-        ->join('kegiatan_realisasis', function($join) use ( $tahun) {
-            $join->on('kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
-                ->where('kegiatan_realisasis.tahun', $tahun);
-        })
-        ->join('target_tpbs', 'target_tpbs.id', 'kegiatans.target_tpb_id')
-        ->join('anggaran_tpbs', function($join) use ($id, $tahun) {
-            $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
-                ->where('anggaran_tpbs.perusahaan_id', $id)
-                ->where('anggaran_tpbs.tahun', $tahun);
-        })
-        ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
-        ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
-        ->leftJoin('jenis_kegiatans', 'jenis_kegiatans.id', '=', 'kegiatans.jenis_kegiatan_id')
-        ->join('provinsis', 'provinsis.id', '=', 'kegiatans.provinsi_id')
-        ->join('kotas', 'kotas.id', '=', 'kegiatans.kota_id')
-        ->join('satuan_ukur', 'satuan_ukur.id', '=', 'kegiatans.satuan_ukur_id')
-        ->select(
-            'kegiatans.*',
-            'kegiatan_realisasis.bulan as kegiatan_realisasi_bulan',
-            'kegiatan_realisasis.tahun as kegiatan_realisasi_tahun',
-            'kegiatan_realisasis.anggaran as kegiatan_realisasi_anggaran',
-            'kegiatan_realisasis.anggaran_total as kegiatan_realisasi_anggaran_total',
-            'kegiatan_realisasis.status_id as kegiatan_realisasi_status_id',
-            'target_tpbs.program as target_tpb_program',
-            'jenis_kegiatans.nama as jenis_kegiatan_nama',
-            'provinsis.nama as provinsi_nama',
-            'kotas.nama as kota_nama',
-            'anggaran_tpbs.id as anggaran_tpb_id',
-            'relasi_pilar_tpbs.id as relasi_pilar_tpb_id',
-            'tpbs.id as tpb_id',
-            'tpbs.jenis_anggaran',
-            'satuan_ukur.nama as satuan_ukur_nama'
-        )
-        ->get();
-       
-        if($kegiatan?->first()){
-            $data[0]['tanggal_update'] = $kegiatan->first()->updated_at;
-            $data[0]['status'] = "Finish";
-        }
+                    ->join('kegiatan_realisasis', function($join) use ( $tahun) {
+                        $join->on('kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
+                            ->where('kegiatan_realisasis.tahun', $tahun);
+                    })
+                    ->join('target_tpbs', 'target_tpbs.id', 'kegiatans.target_tpb_id')
+                    ->join('anggaran_tpbs', function($join) use ($id, $tahun) {
+                        $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                            ->where('anggaran_tpbs.perusahaan_id', $id)
+                            ->where('anggaran_tpbs.tahun', $tahun);
+                    })
+                    ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                    ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
+                    ->leftJoin('jenis_kegiatans', 'jenis_kegiatans.id', '=', 'kegiatans.jenis_kegiatan_id')
+                    ->join('provinsis', 'provinsis.id', '=', 'kegiatans.provinsi_id')
+                    ->join('kotas', 'kotas.id', '=', 'kegiatans.kota_id')
+                    ->join('satuan_ukur', 'satuan_ukur.id', '=', 'kegiatans.satuan_ukur_id')
+                    ->join('bulans', 'bulans.id', '=', 'kegiatan_realisasis.bulan')
+                    ->orderBy('kegiatans.updated_at', 'desc')
+                    ->select(
+                        'kegiatans.*',
+                        'kegiatan_realisasis.bulan as kegiatan_realisasi_bulan',
+                        'kegiatan_realisasis.tahun as kegiatan_realisasi_tahun',
+                        'kegiatan_realisasis.anggaran as kegiatan_realisasi_anggaran',
+                        'kegiatan_realisasis.anggaran_total as kegiatan_realisasi_anggaran_total',
+                        'kegiatan_realisasis.status_id as kegiatan_realisasi_status_id',
+                        'target_tpbs.program as target_tpb_program',
+                        'jenis_kegiatans.nama as jenis_kegiatan_nama',
+                        'provinsis.nama as provinsi_nama',
+                        'kotas.nama as kota_nama',
+                        'anggaran_tpbs.id as anggaran_tpb_id',
+                        'relasi_pilar_tpbs.id as relasi_pilar_tpb_id',
+                        'tpbs.id as tpb_id',
+                        'tpbs.jenis_anggaran',
+                        'satuan_ukur.nama as satuan_ukur_nama',
+                        'bulans.nama as bulan_nama'
+                    )
+                    ->get();
 
-        //kalau ada yg inprogress walaupun 1 sudah pasti in progress
-        if ($kegiatan?->where('kegiatan_realisasi_status_id', 2)->first()) {
-            $data[0]['tanggal_update'] = $kegiatan->where('kegiatan_realisasi_status_id', 2)->first()->updated_at;
-            $data[0]['status'] = "In Progress";
-        }
+        $spd_pumk = DB::table('pumk_anggarans')->where('bumn_id', $id)->where('tahun', $tahun)->where('periode_id', $periode_id)->orderBy('updated_at', 'desc')->get();
+        $periode_laporan = DB::table('periode_laporans')->where('id', $periode_id)->first();
+        $first_two_characters = substr($periode_laporan->nama, 0, 2);
+        if ($first_two_characters === 'TW') {
+           $data = [];
+           if ($periode_laporan->nama ==  "TW I"){
+            $jumlah_bulan = 3;
+           }
+           if ($periode_laporan->nama ==  "TW II"){
+            $jumlah_bulan = 6;
+           }
+           if ($periode_laporan->nama ==  "TW III"){
+            $jumlah_bulan = 9;
+           }
+           if ($periode_laporan->nama ==  "TW IV"){
+            $jumlah_bulan = 12;
+           }
 
-        //cek spd pumk
+           //cek Kegiatan
+           for ($i=0; $i < $jumlah_bulan; $i++) { 
+                $bulan_id = $i+1;
+                $bulan_nama = DB::table('bulans')->where('id', $bulan_id)->first()->nama;
+                $kegiatan_bulan = $kegiatan?->where('kegiatan_realisasi_bulan', $bulan_id)->first();
+                
+                $data_kegiatan_bulan['jenis_laporan'] =  'Kegiatan';
+                $data_kegiatan_bulan['periode'] = $periode_laporan->nama.'-'.$tahun;
+                $data_kegiatan_bulan['bulan'] = $bulan_nama ;
+                $data_kegiatan_bulan['tanggal_update'] = $kegiatan_bulan?->updated_at;
+                $data_kegiatan_bulan['status'] = $kegiatan_bulan?->updated_at ? "Finish" : null;
+
+                //kalau ada yg inprogress walaupun 1 sudah pasti in progress
+                if ($kegiatan?->where('kegiatan_realisasi_bulan', $bulan_id)->where('kegiatan_realisasi_status_id', 2)->first()) {
+                    $data_kegiatan_bulan['tanggal_update'] =$kegiatan?->where('kegiatan_realisasi_bulan', $bulan_id)->where('kegiatan_realisasi_status_id', 2)->first()->updated_at;
+                    $data_kegiatan_bulan['status'] = "In Progress";
+                }
+                $data[] = $data_kegiatan_bulan;
+            }
+
+            //cek PUMK
+            for ($i=0; $i < $jumlah_bulan; $i++) { 
+                $bulan_id = $i+1;
+                $bulan_nama = DB::table('bulans')->where('id', $bulan_id)->first()->nama;
+                $pumk_bulan = DB::table('pumk_bulans')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('bulan_id', $bulan_id)->orderBy('updated_at', 'desc')->first();
+
+                $data_pumk_bulan['jenis_laporan'] =  'PUMK';
+                $data_pumk_bulan['periode'] = $periode_laporan->nama.'-'.$tahun;
+                $data_pumk_bulan['bulan'] = $bulan_nama ;
+                $data_pumk_bulan['tanggal_update'] = $pumk_bulan?->updated_at;
+                $data_pumk_bulan['status'] = $pumk_bulan?->updated_at ? "Finish" : null;
+
+                //kalau ada yg inprogress walaupun 1 sudah pasti in progress
+                $pumk_bulan_in_progress = DB::table('pumk_bulans')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('bulan_id', $bulan_id)->where('status_id', 2)->orderBy('updated_at', 'desc')->first();
+                if ($pumk_bulan_in_progress) {
+                    $data_pumk_bulan['tanggal_update'] = $pumk_bulan_in_progress?->updated_at;
+                    $data_pumk_bulan['status'] = "In Progress";
+                }
+                $data[] = $data_pumk_bulan;
+            }
+
+            //Cek spd_pumk
+            $data_spd_pumk_bulan = [];
+            $data_spd_pumk_bulan['jenis_laporan'] = 'SPD PUMK';
+            $data_spd_pumk_bulan['periode'] = $periode_laporan->nama.'-'.$tahun;
+            $data_spd_pumk_bulan['tanggal_update'] = null;
+            $data_spd_pumk_bulan['status'] = null;
+            if($spd_pumk?->first()){
+                
+                $data_spd_pumk_bulan['tanggal_update'] = $spd_pumk?->first()->updated_at;
+                $data_spd_pumk_bulan['status'] = $spd_pumk?->first()->updated_at ? "Finish" : null;
+            }
+            //kalau ada yg inprogress walaupun 1 sudah pasti in progress/unfilled
+            if ($spd_pumk?->where('status_id', 2)->first()) {
+                $data_spd_pumk_bulan['tanggal_update'] = $spd_pumk->where('status_id', 2)->first()->updated_at;
+                $data_spd_pumk_bulan['status'] = "In Progress";
+            }
       
-        $spd_pumk = DB::table('pumk_anggarans')->where('bumn_id', $id)->where('tahun', $tahun)->where('periode_id', $periode_id)->get();
-       
-        if($spd_pumk?->first()){
-            $data[1]['tanggal_update'] = $spd_pumk->first()->updated_at;
-            $data[1]['status'] = "Finish";
-        }
-        //kalau ada yg inprogress walaupun 1 sudah pasti in progress/unfilled
-        if ($spd_pumk?->where('status_id', 2)->first()) {
-            $data[1]['tanggal_update'] = $spd_pumk->where('status_id', 2)->first()->updated_at;
-            $data[1]['status'] = "In Progress";
-        }
-        //cek laporan manajemen 
-        $laporan_manajemen = DB::table('laporan_manajemens')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('periode_laporan_id', $periode_id)->get();
+            $data[] = $data_spd_pumk_bulan;
+
+            //cek laporan manajemen 
+            $laporan_manajemen = DB::table('laporan_manajemens')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('periode_laporan_id', $periode_id)->orderBy('updated_at', 'desc')->get();
+            $data_laporan_manajemen['jenis_laporan'] = 'Laporan Manajemen';
+            $data_laporan_manajemen['periode'] = $periode_laporan->nama.'-'.$tahun;
+            $data_laporan_manajemen['tanggal_update'] = null;
+            $data_laporan_manajemen['status'] =   null;
+            if($laporan_manajemen?->first() ){
+                $data_laporan_manajemen['jenis_laporan'] = 'Laporan Manajemen';
+                $data_laporan_manajemen['periode'] = $periode_laporan->nama.'-'.$tahun;
+                $data_laporan_manajemen['tanggal_update'] = $laporan_manajemen->first()->updated_at;
+                $data_laporan_manajemen['status'] =  $laporan_manajemen->first()->updated_at ? "Finish" : null;
+            }
+            //kalau ada yg inprogress walaupun 1 sudah pasti in progress
+            if ($laporan_manajemen?->whereIn('status_id', [2, 3])->first()) {
+                $data_laporan_manajemen['tanggal_update'] = $laporan_manajemen?->whereIn('status_id', [2, 3])->first()->updated_at;
+                
+                $data_laporan_manajemen['status'] = $laporan_manajemen?->whereIn('status_id', [2, 3])->first()->status_id === 2 ? "In Progress" : null;
+            }
+            $data[] = $data_laporan_manajemen;
+            
+        } else {
+            $data =  [
+           
+                [
+                    'jenis_laporan' => 'Kegiatan',
+                    'periode' => $periode_laporan->nama.'-'.$tahun,
+                    'tanggal_update' => null,
+                    'status' => null,
+                ],
+                [
+                    'jenis_laporan' => 'SPD PUMK',
+                    'periode' => $periode_laporan->nama.'-'.$tahun,
+                    'tanggal_update' => null,
+                    'status' => null,
+                ],
+                [
+                    'jenis_laporan' => 'Laporan Manajemen',
+                    'periode' => $periode_laporan->nama.'-'.$tahun,
+                    'tanggal_update' => null,
+                    'status' => null,
+                ],
+            ];
+
+            //cek kegiatan
+            if($kegiatan?->first()){
+                $data[0]['tanggal_update'] = $kegiatan->first()->updated_at;
+                $data[0]['status'] = "Finish";
+            }
     
-        if($laporan_manajemen?->first() ){
-            $data[2]['tanggal_update'] = $laporan_manajemen->first()->updated_at;
-            $data[2]['status'] = "Finish";
+            //kalau ada yg inprogress walaupun 1 sudah pasti in progress
+            if ($kegiatan?->where('kegiatan_realisasi_status_id', 2)->first()) {
+                $data[0]['tanggal_update'] = $kegiatan->where('kegiatan_realisasi_status_id', 2)->first()->updated_at;
+                $data[0]['status'] = "In Progress";
+            }
+
+            //cek spd_pumk       
+            if($spd_pumk?->first()){
+                $data[1]['tanggal_update'] = $spd_pumk->first()->updated_at;
+                $data[1]['status'] = "Finish";
+            }
+            //kalau ada yg inprogress walaupun 1 sudah pasti in progress/unfilled
+            if ($spd_pumk?->where('status_id', 2)->first()) {
+                $data[1]['tanggal_update'] = $spd_pumk->where('status_id', 2)->first()->updated_at;
+                $data[1]['status'] = "In Progress";
+            }
+            //cek laporan manajemen 
+            $laporan_manajemen = DB::table('laporan_manajemens')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('periode_laporan_id', $periode_id)->orderBy('updated_at', 'desc')->get();
+        
+            if($laporan_manajemen?->first() ){
+                $data[2]['tanggal_update'] = $laporan_manajemen->first()->updated_at;
+                $data[2]['status'] = "Finish";
+            }
+            //kalau ada yg inprogress walaupun 1 sudah pasti in progress
+            if ($laporan_manajemen?->whereIn('status_id', [2, 3])->first()) {
+                $data[2]['tanggal_update'] = $laporan_manajemen->whereIn('status_id', [2, 3])->first()->updated_at;
+                $data[2]['status'] =  $laporan_manajemen?->whereIn('status_id', [2, 3])->first()->status_id === 2 ? "In Progress" : null;
+            }
         }
-        //kalau ada yg inprogress walaupun 1 sudah pasti in progress
-        if ($laporan_manajemen?->whereIn('status_id', [2, 3])->first()) {
-            $data[2]['tanggal_update'] = $laporan_manajemen->whereIn('status_id', [2, 3])->first()->updated_at;
-            $data[2]['status'] = "In Progress";
-        }
+        
+        // dd($data);
+      
         $tanggal_cetak = Carbon::now()->locale('id_ID')->isoFormat('D MMMM YYYY');
         $user = Auth::user();
         

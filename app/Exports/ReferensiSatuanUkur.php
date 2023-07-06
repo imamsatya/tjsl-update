@@ -12,7 +12,7 @@ class ReferensiSatuanUkur implements FromView , WithTitle
      public function view(): View
     {
         return view('target.administrasi.referensi_satuan_ukur', [
-            'satuan_ukur' => SatuanUkur::all()
+            'satuan_ukur' => SatuanUkur::where('is_active', true)->get()
         ]);
     }
 
