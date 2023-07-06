@@ -939,7 +939,7 @@ class AnggaranTpbController extends Controller
             $tahun = $request->input('tahun');
 
             $allDataUpdated = AnggaranTpb::where('status_id', '!=', 1)
-                            ->where('anggaran', '>', 0)
+                            ->where('anggaran', '>=', 0)
                             ->where('tahun', $tahun)
                             ->when($id_bumn, function($query) use ($id_bumn) {
                                 return $query->where('perusahaan_id', $id_bumn);
@@ -1218,7 +1218,7 @@ class AnggaranTpbController extends Controller
             ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
             ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
             ->where('perusahaan_id', $perusahaan_id)
-            ->where('anggaran', '>', 0)
+            ->where('anggaran', '>=', 0)
             ->where('tahun', $tahun);
 
         if ($request->input('pilar_pembangunan')) {
@@ -1250,7 +1250,7 @@ class AnggaranTpbController extends Controller
             $tahun = $request->input('tahun');
 
             $allDataUpdated = AnggaranTpb::where('status_id', '=', 1)
-                            ->where('anggaran', '>', 0)
+                            ->where('anggaran', '>=', 0)
                             ->where('tahun', $tahun)
                             ->when($id_bumn, function($query) use ($id_bumn) {
                                 return $query->where('perusahaan_id', $id_bumn);
@@ -1381,7 +1381,7 @@ class AnggaranTpbController extends Controller
             ->join('perusahaans', 'perusahaans.id', '=', 'atpb.perusahaan_id')
             ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
             ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
-            ->where('anggaran', '>', 0);
+            ->where('anggaran', '>=', 0);
             
         
         if($perusahaan_id) {
@@ -1503,7 +1503,7 @@ class AnggaranTpbController extends Controller
             ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
             ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
             ->where('perusahaan_id', $perusahaan_id)
-            ->where('anggaran', '>', 0)
+            ->where('anggaran', '>=', 0)
             ->where('tahun', $tahun)
             ->where('pp.nama', str_replace("-", " ", $pilar));
 
@@ -1689,87 +1689,131 @@ class AnggaranTpbController extends Controller
         return response()->json($result);
     }
 
-    public function deleteBySelect2(Request $request) {
-        DB::beginTransaction();
-        try {
-            $list_data = $request->input('anggaran_deleted');
-            foreach($list_data as $data) {
-                $no_tpb = $data['no_tpb'];
-                $nama_pilar = str_replace("-", " ", $data['nama_pilar']);
-                $id_perusahaan = $data['perusahaan'];
-                $tahun = $data['tahun'];
+    public function deleteAll($parameter) {
+        $id_perusahaan = $parameter['perusahaan_id'];
+        $tahun = $parameter['tahun'] ?? (int) date('Y');
+        $pilar_pembangunan = $parameter['pilar_pembangunan'];
+        $tpb = $parameter['tpb'];
 
-                $data_anggaran = DB::table('anggaran_tpbs as atpb')
-                    ->select('atpb.id as id_anggaran', 'tpbs.jenis_anggaran')
+        $datatemp = DB::table('anggaran_tpbs as atpb')
+                    ->select('atpb.perusahaan_id', 'pp.nama as pilar_pembangunan', 'tpbs.no_tpb')
                     ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
                     ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
                     ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
-                    ->where('tpbs.no_tpb', $no_tpb)
-                    ->where('pp.nama', $nama_pilar)
-                    ->where('atpb.perusahaan_id', $id_perusahaan)
                     ->where('atpb.tahun', $tahun)
+                    ->where('atpb.anggaran', '>=', 0)
+                    ->where('atpb.status_id', 2) // hanya yg in progress saja
+                    ->when($id_perusahaan, function($query) use ($id_perusahaan) {
+                        return $query->where('atpb.perusahaan_id', $id_perusahaan);
+                    })
+                    ->when($pilar_pembangunan, function($query) use ($pilar_pembangunan) {
+                        return $query->where('pp.nama', $pilar_pembangunan);
+                    })
+                    ->when($tpb, function($query) use ($tpb) {
+                        return $query->where('tpbs.no_tpb', $tpb);
+                    })
+                    ->groupBy('atpb.perusahaan_id','pp.nama', 'tpbs.no_tpb')
                     ->get();
-                
-                $anggaran_tpb_cid = null;
-                $anggaran_tpb_noncid = null;
-    
-                foreach($data_anggaran as $anggaran) {
-                    if($anggaran->jenis_anggaran == 'CID') $anggaran_tpb_cid = AnggaranTpb::find($anggaran->id_anggaran);
-                    if($anggaran->jenis_anggaran == 'non CID') $anggaran_tpb_noncid = AnggaranTpb::find($anggaran->id_anggaran);
-                }
-                
-                if($anggaran_tpb_cid) {
 
-                    // get list id program
-                    $program = DB::table('target_tpbs')->where('anggaran_tpb_id', $anggaran_tpb_cid->id)->get();
-                    $idProgram = $program->pluck('id')->toArray();
+        foreach($datatemp as $temp) $this->deleteDataPerusahaan($temp->no_tpb, $temp->pilar_pembangunan, $temp->perusahaan_id, $tahun);
 
-                    // get list id kegiatan
-                    $kegiatan = DB::table('kegiatans')->whereIn('target_tpb_id', $idProgram)->get();
-                    $idKegiatan = $kegiatan->pluck('id')->toArray();
+    }
 
-                    // delete data from table
-                    DB::table('kegiatan_realisasis')->whereIn('kegiatan_id', $idKegiatan)->delete();
-                    DB::table('kegiatans')->whereIn('target_tpb_id', $idProgram)->delete();
-                    DB::table('target_tpbs')->whereIn('id', $idProgram)->delete();
-                    $anggaran_tpb_cid->delete();
-                    
-                    // $anggaran_tpb_cid->update(['anggaran' => 0]);
-                    // AnggaranTpbController::store_log($anggaran_tpb_cid->id, $anggaran_tpb_cid->status_id, 0, 'RKA Revisi - Delete');   
-                }
+    public function deleteDataPerusahaan($no_tpb, $nama_pilar, $id_perusahaan, $tahun) {
+        $data_anggaran = DB::table('anggaran_tpbs as atpb')
+                ->select('atpb.id as id_anggaran', 'tpbs.jenis_anggaran')
+                ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
+                ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+                ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+                ->where('tpbs.no_tpb', $no_tpb)
+                ->where('pp.nama', $nama_pilar)
+                ->where('atpb.perusahaan_id', $id_perusahaan)
+                ->where('atpb.tahun', $tahun)
+                ->get();
+            
+        $anggaran_tpb_cid = null;
+        $anggaran_tpb_noncid = null;
 
-                if($anggaran_tpb_noncid) {
+        foreach($data_anggaran as $anggaran) {
+            if($anggaran->jenis_anggaran == 'CID') $anggaran_tpb_cid = AnggaranTpb::find($anggaran->id_anggaran);
+            if($anggaran->jenis_anggaran == 'non CID') $anggaran_tpb_noncid = AnggaranTpb::find($anggaran->id_anggaran);
+        }
+        
+        if($anggaran_tpb_cid) {
 
-                    // get list id program
-                    $program = DB::table('target_tpbs')->where('anggaran_tpb_id', $anggaran_tpb_noncid->id)->get();
-                    $idProgram = $program->pluck('id')->toArray();
+            // get list id program
+            $program = DB::table('target_tpbs')->where('anggaran_tpb_id', $anggaran_tpb_cid->id)->get();
+            $idProgram = $program->pluck('id')->toArray();
 
-                    // get list id kegiatan
-                    $kegiatan = DB::table('kegiatans')->whereIn('target_tpb_id', $idProgram)->get();
-                    $idKegiatan = $kegiatan->pluck('id')->toArray();
+            // get list id kegiatan
+            $kegiatan = DB::table('kegiatans')->whereIn('target_tpb_id', $idProgram)->get();
+            $idKegiatan = $kegiatan->pluck('id')->toArray();
 
-                    // delete data from table
-                    DB::table('kegiatan_realisasis')->whereIn('kegiatan_id', $idKegiatan)->delete();
-                    DB::table('kegiatans')->whereIn('target_tpb_id', $idProgram)->delete();
-                    DB::table('target_tpbs')->whereIn('id', $idProgram)->delete();
-                    $anggaran_tpb_noncid->delete();
+            // delete data from table
+            DB::table('kegiatan_realisasis')->whereIn('kegiatan_id', $idKegiatan)->delete();
+            DB::table('kegiatans')->whereIn('target_tpb_id', $idProgram)->delete();
+            DB::table('target_tpbs')->whereIn('id', $idProgram)->delete();
+            $anggaran_tpb_cid->delete();
+            
+            // $anggaran_tpb_cid->update(['anggaran' => 0]);
+            // AnggaranTpbController::store_log($anggaran_tpb_cid->id, $anggaran_tpb_cid->status_id, 0, 'RKA Revisi - Delete');   
+        }
 
-                    // $anggaran_tpb_noncid->update(['anggaran' => 0]);
-                    // AnggaranTpbController::store_log($anggaran_tpb_noncid->id, $anggaran_tpb_noncid->status_id, 0, 'RKA Revisi - Delete');   
-                }
+        if($anggaran_tpb_noncid) {
+
+            // get list id program
+            $program = DB::table('target_tpbs')->where('anggaran_tpb_id', $anggaran_tpb_noncid->id)->get();
+            $idProgram = $program->pluck('id')->toArray();
+
+            // get list id kegiatan
+            $kegiatan = DB::table('kegiatans')->whereIn('target_tpb_id', $idProgram)->get();
+            $idKegiatan = $kegiatan->pluck('id')->toArray();
+
+            // delete data from table
+            DB::table('kegiatan_realisasis')->whereIn('kegiatan_id', $idKegiatan)->delete();
+            DB::table('kegiatans')->whereIn('target_tpb_id', $idProgram)->delete();
+            DB::table('target_tpbs')->whereIn('id', $idProgram)->delete();
+            $anggaran_tpb_noncid->delete();
+
+            // $anggaran_tpb_noncid->update(['anggaran' => 0]);
+            // AnggaranTpbController::store_log($anggaran_tpb_noncid->id, $anggaran_tpb_noncid->status_id, 0, 'RKA Revisi - Delete');   
+        }
+    }
+
+    public function deleteByIdSelect($list_data) {
+        foreach($list_data as $data) {
+            $no_tpb = $data['no_tpb'];
+            $nama_pilar = str_replace("-", " ", $data['nama_pilar']);
+            $id_perusahaan = $data['perusahaan'];
+            $tahun = $data['tahun'];
+
+            $this->deleteDataPerusahaan($no_tpb, $nama_pilar, $id_perusahaan, $tahun);            
+        }
+    }
+
+    public function deleteBySelect2(Request $request) {
+        DB::beginTransaction();
+        try {
+            $isDeleteAll = filter_var($request->input('isDeleteAll'), FILTER_VALIDATE_BOOLEAN);            
+            if($isDeleteAll) {
+                $parameterSelectAll = $request->input('parameterSelectAll');
+                $this->deleteAll($parameterSelectAll);
+            } else {
+                $list_data = $request->input('anggaran_deleted');
+                $this->deleteByIdSelect($list_data);
             }
             DB::commit();
             $result = [
                 'flag'  => 'success',
                 'msg' => 'Sukses hapus data',
-                'title' => 'Sukses'
+                'title' => 'Sukses',
             ];
         } catch (\Exception $e) {
             DB::rollback();
             $result = [
                 'flag'  => 'warning',
                 'msg' => 'Gagal hapus data',
-                'title' => 'Gagal'
+                'title' => 'Gagal',
             ];
         }
         return response()->json($result);

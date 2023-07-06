@@ -539,17 +539,75 @@ class ProgramController extends Controller
         LogTargetTpb::create((array)$param);
     }
 
+    public function deleteAll($parameter) {
+        $id_perusahaan = $parameter['perusahaan_id'];
+        $tahun = $parameter['tahun'] ?? (int) date('Y');
+        $pilar_pembangunan = $parameter['pilar_pembangunan'];
+        $tpb = $parameter['tpb'];
+        $jenis_anggaran = $parameter['jenis_anggaran'] ?? 'CID';
+        $kriteria_program = explode(',', $parameter['kriteria_program']);
+
+        $datatemp = DB::table('target_tpbs as tt')
+                    ->select('tt.*')
+                    ->join('anggaran_tpbs as atpb', 'atpb.id', '=', 'tt.anggaran_tpb_id')
+                    ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
+                    ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+                    ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+                    ->where('atpb.tahun', $tahun)
+                    ->where('atpb.anggaran', '>=', 0)
+                    ->where('pp.jenis_anggaran', $jenis_anggaran)
+                    ->where('tpbs.jenis_anggaran', $jenis_anggaran)
+                    ->where('tt.status_id', 2) // hanya yg in progress saja
+                    ->when($id_perusahaan, function($query) use ($id_perusahaan) {
+                        return $query->where('atpb.perusahaan_id', $id_perusahaan);
+                    })
+                    ->when($pilar_pembangunan, function($query) use ($pilar_pembangunan) {
+                        return $query->where('pp.id', $pilar_pembangunan);
+                    })
+                    ->when($tpb, function($query) use ($tpb) {
+                        return $query->where('tpbs.id', $tpb);
+                    })
+                    ->when(count($kriteria_program), function($query) use ($kriteria_program) {
+                        return $query->where(function($queryKriteria) use ($kriteria_program) {
+                            if(in_array('prioritas', $kriteria_program)) {
+                                $queryKriteria->orWhere('kriteria_program_prioritas', true);
+                            }
+                
+                            if(in_array('csv', $kriteria_program)) {
+                                $queryKriteria->orWhere('kriteria_program_csv', true);
+                            }
+                
+                            if(in_array('umum', $kriteria_program)) {
+                                $queryKriteria->orWhere('kriteria_program_umum', true);
+                            }    
+                        });
+                    })
+                    ->get();
+
+        return $datatemp->pluck('id')->toArray();        
+    }
+
+    public function executeDeleteProgram($list_id_program) {
+        $listKegiatan = DB::table('kegiatans')->select('id')->whereIn('target_tpb_id', $list_id_program)->get();
+        $idListKegiatan = $listKegiatan->pluck('id')->toArray();
+
+        DB::table('kegiatan_realisasis')->whereIn('kegiatan_id', $idListKegiatan)->delete();
+        DB::table('kegiatans')->whereIn('target_tpb_id', $list_id_program)->delete();
+        DB::table('target_tpbs')->whereIn('id', $list_id_program)->delete();
+    }
+
     public function delete(Request $request) {
         DB::beginTransaction();
         try {
             $list_id_program = $request->input('program_deleted');
-            $listKegiatan = DB::table('kegiatans')->select('id')->whereIn('target_tpb_id', $list_id_program)->get();
-            $idListKegiatan = $listKegiatan->pluck('id')->toArray();
 
-            DB::table('kegiatan_realisasis')->whereIn('kegiatan_id', $idListKegiatan)->delete();
-            DB::table('kegiatans')->whereIn('target_tpb_id', $list_id_program)->delete();
-            DB::table('target_tpbs')->whereIn('id', $list_id_program)->delete();
-
+            $isDeleteAll = filter_var($request->input('isDeleteAll'), FILTER_VALIDATE_BOOLEAN);
+            if($isDeleteAll) {
+                $parameterSelectAll = $request->input('parameterSelectAll');
+                $list_id_program = $this->deleteAll($parameterSelectAll);
+            }
+            
+            $this->executeDeleteProgram($list_id_program);
             DB::commit();
             $result = [
                 'flag'  => 'success',
@@ -791,7 +849,7 @@ class ProgramController extends Controller
         }        
 
         $data = DB::table('anggaran_tpbs as atpb')
-            ->select('perusahaan_id', 'perusahaans.nama_lengkap', 
+            ->select('perusahaan_id', 'perusahaans.nama_lengkap',
             DB::raw("sum(tt.anggaran_alokasi) as total"),
             DB::raw("count(case when tt.status_id = 1 then 1 end) finish"),
             DB::raw("count(case when tt.status_id = 2 then 1 end) inprogress"),
@@ -803,28 +861,41 @@ class ProgramController extends Controller
             ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
             ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
             ->leftJoin('target_tpbs as tt', 'tt.anggaran_tpb_id', '=', 'atpb.id')
-            ->where('anggaran', '>', 0);
+            ->where('anggaran', '>=', 0);
+
+        $rka = DB::table('anggaran_tpbs as atpb')
+            ->select('perusahaan_id', 'perusahaans.nama_lengkap', DB::raw("SUM(atpb.anggaran) as total_rka"))
+            ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
+            ->join('perusahaans', 'perusahaans.id', '=', 'atpb.perusahaan_id')
+            ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+            ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+            ->where('anggaran', '>=', 0);
 
         if($perusahaan_id) {
             $data = $data->where('atpb.perusahaan_id', $perusahaan_id);
+            $rka = $rka->where('atpb.perusahaan_id', $perusahaan_id);
         }
 
         $tahun = $request->tahun ? $request->tahun : (int) date('Y');
         if($tahun) {
             $data = $data->where('tahun', $tahun);
+            $rka = $rka->where('tahun', $tahun);
         }
 
         $jenis_anggaran = $request->jenis_anggaran ?? 'CID';
         if($jenis_anggaran) {
             $data = $data->where('pp.jenis_anggaran', $jenis_anggaran);
+            $rka = $rka->where('pp.jenis_anggaran', $jenis_anggaran);
         }
 
         if ($request->pilar_pembangunan) {
             $data = $data->where('pp.id', $request->pilar_pembangunan);
+            $rka = $rka->where('pp.id', $request->pilar_pembangunan);
         }
 
         if ($request->tpb) {
             $data = $data->where('tpbs.id', $request->tpb);
+            $rka = $rka->where('tpbs.id', $request->tpb);
         }
 
         $kriteria_program = explode(',', $request->kriteria_program);        
@@ -850,6 +921,12 @@ class ProgramController extends Controller
         $data = $data->groupBy('perusahaan_id', 'perusahaans.nama_lengkap')
             ->orderBy('perusahaan_id')
             ->get();
+
+        $rka = $rka->groupBy('perusahaan_id', 'perusahaans.nama_lengkap')
+            ->orderBy('perusahaan_id')
+            ->get();
+
+        $joinData = $data->zip($rka);
 
         $countInprogress = $data->filter(function($row) {
             return $row->inprogress > 0;
@@ -903,6 +980,7 @@ class ProgramController extends Controller
         }
 
         return view($this->__route . '.index2', [
+            'joinData' => $joinData,
             'data' => $data,
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
@@ -1239,7 +1317,8 @@ class ProgramController extends Controller
                         ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id','=','anggaran_tpbs.relasi_pilar_tpb_id')
                         ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
                         ->where('anggaran_tpbs.tahun', $tahun)
-                        ->where('anggaran_tpbs.anggaran', '>', 0);
+                        ->where('anggaran_tpbs.anggaran', '>=', 0)
+                        ->groupBy('tpb_id');
                 })->get(),
                 'tpb_id' => $request->tpb ?? '',
                 'core_subject' => CoreSubject::get(),

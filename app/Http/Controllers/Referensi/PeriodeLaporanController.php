@@ -137,7 +137,8 @@ class PeriodeLaporanController extends Controller
                     $label = '<ul class="no-margin">';
                     if (!empty(@$row->has_jenis)) {
                         foreach ($row->has_jenis as $v) {
-                            $label .= '<li>' . @$v->jenis->nama . '</li>';
+                            // $label .= '<li>' . @$v->jenis->nama . '</li>';
+                            $label .= '<li>' . @$v->jenis->label . '</li>';
                         }
                     }
                     $label .= '</ul>';
@@ -340,8 +341,8 @@ class PeriodeLaporanController extends Controller
     {
         DB::beginTransaction();
         try {
-            $data = PeriodeLaporan::find((int)$request->input('id'));
-            $data->delete();
+            $listId = $request->input('id');
+            PeriodeLaporan::whereIn('id', $listId)->delete();
 
             DB::commit();
             $result = [
