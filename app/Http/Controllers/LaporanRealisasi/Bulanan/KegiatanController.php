@@ -412,11 +412,12 @@ class KegiatanController extends Controller
     {
         
         $kegiatan = DB::table('kegiatans')
-        ->join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', 'kegiatans.id')
-        ->join('sub_kegiatans', 'sub_kegiatans.id', '=', DB::raw('CAST(kegiatans.keterangan_kegiatan AS BIGINT)'))
+        ->leftjoin('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', 'kegiatans.id')
+        ->leftjoin('sub_kegiatans', 'sub_kegiatans.id', '=', DB::raw('CAST(kegiatans.keterangan_kegiatan AS BIGINT)'))
         ->where('kegiatans.id', $request->id)
+        ->select('kegiatans.*', )
         ->first();
-
+        // dd($kegiatan);
         $perusahaan_id = $request->perusahaan_id;
         $tahun = $request->tahun;
         $jenis_anggaran = $request->jenis_anggaran;

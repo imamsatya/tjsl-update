@@ -41,7 +41,7 @@ class TbleController extends Controller
         $view_only = false;
         if (!empty($users->getRoleNames())) {
             foreach ($users->getRoleNames() as $v) {
-                if ($v == 'Admin BUMN') {
+                if ($v == 'Admin BUMN' || $v == 'Verifikator BUMN') {
                     $admin_bumn = true;
                     $perusahaan_id = \Auth::user()->id_bumn;
                 }

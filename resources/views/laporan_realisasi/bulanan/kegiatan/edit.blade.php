@@ -63,7 +63,7 @@
         </div>
         <div class="row mb-6">
             <div class="col-lg-3 ">
-                <div class="ms-2 required">Jenis Kegiatan</div>
+                <div class="ms-2 ">Jenis Kegiatan</div>
             </div>
             <div class="col-lg-9">
                 <select id="jenis_kegiatan_edit" class="form-select form-select-solid form-select2"
@@ -244,7 +244,7 @@
         // })
 
         $("#jenis_anggaran_edit").on('change', function() {
-            console.log('halo')
+            // console.log('halo')
             const jenisAnggaran = $(this).val()
             $("#program_id_edit").val('').trigger('change')
 
@@ -454,8 +454,8 @@
                     $('#satuan_ukur_edit').prop('disabled', true);
                 }
             } else {
-                // If no subkegiatan is selected, disable the "satuan_ukur" field and reset its value
-                $('#satuan_ukur_edit').prop('disabled', true).val('').trigger('change');
+                // If no subkegiatan is selected, enable the "satuan_ukur" field and reset its value
+                $('#satuan_ukur_edit').prop('disabled', false).val('').trigger('change');
             }
         });
 
@@ -470,8 +470,8 @@
                 jenis_anggaran_edit: 'required',
                 program_id_edit: 'required',
                 nama_kegiatan_edit: 'required',
-                jenis_kegiatan_edit: 'required',
-                keterangan_kegiatan_edit: 'required',
+                // jenis_kegiatan_edit: 'required',
+                // keterangan_kegiatan_edit: 'required',
                 provinsi_edit: 'required',
                 kota_kabupaten_edit: 'required',
                 realisasi_anggaran_edit: 'required',
@@ -482,8 +482,8 @@
                 jenis_anggaran_edit: 'Jenis Anggaran harus terisi',
                 program_id_edit: 'Program harus terisi',
                 nama_kegiatan_edit: 'Nama Kegiatan harus terisi',
-                jenis_kegiatan_edit: 'Jenis Kegiatan harus terisi',
-                keterangan_kegiatan_edit: 'Sub Kegiatan harus terisi',
+                // jenis_kegiatan_edit: 'Jenis Kegiatan harus terisi',
+                // keterangan_kegiatan_edit: 'Sub Kegiatan harus terisi',
                 provinsi_edit: 'Provinsi harus terisi',
                 kota_kabupaten_edit: 'Kota/Kabupaten harus terisi',
                 realisasi_anggaran_edit: 'Realisasi Anggaran harus terisi',
@@ -506,7 +506,7 @@
                 }
 
                 if (element.attr("class") === "form-select2") {
-                    console.log('halo error')
+                    // console.log('halo error')
                     error.insertAfter(element.parent().find(".select2-container"));
                 } else {
                     error.insertAfter(element);
@@ -521,7 +521,7 @@
                 // let tempAnggaran = $('#realisasi_indikator_edit').val()
                 // $('#realisasi_indikator_edit').val(parseInt(tempAnggaran.replace(/[^0-9\-]/g, '')))
                 var kegiatan = @json($kegiatan);
-                console.log('halo k', kegiatan)
+                // console.log('halo k', kegiatan)
 
                 let data = {
                     kegiatan_data: kegiatan,
@@ -568,7 +568,7 @@
                     success: function(data) {
                         $.unblockUI();
 
-                        console.log('data', data.data)
+                        // console.log('data', data.data)
                         swal.fire({
                             title: 'Sukses',
                             html: data.data.msg,

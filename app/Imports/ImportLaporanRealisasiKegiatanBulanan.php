@@ -57,14 +57,15 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
         $keterangan = '';
         $range_jenis_anggaran = ['1', '2', 'CID', 'non CID'];
         foreach ($row as $ar) {
+         
             $is_gagal = false;
             
             $no = (int) rtrim($ar['no']);
             $val_jenis_anggaran = rtrim($ar['jenis_anggaran_1_cid_2_non_cid']);            
             $val_program = (int) rtrim($ar['id_program_sheet_referensi_program']);
             $val_nama_kegiatan = rtrim($ar['nama_kegiatan']);
-            $val_jenis_kegiatan = (int) rtrim($ar['id_jenis_kegiatan_sheet_referensi_jenis_kegiatan']);
-            $val_sub_kegiatan = (int) rtrim($ar['id_sub_kegiatan_sheet_referensi_sub_kegiatan']);
+            $val_jenis_kegiatan = $ar['id_jenis_kegiatan_sheet_referensi_jenis_kegiatan'] ? (int) rtrim($ar['id_jenis_kegiatan_sheet_referensi_jenis_kegiatan']) : null;
+            $val_sub_kegiatan =$ar['id_sub_kegiatan_sheet_referensi_sub_kegiatan'] ?  (int) rtrim($ar['id_sub_kegiatan_sheet_referensi_sub_kegiatan']) : null;
             // $val_keterangan_kegiatan = rtrim($ar['keterangan_kegiatan']);
             $val_provinsi = (int) rtrim($ar['id_provinsi_sheet_referensi_provinsi']);
             $val_kabupaten = (int) rtrim($ar['id_kabupatenkota_sheet_referensi_kota']);
@@ -74,7 +75,7 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
                
 
             // eksekusi data kalau kolom nomornya terisi angka
-         
+            
             if( $no > 0) {
                 // cek jenis anggaran
                 try {
@@ -105,7 +106,8 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
                 }
 
                 // cek jenis kegiatan
-                if ($val_jenis_kegiatan) {
+                $jenis_kegiatan = null;
+                if ($val_jenis_kegiatan != null) {
                     try {
                         $jenis_kegiatan = JenisKegiatan::find($val_jenis_kegiatan);
                         if(!$jenis_kegiatan) {
@@ -233,7 +235,7 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
                         $kegiatan->indikator = $val_realisasi_indikator;
                         $kegiatan->satuan_ukur_id = $ukur->id;
                         $kegiatan->anggaran_alokasi = $val_realisasi_anggaran;
-                        $kegiatan->jenis_kegiatan_id = $jenis_kegiatan->id;
+                        $kegiatan->jenis_kegiatan_id = $jenis_kegiatan != null ? $jenis_kegiatan->id : null;
                         $kegiatan->keterangan_kegiatan = $val_sub_kegiatan;
                         $kegiatan->save();
 
