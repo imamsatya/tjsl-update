@@ -35,6 +35,7 @@ use Excel;
 use App\Exports\LaporanRealisasiTemplateExcelSheet;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use App\Imports\LaporanRealisasiBulananImport;
+use DateTime;
 
 class KegiatanController extends Controller
 {
@@ -946,5 +947,37 @@ class KegiatanController extends Controller
         $fileUpload      = $file->move($destinationPath, $fileRaw);
         $data = (object) array('fileName' => $fileName, 'fileRaw' => $fileRaw, 'filePath' => $filePath);
         return $data;
+    }
+
+    public function historyUpload(Request $request) {
+        $id_users = \Auth::user()->id;
+        $data = LaporanRealisasiBulananUpload::where('perusahaan_id', $request->perusahaan_id)
+                ->where('bulan', $request->bulan)
+                ->where('tahun', $request->tahun)
+                ->orderBy('created_at','desc')->get();
+        try{
+            return datatables()->of($data)
+            ->addColumn('tanggal', function ($row){
+                $dateTime = new DateTime($row->created_at);
+                $formattedDate = date_format($dateTime, 'j F Y');
+                return $formattedDate;
+            })
+            ->addColumn('keterangan_trim', function($row) {
+                $maxLength = 100;
+                $ellipsis = "...";
+                $truncatedText = mb_strimwidth($row->keterangan, 0, $maxLength, $ellipsis);
+
+                return $truncatedText;
+            })
+            ->rawColumns(['tanggal', 'keterangan_trim'])
+            ->toJson();
+        }catch(Exception $e){
+            return response([
+                'draw'            => 0,
+                'recordsTotal'    => 0,
+                'recordsFiltered' => 0,
+                'data'            => []
+            ]);
+        }   
     }
 }
