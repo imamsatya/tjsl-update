@@ -267,10 +267,14 @@
                             @endphp
                             @can('view-kegiatan')
                             <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
+                            @can('delete-kegiatan')
                             <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                             </button>
+                            @endcan
+                            @can('edit-kegiatan')
                             <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
                             </button>
+                            @endcan
                             @endcan
                           
                             @can('view-verify')
@@ -283,6 +287,8 @@
                             <button {{ $enable_input ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
                             </button>  
                             @endif  
+                          
+                           @endcan
                             @if(!$isOkToInput && $isSuperAdmin)
                                 @if($perusahaan_id)
                                     @if($isEnableInputBySuperadmin)
@@ -299,7 +305,6 @@
                                     </button>                                         
                                 @endif
                             @endif
-                           @endcan
                         </div>
                         <!--end::Search-->
                         <!--end::Group actions-->
