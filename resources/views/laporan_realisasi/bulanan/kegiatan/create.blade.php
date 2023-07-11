@@ -448,9 +448,25 @@
             <div class="card" style="margin-bottom: 10px">
                 <div class="card-header pt-5">
                     <div class="card-title">
-                        <h3>History Upload Data Kegiatan Melalui Template</h3>
+                        <div class="accordion accordion-icon-collapse" id="kt_accordion_6">
+                            <div class="accordion-header py-3 d-flex" data-bs-toggle="collapse" data-bs-target="#kt_accordion_6_item_1">
+                                <div class="row mb-4">
+                                    <div class="col-1" style="text-align: center">
+                                        <span class="accordion-icon">
+                                            <i class="bi-duotone bi-plus-square fs-3 accordion-icon-on"></i>
+                                            <i class="bi-duotone bi-dash-square fs-3 accordion-icon-off d-none"></i>
+                                        </span>
+                                    </div>
+                                    <div class="col-11" style="">
+                                        <h3>History Upload Data Kegiatan Melalui Template</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
+                <div id="kt_accordion_6_item_1" class="fs-6 collapse" >
                 <div class="card-body p-0">
                     <div class="card-px py-10">
                         <table class="table table-striped- table-bordered table-hover table-checkable" id="datatable">
@@ -469,6 +485,7 @@
                             </thead>
                         </table>
                     </div>
+                </div>
                 </div>
             </div>
         </div>
