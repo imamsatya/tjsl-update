@@ -55,6 +55,48 @@
                     
                     <!--begin::Heading-->
                     <div class="card-px py-10">
+                        @if(!$isOkToInput && !$isEnableInputBySuperadmin)                       
+                        <!--begin::Alert-->
+                        <div class="alert alert-danger d-flex align-items-center p-5" style="    border-radius: 0.5em;background-color: #fff5f8;color: #f1416c;border-color: #f1416c">
+                            <!--begin::Icon-->
+                            <i class=" bi-shield-fill-x fs-2hx text-danger me-4"><span class="path1"></span><span class="path2"></span></i>
+                            <!--end::Icon-->
+
+                            <!--begin::Wrapper-->
+                            <div class="d-flex flex-column">
+                                <!--begin::Title-->
+                                <h4 class="mb-1 text-danger">PENGUMUMAN</h4>
+                                <!--end::Title-->
+
+                                <!--begin::Content-->
+                                <span>Tidak bisa input data karena diluar periode laporan!</span>
+                                <!--end::Content-->
+                            </div>
+                            <!--end::Wrapper-->
+                        </div>
+                        <!--end::Alert-->
+                        @endif
+                        @if($isFinish)                       
+                        <!--begin::Alert-->
+                        <div class="alert alert-success d-flex align-items-center p-5" style="border-radius: 0.5em;background-color: #e8fff3;color: #50cd89;border-color: #50cd89">
+                            <!--begin::Icon-->
+                            <i class=" bi-shield-fill-check fs-2hx text-success me-4"><span class="path1"></span><span class="path2"></span></i>
+                            <!--end::Icon-->
+
+                            <!--begin::Wrapper-->
+                            <div class="d-flex flex-column">
+                                <!--begin::Title-->
+                                <h4 class="mb-1 text-success">PENGUMUMAN</h4>
+                                <!--end::Title-->
+
+                                <!--begin::Content-->
+                                <span>Data sudah diverifikasi!</span>
+                                <!--end::Content-->
+                            </div>
+                            <!--end::Wrapper-->
+                        </div>
+                        <!--end::Alert-->
+                        @endif
                         @if ($errors->any())
                     <div class="alert alert-dismissible bg-danger d-flex flex-column flex-sm-row p-5 mb-10">
 
@@ -343,8 +385,12 @@
                                 <div class="col-lg-3"></div>
                                 <div class="col-lg-9">
                                     <button id="proses" class="btn btn-danger me-3">Close</button>
+                                    @if($isOkToInput || $isEnableInputBySuperadmin)
+                                    @if(!$isFinish)
                                     <button id="clear-btn" class="btn btn-info me-3">Clear</button>
                                     <button id="simpan-btn" class="btn btn-success me-3">Simpan</button>
+                                    @endif
+                                    @endif
                                 </div>
                             </div>
                         </form>

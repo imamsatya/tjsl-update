@@ -1887,7 +1887,7 @@ class AnggaranTpbController extends Controller
             }
         }
 
-        $anggaran = DB::table('anggaran_tpbs')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->get();
+        $anggaran = DB::table('anggaran_tpbs')->where('anggaran', '>=', 0)->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->get();
         $isEnableInputBySuperadmin = $anggaran->filter(function($data) {
             return $data->is_enable_input_by_superadmin == true;
         })->count();

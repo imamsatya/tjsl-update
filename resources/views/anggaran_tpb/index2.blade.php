@@ -248,25 +248,29 @@
                             <!--begin::Search-->
                             <div class="d-flex align-items-center position-relative my-1"
                                 data-kt-view-roles-table-toolbar="base">
+                                @php
+                                    $enable_input = false;
+                                    if($isOkToInput || $isEnableInputBySuperadmin) $enable_input = true;
+                                @endphp
                                 @can('view-kegiatan')
                                     <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data
                                     </button>
-                                    <button {{ $isOkToInput || $isEnableInputBySuperadmin ? '' : 'disabled' }} type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
+                                    <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
                                     </button>
-                                    <button {{ $isOkToInput || $isEnableInputBySuperadmin ? '' : 'disabled' }} type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
+                                    <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
                                     </button>
                                 @endcan
                               
                                 @can('view-verify')
                                 @if($countInprogress || !$data->count())
-                                <button {{ $isOkToInput || $isEnableInputBySuperadmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
+                                <button {{ $enable_input ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
                                 </button>    
                                 @endif
                                 
 
                                 
                                 @if(!$countInprogress && $data->count())
-                                <button {{ $isOkToInput || $isEnableInputBySuperadmin ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
+                                <button {{ $enable_input ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
                                 </button>  
                                 @endif    
                                 

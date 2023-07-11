@@ -941,7 +941,7 @@ class ProgramController extends Controller
         $currentNamaPerusahaan = count($currentNamaPerusahaan) ? $currentNamaPerusahaan[0] : 'ALL';
 
         // validasi availability untuk input data
-        $menuRKA = DB::table('menus')->where('label', 'RKA')->first();
+        $menuRKA = DB::table('menus')->where('label', 'Program')->first();
         $start = null;
         $end = null;
         $isOkToInput = true;
@@ -1020,17 +1020,29 @@ class ProgramController extends Controller
             ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
             ->leftJoin('target_tpbs as tt', 'tt.anggaran_tpb_id', '=', 'atpb.id')
             ->where('perusahaan_id', $perusahaan_id)
-            ->where('anggaran', '>', 0)
+            ->where('anggaran', '>=', 0)
+            ->where('tahun', $tahun)
+            ->where('pp.jenis_anggaran', $jenis_anggaran);
+
+        $rka = DB::table('anggaran_tpbs as atpb')
+            ->select('pp.order_pilar', 'pp.id as id_pilar', 'pp.nama as nama_pilar', DB::raw("SUM(atpb.anggaran) as total_rka"))
+            ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
+            ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+            ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+            ->where('anggaran', '>=', 0)
+            ->where('perusahaan_id', $perusahaan_id)
             ->where('tahun', $tahun)
             ->where('pp.jenis_anggaran', $jenis_anggaran);
             
 
         if ($request->input('pilar_pembangunan')) {
             $result = $result->where('pp.id', $request->pilar_pembangunan);
+            $rka = $rka->where('pp.id', $request->pilar_pembangunan);
         }
 
         if($request->input('tpb')) {
             $result = $result->where('tpbs.id', $request->tpb);
+            $rka = $rka->where('tpbs.id', $request->tpb);
         }
 
         $kriteria_program = explode(',', $request->kriteria_program);        
@@ -1056,7 +1068,13 @@ class ProgramController extends Controller
             ->orderBy('pp.order_pilar')
             ->get();
 
-        echo json_encode(array('result' => $result));
+        $rka = $rka->groupBy('pp.id', 'pp.nama', 'pp.order_pilar')
+            ->orderBy('pp.order_pilar')
+            ->get();
+
+        $joinData = $result->zip($rka);
+
+        echo json_encode(array('result' => $result, 'joinData' => $joinData));
     }
 
     public function getDataPerusahaanPilarTree(Request $request) {
@@ -1075,13 +1093,24 @@ class ProgramController extends Controller
             ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
             ->leftJoin('target_tpbs as tt', 'tt.anggaran_tpb_id', '=', 'atpb.id')
             ->where('perusahaan_id', $perusahaan_id)
-            ->where('anggaran', '>', 0)
+            ->where('anggaran', '>=', 0)
+            ->where('tahun', $tahun)
+            ->where('pp.id', $pilar);
+
+        $rka = DB::table('anggaran_tpbs as atpb')
+            ->select('tpbs.id as id_tpb', 'tpbs.no_tpb', 'tpbs.nama as nama_tpb', DB::raw("SUM(atpb.anggaran) as total_rka"))
+            ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
+            ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+            ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+            ->where('anggaran', '>=', 0)
+            ->where('perusahaan_id', $perusahaan_id)
             ->where('tahun', $tahun)
             ->where('pp.id', $pilar);
 
 
         if($request->input('tpb')) {
             $result = $result->where('tpbs.id', $request->tpb);
+            $rka = $rka->where('tpbs.id', $request->tpb);
         }
 
         $kriteria_program = explode(',', $request->kriteria_program);        
@@ -1107,7 +1136,13 @@ class ProgramController extends Controller
             ->orderBy('tpbs.id')
             ->get();
 
-        echo json_encode(array('result' => $result));
+        $rka = $rka->groupBy('tpbs.id','tpbs.no_tpb', 'tpbs.nama')
+            ->orderBy('tpbs.id')
+            ->get();
+
+        $joinData = $result->zip($rka);
+
+        echo json_encode(array('result' => $result, 'joinData' => $joinData));
     }
 
     public function getDataPerusahaanPilarTpbTree(Request $request) {
@@ -1242,14 +1277,14 @@ class ProgramController extends Controller
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
             ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
             ->where('anggaran_tpbs.tahun', $tahun)
-            ->where('anggaran_tpbs.anggaran', '>', 0);
+            ->where('anggaran_tpbs.anggaran', '>=', 0);
 
         $anggaran_pilar = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
             ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
             ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
             ->where('anggaran_tpbs.tahun', $tahun)
-            ->where('anggaran_tpbs.anggaran', '>', 0);
+            ->where('anggaran_tpbs.anggaran', '>=', 0);
                       
 
         $anggaran_program  = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
@@ -1259,7 +1294,7 @@ class ProgramController extends Controller
             ->leftJoin('target_tpbs', 'target_tpbs.anggaran_tpb_id', 'anggaran_tpbs.id')
             ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
             ->where('anggaran_tpbs.tahun', $tahun)
-            ->where('anggaran_tpbs.anggaran', '>', 0);   
+            ->where('anggaran_tpbs.anggaran', '>=', 0);   
 
         
         $jenis_anggaran = explode('-', $jenis_anggaran);
@@ -1287,7 +1322,7 @@ class ProgramController extends Controller
         'pilar_pembangunans.nama as pilar_nama', 'tpbs.nama as tpb_nama', DB::Raw('(case when tpbs.jenis_anggaran = \'non CID\' then anggaran end) as anggaran_noncid'), DB::Raw('(case when tpbs.jenis_anggaran = \'CID\' then anggaran end) as anggaran_cid'))
                 ->orderBy('pilar_pembangunans.nama')
                 ->orderBy('tpbs.id')
-                ->get();   
+                ->get();           
                 
         $anggaran_program = $anggaran_program->select('target_tpbs.*', 'tpbs.*', 'target_tpbs.id as id_target_tpbs', 'pilar_pembangunans.nama as pilar_nama','tpbs.nama as tpb_nama', 
             DB::Raw('(case when tpbs.jenis_anggaran = \'non CID\' then anggaran end) as anggaran_noncid'), 
@@ -1298,6 +1333,38 @@ class ProgramController extends Controller
         ->orderBy('pilar_pembangunans.nama')
         ->orderBy('no_tpb')
         ->get();  
+
+        $menuRKA = DB::table('menus')->where('label', 'Program')->first();
+        $start = null;
+        $end = null;
+        $isOkToInput = true;
+        if($menuRKA) {
+            $periodeHasJenis = DB::table('periode_has_jenis')->where('jenis_laporan_id', $menuRKA->id)->first();
+            if($periodeHasJenis) {
+                $periodeLaporan = DB::table('periode_laporans')->where('is_active', 1)->where('id', $periodeHasJenis->periode_laporan_id)->first();
+                if($periodeLaporan) {
+                    $currentDate = new DateTime();                    
+                    $start = new DateTime($periodeLaporan->tanggal_awal);
+                    $end = new DateTime($periodeLaporan->tanggal_akhir);
+
+                    if($currentDate < $start || $currentDate > $end) {
+                        $isOkToInput = false;
+                    }
+                }
+            }
+        }
+
+        $isEnableInputBySuperadmin = $anggaran_program->filter(function($data) {
+            return $data->is_enable_input_by_superadmin == true;
+        })->count();
+
+        $countStatus = $anggaran_program->groupBy('status_id')->map(function($data) {
+            return $data->count();
+        });
+
+        $isFinish = isset($countStatus['1']) && !isset($countStatus['2']);
+
+
 
      
         return view(
@@ -1327,6 +1394,9 @@ class ProgramController extends Controller
                 'anggaran' => $anggaran,
                 'anggaran_program' => $anggaran_program,
                 'view_only' => $view_only,
+                'isOkToInput' => $isOkToInput,
+                'isEnableInputBySuperadmin' => $isEnableInputBySuperadmin,
+                'isFinish' => $isFinish,
             ]
         );
     }
