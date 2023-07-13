@@ -17,8 +17,10 @@ use App\Models\Bulan;
 
 class MitraBinaanTemplateExport implements FromView , WithTitle
 {
-    public function __construct($perusahaan){
+    public function __construct($perusahaan, $tahun, $periode){
         $this->perusahaan = $perusahaan ;
+        $this->tahun = $tahun ;
+        $this->periode = $periode;
     }
 
     public function view(): View
@@ -29,14 +31,16 @@ class MitraBinaanTemplateExport implements FromView , WithTitle
     //   } 
       $perusahaan = empty($this->perusahaan)? 'PT/PERUM ... ' : $this->perusahaan->nama_lengkap; 
       
-      $bulan_static = (int)date('m') == 1? 12 : (int)date('m');
-      $tahun_static = (int)date('m') == 1? (int)date('Y')-1 : (int)date('Y');
-      $bulan = Bulan::where('id',$bulan_static)->pluck('nama')->first();
+      // $bulan_static = (int)date('m') == 1? 12 : (int)date('m');
+      // $tahun_static = (int)date('m') == 1? (int)date('Y')-1 : (int)date('Y');
+      // $bulan = Bulan::where('id',$bulan_static)->pluck('nama')->first();
 
       return view('pumk.upload_data_mitra.template', [
-          'periode' => "Periode : ".$bulan."-".$tahun_static, 
+          // 'periode' => "Periode : ".$bulan."-".$tahun_static, 
+          'periode' => "Periode : Semester ".$this->periode."-".$this->tahun, 
           'perusahaan' => $perusahaan, 
           'data' => $data, 
+          'tahun' => $this->tahun,
       ]);
     }
 

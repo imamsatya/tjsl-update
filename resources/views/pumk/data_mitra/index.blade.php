@@ -159,12 +159,14 @@
                             </select>
                         </div>                        
                         <div class="col-lg-2">
-                            <label>Bulan</label>
+                            <label>Semester</label>
                             <select class="form-select form-select-solid form-select2" id="bulan_id" name="bulan_id" data-kt-select2="true" data-placeholder="Pilih Bulan" data-allow-clear="true">
                                 <option></option>
-                                @foreach($bulan as $bu)  
+                                {{-- @foreach($bulan as $bu)  
                                     <option value="{{ $bu->id }}" >{{ $bu->nama }}</option>
-                                @endforeach
+                                @endforeach --}}
+                                <option value="1">Semester 1</option>
+                                <option value="2">Semester 2</option>
                             </select>
                         </div>
                         <div class="col-lg-2">

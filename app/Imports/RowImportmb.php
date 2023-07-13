@@ -26,10 +26,17 @@ class RowImportmb implements ToCollection, WithMultipleSheets, WithMappedCells
      }
  
      public function collection(Collection $row)
-     {
+     {          
+
+           // bulan berfungsi sebagai semester, possible value : 1 , 2
              $perusahaan =  rtrim($row['perusahaan']);
              $tahun      =  substr(rtrim($row['tahun']),10);
-             $Importmb = new ImportMb($this->nama_file,$this->mb_upload,$perusahaan,$tahun);
+             
+             $periode = substr($tahun, 9, 1);
+             $position = strpos($tahun , "-");
+             $tahunCut = substr($tahun, $position + 1);
+             
+             $Importmb = new ImportMb($this->nama_file,$this->mb_upload,$perusahaan,$tahun,$tahunCut, $periode);
              $Importmb->sheets();
              Excel::import($Importmb, public_path('file_upload/upload_mitra_binaan/'.$this->nama_file));
  

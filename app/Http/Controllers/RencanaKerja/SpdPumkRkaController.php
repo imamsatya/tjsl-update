@@ -84,7 +84,7 @@ class SpdPumkRkaController extends Controller
         $status = DB::table('statuss')->get();
 
          // validasi availability untuk input data
-         $menuSPDPUMK_RKA = DB::table('menus')->where('label', 'SPD PUMK - RKA')->first();
+         $menuSPDPUMK_RKA = DB::table('menus')->where('route_name', 'rencana_kerja.spdpumk_rka.index')->first();
          $start = null;
          $end = null;
          $isOkToInput = true;

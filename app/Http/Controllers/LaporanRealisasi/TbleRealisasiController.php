@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Perusahaan;
+use App\Models\Menu;
 use DB;
 use Session;
 use Datatables;
@@ -244,6 +245,12 @@ class TbleRealisasiController extends Controller
 
         $spd_pumk = DB::table('pumk_anggarans')->where('bumn_id', $id)->where('tahun', $tahun)->where('periode_id', $periode_id)->orderBy('updated_at', 'desc')->get();
         $periode_laporan = DB::table('periode_laporans')->where('id', $periode_id)->first();
+
+        //Menu
+        $menu_kegiatan = Menu::where('route_name', 'laporan_realisasi.bulanan.kegiatan.index')->first()->label;
+        $menu_pumk = Menu::where('route_name', 'laporan_realisasi.bulanan.pumk.index')->first()->label;
+        $menu_laporan_manajemen = Menu::where('route_name', 'laporan_realisasi.triwulan.laporan_manajemen.index')->first()->label; 
+        $menu_spdpumk = Menu::where('route_name', 'laporan_realisasi.triwulan.spd_pumk.index')->first()->label;
         $first_two_characters = substr($periode_laporan->nama, 0, 2);
         if ($first_two_characters === 'TW') {
            $data = [];
@@ -261,12 +268,13 @@ class TbleRealisasiController extends Controller
            }
 
            //cek Kegiatan
+           
            for ($i=0; $i < $jumlah_bulan; $i++) { 
                 $bulan_id = $i+1;
                 $bulan_nama = DB::table('bulans')->where('id', $bulan_id)->first()->nama;
                 $kegiatan_bulan = $kegiatan?->where('kegiatan_realisasi_bulan', $bulan_id)->first();
                 
-                $data_kegiatan_bulan['jenis_laporan'] =  'Kegiatan';
+                $data_kegiatan_bulan['jenis_laporan'] =  $menu_kegiatan;
                 $data_kegiatan_bulan['periode'] = $periode_laporan->nama.'-'.$tahun;
                 $data_kegiatan_bulan['bulan'] = $bulan_nama ;
                 $data_kegiatan_bulan['tanggal_update'] = $kegiatan_bulan?->updated_at;
@@ -281,12 +289,13 @@ class TbleRealisasiController extends Controller
             }
 
             //cek PUMK
+            
             for ($i=0; $i < $jumlah_bulan; $i++) { 
                 $bulan_id = $i+1;
                 $bulan_nama = DB::table('bulans')->where('id', $bulan_id)->first()->nama;
                 $pumk_bulan = DB::table('pumk_bulans')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('bulan_id', $bulan_id)->orderBy('updated_at', 'desc')->first();
 
-                $data_pumk_bulan['jenis_laporan'] =  'PUMK';
+                $data_pumk_bulan['jenis_laporan'] =  $menu_pumk;
                 $data_pumk_bulan['periode'] = $periode_laporan->nama.'-'.$tahun;
                 $data_pumk_bulan['bulan'] = $bulan_nama ;
                 $data_pumk_bulan['tanggal_update'] = $pumk_bulan?->updated_at;
@@ -302,8 +311,9 @@ class TbleRealisasiController extends Controller
             }
 
             //Cek spd_pumk
+            
             $data_spd_pumk_bulan = [];
-            $data_spd_pumk_bulan['jenis_laporan'] = 'SPD PUMK';
+            $data_spd_pumk_bulan['jenis_laporan'] = $menu_spdpumk;
             $data_spd_pumk_bulan['periode'] = $periode_laporan->nama.'-'.$tahun;
             $data_spd_pumk_bulan['tanggal_update'] = null;
             $data_spd_pumk_bulan['status'] = null;
@@ -320,14 +330,14 @@ class TbleRealisasiController extends Controller
       
             $data[] = $data_spd_pumk_bulan;
 
-            //cek laporan manajemen 
+            //cek laporan manajemen
             $laporan_manajemen = DB::table('laporan_manajemens')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('periode_laporan_id', $periode_id)->orderBy('updated_at', 'desc')->get();
             $data_laporan_manajemen['jenis_laporan'] = 'Laporan Manajemen';
             $data_laporan_manajemen['periode'] = $periode_laporan->nama.'-'.$tahun;
             $data_laporan_manajemen['tanggal_update'] = null;
             $data_laporan_manajemen['status'] =   null;
             if($laporan_manajemen?->first() ){
-                $data_laporan_manajemen['jenis_laporan'] = 'Laporan Manajemen';
+                $data_laporan_manajemen['jenis_laporan'] =  $menu_laporan_manajemen;
                 $data_laporan_manajemen['periode'] = $periode_laporan->nama.'-'.$tahun;
                 $data_laporan_manajemen['tanggal_update'] = $laporan_manajemen->first()->updated_at;
                 $data_laporan_manajemen['status'] =  $laporan_manajemen->first()->updated_at ? "Finish" : null;
@@ -344,19 +354,19 @@ class TbleRealisasiController extends Controller
             $data =  [
            
                 [
-                    'jenis_laporan' => 'Kegiatan',
+                    'jenis_laporan' => $menu_kegiatan,
                     'periode' => $periode_laporan->nama.'-'.$tahun,
                     'tanggal_update' => null,
                     'status' => null,
                 ],
                 [
-                    'jenis_laporan' => 'SPD PUMK',
+                    'jenis_laporan' => $menu_spdpumk,
                     'periode' => $periode_laporan->nama.'-'.$tahun,
                     'tanggal_update' => null,
                     'status' => null,
                 ],
                 [
-                    'jenis_laporan' => 'Laporan Manajemen',
+                    'jenis_laporan' => $menu_laporan_manajemen,
                     'periode' => $periode_laporan->nama.'-'.$tahun,
                     'tanggal_update' => null,
                     'status' => null,

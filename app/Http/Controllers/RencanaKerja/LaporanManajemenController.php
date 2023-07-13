@@ -113,7 +113,7 @@ class LaporanManajemenController extends Controller
         // dd($laporan_manajemen->pluck('perusahaan_id'));
 
          // validasi availability untuk input data
-         $menu = DB::table('menus')->where('label', 'Laporan Manajemen - RKA')->first();
+         $menu = DB::table('menus')->where('route_name', 'rencana_kerja.laporan_manajemen.index')->first();
          $start = null;
          $end = null;
          $isOkToInput = true;

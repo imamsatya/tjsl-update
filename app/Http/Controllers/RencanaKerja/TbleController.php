@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Perusahaan;
+use App\Models\Menu;
 use DB;
 use Session;
 use Datatables;
@@ -202,27 +203,32 @@ class TbleController extends Controller
     public function cetakDataById( $id, $tahun) {
         
         $perusahaan = Perusahaan::where('id', $id)->first();
+        $menu_anggaran = Menu::where('route_name', 'anggaran_tpb.rka')->first()->label;
+        $menu_program = Menu::where('route_name', 'rencana_kerja.program.index2')->first()->label;
+        $menu_spdpumk = Menu::where('route_name', 'rencana_kerja.spdpumk_rka.index')->first()->label;
+        $menu_laporan_manajemen = Menu::where('route_name', 'rencana_kerja.laporan_manajemen.index')->first()->label;
+        // dd($menu_program);
         $data =  [
             [
-                'jenis_laporan' => 'Anggaran',
+                'jenis_laporan' => $menu_anggaran,
                 'periode' => 'RKA '.$tahun,
                 'tanggal_update' => null,
                 'status' => null,
             ],
             [
-                'jenis_laporan' => 'Program',
+                'jenis_laporan' => $menu_program,
                 'periode' => 'RKA '.$tahun,
                 'tanggal_update' => null,
                 'status' => null,
             ],
             [
-                'jenis_laporan' => 'SPD PUMK',
+                'jenis_laporan' => $menu_spdpumk,
                 'periode' => 'RKA '.$tahun,
                 'tanggal_update' => null,
                 'status' => null,
             ],
             [
-                'jenis_laporan' => 'Laporan Manajemen',
+                'jenis_laporan' => $menu_laporan_manajemen,
                 'periode' => 'RKA '.$tahun,
                 'tanggal_update' => null,
                 'status' => null,

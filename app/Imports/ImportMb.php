@@ -32,11 +32,15 @@ use App\Models\UploadGagalPumkMitraBinaan;
 
 class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , WithValidation
 {
-    public function __construct($nama_file,$mb_upload,$perusahaan,$tahun){
+    public function __construct($nama_file,$mb_upload,$perusahaan,$tahun,$tahunCut,$periode){
+        // bulan berfungsi sebagai semester, possible value : 1 , 2
+        // periode adalah semester 
         $this->nama_file = $nama_file;
         $this->mb_upload = $mb_upload;
         $this->perusahaan = $perusahaan;
         $this->tahun = $tahun;
+        $this->tahunCut = $tahunCut;
+        $this->periode = $periode;
     }
       public function sheets(): array
     {
@@ -623,8 +627,10 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     //buat data baru jika identitas & kolek belum ada
                     if(($cek_identitas && $cek_kolektibilitas) == 0 ){
                         $mitra = PumkMitraBinaan::create([
-                            'bulan' => (int)date('m') == 1? 12 : (int)date('m')-1,
-                            'tahun' => (int)date('m') == 1? (int)date('Y')-1 : (int)date('Y'),
+                            // 'bulan' => (int)date('m') == 1? 12 : (int)date('m')-1,
+                            // 'tahun' => (int)date('m') == 1? (int)date('Y')-1 : (int)date('Y'),
+                            'bulan' => $this->periode,
+                            'tahun' => $this->tahunCut,
                             'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                             'no_identitas' => rtrim(preg_replace('/[^0-9]/','',$ar['no_identitas'])),
                             'provinsi_id' => rtrim($ar['id_provinsi']),
@@ -667,8 +673,10 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
 
                         if($ar['id_tambahan_pendanaan'] == $Tambah_ya){
                             $mitra = PumkMitraBinaan::create([
-                                'bulan' => (int)date('m') == 1? 12 : (int)date('m')-1,
-                                'tahun' => (int)date('m') == 1? (int)date('Y')-1 : (int)date('Y'),
+                                // 'bulan' => (int)date('m') == 1? 12 : (int)date('m')-1,
+                                // 'tahun' => (int)date('m') == 1? (int)date('Y')-1 : (int)date('Y'),
+                                'bulan' => $this->periode,
+                                'tahun' => $this->tahunCut,
                                 'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                                 'no_identitas' => rtrim(preg_replace('/[^0-9]/','',$ar['no_identitas'])),
                                 'provinsi_id' => rtrim($ar['id_provinsi']),
@@ -713,14 +721,17 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             $last_data = PumkMitraBinaan::select('no_identitas','is_arsip')
                                 ->where('no_identitas',(int)preg_replace('/[^0-9]/','',$ar['no_identitas']))
                                 ->where('no_pinjaman',$ar['no_pinjaman'])
-                                ->where('bulan',(int) date('m')-1)
+                                // ->where('bulan',(int) date('m')-1)
+                                ->where('bulan', $this->periode)
                                 ->where('tahun',(int) date('Y'))
                                 ->update([
                                     'is_arsip'=> true
                                 ]);
                             $mitra = PumkMitraBinaan::create([                             
-                            'bulan' => (int)date('m') == 1? 12 : (int)date('m')-1,
-                            'tahun' => (int)date('m') == 1? (int)date('Y')-1 : (int)date('Y'),
+                            // 'bulan' => (int)date('m') == 1? 12 : (int)date('m')-1,
+                            // 'tahun' => (int)date('m') == 1? (int)date('Y')-1 : (int)date('Y'),
+                            'bulan' => $this->periode,
+                            'tahun' => $this->tahunCut,
                             'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
                             'no_identitas' => rtrim(preg_replace('/[^0-9]/','',$ar['no_identitas'])),
                             'provinsi_id' => rtrim($ar['id_provinsi']),

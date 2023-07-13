@@ -27,7 +27,7 @@ use App\Exports\MitraBinaanGagalUpload;
 use App\Exports\MitraBinaanGagalUploadExport;
 use App\Exports\MitraBinaanTemplateExcelSheet;
 
-
+// bulan berfungsi sebagai semester, possible value : 1 , 2
 class UploadMitraBinaanController extends Controller
 {
     public function __construct()
@@ -148,8 +148,11 @@ class UploadMitraBinaanController extends Controller
         }
     }
 
-    public function download_template()
+    public function download_template(Request $request)
     {
+        $tahun = $request->tahun;
+        $periode = $request->periode;
+     
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
         $perusahaan_id = null;
@@ -174,7 +177,7 @@ class UploadMitraBinaanController extends Controller
 
         $namaFile = "Template Data Mitra Binaan.xlsx";
         
-        return Excel::download(new MitraBinaanTemplateExcelSheet($perusahaan), $namaFile);
+        return Excel::download(new MitraBinaanTemplateExcelSheet($perusahaan, $tahun, $periode), $namaFile);
     }
 
     public function download_upload_berhasil($kode)
