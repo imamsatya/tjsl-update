@@ -267,38 +267,22 @@
                             @endphp
                             @can('view-kegiatan')
                             <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
-                            <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
+                            <button {{ $isSuperAdmin ? '' : ($enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                             </button>
-                            <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
+                            <button {{ $isSuperAdmin ? '' : ($enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
                             </button>
                             @endcan
                           
                             @can('view-verify')
                             @if($countInprogress || !$data->count())
-                                <button {{ $enable_input ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
+                                <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
                                 </button>
                             @endif
 
                             @if(!$countInprogress && $data->count())
-                            <button {{ $enable_input ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
+                            <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
                             </button>  
                             @endif  
-                            @if(!$isOkToInput && $isSuperAdmin)
-                                @if($perusahaan_id)
-                                    @if($isEnableInputBySuperadmin)
-                                    <button type="button" class="btn btn-outline btn-outline-dark btn-active-dark btn-sm ms-2 enable-disable-input-by-superadmin" data-status="disable" >Disable Input Data
-                                    </button> 
-                                    @else
-                                    <button type="button" class="btn btn-outline btn-outline-danger btn-active-danger btn-sm ms-2 enable-disable-input-by-superadmin" data-status="enable" >Enable Input Data
-                                    </button> 
-                                    @endif
-                                @else                                        
-                                <button type="button" class="btn btn-outline btn-outline-dark btn-active-dark btn-sm ms-2 enable-disable-input-by-superadmin" data-status="disable" >Disable Input Data - ALL                                        
-                                    </button> 
-                                <button type="button" class="btn btn-outline btn-outline-danger btn-active-danger btn-sm ms-2 enable-disable-input-by-superadmin" data-status="enable" >Enable Input Data - ALL
-                                    </button>                                         
-                                @endif
-                            @endif
                            @endcan
                         </div>
                         <!--end::Search-->
@@ -401,7 +385,7 @@
             const isOkToInput = "{{ $isOkToInput }}";  
             const countInprogress = parseInt("{{ $countInprogress }}")
             const countFinish = parseInt("{{ $countFinish }}")
-
+            const isSuperAdmin = "{{ $isSuperAdmin }}";
 
             $(".tree-new").treegrid({            
                 initialState : 'collapsed',
@@ -591,11 +575,11 @@
 
                             let isCheckAll = $("#select-all").prop('checked');
 
-                            let btnEdit = `<button ${isOkToInput || target[i].enable_by_admin > 0 ? '' : 'disabled'} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${target[i].id_target}" data-toggle="tooltip" title="Ubah data ${target[i].program}"><i class="bi bi-pencil fs-3"></i></button>`;
+                            let btnEdit = `<button ${isOkToInput || target[i].enable_by_admin > 0 || isSuperAdmin ? '' : 'disabled'} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${target[i].id_target}" data-toggle="tooltip" title="Ubah data ${target[i].program}"><i class="bi bi-pencil fs-3"></i></button>`;
 
                             let checkboxData = '';                            
 
-                            if((isOkToInput || target[i].enable_by_admin > 0) && (target[i].inprogress)) {
+                            if((isOkToInput || target[i].enable_by_admin > 0 || isSuperAdmin) && (target[i].inprogress)) {
                                 checkboxData = `
                                     <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
                                         <input class="form-check-input is_active-check target-check perusahaan-${tempPerusahaan} pilar-${tempPerusahaan}-${tempPilar}" data-anggaran="${target[i].id_target}" type="checkbox" ${isCheckAll ? 'checked' : ''}>

@@ -35,6 +35,8 @@ class AnggaranTpbController extends Controller
     {
         $this->__route = 'anggaran_tpb';
         $this->pagetitle = 'RKA';
+        $this->pageRouteName = 'anggaran_tpb.rka'; // dipake buat check periode menu + enable disable
+        $this->tipeRouteName = 'RKA'; // dipake buat enable disable
     }
 
     /**
@@ -1366,21 +1368,29 @@ class AnggaranTpbController extends Controller
                 }
             }
         }   
+
+        $refEnable = $this->getReferensiEnable();
         
         $tahun = $request->tahun ? $request->tahun : (int)date('Y');
         
         $data = DB::table('anggaran_tpbs as atpb')
-            ->select('perusahaan_id', 'perusahaans.nama_lengkap', DB::raw("sum(case when pp.jenis_anggaran = 'CID' then atpb.anggaran end) as sum_cid"),
+            ->select('atpb.perusahaan_id', 'perusahaans.nama_lengkap', DB::raw("sum(case when pp.jenis_anggaran = 'CID' then atpb.anggaran end) as sum_cid"),
             DB::raw("sum(case when pp.jenis_anggaran = 'non CID' then atpb.anggaran end) as sum_noncid"),
             DB::raw("count(case when status_id = 1 then 1 end) finish"),
             DB::raw("count(case when status_id = 2 then 1 end) inprogress"),
-            DB::raw("count(case when atpb.is_enable_input_by_superadmin = true then 1 end) enable_by_admin"),
-            DB::raw("count(case when atpb.is_enable_input_by_superadmin = false then 1 end) disable_by_admin")
+            DB::raw("(case when epp.id is not null then 1 else 0 end) enable_by_admin")
+            // DB::raw("count(case when atpb.is_enable_input_by_superadmin = true then 1 end) enable_by_admin"),
+            // DB::raw("count(case when atpb.is_enable_input_by_superadmin = false then 1 end) disable_by_admin")
             )
             ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
             ->join('perusahaans', 'perusahaans.id', '=', 'atpb.perusahaan_id')
             ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
             ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+            ->leftJoin('enable_input_by_superadmin as epp', function($join) use ($refEnable) {
+                $join->on('epp.perusahaan_id', '=', 'atpb.perusahaan_id')
+                    ->on('epp.tahun', '=', DB::raw("CAST(atpb.tahun AS INTEGER)"))
+                    ->where('epp.referensi_id', '=', $refEnable->id);
+            })
             ->where('anggaran', '>=', 0);
             
         
@@ -1407,8 +1417,8 @@ class AnggaranTpbController extends Controller
             }
         } 
 
-        $data = $data->groupBy('perusahaan_id', 'perusahaans.nama_lengkap')
-            ->orderBy('perusahaan_id')
+        $data = $data->groupBy('atpb.perusahaan_id', 'perusahaans.nama_lengkap', 'epp.id')
+            ->orderBy('atpb.perusahaan_id')
             ->get();
 
         $countInprogress = $data->filter(function($row) {
@@ -1424,44 +1434,38 @@ class AnggaranTpbController extends Controller
         $currentNamaPerusahaan = count($currentNamaPerusahaan) ? $currentNamaPerusahaan[0] : 'ALL';
 
         // validasi availability untuk input data
-        $menuRKA = DB::table('menus')->where('label', 'RKA')->first();
-        $start = null;
-        $end = null;
-        $isOkToInput = true;
-        if($menuRKA) {
-            $periodeHasJenis = DB::table('periode_has_jenis')->where('jenis_laporan_id', $menuRKA->id)->first();
-            if($periodeHasJenis) {
-                $periodeLaporan = DB::table('periode_laporans')->where('is_active', 1)->where('id', $periodeHasJenis->periode_laporan_id)->first();
-                if($periodeLaporan) {
-                    $currentDate = new DateTime();                    
-                    $start = new DateTime($periodeLaporan->tanggal_awal);
-                    $end = new DateTime($periodeLaporan->tanggal_akhir);
+        $isOkToInput = $this->checkRule();
 
-                    if($currentDate < $start || $currentDate > $end) {
-                        $isOkToInput = false;
-                    }
-                }
-            }
-        }
-
+        // cek enable input by superadmin
+        $list_enable = DB::table('enable_input_by_superadmin')
+            ->where('referensi_id', $refEnable->id)
+            ->where('tahun', $tahun)
+            ->when($perusahaan_id, function($query) use ($perusahaan_id) {
+                return $query->where('perusahaan_id', $perusahaan_id);
+            })
+            ->get();
+        
         $isEnableInputBySuperadmin = false;
-        if($perusahaan_id) {
-            // kalo ada satu aja yg enable -> status = ENABLE
-            $isEnableInputBySuperadmin = $data->filter(function($row) {
-                return $row->enable_by_admin > 0;
-            })->count();
-        } else {
-            $countEnable = $data->filter(function($row) {
-                return $row->enable_by_admin > 0;
-            })->count();
+        if($list_enable->count()) $isEnableInputBySuperadmin = true;
+        
+        // $isEnableInputBySuperadmin = false;
+        // if($perusahaan_id) {
+        //     // kalo ada satu aja yg enable -> status = ENABLE
+        //     $isEnableInputBySuperadmin = $data->filter(function($row) {
+        //         return $row->enable_by_admin > 0;
+        //     })->count();
+        // } else {
+        //     $countEnable = $data->filter(function($row) {
+        //         return $row->enable_by_admin > 0;
+        //     })->count();
 
-            $countDisable = $data->filter(function($row) {
-                return $row->disable_by_admin > 0;
-            })->count();
+        //     $countDisable = $data->filter(function($row) {
+        //         return $row->disable_by_admin > 0;
+        //     })->count();
 
-            if($countEnable == 0) $isEnableInputBySuperadmin = false;
-            if($countDisable == 0) $isEnableInputBySuperadmin = true;
-        }
+        //     if($countEnable == 0) $isEnableInputBySuperadmin = false;
+        //     if($countDisable == 0) $isEnableInputBySuperadmin = true;
+        // }
         
         return view($this->__route . '.index2', [
             'pagetitle' => $this->pagetitle,
@@ -1481,7 +1485,8 @@ class AnggaranTpbController extends Controller
             'isOkToInput' => $isOkToInput,
             'isEnableInputBySuperadmin' => $isEnableInputBySuperadmin,
             'isSuperAdmin' => $isSuperAdmin,
-            'data' => $data
+            'data' => $data,
+            'list_enable' => $list_enable
         ]);
     }
 
@@ -1490,21 +1495,29 @@ class AnggaranTpbController extends Controller
         $tahun = $request->input('tahun');
         $pilar = $request->input('pilar');
 
+        $refEnable = $this->getReferensiEnable();
+
         $result = DB::table('anggaran_tpbs as atpb')
             ->select('tpbs.no_tpb', 'tpbs.nama as nama_tpb',
                 DB::raw("sum(case when tpbs.jenis_anggaran = 'CID' then anggaran end) sum_cid"),
                 DB::raw("sum(case when tpbs.jenis_anggaran = 'non CID' then anggaran end) sum_noncid"),
                 DB::raw("count(case when status_id = 1 then 1 end) finish"),
                 DB::raw("count(case when status_id = 2 then 1 end) inprogress"),
-                DB::raw("count(case when atpb.is_enable_input_by_superadmin = true then 1 end) enable_by_admin"),
-                DB::raw("count(case when atpb.is_enable_input_by_superadmin = false then 1 end) disable_by_admin")
+                DB::raw("(case when epp.id is not null then 1 else 0 end) enable_by_admin")
+                // DB::raw("count(case when atpb.is_enable_input_by_superadmin = true then 1 end) enable_by_admin"),
+                // DB::raw("count(case when atpb.is_enable_input_by_superadmin = false then 1 end) disable_by_admin")
             )
             ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
             ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
             ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
-            ->where('perusahaan_id', $perusahaan_id)
+            ->leftJoin('enable_input_by_superadmin as epp', function($join) use ($refEnable) {
+                $join->on('epp.perusahaan_id', '=', 'atpb.perusahaan_id')
+                    ->on('epp.tahun', '=', DB::raw("CAST(atpb.tahun AS INTEGER)"))
+                    ->where('epp.referensi_id', '=', $refEnable->id);
+            })
+            ->where('atpb.perusahaan_id', $perusahaan_id)
             ->where('anggaran', '>=', 0)
-            ->where('tahun', $tahun)
+            ->where('atpb.tahun', $tahun)
             ->where('pp.nama', str_replace("-", " ", $pilar));
 
 
@@ -1518,7 +1531,7 @@ class AnggaranTpbController extends Controller
                 $result = $result->where('atpb.status_id', $statusId->id);
             }
         }    
-        $result = $result->groupBy('tpbs.no_tpb', 'tpbs.nama')            
+        $result = $result->groupBy('tpbs.no_tpb', 'tpbs.nama', 'epp.id')            
             ->orderBy(DB::raw("substring(tpbs.no_tpb, '^[^0-9]*'), (substring(tpbs.no_tpb, '[0-9]+'))::int"))
             ->get();
 
@@ -1570,6 +1583,17 @@ class AnggaranTpbController extends Controller
 
         try {
 
+            $id_users = \Auth::user()->id;
+            $users = User::where('id', $id_users)->first();
+            $isSuperAdmin = false;
+            if (!empty($users->getRoleNames())) {
+                foreach ($users->getRoleNames() as $v) {
+                    if($v == 'Super Admin') {
+                        $isSuperAdmin = true;
+                    }
+                }
+            }
+
             $no_tpb = $request->no_tpb;
             $nama_pilar = str_replace("-", " ", $request->nama_pilar);
             $id_perusahaan = $request->perusahaan;
@@ -1593,37 +1617,24 @@ class AnggaranTpbController extends Controller
                 if($anggaran->jenis_anggaran == 'CID') $anggaran_tpb_cid = AnggaranTpb::find($anggaran->id_anggaran);
                 if($anggaran->jenis_anggaran == 'non CID') $anggaran_tpb_noncid = AnggaranTpb::find($anggaran->id_anggaran);
             }
-                    
 
             // validasi availability untuk input data
-            $menuRKA = DB::table('menus')->where('label', 'RKA')->first();
-            $start = null;
-            $end = null;
-            $isOkToInput = true;
-            if($menuRKA) {
-                $periodeHasJenis = DB::table('periode_has_jenis')->where('jenis_laporan_id', $menuRKA->id)->first();
-                if($periodeHasJenis) {
-                    $periodeLaporan = DB::table('periode_laporans')->where('is_active', 1)->where('id', $periodeHasJenis->periode_laporan_id)->first();
-                    if($periodeLaporan) {
-                        $currentDate = new DateTime();                    
-                        $start = new DateTime($periodeLaporan->tanggal_awal);
-                        $end = new DateTime($periodeLaporan->tanggal_akhir);
+            $isOkToInput = $this->checkRule();
 
-                        if($currentDate < $start || $currentDate > $end) {
-                            $isOkToInput = false;
-                        }
-                    }
-                }
-            }
+            $refEnable = $this->getReferensiEnable();
 
-            if($anggaran_tpb_cid) {
-                $isEnableInputBySuperadmin = $anggaran_tpb_cid->is_enable_input_by_superadmin; 
-            } else if($anggaran_tpb_noncid) {
-                $isEnableInputBySuperadmin = $anggaran_tpb_noncid->is_enable_input_by_superadmin; 
-            } else {
-                $isEnableInputBySuperadmin = false;
-            }
-
+            // cek enable input by superadmin
+            $list_enable = DB::table('enable_input_by_superadmin')
+                ->where('referensi_id', $refEnable->id)
+                ->where('tahun', $tahun)
+                ->when($id_perusahaan, function($query) use ($id_perusahaan) {
+                    return $query->where('perusahaan_id', $id_perusahaan);
+                })
+                ->get();
+            
+            $isEnableInputBySuperadmin = false;
+            if($list_enable->count()) $isEnableInputBySuperadmin = true;
+                    
 
             return view($this->__route . '.edit2', [
                 'pagetitle' => $this->pagetitle,
@@ -1636,7 +1647,8 @@ class AnggaranTpbController extends Controller
                 'data_cid' => $anggaran_tpb_cid,
                 'data_noncid' => $anggaran_tpb_noncid,
                 'isOkToInput' => $isOkToInput,
-                'isEnableInputBySuperadmin' => $isEnableInputBySuperadmin
+                'isEnableInputBySuperadmin' => $isEnableInputBySuperadmin,
+                'isSuperAdmin' => $isSuperAdmin
             ]);
         } catch (Exception $e) {
         }
@@ -1689,7 +1701,7 @@ class AnggaranTpbController extends Controller
         return response()->json($result);
     }
 
-    public function deleteAll($parameter) {
+    public function deleteAll($parameter, $isSuperAdmin) {
         $id_perusahaan = $parameter['perusahaan_id'];
         $tahun = $parameter['tahun'] ?? (int) date('Y');
         $pilar_pembangunan = $parameter['pilar_pembangunan'];
@@ -1714,8 +1726,29 @@ class AnggaranTpbController extends Controller
                     })
                     ->groupBy('atpb.perusahaan_id','pp.nama', 'tpbs.no_tpb')
                     ->get();
+        
+        // validasi availability untuk input data
+        $isOkToInput = $this->checkRule();   
 
-        foreach($datatemp as $temp) $this->deleteDataPerusahaan($temp->no_tpb, $temp->pilar_pembangunan, $temp->perusahaan_id, $tahun);
+        foreach($datatemp as $temp) {
+            $id_perusahaan = $temp->perusahaan_id;
+            // cek enable input by superadmin
+            $list_enable = DB::table('enable_input_by_superadmin')
+                ->where('tipe', 'RKA')
+                ->where('referensi', 'anggaran_tpbs')
+                ->where('tahun', $tahun)
+                ->when($id_perusahaan, function($query) use ($id_perusahaan) {
+                    return $query->where('perusahaan_id', $id_perusahaan);
+                })
+                ->get();
+            
+            $isEnableInputBySuperadmin = false;
+            if($list_enable->count()) $isEnableInputBySuperadmin = true;
+
+            if($isOkToInput || $isEnableInputBySuperadmin || $isSuperAdmin) {
+                $this->deleteDataPerusahaan($temp->no_tpb, $temp->pilar_pembangunan, $temp->perusahaan_id, $tahun);
+            }
+        }
 
     }
 
@@ -1780,34 +1813,64 @@ class AnggaranTpbController extends Controller
         }
     }
 
-    public function deleteByIdSelect($list_data) {
+    public function deleteByIdSelect($list_data, $isSuperAdmin) {
+        // validasi availability untuk input data
+        $isOkToInput = $this->checkRule();        
+
         foreach($list_data as $data) {
             $no_tpb = $data['no_tpb'];
             $nama_pilar = str_replace("-", " ", $data['nama_pilar']);
             $id_perusahaan = $data['perusahaan'];
             $tahun = $data['tahun'];
 
-            $this->deleteDataPerusahaan($no_tpb, $nama_pilar, $id_perusahaan, $tahun);            
+            // cek enable input by superadmin
+            $list_enable = DB::table('enable_input_by_superadmin')
+                ->where('tipe', 'RKA')
+                ->where('referensi', 'anggaran_tpbs')
+                ->where('tahun', $tahun)
+                ->when($id_perusahaan, function($query) use ($id_perusahaan) {
+                    return $query->where('perusahaan_id', $id_perusahaan);
+                })
+                ->get();
+            
+            $isEnableInputBySuperadmin = false;
+            if($list_enable->count()) $isEnableInputBySuperadmin = true;
+
+            if($isOkToInput || $isEnableInputBySuperadmin || $isSuperAdmin) {
+                $this->deleteDataPerusahaan($no_tpb, $nama_pilar, $id_perusahaan, $tahun);    
+            }
         }
     }
 
     public function deleteBySelect2(Request $request) {
         DB::beginTransaction();
         try {
+
+            $id_users = \Auth::user()->id;
+            $users = User::where('id', $id_users)->first();
+            $isSuperAdmin = false;
+            if (!empty($users->getRoleNames())) {
+                foreach ($users->getRoleNames() as $v) {
+                    if($v == 'Super Admin') {
+                        $isSuperAdmin = true;
+                    }
+                }
+            }
+
             $isDeleteAll = filter_var($request->input('isDeleteAll'), FILTER_VALIDATE_BOOLEAN);            
             if($isDeleteAll) {
                 $parameterSelectAll = $request->input('parameterSelectAll');
-                $this->deleteAll($parameterSelectAll);
+                $this->deleteAll($parameterSelectAll, $isSuperAdmin);
             } else {
                 $list_data = $request->input('anggaran_deleted');
-                $this->deleteByIdSelect($list_data);
+                $this->deleteByIdSelect($list_data, $isSuperAdmin);
             }
             DB::commit();
             $result = [
                 'flag'  => 'success',
                 'msg' => 'Sukses hapus data',
                 'title' => 'Sukses',
-            ];
+            ];  
         } catch (\Exception $e) {
             DB::rollback();
             $result = [
@@ -1821,6 +1884,17 @@ class AnggaranTpbController extends Controller
 
     public function createRKA($perusahaan_id, $tahun)
     {
+        $id_users = \Auth::user()->id;
+        $users = User::where('id', $id_users)->first();
+        $isSuperAdmin = false;
+        if (!empty($users->getRoleNames())) {
+            foreach ($users->getRoleNames() as $v) {
+                if($v == 'Super Admin') {
+                    $isSuperAdmin = true;
+                }
+            }
+        }
+
         $versi = VersiPilar::whereNull('tanggal_akhir')->orWhere('tanggal_akhir', '>=', date('Y-m-d'))->first();
         $versi_pilar_id = $versi->id;
 
@@ -1867,31 +1941,22 @@ class AnggaranTpbController extends Controller
         }
 
         // validasi availability untuk input data
-        $menuRKA = DB::table('menus')->where('label', 'RKA')->first();
-        $start = null;
-        $end = null;
-        $isOkToInput = true;
-        if($menuRKA) {
-            $periodeHasJenis = DB::table('periode_has_jenis')->where('jenis_laporan_id', $menuRKA->id)->first();
-            if($periodeHasJenis) {
-                $periodeLaporan = DB::table('periode_laporans')->where('is_active', 1)->where('id', $periodeHasJenis->periode_laporan_id)->first();
-                if($periodeLaporan) {
-                    $currentDate = new DateTime();                    
-                    $start = new DateTime($periodeLaporan->tanggal_awal);
-                    $end = new DateTime($periodeLaporan->tanggal_akhir);
+        $isOkToInput = $this->checkRule();
+        $refEnable = $this->getReferensiEnable();
 
-                    if($currentDate < $start || $currentDate > $end) {
-                        $isOkToInput = false;
-                    }
-                }
-            }
-        }
+        // cek enable input by superadmin
+        $list_enable = DB::table('enable_input_by_superadmin')
+            ->where('referensi_id', $refEnable->id)
+            ->where('tahun', $tahun)
+            ->when($perusahaan_id, function($query) use ($perusahaan_id) {
+                return $query->where('perusahaan_id', $perusahaan_id);
+            })
+            ->get();
+        
+        $isEnableInputBySuperadmin = false;
+        if($list_enable->count()) $isEnableInputBySuperadmin = true;
 
         $anggaran = DB::table('anggaran_tpbs')->where('anggaran', '>=', 0)->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->get();
-        $isEnableInputBySuperadmin = $anggaran->filter(function($data) {
-            return $data->is_enable_input_by_superadmin == true;
-        })->count();
-
         $countStatus = $anggaran->groupBy('status_id')->map(function($data) {
             return $data->count();
         });
@@ -1911,8 +1976,43 @@ class AnggaranTpbController extends Controller
                 'isOkToInput' => $isOkToInput,
                 'isEnableInputBySuperadmin' => $isEnableInputBySuperadmin,
                 'isFinish' => $isFinish,
-                'dataInput' => $dataInput
+                'dataInput' => $dataInput,
+                'isSuperAdmin' => $isSuperAdmin
             ]
         );
+    }
+
+    public function checkRule() {
+        // validasi availability untuk input data
+        $menuRKA = DB::table('menus')->where('route_name', $this->pageRouteName)->first();
+        $start = null;
+        $end = null;
+        $isOkToInput = true;
+        if($menuRKA) {
+            $periodeHasJenis = DB::table('periode_has_jenis')->where('jenis_laporan_id', $menuRKA->id)->first();
+            if($periodeHasJenis) {
+                $periodeLaporan = DB::table('periode_laporans')->where('is_active', 1)->where('id', $periodeHasJenis->periode_laporan_id)->first();
+                if($periodeLaporan) {
+                    $currentDate = new DateTime();                    
+                    $start = new DateTime($periodeLaporan->tanggal_awal);
+                    $end = new DateTime($periodeLaporan->tanggal_akhir);
+
+                    if($currentDate < $start || $currentDate > $end) {
+                        $isOkToInput = false;
+                    }
+                }
+            }
+        }
+
+        return $isOkToInput;        
+    }
+
+    public function getReferensiEnable() {
+        $data = DB::table('referensi_enable_input_by_superadmin')
+            ->where('deskripsi', $this->tipeRouteName)
+            ->where('route_name', $this->pageRouteName)
+            ->first();
+
+        return $data;
     }
 }

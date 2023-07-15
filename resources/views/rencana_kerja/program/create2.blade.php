@@ -55,7 +55,7 @@
                     
                     <!--begin::Heading-->
                     <div class="card-px py-10">
-                        @if(!$isOkToInput && !$isEnableInputBySuperadmin)                       
+                        @if(!$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin )
                         <!--begin::Alert-->
                         <div class="alert alert-danger d-flex align-items-center p-5" style="    border-radius: 0.5em;background-color: #fff5f8;color: #f1416c;border-color: #f1416c">
                             <!--begin::Icon-->
@@ -385,7 +385,7 @@
                                 <div class="col-lg-3"></div>
                                 <div class="col-lg-9">
                                     <button id="proses" class="btn btn-danger me-3">Close</button>
-                                    @if($isOkToInput || $isEnableInputBySuperadmin)
+                                    @if($isOkToInput || $isEnableInputBySuperadmin || $isSuperAdmin)
                                     @if(!$isFinish)
                                     <button id="clear-btn" class="btn btn-info me-3">Clear</button>
                                     <button id="simpan-btn" class="btn btn-success me-3">Simpan</button>
@@ -399,7 +399,9 @@
                         <div class="card-px py-10">
                             <!--begin: Datatable -->
                             <div style="text-align:right">
+                            @if(($isOkToInput || $isEnableInputBySuperadmin || $isSuperAdmin) && !$isFinish)
                             <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
+                            @endif
                             </button>
                             </div>
                             <div class="table-responsive">
@@ -414,7 +416,7 @@
                                             <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
                                             <th style="width: 5%"><label
                                                 class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
-                                                    class="form-check-input addCheck" type="checkbox"
+                                                     class="form-check-input addCheck" type="checkbox"
                                                     id="select-all"></label>
                                         </th>
                                         </tr>
@@ -464,9 +466,7 @@
                                                     <span class="badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3">{{$status}}</span>
                                                 </td>
                                                 <td style="text-align:center;"></td>
-                                                <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                                    <input class="form-check-input is_active-check pilar-check" data-pilar-parent="pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" type="checkbox" data-anggaran="" name="selected-is_active[]" value="${row.id}">
-                                                    </label></td>
+                                                <td></td>
                                             </tr>
                                                 @foreach ($anggaran_anak as $key => $a)                                                                                                                                              
                                                     @if($a->jenis_anggaran === $jenis_anggaran)                                                    
@@ -499,9 +499,7 @@
                                                                 </td>
                                                                 <td style="text-align:center;"></td>
                                                                 
-                                                                <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                                                    <input class="form-check-input is_active-check tpb-check pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}} pilar-{{str_replace(' ', '-', @$p->pilar_nama)}}" data-tpb-parent="tpb-{{str_replace(' ', '-', @$a->no_tpb)}}-pilar-{{$p->perusahaan_id}}-{{str_replace(' ', '-', @$p->pilar_nama)}}" type="checkbox" name="selected-is_active[]" value="${row.id}">
-                                                                    </label></td>
+                                                                <td></td>
                                                             </tr>
                                                             
                                                             @foreach($program as $ap)
@@ -530,8 +528,10 @@
                                                                         <span class="btn cls-log badge badge-light-{{$status_class}} fw-bolder me-auto px-4 py-3" data-id="{{$ap->id_target_tpbs}}">{{$status}}</span>
                                                                     </td>
                                                                     <td style="text-align:center;">
+                                                                        @if($isOkToInput || $isEnableInputBySuperadmin || $isSuperAdmin )
                                                                         @if($ap->status_id == 2)
                                                                         <button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="{{$ap->id_target_tpbs}}" data-toggle="tooltip" title="Ubah data {{$ap->program}}"><i class="bi bi-pencil fs-3"></i></button>
+                                                                        @endif
                                                                         @endif
                                                                     </td>
                                                                     
@@ -579,6 +579,7 @@
         var urledit = "{{route('rencana_kerja.program.edit2')}}";
         var urlprogram = "{{ route('rencana_kerja.program.index2') }}"     
         var urldelete = "{{ route('rencana_kerja.program.delete') }}";
+        var urllog = "{{ route('rencana_kerja.program.log') }}";
 
         $(document).ready(function() {
             $('.tree').treegrid({
@@ -670,7 +671,11 @@
                     return
                 } 
                 $("#mitra_bumn").prop('disabled', false)
-            })            
+            })  
+            
+            $('body').on('click','.cls-log',function(){
+                winform(urllog, {'id':$(this).data('id')}, 'Log Data');
+            });
         });
 
         function setTpbOption(jenisAnggaran) {

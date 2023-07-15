@@ -6,7 +6,7 @@
 	<input type="hidden" name="actionform" id="actionform" readonly="readonly" value="{{$actionform}}" />
     <input type="hidden" name="kriteria_used" id="kriteria_used" readonly="readonly" value="" />
 
-    @if(!$isOkToInput && !$isEnableInputBySuperadmin)
+    @if(!$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin)
     <!--begin::Alert-->
     <div class="alert alert-danger d-flex align-items-center p-5" style="    border-radius: 0.5em;background-color: #fff5f8;color: #f1416c;border-color: #f1416c">
         <!--begin::Icon-->
@@ -34,7 +34,7 @@
                 <div class="ms-2">Pilih TPB<span style="color: red">*</span></div>
             </div>
             <div class="col-lg-9">
-                <select {{ !$isOkToInput && !$isEnableInputBySuperadmin ? 'disabled' : '' }} id="tpb_id_edit" class="form-select form-select-solid form-select2" name="tpb_id_edit" data-kt-select2="true"  data-placeholder="Pilih TPB" data-allow-clear="true">
+                <select {{ !$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin ? 'disabled' : '' }} id="tpb_id_edit" class="form-select form-select-solid form-select2" name="tpb_id_edit" data-kt-select2="true"  data-placeholder="Pilih TPB" data-allow-clear="true">
                     <option></option>
                     @foreach($tpb as $p)                                                
                         <option {{ $data->tpb_id === $p->id ? "selected='selected'" : '' }} value="{{ $p->id }}">{{ $p->no_tpb }} - {{ $p->nama }} [{{$p->jenis_anggaran}}]</option>
@@ -47,7 +47,7 @@
                 <div class="ms-2">Nama Program<span style="color: red">*</span></div>
             </div>
             <div class="col-lg-9">
-                <textarea {{ !$isOkToInput && !$isEnableInputBySuperadmin ? 'disabled' : '' }} class="form-control" id="nama_program_edit" name="nama_program_edit" style="height: 100px">{{ $data->program }}</textarea>                
+                <textarea {{ !$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin ? 'disabled' : '' }} class="form-control" id="nama_program_edit" name="nama_program_edit" style="height: 100px">{{ $data->program }}</textarea>                
             </div>
         </div>        
         <div class="row mb-6">
@@ -55,7 +55,7 @@
                 <div class="ms-2">Unit Owner</div>
             </div>
             <div class="col-lg-9">                
-                <input {{ !$isOkToInput && !$isEnableInputBySuperadmin ? 'disabled' : '' }} value="{{ $data->unit_owner }}" type="text" name="unit_owner_edit" id="unit_owner_edit"
+                <input {{ !$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin ? 'disabled' : '' }} value="{{ $data->unit_owner }}" type="text" name="unit_owner_edit" id="unit_owner_edit"
                     class="form-control form-control-lg form-control-solid"
                     placeholder="Unit Owner"  
                     />  
@@ -68,19 +68,19 @@
             <div class="col-lg-9 fv-row d-flex align-items-center justify-content-start">
                 <div style="display:flex; flex-direction: row;">
                     <div class="form-check form-check-custom form-check-solid form-check-sm me-8">
-                        <input {{ !$isOkToInput && !$isEnableInputBySuperadmin ? 'disabled' : '' }} {{ $data->kriteria_program_prioritas ? 'checked="checked"' : '' }} class="form-check-input" type="checkbox" name="kriteria_program_edit" value="prioritas" id="checkboxPrioritas_edit"/>
+                        <input {{ !$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin ? 'disabled' : '' }} {{ $data->kriteria_program_prioritas ? 'checked="checked"' : '' }} class="form-check-input" type="checkbox" name="kriteria_program_edit" value="prioritas" id="checkboxPrioritas_edit"/>
                         <label class="form-check-label" for="checkboxPrioritas_edit">
                             Prioritas
                         </label>
                     </div> 
                     <div class="form-check form-check-custom form-check-solid form-check-sm me-8">
-                        <input {{ !$isOkToInput && !$isEnableInputBySuperadmin ? 'disabled' : '' }} {{ $data->kriteria_program_csv ? 'checked="checked"' : '' }} class="form-check-input" type="checkbox" name="kriteria_program_edit" value="csv" id="checkboxCSV_edit"/>
+                        <input {{ !$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin ? 'disabled' : '' }} {{ $data->kriteria_program_csv ? 'checked="checked"' : '' }} class="form-check-input" type="checkbox" name="kriteria_program_edit" value="csv" id="checkboxCSV_edit"/>
                         <label class="form-check-label" for="checkboxCSV_edit">
                             CSV
                         </label>
                     </div>
                     <div class="form-check form-check-custom form-check-solid form-check-sm">
-                        <input {{ !$isOkToInput && !$isEnableInputBySuperadmin ? 'disabled' : '' }} {{ $data->kriteria_program_umum ? 'checked="checked"' : '' }} class="form-check-input" type="checkbox" name="kriteria_program_edit" value="umum" id="checkboxUmum_edit"/>
+                        <input {{ !$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin ? 'disabled' : '' }} {{ $data->kriteria_program_umum ? 'checked="checked"' : '' }} class="form-check-input" type="checkbox" name="kriteria_program_edit" value="umum" id="checkboxUmum_edit"/>
                         <label class="form-check-label" for="checkboxUmum_edit">
                             Umum
                         </label>
@@ -94,7 +94,7 @@
                 <div class="ms-2">ID Core Subject<span style="color: red">*</span></div>
             </div>
             <div class="col-lg-9">
-                <select {{ !$isOkToInput && !$isEnableInputBySuperadmin ? 'disabled' : '' }} id="core_subject_id_edit" class="form-select form-select-solid form-select2" name="core_subject_id_edit" data-kt-select2="true" data-placeholder="Pilih ID Core Subject" data-allow-clear="true">
+                <select {{ !$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin ? 'disabled' : '' }} id="core_subject_id_edit" class="form-select form-select-solid form-select2" name="core_subject_id_edit" data-kt-select2="true" data-placeholder="Pilih ID Core Subject" data-allow-clear="true">
                     <option></option>
                     @foreach($core_subject as $c)                                              
                         <option {{ $data->core_subject_id === $c->id ? 'selected="selected"' : '' }} value="{{ $c->id }}" >{{ $c->nama }}</option>
@@ -108,7 +108,7 @@
                 <div class="ms-2">Pelaksanaan Program<span style="color: red">*</span></div>
             </div>
             <div class="col-lg-9">
-                <select {{ !$isOkToInput && !$isEnableInputBySuperadmin ? 'disabled' : '' }} id="pelaksanaan_program_edit" class="form-select form-select-solid form-select2" name="pelaksanaan_program_edit" data-kt-select2="true" data-placeholder="Pilih Pelaksanaan Program" data-allow-clear="true">
+                <select {{ !$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin ? 'disabled' : '' }} id="pelaksanaan_program_edit" class="form-select form-select-solid form-select2" name="pelaksanaan_program_edit" data-kt-select2="true" data-placeholder="Pilih Pelaksanaan Program" data-allow-clear="true">
                     <option></option>
                     <option value="Mandiri" {{ $data->pelaksanaan_program === 'Mandiri' ? 'selected="selected"' : '' }} >
                             Mandiri</option>
@@ -124,7 +124,7 @@
                 <div class="ms-2">Mitra BUMN</div>
             </div>
             <div class="col-lg-9">
-                <select {{ !$isOkToInput && !$isEnableInputBySuperadmin ? 'disabled' : '' }} class="form-select form-select-solid form-select2" id="mitra_bumn_edit" name="mitra_bumn_edit" data-kt-select2="true" data-placeholder="Pilih Mitra BUMN" data-allow-clear="true" >
+                <select {{ !$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin ? 'disabled' : '' }} class="form-select form-select-solid form-select2" id="mitra_bumn_edit" name="mitra_bumn_edit" data-kt-select2="true" data-placeholder="Pilih Mitra BUMN" data-allow-clear="true" >
                     <option></option>
                     @foreach($perusahaan as $p)                                                  
                         <option {{ $data->mitra_bumn_id === $p->id ? 'selected="selected"' : '' }} value="{{ $p->id }}">{{ $p->nama_lengkap }}</option>
@@ -141,13 +141,13 @@
             <div class="col-lg-9 fv-row d-flex align-items-center justify-content-start">
                 <div style="display:flex; flex-direction: row;">
                     <div class="form-check form-check-custom form-check-solid form-check-sm me-8">
-                        <input {{ !$isOkToInput && !$isEnableInputBySuperadmin ? 'disabled' : '' }} {{ $data->multi_years ? 'checked="checked"' : '' }} class="form-check-input" type="radio" name="program_edit" id="multiyears_ya_edit" value="ya"/>
+                        <input {{ !$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin ? 'disabled' : '' }} {{ $data->multi_years ? 'checked="checked"' : '' }} class="form-check-input" type="radio" name="program_edit" id="multiyears_ya_edit" value="ya"/>
                         <label class="form-check-label" for="multiyears_ya_edit">
                             Ya
                         </label>
                     </div> 
                     <div class="form-check form-check-custom form-check-solid form-check-sm me-8">
-                        <input {{ !$isOkToInput && !$isEnableInputBySuperadmin ? 'disabled' : '' }} {{ !$data->multi_years ? 'checked="checked"' : '' }} class="form-check-input" type="radio" name="program_edit" id="multiyears_tidak_edit" value="tidak"/>
+                        <input {{ !$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin ? 'disabled' : '' }} {{ !$data->multi_years ? 'checked="checked"' : '' }} class="form-check-input" type="radio" name="program_edit" id="multiyears_tidak_edit" value="tidak"/>
                         <label class="form-check-label" for="multiyears_tidak_edit">
                             Tidak
                         </label>
@@ -162,7 +162,7 @@
                 <div class="ms-2">Alokasi Anggaran<span style="color: red">*</span></div>
             </div>
             <div class="col-lg-9">
-                <input {{ !$isOkToInput && !$isEnableInputBySuperadmin ? 'disabled' : '' }} type="text" name="alokasi_anggaran_edit" id="alokasi_anggaran_edit"
+                <input {{ !$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin ? 'disabled' : '' }} type="text" name="alokasi_anggaran_edit" id="alokasi_anggaran_edit"
                     class="form-control form-control-lg form-control-solid"
                     placeholder="Rp ... " oninput="formatCurrency2(this)" 
                     onkeypress="return onlyNumbers(event)" style="text-align:right;"  value="{{ number_format($data->anggaran_alokasi,0,',',',')}}"
@@ -172,7 +172,7 @@
     </div>
     <div class="text-center pt-15">
         <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" data-kt-roles-modal-action="cancel">Discard</button>
-        @if(!(!$isOkToInput && !$isEnableInputBySuperadmin))
+        @if(!(!$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin))
         <button id="submit" type="submit" class="btn btn-primary" data-kt-roles-modal-action="submit">
             <span class="indicator-label">Simpan</span>
             <span class="indicator-progress">Please wait...
