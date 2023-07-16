@@ -13,12 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('log_enable_disable_input_datas', function (Blueprint $table) {
+        Schema::create('enable_input_by_superadmin', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['enable', 'disable'])->default('disable');
-            $table->integer('perusahaan_id');
-            $table->integer('tahun');
-            $table->integer('referensi_id');
+            $table->integer('referensi_id')->nullable();
+            $table->integer('perusahaan_id')->nullable();
+            $table->integer('tahun')->nullable();
+            $table->string('status')->nullable();
+            $table->integer('user_id')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('log_enable_disable_input_datas');
+        Schema::dropIfExists('enable_input_by_superadmin');
     }
 };

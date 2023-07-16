@@ -57,7 +57,7 @@
                     
                     <!--begin::Heading-->
                     <div class="card-px py-10"> 
-                        @if(!$isOkToInput && !$isEnableInputBySuperadmin)                       
+                        @if(!$isOkToInput && !$isEnableInputBySuperadmin && !$isSuperAdmin)                       
                         <!--begin::Alert-->
                         <div class="alert alert-danger d-flex align-items-center p-5" style="    border-radius: 0.5em;background-color: #fff5f8;color: #f1416c;border-color: #f1416c">
                             <!--begin::Icon-->
@@ -314,7 +314,7 @@
                         <div class="form-group row mt-2 mb-5 text-end">
                             <div class="col-lg-12">   
                                 <a id="close-btn" href="javascript:void(0);" class="btn btn-light-danger font-weight-bold me-3"><i class="bi bi-x-circle-fill"></i> Close</a>
-                                @if($isOkToInput || $isEnableInputBySuperadmin)
+                                @if($isOkToInput || $isEnableInputBySuperadmin || $isSuperAdmin)
                                 @if(!$isFinish)
                                 <a id="clear-btn" href="javascript:void(0)" class="btn btn-light-info font-weight-bold me-3"><i class="bi bi-trash-fill"></i> Clear</a>
                                 <button id="simpan-btn" class="btn btn-success font-weight-bold me-3"><i class="bi bi-save-fill"></i> Simpan</button>                                
@@ -342,6 +342,7 @@
             const isFinish = "{{ $isFinish }}"
             const okToInput = "{{ $isOkToInput }}"
             const isEnableInputBySuperadmin = parseInt("{{ $isEnableInputBySuperadmin }}")
+            const isSuperAdmin = "{{ $isSuperAdmin }}"
             // $('input[name^="cid_tpb"]').on('input', function() {
             //     $(this).val($(this).val().replace(/[^0-9]/g, ''));
 
@@ -395,7 +396,7 @@
             //     }
             // });
 
-            if(!isFinish && (okToInput || isEnableInputBySuperadmin)) {                
+            if(!isFinish && (okToInput || isEnableInputBySuperadmin || isSuperAdmin)) {                
                 const clearBtn = document.querySelector("#clear-btn");
                 clearBtn.addEventListener("click", function() {                    
                     const inputFields = document.querySelectorAll("input[type='text']");
