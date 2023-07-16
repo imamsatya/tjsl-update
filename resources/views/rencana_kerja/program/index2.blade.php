@@ -267,20 +267,14 @@
                             @endphp
                             @can('view-kegiatan')
                             <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
-<<<<<<< HEAD
-                            @can('delete-kegiatan')
-                            <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
-                            </button>
-                            @endcan
-                            @can('edit-kegiatan')
-                            <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
-=======
-                            <button {{ $isSuperAdmin ? '' : ($enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
-                            </button>
-                            <button {{ $isSuperAdmin ? '' : ($enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
->>>>>>> 5bab29c95ca976f3fcc6514c6bb99ab76ff53579
-                            </button>
-                            @endcan
+                                @can('delete-kegiatan')
+                                <button {{ $isSuperAdmin ? '' : ($enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
+                                </button>
+                                @endcan
+                                @can('edit-kegiatan')
+                                <button {{ $isSuperAdmin ? '' : ($enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
+                                </button>
+                                @endcan
                             @endcan
                           
                             @can('view-verify')
@@ -293,28 +287,7 @@
                             <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
                             </button>  
                             @endif  
-<<<<<<< HEAD
-                          
                            @endcan
-                            @if(!$isOkToInput && $isSuperAdmin)
-                                @if($perusahaan_id)
-                                    @if($isEnableInputBySuperadmin)
-                                    <button type="button" class="btn btn-outline btn-outline-dark btn-active-dark btn-sm ms-2 enable-disable-input-by-superadmin" data-status="disable" >Disable Input Data
-                                    </button> 
-                                    @else
-                                    <button type="button" class="btn btn-outline btn-outline-danger btn-active-danger btn-sm ms-2 enable-disable-input-by-superadmin" data-status="enable" >Enable Input Data
-                                    </button> 
-                                    @endif
-                                @else                                        
-                                <button type="button" class="btn btn-outline btn-outline-dark btn-active-dark btn-sm ms-2 enable-disable-input-by-superadmin" data-status="disable" >Disable Input Data - ALL                                        
-                                    </button> 
-                                <button type="button" class="btn btn-outline btn-outline-danger btn-active-danger btn-sm ms-2 enable-disable-input-by-superadmin" data-status="enable" >Enable Input Data - ALL
-                                    </button>                                         
-                                @endif
-                            @endif
-=======
-                           @endcan
->>>>>>> 5bab29c95ca976f3fcc6514c6bb99ab76ff53579
                         </div>
                         <!--end::Search-->
                         <!--end::Group actions-->

@@ -869,7 +869,7 @@ class ProgramController extends Controller
             ->leftJoin('enable_input_by_superadmin as epp', function($join) use ($refEnable) {
                 $join->on('epp.perusahaan_id', '=', 'atpb.perusahaan_id')
                     ->on('epp.tahun', '=', DB::raw("CAST(atpb.tahun AS INTEGER)"))
-                    ->where('epp.referensi_id', '=', $refEnable->id);
+                    ->where('epp.referensi_id', '=', $refEnable?->id);
             })
             ->where('anggaran', '>=', 0);
 
@@ -955,7 +955,7 @@ class ProgramController extends Controller
 
         // cek enable input by superadmin
         $list_enable = DB::table('enable_input_by_superadmin')
-            ->where('referensi_id', $refEnable->id)
+            ->where('referensi_id', $refEnable?->id)
             ->where('tahun', $tahun)
             ->when($perusahaan_id, function($query) use ($perusahaan_id) {
                 return $query->where('perusahaan_id', $perusahaan_id);
@@ -1155,7 +1155,7 @@ class ProgramController extends Controller
             ->leftJoin('enable_input_by_superadmin as epp', function($join) use ($refEnable) {
                 $join->on('epp.perusahaan_id', '=', 'atpb.perusahaan_id')
                     ->on('epp.tahun', '=', DB::raw("CAST(atpb.tahun AS INTEGER)"))
-                    ->where('epp.referensi_id', '=', $refEnable->id);
+                    ->where('epp.referensi_id', '=', $refEnable?->id);
             })
             ->where('atpb.perusahaan_id', $perusahaan_id)
             ->where('anggaran', '>', 0)
@@ -1216,7 +1216,7 @@ class ProgramController extends Controller
             $refEnable = $this->getReferensiEnable();
             // cek enable input by superadmin
             $list_enable = DB::table('enable_input_by_superadmin')
-                ->where('referensi_id', $refEnable->id)
+                ->where('referensi_id', $refEnable?->id)
                 ->where('tahun', $tahun)
                 ->when($perusahaan_id, function($query) use ($perusahaan_id) {
                     return $query->where('perusahaan_id', $perusahaan_id);
@@ -1344,7 +1344,7 @@ class ProgramController extends Controller
 
         // cek enable input by superadmin
         $list_enable = DB::table('enable_input_by_superadmin')
-            ->where('referensi_id', $refEnable->id)
+            ->where('referensi_id', $refEnable?->id)
             ->where('tahun', $tahun)
             ->when($perusahaan_id, function($query) use ($perusahaan_id) {
                 return $query->where('perusahaan_id', $perusahaan_id);
