@@ -10,7 +10,7 @@
         <div class="row mb-6">
             <div class="col-lg-6">
                 <label>Tahun</label>
-                <select class="form-control form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true">
+                <select class="form-control form-control-lg form-control-solid form-select form-select-solid form-select2" id="tahun_create" name="tahun_create" data-kt-select2="true">
                     @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
                     @php
                     $select = (($i == $tahun) ? 'selected="selected"' : '');
@@ -223,6 +223,7 @@
 
         // Trigger the change event to apply the script on page load
         $("#bulan_id_create").change();
+        $("#tahun_create").change();
 
         //Get Data
         async function getPumkBulanData(tahunValue, bulanValue) {
@@ -268,107 +269,74 @@
         }
 
         // Handle change event for the 'tahun' select element
-        $('#tahun').change(async function() {
+        $('#tahun_create').change(async function() {
             var selectedTahun = $(this).val();
             var selectedBulan = $('#bulan_id_create').val();
 
-            try {
-                // Call the function to make the AJAX request
-                let data = await getPumkBulanData(selectedTahun, selectedBulan);
-                console.log(data); // Handle the response data here
-
-                 // Access the nilai_penyaluran property from the response data
-                let nilaiPenyaluran = data.nilai_penyaluran;
-                let nilaiPenyaluranMelaluiBri = data.nilai_penyaluran_melalui_bri
-                let jumlahMb = data.jumlah_mb
-                let jumlahMbNaikKelas = data.jumlah_mb_naik_kelas
-                let kolektabilitasLancar = data.kolektabilitas_lancar
-                let kolektabilitasLancarJumlahMb = data.kolektabilitas_lancar_jumlah_mb
-
-                
-                // Set the value of the 'nilai_penyaluran' input with the retrieved value
-                $('#nilai_penyaluran').val(nilaiPenyaluran)
-                $(`#nilai_penyaluran_melalui_bri`).val(nilaiPenyaluranMelaluiBri)
-                $('#jumlah_mb').val(jumlahMb)
-                $('#jumlah_mb_naik_kelas').val(jumlahMbNaikKelas)
-                $('#kolektabilitas_lancar').val(kolektabilitasLancarJumlahMb)
-
-                
-                } catch (error) {
-                    console.error(error); // Handle any errors that occurred during the AJAX request
-                }
+            await handleDataUpdate(selectedTahun, selectedBulan);
         })
 
         // Handle change event for the 'bulan_id_create' select element
         $('#bulan_id_create').change(async function() {
-            var selectedTahun = $('#tahun').val();
+            var selectedTahun = $('#tahun_create').val();
             var selectedBulan = $(this).val();
 
                 // Call the function to make the AJAX request
-                try {
+                await handleDataUpdate(selectedTahun, selectedBulan);
+        });
+
+        // Function to handle data retrieval and updating the UI
+        async function handleDataUpdate(selectedTahun, selectedBulan) {
+            try {
                 // Call the function to make the AJAX request
                 let data = await getPumkBulanData(selectedTahun, selectedBulan);
-                console.log(data.bulan_id); // Handle the response data here
-                 // Access the nilai_penyaluran property from the response data
-                let nilaiPenyaluran = data.nilai_penyaluran;
-                let nilaiPenyaluranMelaluiBri = data.nilai_penyaluran_melalui_bri
-                let jumlahMb = data.jumlah_mb
-                let jumlahMbNaikKelas = data.jumlah_mb_naik_kelas
-                let kolektabilitasLancar = data.kolektabilitas_lancar
-                let kolektabilitasLancarJumlahMb = data.kolektabilitas_lancar_jumlah_mb
-                let kolektabilitasKurangLancar = data.kolektabilitas_kurang_lancar
-                let kolektabilitasKurangLancarJumlahMb = data.kolektabilitas_kurang_lancar_jumlah_mb
-                let kolektabilitasDiragukan = data.kolektabilitas_diragukan
-                let kolektabilitasDiragukanJumlahMb = data.kolektabilitas_diragukan_jumlah_mb
-                let kolektabilitasMacet = data.kolektabilitas_macet
-                let kolektabilitasMacetJumlahMb = data.kolektabilitas_macet_jumlah_mb
-                let kolektabilitasPinjamanBermasalah = data.kolektabilitas_pinjaman_bermasalah
-                let kolektabilitasPinjamanBermasalahJumlahMb = data.kolektabilitas_pinjaman_bermasalah_jumlah_mb
-
-                // Set the value of the 'nilai_penyaluran' input with the retrieved value
-                $('#nilai_penyaluran').val(nilaiPenyaluran);
-                $(`#nilai_penyaluran_melalui_bri`).val(nilaiPenyaluranMelaluiBri)
-                $('#jumlah_mb').val(jumlahMb)
-                $('#jumlah_mb_naik_kelas').val(jumlahMbNaikKelas)
-                $('#kolektabilitas_lancar').val(kolektabilitasLancar)
-                $('#kolektabilitas_lancar_jumlah_mb').val(kolektabilitasLancarJumlahMb)
-
-                $('#kolektabilitas_kurang_lancar').val(kolektabilitasKurangLancar)
-                $('#kolektabilitas_kurang_lancar_jumlah_mb').val(kolektabilitasKurangLancarJumlahMb)
-
-                $('#kolektabilitas_diragukan').val(kolektabilitasDiragukan)
-                $('#kolektabilitas_diragukan_jumlah_mb').val(kolektabilitasDiragukanJumlahMb)
-
-                $('#kolektabilitas_macet').val(kolektabilitasMacet)
-                $('#kolektabilitas_macet_jumlah_mb').val(kolektabilitasMacetJumlahMb)
-
-                $('#kolektabilitas_pinjaman_bermasalah').val(kolektabilitasPinjamanBermasalah)
-                $('#kolektabilitas_pinjaman_bermasalah_jumlah_mb').val(kolektabilitasPinjamanBermasalahJumlahMb)
+                // Handle the response data here
+                
+                // Access the properties from the response data
+                const propertiesToUpdate = [
+                    'nilai_penyaluran',
+                    'nilai_penyaluran_melalui_bri',
+                    'jumlah_mb',
+                    'jumlah_mb_naik_kelas',
+                    'kolektabilitas_lancar',
+                    'kolektabilitas_lancar_jumlah_mb',
+                    'kolektabilitas_kurang_lancar',
+                    'kolektabilitas_kurang_lancar_jumlah_mb',
+                    'kolektabilitas_diragukan',
+                    'kolektabilitas_diragukan_jumlah_mb',
+                    'kolektabilitas_macet',
+                    'kolektabilitas_macet_jumlah_mb',
+                    'kolektabilitas_pinjaman_bermasalah',
+                    'kolektabilitas_pinjaman_bermasalah_jumlah_mb'
+                ];
+                
+                // Update the values of input fields with the retrieved values
+                propertiesToUpdate.forEach(property => {
+                    $('#' + property).val(data[property]);
+                });
 
                 // Trigger formatCurrency function on input fields with placeholder "Rp"
-   var currencyInputs = document.querySelectorAll('input[type="text"][placeholder="Rp"]');
-        currencyInputs.forEach(function(input) {
-            formatCurrency(input);
-            input.addEventListener('input', function() {
-                formatCurrency(this);
-            });
-            input.addEventListener('change', function() {
-                formatCurrency(this);
-            });
-        });
+                var currencyInputs = document.querySelectorAll('input[type="text"][placeholder="Rp"]');
+                currencyInputs.forEach(function(input) {
+                    formatCurrency(input);
+                    input.addEventListener('input', function() {
+                        formatCurrency(this);
+                    });
+                    input.addEventListener('change', function() {
+                        formatCurrency(this);
+                    });
+                });
 
-        // Trigger formatCurrency function on the initial values of currency inputs
-        window.addEventListener('DOMContentLoaded', function() {
-            currencyInputs.forEach(function(input) {
-                formatCurrency(input);
-            });
-        });
-
-                
+                // Trigger formatCurrency function on the initial values of currency inputs
+                window.addEventListener('DOMContentLoaded', function() {
+                    currencyInputs.forEach(function(input) {
+                        formatCurrency(input);
+                    });
+                });
             } catch (error) {
                 console.error(error); // Handle any errors that occurred during the AJAX request
             }
-        });
+        }
   
 
 
@@ -376,7 +344,7 @@
     function setFormValidate() {
         $('#form-edit').validate({
                 rules: {
-                    tahun: 'required',
+                    tahun_create: 'required',
                     bulan_id_create: 'required',
                     //
                     nilai_penyaluran: 'required',
@@ -396,7 +364,7 @@
                     kolektabilitas_pinjaman_bermasalah_jumlah_mb: 'required',
                 },
                 messages: {
-                    tahun: 'tahun harus terisi!',
+                    tahun_create: 'tahun harus terisi!',
                     bulan_id_create: 'Bulan harus terisi!',
                     //
                     nilai_penyaluran: 'Nilai Penyaluran harus terisi!',
