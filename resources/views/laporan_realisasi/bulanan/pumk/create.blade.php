@@ -168,8 +168,9 @@
 </form>
 
 <script type="text/javascript">
-    var title = "{{ $actionform == 'edit' ? 'Update' : 'Tambah' }}" + " {{ $pagetitle }}";
+    var title = "{{ $actionform == 'edit' ? 'Update' : 'Tambah' }}" + " {{ $pagetitle }}" + `<span class="text-gray-600 fs-6 ms-1">- {{ $perusahaan?->nama_lengkap }}</span>`;
     var urleditstore = "{{ route('laporan_realisasi.bulanan.pumk.store') }}";
+    var urlgetdata = "{{ route('laporan_realisasi.bulanan.pumk.get_data') }}";
     
 
     $(document).ready(function() {
@@ -222,6 +223,153 @@
 
         // Trigger the change event to apply the script on page load
         $("#bulan_id_create").change();
+
+        //Get Data
+        async function getPumkBulanData(tahunValue, bulanValue) {
+            let actionform = $('#actionform').val();
+            let pumk_bulan_id = $('#pumk_bulan_id').val();
+            let perusahaan_id = $('#perusahaan_id').val();
+
+            try {
+                // Perform AJAX request using await
+                const response = await $.ajax({
+                    url: urlgetdata, // Replace with your actual URL
+                    method: 'POST', // Replace with the desired HTTP method
+                    data: {
+                        tahun: tahunValue,
+                        bulan_id: bulanValue,
+                        pumk_bulan_id: pumk_bulan_id,
+                        perusahaan_id: perusahaan_id,
+                        actionform: actionform
+                    },
+                    beforeSend: function () {
+                        // Show the SweetAlert animation here
+                        Swal.fire({
+                            title: 'Loading...',
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            onBeforeOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                    },
+                    // Hide the SweetAlert when the AJAX request is completed
+                    complete: function () {
+                        Swal.close();
+                    }
+                });
+                // Return the response data
+                return response;
+            } catch (error) {
+                // Handle any errors that occur during the AJAX request
+                console.error(error);
+                throw error; // Rethrow the error to be caught in the calling function
+            }
+        }
+
+        // Handle change event for the 'tahun' select element
+        $('#tahun').change(async function() {
+            var selectedTahun = $(this).val();
+            var selectedBulan = $('#bulan_id_create').val();
+
+            try {
+                // Call the function to make the AJAX request
+                let data = await getPumkBulanData(selectedTahun, selectedBulan);
+                console.log(data); // Handle the response data here
+
+                 // Access the nilai_penyaluran property from the response data
+                let nilaiPenyaluran = data.nilai_penyaluran;
+                let nilaiPenyaluranMelaluiBri = data.nilai_penyaluran_melalui_bri
+                let jumlahMb = data.jumlah_mb
+                let jumlahMbNaikKelas = data.jumlah_mb_naik_kelas
+                let kolektabilitasLancar = data.kolektabilitas_lancar
+                let kolektabilitasLancarJumlahMb = data.kolektabilitas_lancar_jumlah_mb
+
+                
+                // Set the value of the 'nilai_penyaluran' input with the retrieved value
+                $('#nilai_penyaluran').val(nilaiPenyaluran)
+                $(`#nilai_penyaluran_melalui_bri`).val(nilaiPenyaluranMelaluiBri)
+                $('#jumlah_mb').val(jumlahMb)
+                $('#jumlah_mb_naik_kelas').val(jumlahMbNaikKelas)
+                $('#kolektabilitas_lancar').val(kolektabilitasLancarJumlahMb)
+
+                
+                } catch (error) {
+                    console.error(error); // Handle any errors that occurred during the AJAX request
+                }
+        })
+
+        // Handle change event for the 'bulan_id_create' select element
+        $('#bulan_id_create').change(async function() {
+            var selectedTahun = $('#tahun').val();
+            var selectedBulan = $(this).val();
+
+                // Call the function to make the AJAX request
+                try {
+                // Call the function to make the AJAX request
+                let data = await getPumkBulanData(selectedTahun, selectedBulan);
+                console.log(data.bulan_id); // Handle the response data here
+                 // Access the nilai_penyaluran property from the response data
+                let nilaiPenyaluran = data.nilai_penyaluran;
+                let nilaiPenyaluranMelaluiBri = data.nilai_penyaluran_melalui_bri
+                let jumlahMb = data.jumlah_mb
+                let jumlahMbNaikKelas = data.jumlah_mb_naik_kelas
+                let kolektabilitasLancar = data.kolektabilitas_lancar
+                let kolektabilitasLancarJumlahMb = data.kolektabilitas_lancar_jumlah_mb
+                let kolektabilitasKurangLancar = data.kolektabilitas_kurang_lancar
+                let kolektabilitasKurangLancarJumlahMb = data.kolektabilitas_kurang_lancar_jumlah_mb
+                let kolektabilitasDiragukan = data.kolektabilitas_diragukan
+                let kolektabilitasDiragukanJumlahMb = data.kolektabilitas_diragukan_jumlah_mb
+                let kolektabilitasMacet = data.kolektabilitas_macet
+                let kolektabilitasMacetJumlahMb = data.kolektabilitas_macet_jumlah_mb
+                let kolektabilitasPinjamanBermasalah = data.kolektabilitas_pinjaman_bermasalah
+                let kolektabilitasPinjamanBermasalahJumlahMb = data.kolektabilitas_pinjaman_bermasalah_jumlah_mb
+
+                // Set the value of the 'nilai_penyaluran' input with the retrieved value
+                $('#nilai_penyaluran').val(nilaiPenyaluran);
+                $(`#nilai_penyaluran_melalui_bri`).val(nilaiPenyaluranMelaluiBri)
+                $('#jumlah_mb').val(jumlahMb)
+                $('#jumlah_mb_naik_kelas').val(jumlahMbNaikKelas)
+                $('#kolektabilitas_lancar').val(kolektabilitasLancar)
+                $('#kolektabilitas_lancar_jumlah_mb').val(kolektabilitasLancarJumlahMb)
+
+                $('#kolektabilitas_kurang_lancar').val(kolektabilitasKurangLancar)
+                $('#kolektabilitas_kurang_lancar_jumlah_mb').val(kolektabilitasKurangLancarJumlahMb)
+
+                $('#kolektabilitas_diragukan').val(kolektabilitasDiragukan)
+                $('#kolektabilitas_diragukan_jumlah_mb').val(kolektabilitasDiragukanJumlahMb)
+
+                $('#kolektabilitas_macet').val(kolektabilitasMacet)
+                $('#kolektabilitas_macet_jumlah_mb').val(kolektabilitasMacetJumlahMb)
+
+                $('#kolektabilitas_pinjaman_bermasalah').val(kolektabilitasPinjamanBermasalah)
+                $('#kolektabilitas_pinjaman_bermasalah_jumlah_mb').val(kolektabilitasPinjamanBermasalahJumlahMb)
+
+                // Trigger formatCurrency function on input fields with placeholder "Rp"
+   var currencyInputs = document.querySelectorAll('input[type="text"][placeholder="Rp"]');
+        currencyInputs.forEach(function(input) {
+            formatCurrency(input);
+            input.addEventListener('input', function() {
+                formatCurrency(this);
+            });
+            input.addEventListener('change', function() {
+                formatCurrency(this);
+            });
+        });
+
+        // Trigger formatCurrency function on the initial values of currency inputs
+        window.addEventListener('DOMContentLoaded', function() {
+            currencyInputs.forEach(function(input) {
+                formatCurrency(input);
+            });
+        });
+
+                
+            } catch (error) {
+                console.error(error); // Handle any errors that occurred during the AJAX request
+            }
+        });
+  
 
 
     });
@@ -440,6 +588,9 @@
         currencyInputs.forEach(function(input) {
             formatCurrency(input);
             input.addEventListener('input', function() {
+                formatCurrency(this);
+            });
+            input.addEventListener('change', function() {
                 formatCurrency(this);
             });
         });

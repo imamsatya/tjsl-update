@@ -645,6 +645,8 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('log', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@log_status')->name('laporan_realisasi.bulanan.pumk.log');
                 Route::post('kolektabilitas', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@kolektabilitas_view')->name('laporan_realisasi.bulanan.pumk.kolektabilitas');
                 Route::post('delete', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@delete')->name('laporan_realisasi.bulanan.pumk.delete');
+                Route::post('verifikasi_data', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@verifikasiData')->name('laporan_realisasi.bulanan.pumk.verifikasi_data');
+                Route::post('get_data', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@getData')->name('laporan_realisasi.bulanan.pumk.get_data');
             });
         });
         Route::prefix('triwulan')->group(function () {

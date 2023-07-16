@@ -339,8 +339,27 @@ class KegiatanController extends Controller
 
         // dd($request->data['nama_kegiatan']);
   
+    //    dd($request);
+       $cek_kegiatan = Kegiatan::join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id');
        
-        // dd($kegiatanGroup);
+       $cek_kegiatan = $cek_kegiatan
+       ->where('target_tpb_id',$request->data['program_id'] )
+       ->where('kota_id',  $request->data['kota_kabupaten'])
+       ->where('kegiatan', $request->data['nama_kegiatan'])
+       ->where('bulan', $request->bulan)
+       ->where('tahun', $request->tahun)
+       ->first();
+       if ($cek_kegiatan ) {
+            Session::flash('error', "Data Kegiatan sudah ada. Data kegiatan tidak boleh memiliki program, kabupaten/kota, kegiatan, bulan dan tahun yang sama");
+            $result = [
+                        'flag'  => 'error',
+                        'msg' => 'Gagal menambah data.Data Kegiatan sudah ada. Data kegiatan tidak boleh memiliki program, kabupaten/kota, kegiatan, bulan dan tahun yang sama',
+                        'title' => 'Error'
+            ];
+            echo json_encode(['result' => $result]);
+            return;
+       }
+    
         DB::beginTransaction();
         try {
             $kegiatan = new Kegiatan();
@@ -382,7 +401,7 @@ class KegiatanController extends Controller
                         'msg' => 'Sukses tambah data',
                         'title' => 'Sukses'
             ];
-            echo json_encode(['result' => true]);
+            echo json_encode(['result' => $result]);
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollback();
@@ -797,7 +816,7 @@ class KegiatanController extends Controller
 
     public function verifikasiData(Request $request) {
 
-       
+      
         DB::beginTransaction();
         try {
             foreach ($request->kegiatan_verifikasi as $key => $kegiatan_id) {

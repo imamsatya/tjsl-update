@@ -13,7 +13,7 @@
             <td style="text-align: right;"><span id="kolektabilitas_lancar">Rp
                     {{ number_format($pumk_bulan->kolektabilitas_lancar, 0, ',', ',') }}</span>
             </td>
-            <td style="text-align: right;"><span id="kolektabilitas_lancar_jumlah_mb">Rp
+            <td style="text-align: right;"><span id="kolektabilitas_lancar_jumlah_mb">
                     {{ $pumk_bulan->kolektabilitas_lancar_jumlah_mb }}</span></td>
         </tr>
         <tr>

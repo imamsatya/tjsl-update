@@ -110,14 +110,18 @@ class PumkController extends Controller
     public function create(Request $request)
     {
         try {
+            $perusahaan = Perusahaan::where('id', $request->perusahaan_id)->first();
             if ($request->actionform == 'edit') {
                 $pumk_bulan = PumkBulan::where('id', $request->bulanan_pumk_id)->first();
+                $perusahaan = Perusahaan::where('id', $pumk_bulan->perusahaan_id)->first();
             }
             // $data = TargetTpb::find((int)$request->input('program'));
             // $anggaran_tpbs = AnggaranTpb::find($data->anggaran_tpb_id ?? 1);
             // $perusahaan_id = $anggaran_tpbs->perusahaan_id;
             // $tahun = $anggaran_tpbs->tahun;
             // $tpbs_temp = Tpb::find($data->tpb_id);
+            
+        
             return view($this->__route . '.create', [
                 'pagetitle' => $this->pagetitle,
                 'actionform' => $request->actionform ?? 'insert',
@@ -125,7 +129,8 @@ class PumkController extends Controller
                 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
                 'perusahaan_id' => $request->perusahaan_id,
                 'pumk_bulan_id' => $request->bulanan_pumk_id ?? null,
-                'pumk_bulan' => $pumk_bulan ?? null 
+                'pumk_bulan' => $pumk_bulan ?? null ,
+                'perusahaan' => $perusahaan
                 // 'tpb' => DB::table('tpbs')->select('*')->whereIn('id', function($query) use($perusahaan_id, $tahun) {
                 //     $query->select('relasi_pilar_tpbs.tpb_id as id')
                 //         ->from('anggaran_tpbs')
@@ -155,6 +160,14 @@ class PumkController extends Controller
         //
 
        
+       $cekData = PumkBulan::where('bulan_id', $request->bulan_id_create)
+       ->where('tahun', $request->tahun)
+       ->where('perusahaan_id', $request->perusahaan_id)
+       ->first();
+       
+        if ($cekData) {
+            $request->actionform ='edit';
+        }
        if ($request->actionform === 'insert') {
            
         DB::beginTransaction();
@@ -203,7 +216,8 @@ class PumkController extends Controller
         DB::beginTransaction();
 
         try {
-            $pumk_bulan = PumkBulan::where('id', $request->pumk_bulan_id)->first();
+            // $pumk_bulan = PumkBulan::where('id', $request->pumk_bulan_id)->first();
+            $pumk_bulan = $cekData;
             $pumk_bulan->tahun = $request->tahun;
             $pumk_bulan->bulan_id = $request->bulan_id_create;
             $pumk_bulan->nilai_penyaluran = $request->nilai_penyaluran;
@@ -323,22 +337,26 @@ class PumkController extends Controller
         // $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
         // $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')
         // ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')->where('periode_laporan_id', $periode_rka_id)->where('perusahaans.induk', 0);
-
+        // dd($request->bulan);
         $perusahaan_id = $request->perusahaan_id ?? 1;
         $bulan = $request->bulan ?? (int) date('n');
         $tahun = $request->tahun ?? date('Y');
         $pumk_bulan = DB::table('pumk_bulans')
         ->where('perusahaan_id', $perusahaan_id)
-        ->where('bulan_id', $bulan)
         ->where('tahun', $tahun)
         ->join('bulans', 'bulans.id', '=', 'pumk_bulans.bulan_id')
         ->join('statuses', 'statuses.id', '=', 'pumk_bulans.status_id')
+        ->orderBy('bulans.id')
         ->select(
             'pumk_bulans.*',
             'statuses.nama as status',
             'bulans.nama as bulan'
-           
         );
+    
+        if ($bulan !== 'all') {
+            $pumk_bulan->where('bulan_id', $bulan);
+        }
+       
 
    
 
@@ -364,7 +382,7 @@ class PumkController extends Controller
         // }
 
         $pumk_bulan = $pumk_bulan->get();
-       
+    //    dd($pumk_bulan);
         try {
             return datatables()->of($pumk_bulan)
                 ->addColumn('action', function ($row) {
@@ -433,5 +451,46 @@ class PumkController extends Controller
             'pagetitle' => 'Data Kolektabilitas',
             'pumk_bulan' => $pumk_bulan
         ]);
+    }
+
+    public function verifikasiData(Request $request) {
+
+        
+        DB::beginTransaction();
+        try {
+            foreach ($request->pumk_verifikasi as $key => $pumk_id) {
+                $pumk = PumkBulan::where('id', $pumk_id)->first();
+                $pumk->status_id = 1;
+                $pumk->save();
+                PumkController::store_log($pumk->id,$pumk->status_id);
+                
+               
+                
+        }
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal verifikasi data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function getData(Request $request){
+        
+        $data = PumkBulan::where('bulan_id', $request->bulan_id)
+        ->where('tahun', $request->tahun)
+        ->where('perusahaan_id', $request->perusahaan_id)
+        ->first();
+
+        return $data;
     }
 }

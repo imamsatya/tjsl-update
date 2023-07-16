@@ -804,14 +804,20 @@
                 success: function(response) {
                     $.unblockUI();
                     console.log(`success : ${response}`)
+                    const responseObject = JSON.parse(response);
+                    const flag = responseObject.result.flag;
+                  
                     swal.fire({                    
-                        icon: 'success',
-                        title: 'Sukses!',
-                        html: 'Berhasil menyimpan data',
-                        type: 'success', 
+                        icon: responseObject.result.flag,
+                        title: responseObject.result.title,
+                        html:  responseObject.result.msg,
+                        type: responseObject.result.flag, 
                         confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
                     })
-                    window.location.reload();
+                    if( responseObject.result.flag == 'success'){
+                        window.location.reload();
+                    }
+                   
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     console.log(errorThrown);

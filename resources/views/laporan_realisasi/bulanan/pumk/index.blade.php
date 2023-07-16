@@ -178,6 +178,10 @@
                                             name="bulan_id" data-kt-select2="true" data-placeholder="Pilih Bulan"
                                             data-allow-clear="true">
                                             <option></option>
+                                            @php
+                                             $select_all = (($bulan_id = 'all') ? 'selected="selected"' : '');
+                                            @endphp
+                                            <option value="all" {!! $select_all !!}> ALL</option>
                                             @foreach($bulan as $bulan_row)
                                             @php
                                                 $select = (($bulan_row->id == $bulan_id) ? 'selected="selected"' : '');
@@ -271,7 +275,11 @@
                         </button>
                         @endcan
                         @can('edit-kegiatan')
-                        <button type="button" class="btn btn-primary btn-sm input-data">Input Data
+                        <button type="button" class="btn btn-primary btn-sm input-data me-2">Input Data
+                        </button>
+                        @endcan
+                        @can('view-verify')
+                        <button type="button" class="btn btn-primary btn-sm " id="verify-data">Verify
                         </button>
                         @endcan
                     </div>
@@ -350,6 +358,7 @@
     var urldatatable = "{{ route('laporan_realisasi.bulanan.pumk.datatable') }}";
     var urllog = "{{ route('laporan_realisasi.bulanan.pumk.log') }}";
     var urlkolektabilitas ="{{ route('laporan_realisasi.bulanan.pumk.kolektabilitas')}}";
+    var urlverifikasidata = "{{route('laporan_realisasi.bulanan.pumk.verifikasi_data')}}";
     //
     var urldelete = "{{ route('laporan_realisasi.bulanan.pumk.delete') }}";
     
@@ -446,11 +455,6 @@
             deleteselectedData(selectedData)
         })
 
-
-
-
-
-
         $("#jenis-anggaran").on('change', function () {
             const jenisAnggaran = $(this).val()
             $("#tpb_id, #pilar_pembangunan_id").val('').trigger('change')
@@ -488,6 +492,27 @@
             // })            
 
         })
+
+        $("#verify-data").on('click', function() {
+                var selectedProgram = $('input[name="selected-data[]"]:checked').map(function () {
+                         return $(this).val();
+                     }).get();
+
+                     if(!selectedProgram.length) {
+                    swal.fire({
+                        icon: 'warning',
+                        title: 'Warning',
+                        html: 'Tidak ada data terpilih untuk diverifikasi!',
+                        buttonsStyling: true,
+                        confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                    })
+                    return
+                }
+            
+                verifySelectedData(selectedProgram) 
+            
+            })
+
 
 
     });
@@ -571,7 +596,7 @@
                     orderable: false,
                         searchable: false,
                         render: function(data, type, row) {
-                            console.log(row)
+                            // console.log(row)
                             let status = null
                             if (data === 1) {
                                  status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Finish</span>`
@@ -599,7 +624,7 @@
 
                         if (row.status_id === 1) {
                             button =
-                                `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info" data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                                `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info cls-kolektabilitas" data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                         }
                         return button
                     }
@@ -835,6 +860,79 @@
                     });
                 }
             });  
+    } 
+
+    function verifySelectedData(selectedData) {
+        const jumlahSelected = selectedData.length
+        swal.fire({
+            title: "Pemberitahuan",
+            html: "Yakin verifikasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahSelected+" rows]</span>",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, verifikasi data",
+            cancelButtonText: "Tidak"
+        }).then(function(result) {
+            if (result.value) {
+                $.ajax({
+                url: urlverifikasidata,
+                data:{
+                    "pumk_verifikasi": selectedData
+                },
+                type:'post',
+                dataType:'json',
+                beforeSend: function(){
+                    $.blockUI();
+                },
+                success: function(data){
+                    $.unblockUI();
+
+                    swal.fire({
+                            title: data.title,
+                            html: data.msg,
+                            icon: data.flag,
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });
+
+                    if(data.flag == 'success') {
+                        // datatable.ajax.reload( null, false );
+                        location.reload(); 
+                    }
+                    
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                    });  
+                    }
+                });
+            }
+        });
     } 
 
 </script>
