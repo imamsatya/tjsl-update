@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('log_enable_disable_input_datas', function (Blueprint $table) {
+        Schema::create('referensi_enable_input_by_superadmin', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['enable', 'disable'])->default('disable');
-            $table->integer('perusahaan_id');
-            $table->integer('tahun');
-            $table->integer('referensi_id');
+            $table->string('route_name', 255)->nullable();
+            $table->string('deskripsi', 255)->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('log_enable_disable_input_datas');
+        Schema::dropIfExists('referensi_enable_input_by_superadmin');
     }
 };

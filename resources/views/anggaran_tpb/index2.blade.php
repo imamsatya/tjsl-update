@@ -251,51 +251,34 @@
                                 @php
                                     $enable_input = false;
                                     if($isOkToInput || $isEnableInputBySuperadmin) $enable_input = true;
+                                    
                                 @endphp
                                 @can('view-kegiatan')
                                     <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data
                                     </button>
                                     @can('delete-kegiatan')
-                                    <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
+                                    <button {{ $isSuperAdmin ? '' : ($enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
                                     </button>
                                     @endcan
                                     @can('edit-kegiatan')
-                                    <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
+                                    <button {{ $isSuperAdmin ? '' : ($enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
                                     </button>
                                     @endcan
                                 @endcan
                               
                                 @can('view-verify')
                                 @if($countInprogress || !$data->count())
-                                <button {{ $enable_input ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
+                                <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
                                 </button>    
                                 @endif
                                 
 
                                 
                                 @if(!$countInprogress && $data->count())
-                                <button {{ $enable_input ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
+                                <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
                                 </button>  
                                 @endif    
 
-                                @endcan
-                                @can('edit-kegiatan')
-                                @if(!$isOkToInput && $isSuperAdmin)
-                                    @if($perusahaan_id)
-                                        @if($isEnableInputBySuperadmin)
-                                        <button type="button" class="btn btn-outline btn-outline-dark btn-active-dark btn-sm ms-2 enable-disable-input-by-superadmin" data-status="disable" >Disable Input Data
-                                        </button> 
-                                        @else
-                                        <button type="button" class="btn btn-outline btn-outline-danger btn-active-danger btn-sm ms-2 enable-disable-input-by-superadmin" data-status="enable" >Enable Input Data
-                                        </button> 
-                                        @endif
-                                    @else                                        
-                                    <button type="button" class="btn btn-outline btn-outline-dark btn-active-dark btn-sm ms-2 enable-disable-input-by-superadmin" data-status="disable" >Disable Input Data - ALL                                        
-                                        </button> 
-                                    <button type="button" class="btn btn-outline btn-outline-danger btn-active-danger btn-sm ms-2 enable-disable-input-by-superadmin" data-status="enable" >Enable Input Data - ALL
-                                        </button>                                         
-                                    @endif
-                                @endif
                                 @endcan
                             </div>
                             <!--end::Search-->
@@ -413,6 +396,7 @@
         const isOkToInput = "{{ $isOkToInput }}";  
         const countInprogress = parseInt("{{ $countInprogress }}")
         const countFinish = parseInt("{{ $countFinish }}")
+        const isSuperAdmin = "{{ $isSuperAdmin }}";
 
         $(".tree-new").treegrid({            
             initialState : 'collapsed',
@@ -551,14 +535,14 @@
                         else if(tpb[i].finish) status_class = 'success'
                         else status_class = 'danger'
 
-                        let btnEdit = `<button ${isOkToInput || tpb[i].enable_by_admin > 0 ? '' : 'disabled'} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${selectedYear}" data-notpb="${tpb[i].no_tpb}" data-namapilar="${value}" data-perusahaan="${tempPerusahaan}" data-toggle="tooltip" title="Ubah data ${tpb[i].no_tpb}"><i class="bi bi-pencil fs-3"></i></button>`;
+                        let btnEdit = `<button ${isOkToInput || tpb[i].enable_by_admin > 0 || isSuperAdmin ? '' : 'disabled'} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${selectedYear}" data-notpb="${tpb[i].no_tpb}" data-namapilar="${value}" data-perusahaan="${tempPerusahaan}" data-toggle="tooltip" title="Ubah data ${tpb[i].no_tpb}"><i class="bi bi-pencil fs-3"></i></button>`;
                         let totalTpb = (tpb[i].sum_cid ? parseInt(tpb[i].sum_cid) : 0) + (tpb[i].sum_noncid ? parseInt(tpb[i].sum_noncid) : 0)
                         
                         let isCheckAll = $("#select-all").prop('checked');
 
                         let checkboxData = '';
 
-                        if((isOkToInput || tpb[i].enable_by_admin > 0) && (tpb[i].inprogress)) {
+                        if((isOkToInput || tpb[i].enable_by_admin > 0 || isSuperAdmin) && (tpb[i].inprogress)) {
                             checkboxData = `
                                 <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
                                     <input class="form-check-input is_active-check tpb-check perusahaan-${tempPerusahaan} pilar-${tempPerusahaan}-${value}" data-tahun="${selectedYear}" data-notpb="${tpb[i].no_tpb}" data-namapilar="${value}" data-perusahaan="${tempPerusahaan}" type="checkbox" ${isCheckAll ? 'checked' : ''}>

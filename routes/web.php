@@ -335,6 +335,16 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::get('datatable_subkegiatan', 'App\Http\Controllers\Referensi\JenisKegiatanController@datatable_subkegiatan')->name('referensi.jenis_kegiatan.datatable_subkegiatan');
             Route::post('delete_subkegiatan', 'App\Http\Controllers\Referensi\JenisKegiatanController@delete_subkegiatan')->name('referensi.jenis_kegiatan.delete_subkegiatan');
         });
+
+        Route::prefix('enable_input')->group(function() {
+            Route::get('index', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@index')->name('referensi.enable_input.index');
+            Route::post('create', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@create')->name('referensi.enable_input.create');
+            Route::post('save', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@save')->name('referensi.enable_input.save');
+            Route::post('delete', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@delete')->name('referensi.enable_input.delete');
+            Route::post('create_master', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@createMaster')->name('referensi.enable_input.create_master');
+            Route::post('save_master', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@saveMaster')->name('referensi.enable_input.save_master');
+            Route::post('delete_master', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@deleteMaster')->name('referensi.enable_input.delete_master');
+        });
     });
 
     Route::prefix('target')->group(function () {
