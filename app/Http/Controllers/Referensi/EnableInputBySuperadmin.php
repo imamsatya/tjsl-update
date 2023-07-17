@@ -9,7 +9,7 @@ use App\Models\Perusahaan;
 use App\Models\User;
 use DateTime;
 use Exception;
-
+use Auth;
 class EnableInputBySuperadmin extends Controller
 {
     public function __construct() {
@@ -91,7 +91,7 @@ class EnableInputBySuperadmin extends Controller
     public function save(Request $request) {
         DB::beginTransaction();
         try {
-
+            $id_users = Auth::user()->id;
             $isSuperAdmin = $this->isSuperAdmin();
             if(!$isSuperAdmin) throw new Exception('Anda tidak memiliki hak akses terhadap fitur ini!');
 
