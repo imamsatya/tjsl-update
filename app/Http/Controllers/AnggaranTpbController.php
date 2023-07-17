@@ -1729,13 +1729,13 @@ class AnggaranTpbController extends Controller
         
         // validasi availability untuk input data
         $isOkToInput = $this->checkRule();   
+        $refEnable = $this->getReferensiEnable();
 
         foreach($datatemp as $temp) {
             $id_perusahaan = $temp->perusahaan_id;
             // cek enable input by superadmin
             $list_enable = DB::table('enable_input_by_superadmin')
-                ->where('tipe', 'RKA')
-                ->where('referensi', 'anggaran_tpbs')
+                ->where('referensi_id', $refEnable->id)
                 ->where('tahun', $tahun)
                 ->when($id_perusahaan, function($query) use ($id_perusahaan) {
                     return $query->where('perusahaan_id', $id_perusahaan);
@@ -1815,7 +1815,8 @@ class AnggaranTpbController extends Controller
 
     public function deleteByIdSelect($list_data, $isSuperAdmin) {
         // validasi availability untuk input data
-        $isOkToInput = $this->checkRule();        
+        $isOkToInput = $this->checkRule();  
+        $refEnable = $this->getReferensiEnable();      
 
         foreach($list_data as $data) {
             $no_tpb = $data['no_tpb'];
@@ -1825,8 +1826,7 @@ class AnggaranTpbController extends Controller
 
             // cek enable input by superadmin
             $list_enable = DB::table('enable_input_by_superadmin')
-                ->where('tipe', 'RKA')
-                ->where('referensi', 'anggaran_tpbs')
+                ->where('referensi_id', $refEnable->id)
                 ->where('tahun', $tahun)
                 ->when($id_perusahaan, function($query) use ($id_perusahaan) {
                     return $query->where('perusahaan_id', $id_perusahaan);
