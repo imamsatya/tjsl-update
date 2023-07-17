@@ -1389,7 +1389,7 @@ class AnggaranTpbController extends Controller
             ->leftJoin('enable_input_by_superadmin as epp', function($join) use ($refEnable) {
                 $join->on('epp.perusahaan_id', '=', 'atpb.perusahaan_id')
                     ->on('epp.tahun', '=', DB::raw("CAST(atpb.tahun AS INTEGER)"))
-                    ->where('epp.referensi_id', '=', $refEnable->id);
+                    ->where('epp.referensi_id', '=', $refEnable?->id);
             })
             ->where('anggaran', '>=', 0);
             
@@ -1438,7 +1438,7 @@ class AnggaranTpbController extends Controller
 
         // cek enable input by superadmin
         $list_enable = DB::table('enable_input_by_superadmin')
-            ->where('referensi_id', $refEnable->id)
+            ->where('referensi_id', $refEnable?->id)
             ->where('tahun', $tahun)
             ->when($perusahaan_id, function($query) use ($perusahaan_id) {
                 return $query->where('perusahaan_id', $perusahaan_id);
@@ -1513,7 +1513,7 @@ class AnggaranTpbController extends Controller
             ->leftJoin('enable_input_by_superadmin as epp', function($join) use ($refEnable) {
                 $join->on('epp.perusahaan_id', '=', 'atpb.perusahaan_id')
                     ->on('epp.tahun', '=', DB::raw("CAST(atpb.tahun AS INTEGER)"))
-                    ->where('epp.referensi_id', '=', $refEnable->id);
+                    ->where('epp.referensi_id', '=', $refEnable?->id);
             })
             ->where('atpb.perusahaan_id', $perusahaan_id)
             ->where('anggaran', '>=', 0)
@@ -1625,7 +1625,7 @@ class AnggaranTpbController extends Controller
 
             // cek enable input by superadmin
             $list_enable = DB::table('enable_input_by_superadmin')
-                ->where('referensi_id', $refEnable->id)
+                ->where('referensi_id', $refEnable?->id)
                 ->where('tahun', $tahun)
                 ->when($id_perusahaan, function($query) use ($id_perusahaan) {
                     return $query->where('perusahaan_id', $id_perusahaan);
@@ -1735,7 +1735,7 @@ class AnggaranTpbController extends Controller
             $id_perusahaan = $temp->perusahaan_id;
             // cek enable input by superadmin
             $list_enable = DB::table('enable_input_by_superadmin')
-                ->where('referensi_id', $refEnable->id)
+                ->where('referensi_id', $refEnable?->id)
                 ->where('tahun', $tahun)
                 ->when($id_perusahaan, function($query) use ($id_perusahaan) {
                     return $query->where('perusahaan_id', $id_perusahaan);
@@ -1826,7 +1826,7 @@ class AnggaranTpbController extends Controller
 
             // cek enable input by superadmin
             $list_enable = DB::table('enable_input_by_superadmin')
-                ->where('referensi_id', $refEnable->id)
+                ->where('referensi_id', $refEnable?->id)
                 ->where('tahun', $tahun)
                 ->when($id_perusahaan, function($query) use ($id_perusahaan) {
                     return $query->where('perusahaan_id', $id_perusahaan);
@@ -1946,7 +1946,7 @@ class AnggaranTpbController extends Controller
 
         // cek enable input by superadmin
         $list_enable = DB::table('enable_input_by_superadmin')
-            ->where('referensi_id', $refEnable->id)
+            ->where('referensi_id', $refEnable?->id)
             ->where('tahun', $tahun)
             ->when($perusahaan_id, function($query) use ($perusahaan_id) {
                 return $query->where('perusahaan_id', $perusahaan_id);
