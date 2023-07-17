@@ -91,7 +91,7 @@ class EnableInputBySuperadmin extends Controller
     public function save(Request $request) {
         DB::beginTransaction();
         try {
-
+            $id_users = \Auth::user()->id;
             $isSuperAdmin = $this->isSuperAdmin();
             if(!$isSuperAdmin) throw new Exception('Anda tidak memiliki hak akses terhadap fitur ini!');
 
