@@ -304,21 +304,25 @@
                                     <th
                                         style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">
                                         Bulan - Tahun</th>
+                                        @if($perusahaan_id == '3')
                                     <th
                                         style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">
                                         Nilai Penyaluran </th>
+                                        @endif
+                                        @if($perusahaan_id != '3')
                                     <th
                                         style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">
                                         Penyaluran Melalui BRI</th>
+                                        @endif
                                     <th
                                         style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">
                                         Jumlah MB Baru</th>
                                     <th
                                         style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">
                                         Jumlah MB Naik Kelas</th>
-                                    <th
+                                    {{-- <th
                                         style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">
-                                        Kolektabilitas</th>
+                                        Kolektabilitas</th> --}}
                                     <th
                                         style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">
                                         Status</th>
@@ -518,23 +522,10 @@
     });
 
     function setDatatable() {
-        datatable = $('#datatable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: {
-                url: urldatatable,
-                type: 'GET',
-                data: function (d) {
-                    d.perusahaan_id = $('#perusahaan_id').val(),
-                        d.tahun = $("#tahun").val(),
-
-
-                        d.bulan = $('#bulan_id').val()
-
-                }
-            },
-            columns: [
-                // ['id', 'target_tpb_program', 'kegiatan', 'jenis_kegiatan_nama', 'provinsi_nama','kota_nama', 'anggaran_alokasi', 'indikator', 'kegiatan_realisasi_status_id', 'action']
+        let perusahaan_id = $('#perusahaan_id').val()
+        let columns = null
+        if (perusahaan_id == '3') {
+            columns =  [
                 {
                     data: 'id',
                     orderable: false,
@@ -558,15 +549,6 @@
                     }
                 },
                 {
-                    data: 'nilai_penyaluran_melalui_bri',
-                    name: 'nilai_penyaluran_melalui_bri',
-                    className: 'text-end',
-                    render: function (data, type, row) {
-                        let formattedValue = formatCurrency2(data.toString());
-                        return `<div class="text-end">${formattedValue}</div>`;
-                    }
-                },
-                {
                     data: 'jumlah_mb',
                     name: 'jumlah_mb',
                     className: 'text-end',
@@ -582,12 +564,6 @@
                     render: function (data, type, row) {
                    
                         return `<div class="text-end">${data}</div>`;
-                    }
-                },
-                {
-                    render: function (data, type, row) {
-                        // return  row;
-                        return `<div class="text-center cls-kolektabilitas" data-id="${row.id}"><a href="javascript:void(0)">detail</a></div>`
                     }
                 },
                 {
@@ -623,8 +599,8 @@
                         }
 
                         if (row.status_id === 1) {
-                            button =
-                                `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info cls-kolektabilitas" data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                            // button =  `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info cls-kolektabilitas" data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                            button =  `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info " data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                         }
                         return button
                     }
@@ -637,7 +613,115 @@
                         return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input class="form-check-input row-check" type="checkbox" name="selected-data[]" value="${row.id}"></label>`;
                     }
                 }
-            ],
+            ]
+        }
+        if (perusahaan_id != '3') {
+             columns =  [
+                {
+                    data: 'id',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'bulan_id',
+                    name: 'bulan_id',
+                    render: function (data, type, row) {
+
+                        return row.bulan + ' ' + row.tahun;
+                    }
+                },
+                {
+                    data: 'nilai_penyaluran_melalui_bri',
+                    name: 'nilai_penyaluran_melalui_bri',
+                    className: 'text-end',
+                    render: function (data, type, row) {
+                        let formattedValue = formatCurrency2(data.toString());
+                        return `<div class="text-end">${formattedValue}</div>`;
+                    }
+                },
+                {
+                    data: 'jumlah_mb',
+                    name: 'jumlah_mb',
+                    className: 'text-end',
+                    render: function (data, type, row) {
+                       
+                        return `<div class="text-end">${data}</div>`;
+                    }
+                },
+                {
+                    data: 'jumlah_mb_naik_kelas',
+                    name: 'jumlah_mb_naik_kelas',
+                    className: 'text-end',
+                    render: function (data, type, row) {
+                   
+                        return `<div class="text-end">${data}</div>`;
+                    }
+                },
+                {
+                    data: 'status_id',
+                    name: 'status_id',
+                    orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            // console.log(row)
+                            let status = null
+                            if (data === 1) {
+                                 status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Finish</span>`
+                            }
+                            if (data === 2) {
+                                 status = `<span class="btn cls-log badge badge-light-primary fw-bolder me-auto px-4 py-3" data-id="${row.id}">In Progress</span>`
+                            }
+                            return status;
+                        }
+                },
+                
+                {
+                    data: 'action',
+                    name: 'action',
+                    render: function (data, type, row) {
+                        // console.log(row)
+                        let button = null;
+                        if (row.status_id === 2) {
+                            // , minus
+                            button =
+                                `@can('edit-kegiatan')<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>@endcan`
+
+                                // button = button + `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info" data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                        }
+
+                        if (row.status_id === 1) {
+                            // button =  `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info cls-kolektabilitas" data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                            button =  `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info " data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                        }
+                        return button
+                    }
+                },
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, row) {
+                        return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input class="form-check-input row-check" type="checkbox" name="selected-data[]" value="${row.id}"></label>`;
+                    }
+                }
+            ]
+        }
+        datatable = $('#datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: urldatatable,
+                type: 'GET',
+                data: function (d) {
+                    d.perusahaan_id = $('#perusahaan_id').val(),
+                        d.tahun = $("#tahun").val(),
+
+
+                        d.bulan = $('#bulan_id').val()
+
+                }
+            },
+            columns: columns,
             // footerCallback: function (row, data, start, end, display) {
             //     var api = this.api();
 

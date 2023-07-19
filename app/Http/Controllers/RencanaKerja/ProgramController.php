@@ -390,9 +390,9 @@ class ProgramController extends Controller
 
             $target_tpb->pelaksanaan_program = $request->data['pelaksanaan_program'];
             $target_tpb->mitra_bumn_id = $request->data['mitra_bumn'];
-            if ($request->data['program_multiyears'] === 'ya') {
-                $target_tpb->multi_years = true;
-            }
+            // if ($request->data['program_multiyears'] === 'ya') {
+            //     $target_tpb->multi_years = true;
+            // }
             $target_tpb->save();
     
             ProgramController::store_log($target_tpb->id,$target_tpb->status_id);

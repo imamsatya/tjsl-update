@@ -106,7 +106,7 @@ class EnableInputBySuperadmin extends Controller
                 ->where('referensi_id', $referensi_id)
                 ->get();
             $id_already_enable = $already_enable->pluck('perusahaan_id')->toArray();
-
+            
             if($list_perusahaan[0] === 'all') {
                 $all_perusahaan = DB::table('perusahaans as pp')
                     ->where('pp.is_active', true) // perusahaan aktif only
@@ -126,13 +126,29 @@ class EnableInputBySuperadmin extends Controller
                     'status' => 'enable',
                     'created_at' => $currentDate,
                     'updated_at' => $currentDate,
-                    'referensi_id' => $referensi_id,                    
+                    'referensi_id' => $referensi_id,   
+                    'user_id' => $id_users
                 ];
-                array_push($log, $tempData);
-                $tempData['user_id'] = $id_users;
-                array_push($send, $tempData);
-            }
 
+                $tempDataLog = [
+                    'perusahaan_id' => $lp, 
+                    'tahun' => $tahun,
+                    'status' => 'enable',
+                    'created_at' => $currentDate,
+                    'updated_at' => $currentDate,
+                    'tipe' => $referensi_id,                    
+                ];
+
+                array_push($log, $tempDataLog);
+                array_push($send, $tempData);
+
+                // // Unset the 'referensi_id' property
+                // unset($tempData['referensi_id']);
+                // unset($tempData['user_id']);
+                // // Push the modified $tempData to $log
+                // array_push($log, $tempDataLog);
+            }
+            // dd($send);
             DB::table('enable_input_by_superadmin')->insert($send);
             DB::table('log_enable_disable_input_datas')->insert($log);
 

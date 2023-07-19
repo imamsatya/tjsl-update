@@ -483,7 +483,7 @@ class AnggaranTpbController extends Controller
             'msg' => 'Error System',
             'title' => 'Error'
         ];
-
+        
         switch ($request->input('actionform')) {
             case 'insert':
                 DB::beginTransaction();
@@ -596,7 +596,7 @@ class AnggaranTpbController extends Controller
             'msg' => 'Error System',
             'title' => 'Error'
         ];
-
+      
         $param['perusahaan_id'] = $request->perusahaan_id;
         $param['tahun'] = $request->tahun;
         $param['status_id'] = DB::table('statuss')->where('nama', 'In Progress')->first()->id;

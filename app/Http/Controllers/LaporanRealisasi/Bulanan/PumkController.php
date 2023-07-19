@@ -161,7 +161,7 @@ class PumkController extends Controller
 
        
        $cekData = PumkBulan::where('bulan_id', $request->bulan_id_create)
-       ->where('tahun', $request->tahun)
+       ->where('tahun', $request->tahun_create)
        ->where('perusahaan_id', $request->perusahaan_id)
        ->first();
        
@@ -176,23 +176,23 @@ class PumkController extends Controller
             $pumk_bulan = new PumkBulan();
             $pumk_bulan->perusahaan_id = $request->perusahaan_id;
             $pumk_bulan->status_id = 2;//In Progress
-            $pumk_bulan->tahun = $request->tahun;
+            $pumk_bulan->tahun = $request->tahun_create;
             $pumk_bulan->bulan_id = $request->bulan_id_create;
             $pumk_bulan->nilai_penyaluran = $request->nilai_penyaluran;
             $pumk_bulan->nilai_penyaluran_melalui_bri = $request->nilai_penyaluran_melalui_bri;
             $pumk_bulan->jumlah_mb = $request->jumlah_mb;
             $pumk_bulan->jumlah_mb_naik_kelas = $request->jumlah_mb_naik_kelas;
 
-            $pumk_bulan->kolektabilitas_lancar = $request->kolektabilitas_lancar;
-            $pumk_bulan->kolektabilitas_lancar_jumlah_mb = $request->kolektabilitas_lancar_jumlah_mb;
-            $pumk_bulan->kolektabilitas_kurang_lancar = $request->kolektabilitas_kurang_lancar;
-            $pumk_bulan->kolektabilitas_kurang_lancar_jumlah_mb = $request->kolektabilitas_kurang_lancar_jumlah_mb;
-            $pumk_bulan->kolektabilitas_diragukan = $request->kolektabilitas_diragukan;
-            $pumk_bulan->kolektabilitas_diragukan_jumlah_mb = $request->kolektabilitas_diragukan_jumlah_mb;
-            $pumk_bulan->kolektabilitas_macet = $request->kolektabilitas_macet;
-            $pumk_bulan->kolektabilitas_macet_jumlah_mb = $request->kolektabilitas_macet_jumlah_mb;
-            $pumk_bulan->kolektabilitas_pinjaman_bermasalah = $request->kolektabilitas_pinjaman_bermasalah;
-            $pumk_bulan->kolektabilitas_pinjaman_bermasalah_jumlah_mb = $request->kolektabilitas_pinjaman_bermasalah_jumlah_mb;
+            // $pumk_bulan->kolektabilitas_lancar = $request->kolektabilitas_lancar;
+            // $pumk_bulan->kolektabilitas_lancar_jumlah_mb = $request->kolektabilitas_lancar_jumlah_mb;
+            // $pumk_bulan->kolektabilitas_kurang_lancar = $request->kolektabilitas_kurang_lancar;
+            // $pumk_bulan->kolektabilitas_kurang_lancar_jumlah_mb = $request->kolektabilitas_kurang_lancar_jumlah_mb;
+            // $pumk_bulan->kolektabilitas_diragukan = $request->kolektabilitas_diragukan;
+            // $pumk_bulan->kolektabilitas_diragukan_jumlah_mb = $request->kolektabilitas_diragukan_jumlah_mb;
+            // $pumk_bulan->kolektabilitas_macet = $request->kolektabilitas_macet;
+            // $pumk_bulan->kolektabilitas_macet_jumlah_mb = $request->kolektabilitas_macet_jumlah_mb;
+            // $pumk_bulan->kolektabilitas_pinjaman_bermasalah = $request->kolektabilitas_pinjaman_bermasalah;
+            // $pumk_bulan->kolektabilitas_pinjaman_bermasalah_jumlah_mb = $request->kolektabilitas_pinjaman_bermasalah_jumlah_mb;
             $pumk_bulan->save();
 
             PumkController::store_log($pumk_bulan->id,$pumk_bulan->status_id);
@@ -218,23 +218,23 @@ class PumkController extends Controller
         try {
             // $pumk_bulan = PumkBulan::where('id', $request->pumk_bulan_id)->first();
             $pumk_bulan = $cekData;
-            $pumk_bulan->tahun = $request->tahun;
+            $pumk_bulan->tahun = $request->tahun_create;
             $pumk_bulan->bulan_id = $request->bulan_id_create;
             $pumk_bulan->nilai_penyaluran = $request->nilai_penyaluran;
             $pumk_bulan->nilai_penyaluran_melalui_bri = $request->nilai_penyaluran_melalui_bri;
             $pumk_bulan->jumlah_mb = $request->jumlah_mb;
             $pumk_bulan->jumlah_mb_naik_kelas = $request->jumlah_mb_naik_kelas;
 
-            $pumk_bulan->kolektabilitas_lancar = $request->kolektabilitas_lancar;
-            $pumk_bulan->kolektabilitas_lancar_jumlah_mb = $request->kolektabilitas_lancar_jumlah_mb;
-            $pumk_bulan->kolektabilitas_kurang_lancar = $request->kolektabilitas_kurang_lancar;
-            $pumk_bulan->kolektabilitas_kurang_lancar_jumlah_mb = $request->kolektabilitas_kurang_lancar_jumlah_mb;
-            $pumk_bulan->kolektabilitas_diragukan = $request->kolektabilitas_diragukan;
-            $pumk_bulan->kolektabilitas_diragukan_jumlah_mb = $request->kolektabilitas_diragukan_jumlah_mb;
-            $pumk_bulan->kolektabilitas_macet = $request->kolektabilitas_macet;
-            $pumk_bulan->kolektabilitas_macet_jumlah_mb = $request->kolektabilitas_macet_jumlah_mb;
-            $pumk_bulan->kolektabilitas_pinjaman_bermasalah = $request->kolektabilitas_pinjaman_bermasalah;
-            $pumk_bulan->kolektabilitas_pinjaman_bermasalah_jumlah_mb = $request->kolektabilitas_pinjaman_bermasalah_jumlah_mb;
+            // $pumk_bulan->kolektabilitas_lancar = $request->kolektabilitas_lancar;
+            // $pumk_bulan->kolektabilitas_lancar_jumlah_mb = $request->kolektabilitas_lancar_jumlah_mb;
+            // $pumk_bulan->kolektabilitas_kurang_lancar = $request->kolektabilitas_kurang_lancar;
+            // $pumk_bulan->kolektabilitas_kurang_lancar_jumlah_mb = $request->kolektabilitas_kurang_lancar_jumlah_mb;
+            // $pumk_bulan->kolektabilitas_diragukan = $request->kolektabilitas_diragukan;
+            // $pumk_bulan->kolektabilitas_diragukan_jumlah_mb = $request->kolektabilitas_diragukan_jumlah_mb;
+            // $pumk_bulan->kolektabilitas_macet = $request->kolektabilitas_macet;
+            // $pumk_bulan->kolektabilitas_macet_jumlah_mb = $request->kolektabilitas_macet_jumlah_mb;
+            // $pumk_bulan->kolektabilitas_pinjaman_bermasalah = $request->kolektabilitas_pinjaman_bermasalah;
+            // $pumk_bulan->kolektabilitas_pinjaman_bermasalah_jumlah_mb = $request->kolektabilitas_pinjaman_bermasalah_jumlah_mb;
             $pumk_bulan->save();
 
             PumkController::store_log($pumk_bulan->id,$pumk_bulan->status_id);

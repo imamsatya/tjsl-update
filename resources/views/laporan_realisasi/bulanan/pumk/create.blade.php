@@ -33,6 +33,7 @@
                         </select>
             </div>
         </div>
+        @if($perusahaan_id == 3)
         <div class="row mb-6">
             <div class="col-lg-3">
                 <div class="ms-2 bulan-label">Nilai Penyaluran Bulan <span style="color: red">*</span></div>
@@ -43,6 +44,8 @@
                     class="form-control form-control-lg form-control-solid" placeholder="Rp" />
             </div>
         </div>
+        @endif
+        @if($perusahaan_id != 3)
         <div class="row mb-6">
             <div class="col-lg-3">
                 <div class="ms-2 bulan-label">Nilai Penyaluran melalui BRI pada Bulan <span style="color: red">*</span></div>
@@ -53,6 +56,7 @@
                     class="form-control form-control-lg form-control-solid" placeholder="Rp" />
             </div>
         </div>
+        @endif
         <div class="row mb-6">
             <div class="col-lg-3">
                 <div class="ms-2 bulan-label">Jumlah MB baru pada Bulan<span style="color: red">*</span></div>
@@ -72,7 +76,7 @@
                     class="form-control form-control-lg form-control-solid" placeholder="Jumlah MB" />
             </div>
         </div>
-        <div class="row mb-2">
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 
             </div>
@@ -153,7 +157,7 @@
                 <input type="text" name="kolektabilitas_pinjaman_bermasalah_jumlah_mb"  id="kolektabilitas_pinjaman_bermasalah_jumlah_mb" value="{{ $pumk_bulan?->kolektabilitas_pinjaman_bermasalah_jumlah_mb }}"
                 class="form-control form-control-lg form-control-solid" style="text-align:right;" placeholder="Jumlah MB" />
             </div>
-        </div>
+        </div> --}}
        
     </div>
     <div class="text-center pt-15">
@@ -298,16 +302,16 @@
                     'nilai_penyaluran_melalui_bri',
                     'jumlah_mb',
                     'jumlah_mb_naik_kelas',
-                    'kolektabilitas_lancar',
-                    'kolektabilitas_lancar_jumlah_mb',
-                    'kolektabilitas_kurang_lancar',
-                    'kolektabilitas_kurang_lancar_jumlah_mb',
-                    'kolektabilitas_diragukan',
-                    'kolektabilitas_diragukan_jumlah_mb',
-                    'kolektabilitas_macet',
-                    'kolektabilitas_macet_jumlah_mb',
-                    'kolektabilitas_pinjaman_bermasalah',
-                    'kolektabilitas_pinjaman_bermasalah_jumlah_mb'
+                    // 'kolektabilitas_lancar',
+                    // 'kolektabilitas_lancar_jumlah_mb',
+                    // 'kolektabilitas_kurang_lancar',
+                    // 'kolektabilitas_kurang_lancar_jumlah_mb',
+                    // 'kolektabilitas_diragukan',
+                    // 'kolektabilitas_diragukan_jumlah_mb',
+                    // 'kolektabilitas_macet',
+                    // 'kolektabilitas_macet_jumlah_mb',
+                    // 'kolektabilitas_pinjaman_bermasalah',
+                    // 'kolektabilitas_pinjaman_bermasalah_jumlah_mb'
                 ];
                 
                 // Update the values of input fields with the retrieved values
@@ -342,47 +346,82 @@
 
     });
     function setFormValidate() {
+        let perusahaan_id = $('#perusahaan_id').val()
+        if (perusahaan_id === '3') {
+            validationRules = {
+                tahun_create: 'required',
+                bulan_id_create: 'required',
+                nilai_penyaluran: 'required', // Add this rule for perusahaan_id === '3'
+                jumlah_mb: 'required',
+                jumlah_mb_naik_kelas: 'required',
+            };
+
+            messagesRules = {
+                        tahun_create: 'tahun harus terisi!',
+                        bulan_id_create: 'Bulan harus terisi!',
+                        nilai_penyaluran: 'Nilai Penyaluran harus terisi!',
+                        jumlah_mb: 'Jumlah MB baru harus terisi!',
+                        jumlah_mb_naik_kelas: 'Jumlah MB Naik Kelas harus terisi!',
+            };
+        } else {
+            validationRules = {
+                tahun_create: 'required',
+                bulan_id_create: 'required',
+                nilai_penyaluran_melalui_bri: 'required', // Add this rule for perusahaan_id !== '3'
+                jumlah_mb: 'required',
+                jumlah_mb_naik_kelas: 'required',
+            };
+            messagesRules = {
+                        tahun_create: 'tahun harus terisi!',
+                        bulan_id_create: 'Bulan harus terisi!',
+                        nilai_penyaluran_melalui_bri: 'Nilai Penyaluran Melalui BRI harus terisi!',
+                        jumlah_mb: 'Jumlah MB baru harus terisi!',
+                        jumlah_mb_naik_kelas: 'Jumlah MB Naik Kelas harus terisi!',
+            };
+        }
         $('#form-edit').validate({
-                rules: {
-                    tahun_create: 'required',
-                    bulan_id_create: 'required',
-                    //
-                    nilai_penyaluran: 'required',
-                    nilai_penyaluran_melalui_bri: 'required',
-                    jumlah_mb: 'required',
-                    jumlah_mb_naik_kelas: 'required',
-                    //
-                    kolektabilitas_lancar: 'required',
-                    kolektabilitas_lancar_jumlah_mb: 'required',
-                    kolektabilitas_kurang_lancar: 'required',
-                    kolektabilitas_kurang_lancar_jumlah_mb: 'required',
-                    kolektabilitas_diragukan: 'required',
-                    kolektabilitas_diragukan_jumlah_mb: 'required',
-                    kolektabilitas_macet: 'required',
-                    kolektabilitas_macet_jumlah_mb: 'required',
-                    kolektabilitas_pinjaman_bermasalah: 'required',
-                    kolektabilitas_pinjaman_bermasalah_jumlah_mb: 'required',
-                },
-                messages: {
-                    tahun_create: 'tahun harus terisi!',
-                    bulan_id_create: 'Bulan harus terisi!',
-                    //
-                    nilai_penyaluran: 'Nilai Penyaluran harus terisi!',
-                    nilai_penyaluran_melalui_bri: 'Nilai Penyaluran Melalui BRI harus terisi!',
-                    jumlah_mb: 'Jumlah MB baru harus terisi!',
-                    jumlah_mb_naik_kelas: 'Jumlah MB Naik Kelas harus terisi!',
-                    //
-                    kolektabilitas_lancar: 'Kolektabilitas Lancar harus terisi!',
-                    kolektabilitas_lancar_jumlah_mb: 'Jumlah MB Kolektabilitas Lancar harus terisi!',
-                    kolektabilitas_kurang_lancar: 'Kolektabilitas Kurang Lancar harus terisi!',
-                    kolektabilitas_kurang_lancar_jumlah_mb: 'Jumlah MB Kolektabilitas Kurang Lancar harus terisi!',
-                    kolektabilitas_diragukan: 'Kolektabilitas Diragukan harus terisi!',
-                    kolektabilitas_diragukan_jumlah_mb: 'Jumlah MB Kolektabilitas Diragukan harus terisi!',
-                    kolektabilitas_macet: 'Kolektabilitas Macet harus terisi!',
-                    kolektabilitas_macet_jumlah_mb: 'Jumlah MB Kolektabilitas Macet harus terisi!',
-                    kolektabilitas_pinjaman_bermasalah: 'Kolektabilitas Pinjaman Bermasalah harus terisi!',
-                    kolektabilitas_pinjaman_bermasalah_jumlah_mb: 'Jumlah MB Kolektabilitas Pinjaman Bermasalah harus terisi!',
-                },
+                // rules: {
+                //     tahun_create: 'required',
+                //     bulan_id_create: 'required',
+                //     //
+                //     // nilai_penyaluran: 'required',
+                //     // nilai_penyaluran_melalui_bri: 'required',
+                //     jumlah_mb: 'required',
+                //     jumlah_mb_naik_kelas: 'required',
+                //     //
+                //     // kolektabilitas_lancar: 'required',
+                //     // kolektabilitas_lancar_jumlah_mb: 'required',
+                //     // kolektabilitas_kurang_lancar: 'required',
+                //     // kolektabilitas_kurang_lancar_jumlah_mb: 'required',
+                //     // kolektabilitas_diragukan: 'required',
+                //     // kolektabilitas_diragukan_jumlah_mb: 'required',
+                //     // kolektabilitas_macet: 'required',
+                //     // kolektabilitas_macet_jumlah_mb: 'required',
+                //     // kolektabilitas_pinjaman_bermasalah: 'required',
+                //     // kolektabilitas_pinjaman_bermasalah_jumlah_mb: 'required',
+                // },
+                rules: validationRules,
+                // messages: {
+                //     tahun_create: 'tahun harus terisi!',
+                //     bulan_id_create: 'Bulan harus terisi!',
+                //     //
+                //     // nilai_penyaluran: 'Nilai Penyaluran harus terisi!',
+                //     // nilai_penyaluran_melalui_bri: 'Nilai Penyaluran Melalui BRI harus terisi!',
+                //     jumlah_mb: 'Jumlah MB baru harus terisi!',
+                //     jumlah_mb_naik_kelas: 'Jumlah MB Naik Kelas harus terisi!',
+                //     //
+                //     // kolektabilitas_lancar: 'Kolektabilitas Lancar harus terisi!',
+                //     // kolektabilitas_lancar_jumlah_mb: 'Jumlah MB Kolektabilitas Lancar harus terisi!',
+                //     // kolektabilitas_kurang_lancar: 'Kolektabilitas Kurang Lancar harus terisi!',
+                //     // kolektabilitas_kurang_lancar_jumlah_mb: 'Jumlah MB Kolektabilitas Kurang Lancar harus terisi!',
+                //     // kolektabilitas_diragukan: 'Kolektabilitas Diragukan harus terisi!',
+                //     // kolektabilitas_diragukan_jumlah_mb: 'Jumlah MB Kolektabilitas Diragukan harus terisi!',
+                //     // kolektabilitas_macet: 'Kolektabilitas Macet harus terisi!',
+                //     // kolektabilitas_macet_jumlah_mb: 'Jumlah MB Kolektabilitas Macet harus terisi!',
+                //     // kolektabilitas_pinjaman_bermasalah: 'Kolektabilitas Pinjaman Bermasalah harus terisi!',
+                //     // kolektabilitas_pinjaman_bermasalah_jumlah_mb: 'Jumlah MB Kolektabilitas Pinjaman Bermasalah harus terisi!',
+                // },
+                messages: messagesRules,
                 highlight: function(element) {
                     $(element).closest('.form-control').addClass('is-invalid');
                 },
@@ -410,44 +449,48 @@
                         // $('#alokasi_anggaran_edit').val(parseInt(tempAnggaran.replace(/[^0-9\-]/g, '')))
 
                     
-                    //     let tahun = $('#tahun').val()
-                    // let bulan_id_create = $('#bulan_id_create').val()
+                    let tahun = $('#tahun_create').val()
+                    let bulan_id_create = $('#bulan_id_create').val()
                     //
                     let actionform = $('#actionform').val()
                     let pumk_bulan_id = $('#pumk_bulan_id').val()
-                    
-                    let nilai_penyaluran = $('#nilai_penyaluran').val()
-                    let nilai_penyaluran_melalui_bri = $('#nilai_penyaluran_melalui_bri').val()
+                    if (perusahaan_id === '3') {
+                        let nilai_penyaluran = $('#nilai_penyaluran').val()
+                        $('#nilai_penyaluran').val(parseInt(nilai_penyaluran.replace(/[^0-9\-]/g, '')))
+                    } else {
+                        let nilai_penyaluran_melalui_bri = $('#nilai_penyaluran_melalui_bri').val()
+                        $('#nilai_penyaluran_melalui_bri').val(parseInt(nilai_penyaluran_melalui_bri.replace(/[^0-9\-]/g, '')))
+                    }
                     let jumlah_mb = $('#jumlah_mb').val()
                     let jumlah_mb_naik_kelas = $('#jumlah_mb_naik_kelas').val()
                     //
-                    let kolektabilitas_lancar = $('#kolektabilitas_lancar').val()
-                    let kolektabilitas_lancar_jumlah_mb = $('#kolektabilitas_lancar_jumlah_mb').val()
-                    let kolektabilitas_kurang_lancar = $('#kolektabilitas_kurang_lancar').val()
-                    let kolektabilitas_kurang_lancar_jumlah_mb = $('#kolektabilitas_kurang_lancar_jumlah_mb').val()
-                    let kolektabilitas_diragukan = $('#kolektabilitas_diragukan').val()
-                    let kolektabilitas_diragukan_jumlah_mb = $('#kolektabilitas_diragukan_jumlah_mb').val()
-                    let kolektabilitas_macet = $('#kolektabilitas_macet').val()
-                    let kolektabilitas_macet_jumlah_mb = $('#kolektabilitas_macet_jumlah_mb').val()
-                    let kolektabilitas_pinjaman_bermasalah = $('#kolektabilitas_pinjaman_bermasalah').val()
-                    let kolektabilitas_pinjaman_bermasalah_jumlah_mb = $('#kolektabilitas_pinjaman_bermasalah_jumlah_mb').val()
+                    // let kolektabilitas_lancar = $('#kolektabilitas_lancar').val()
+                    // let kolektabilitas_lancar_jumlah_mb = $('#kolektabilitas_lancar_jumlah_mb').val()
+                    // let kolektabilitas_kurang_lancar = $('#kolektabilitas_kurang_lancar').val()
+                    // let kolektabilitas_kurang_lancar_jumlah_mb = $('#kolektabilitas_kurang_lancar_jumlah_mb').val()
+                    // let kolektabilitas_diragukan = $('#kolektabilitas_diragukan').val()
+                    // let kolektabilitas_diragukan_jumlah_mb = $('#kolektabilitas_diragukan_jumlah_mb').val()
+                    // let kolektabilitas_macet = $('#kolektabilitas_macet').val()
+                    // let kolektabilitas_macet_jumlah_mb = $('#kolektabilitas_macet_jumlah_mb').val()
+                    // let kolektabilitas_pinjaman_bermasalah = $('#kolektabilitas_pinjaman_bermasalah').val()
+                    // let kolektabilitas_pinjaman_bermasalah_jumlah_mb = $('#kolektabilitas_pinjaman_bermasalah_jumlah_mb').val()
 
-                    // $('#tahun').val(parseInt(tahun.replace(/[^0-9\-]/g, '')))
-                    // $('#bulan_id_create').val(parseInt(bulan_id_create.replace(/[^0-9\-]/g, '')))
-                    $('#nilai_penyaluran').val(parseInt(nilai_penyaluran.replace(/[^0-9\-]/g, '')))
-                    $('#nilai_penyaluran_melalui_bri').val(parseInt(nilai_penyaluran_melalui_bri.replace(/[^0-9\-]/g, '')))
+                    $('#tahun_create').val(parseInt(tahun.replace(/[^0-9\-]/g, '')))
+                    $('#bulan_id_create').val(parseInt(bulan_id_create.replace(/[^0-9\-]/g, '')))
+                    
+                   
                     $('#jumlah_mb').val(parseInt(jumlah_mb.replace(/[^0-9\-]/g, '')))
                     $('#jumlah_mb_naik_kelas').val(parseInt(jumlah_mb_naik_kelas.replace(/[^0-9\-]/g, '')))
-                    $('#kolektabilitas_lancar').val(parseInt(kolektabilitas_lancar.replace(/[^0-9\-]/g, '')))
-                    $('#kolektabilitas_lancar_jumlah_mb').val(parseInt(kolektabilitas_lancar_jumlah_mb.replace(/[^0-9\-]/g, '')))
-                    $('#kolektabilitas_kurang_lancar').val(parseInt(kolektabilitas_kurang_lancar.replace(/[^0-9\-]/g, '')))
-                    $('#kolektabilitas_kurang_lancar_jumlah_mb').val(parseInt(kolektabilitas_kurang_lancar_jumlah_mb.replace(/[^0-9\-]/g, '')))
-                    $('#kolektabilitas_diragukan').val(parseInt(kolektabilitas_diragukan.replace(/[^0-9\-]/g, '')))
-                    $('#kolektabilitas_diragukan_jumlah_mb').val(parseInt(kolektabilitas_diragukan_jumlah_mb.replace(/[^0-9\-]/g, '')))
-                    $('#kolektabilitas_macet').val(parseInt(kolektabilitas_macet.replace(/[^0-9\-]/g, '')))
-                    $('#kolektabilitas_macet_jumlah_mb').val(parseInt(kolektabilitas_macet_jumlah_mb.replace(/[^0-9\-]/g, '')))
-                    $('#kolektabilitas_pinjaman_bermasalah').val(parseInt(kolektabilitas_pinjaman_bermasalah.replace(/[^0-9\-]/g, '')))
-                    $('#kolektabilitas_pinjaman_bermasalah_jumlah_mb').val(parseInt(kolektabilitas_pinjaman_bermasalah_jumlah_mb.replace(/[^0-9\-]/g, '')))
+                    // $('#kolektabilitas_lancar').val(parseInt(kolektabilitas_lancar.replace(/[^0-9\-]/g, '')))
+                    // $('#kolektabilitas_lancar_jumlah_mb').val(parseInt(kolektabilitas_lancar_jumlah_mb.replace(/[^0-9\-]/g, '')))
+                    // $('#kolektabilitas_kurang_lancar').val(parseInt(kolektabilitas_kurang_lancar.replace(/[^0-9\-]/g, '')))
+                    // $('#kolektabilitas_kurang_lancar_jumlah_mb').val(parseInt(kolektabilitas_kurang_lancar_jumlah_mb.replace(/[^0-9\-]/g, '')))
+                    // $('#kolektabilitas_diragukan').val(parseInt(kolektabilitas_diragukan.replace(/[^0-9\-]/g, '')))
+                    // $('#kolektabilitas_diragukan_jumlah_mb').val(parseInt(kolektabilitas_diragukan_jumlah_mb.replace(/[^0-9\-]/g, '')))
+                    // $('#kolektabilitas_macet').val(parseInt(kolektabilitas_macet.replace(/[^0-9\-]/g, '')))
+                    // $('#kolektabilitas_macet_jumlah_mb').val(parseInt(kolektabilitas_macet_jumlah_mb.replace(/[^0-9\-]/g, '')))
+                    // $('#kolektabilitas_pinjaman_bermasalah').val(parseInt(kolektabilitas_pinjaman_bermasalah.replace(/[^0-9\-]/g, '')))
+                    // $('#kolektabilitas_pinjaman_bermasalah_jumlah_mb').val(parseInt(kolektabilitas_pinjaman_bermasalah_jumlah_mb.replace(/[^0-9\-]/g, '')))
                 $(form).ajaxSubmit({
                     type: 'post',
                     url: urleditstore,

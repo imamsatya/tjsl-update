@@ -345,7 +345,7 @@
                                 
                                 </div>
 
-                                <div class="row mb-6">
+                                {{-- <div class="row mb-6">
                                     <div class="col-lg-3">
                                         <div class="ms-2">Program Multi Years<span style="color: red">*</span></div>
                                     </div>
@@ -365,7 +365,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                                 
 
                                 <div class="row mb-6">
@@ -837,7 +837,7 @@
             let core_subject_id = document.getElementById('core_subject_id').value
             let pelaksanaan_program = document.getElementById('pelaksanaan_program').value
             let mitra_bumn = document.getElementById('mitra_bumn').value
-            let program_multiyears =  document.querySelector('input[name="program"]:checked') ? document.querySelector('input[name="program"]:checked').value : ''
+            // let program_multiyears =  document.querySelector('input[name="program"]:checked') ? document.querySelector('input[name="program"]:checked').value : ''
             let alokasi_anggaran = document.getElementById('alokasi_anggaran').value
             alokasi_anggaran = alokasi_anggaran ? parseInt(alokasi_anggaran.replace(/[^0-9\-]/g, '')) : ''
 
@@ -849,7 +849,7 @@
                 core_subject_id : core_subject_id,
                 pelaksanaan_program : pelaksanaan_program,
                 mitra_bumn : mitra_bumn,
-                program_multiyears : program_multiyears,
+                // program_multiyears : program_multiyears,
                 alokasi_anggaran : alokasi_anggaran
             }
             
