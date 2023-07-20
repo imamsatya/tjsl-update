@@ -258,32 +258,86 @@ class PilarPembangunanController extends Controller
      */
     public function delete(Request $request)
     {
-        foreach ($request->selectedData as $key => $value) {
+        DB::beginTransaction();
+        try {
+            $id_pilar_pembangunan = $request->selectedData;
 
-            $pilar_pembangunan = new PilarPembangunan();
-            $pilar_pembangunan = $pilar_pembangunan->where('id', $value)->delete();
+            $id_anggaran_tpbs = DB::table('anggaran_tpbs as atpb')
+                ->select('atpb.id')
+                ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
+                ->whereIn('rpt.pilar_pembangunan_id', $id_pilar_pembangunan)
+                ->get();
+            $id_anggaran_tpbs = $id_anggaran_tpbs->pluck('id')->toArray();
+
+            $id_target_tpbs = DB::table('target_tpbs as tt')
+                ->select('tt.id')
+                ->whereIn('anggaran_tpb_id', $id_anggaran_tpbs)
+                ->get();
+            $id_target_tpbs = $id_target_tpbs->pluck('id')->toArray();
+
+            $id_kegiatans = DB::table('kegiatans as kk')
+                ->select('kk.id')
+                ->whereIn('target_tpb_id', $id_target_tpbs)
+                ->get();
+            $id_kegiatans = $id_kegiatans->pluck('id')->toArray();
+
+            $id_kegiatan_realisasi = DB::table('kegiatan_realisasis as kr')
+                ->select('kr.id')
+                ->whereIn('kegiatan_id', $id_kegiatans)
+                ->get();
+            $id_kegiatan_realisasi = $id_kegiatan_realisasi->pluck('id')->toArray();
+
+            DB::table('kegiatan_realisasis')->whereIn('id', $id_kegiatan_realisasi)->delete();
+            DB::table('kegiatans')->whereIn('id', $id_kegiatans)->delete();
+            DB::table('target_tpbs')->whereIn('id', $id_target_tpbs)->delete();
+            DB::table('anggaran_tpbs')->whereIn('id', $id_anggaran_tpbs)->delete();
+            DB::table('relasi_pilar_tpbs')->whereIn('pilar_pembangunan_id', $id_pilar_pembangunan)->delete();
+            DB::table('pilar_pembangunans')->whereIn('id', $id_pilar_pembangunan)->delete();
+
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Berhasil menghapus Pilar Pembangunan yang dipilih',
+                'title' => 'Sukses',
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal hapus data',
+                'title' => 'Gagal',
+                'err' => $e->getMessage()
+            ];
         }
-        Session::flash('success', "Berhasil menghapus Pilar Pembangunan yang dipilih");
-        // DB::beginTransaction();
-        // try {
-        //     $data = PilarPembangunan::find((int)$request->input('id'));
-        //     $data->delete();
 
-        //     DB::commit();
-        //     $result = [
-        //         'flag'  => 'success',
-        //         'msg' => 'Sukses hapus data',
-        //         'title' => 'Sukses'
-        //     ];
-        // } catch (\Exception $e) {
-        //     DB::rollback();
-        //     $result = [
-        //         'flag'  => 'warning',
-        //         'msg' => 'Gagal hapus data',
-        //         'title' => 'Gagal'
-        //     ];
+        return response()->json($result);
+        
+
+        // foreach ($request->selectedData as $key => $value) {
+        //     $pilar_pembangunan = new PilarPembangunan();
+        //     $pilar_pembangunan = $pilar_pembangunan->where('id', $value)->delete();
         // }
-        // return response()->json($result);
+        // Session::flash('success', "Berhasil menghapus Pilar Pembangunan yang dipilih");
+        // // DB::beginTransaction();
+        // // try {
+        // //     $data = PilarPembangunan::find((int)$request->input('id'));
+        // //     $data->delete();
+
+        // //     DB::commit();
+        // //     $result = [
+        // //         'flag'  => 'success',
+        // //         'msg' => 'Sukses hapus data',
+        // //         'title' => 'Sukses'
+        // //     ];
+        // // } catch (\Exception $e) {
+        // //     DB::rollback();
+        // //     $result = [
+        // //         'flag'  => 'warning',
+        // //         'msg' => 'Gagal hapus data',
+        // //         'title' => 'Gagal'
+        // //     ];
+        // // }
+        // // return response()->json($result);
     }
 
     /**
