@@ -264,17 +264,20 @@
                             @php
                                 $enable_input = false;
                                 if($isOkToInput || $isEnableInputBySuperadmin) $enable_input = true;
+                                $isFinisih = false;
+                                if($countInprogress > 0) $isFinisih = false;
+                                else if($countFinish > 0) $isFinisih = true;
                             @endphp
                             @can('view-kegiatan')
                             <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
-                                @can('delete-kegiatan')
-                                <button {{ $isSuperAdmin ? '' : ($enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
-                                </button>
-                                @endcan
-                                @can('edit-kegiatan')
-                                <button {{ $isSuperAdmin ? '' : ($enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
-                                </button>
-                                @endcan
+                            @can('delete-kegiatan')
+                            <button {{ $isSuperAdmin ? '' : ($enable_input ? (!$isFinisih ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
+                            </button>
+                            @endcan
+                            @can('edit-kegiatan')
+                            <button {{ $isSuperAdmin ? '' : ($enable_input ? (!$isFinisih ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
+                            </button>
+                            @endcan
                             @endcan
                           
                             @can('view-verify')
@@ -319,9 +322,12 @@
                                 <tbody>
                                     @php
                                         $total = 0;
+                                        $draw = 0;
                                     @endphp
                                     @foreach($joinData as $perusahaan)
+                                        @if($perusahaan[0])
                                         @php
+                                            $draw+=1;
                                             $total += $perusahaan[0]->total;
                                             if($perusahaan[0]->inprogress) $status_class = 'primary';
                                             else if($perusahaan[0]->finish) $status_class = 'success';
@@ -333,7 +339,13 @@
                                         <td style="text-align: right">
                                             {{ number_format($perusahaan[0]->total, 0, ',', ',') }}                                                                                        
                                             <br/> 
-                                            <span style="color: {{ $perusahaan[0]->total <= $perusahaan[1]->total_rka ? 'green' : 'red'}}; font-size: smaller">RKA: {{number_format($perusahaan[1]->total_rka,0,',',',')}}</span>
+                                            @php
+                                                $color_status = '';
+                                                if($perusahaan[0]->total < $perusahaan[1]->total_rka) $color_status = 'orange';
+                                                else if($perusahaan[0]->total > $perusahaan[1]->total_rka) $color_status = 'red';
+                                                else $color_status = 'green';
+                                            @endphp
+                                            <span style="color: {{ $color_status }}; font-size: smaller">RKA: {{number_format($perusahaan[1]->total_rka,0,',',',')}}</span>
                                         </td>
                                         <td></td>
                                         <td style="text-align: center">
@@ -342,8 +354,9 @@
                                         <td></td>
                                     </tr>
                                     <tr class="treegrid-parent-perusahaan-{{ $perusahaan[0]->perusahaan_id }}" id="treegrid-parent-perusahaan-{{ $perusahaan[0]->perusahaan_id }}" style="visibility: hidden"><td style="text-align: center;"></td></tr>
+                                    @endif
                                     @endforeach
-                                    @if(!$joinData->count())
+                                    @if(!$joinData->count() || !$draw)
                                     <tr>
                                         <td colspan="7" style="text-align:center; color: #696969; text-transform: uppercase">Data tidak tersedia!</td>
                                     </tr>
@@ -439,34 +452,37 @@
                         let parentClass = selectedClassTree.replace('treegrid-', 'treegrid-parent-')
                         for(let i=0; i < pilar.length; i++) {
 
-                            // defining progress status
-                            let status_class = ''
-                            if(pilar[i][0].inprogress) status_class = 'primary'
-                            else if(pilar[i][0].finish) status_class = 'success'
-                            else status_class = 'danger'
+                            if(pilar[i][0]) {
+                                // defining progress status
+                                let status_class = ''
+                                if(pilar[i][0].inprogress) status_class = 'primary'
+                                else if(pilar[i][0].finish) status_class = 'success'
+                                else status_class = 'danger'
 
-                            let tempPilarRow = `
-                            <tr class="treegrid-bumn-${value}-pilar-${pilar[i][0].id_pilar} ${parentClass}" data-type="pilar" data-value="${pilar[i][0].id_pilar}" data-perusahaan="${value}" id="perusahaan-${value}-pilar-${pilar[i][0].id_pilar}">
-                                <td style="text-align:center;">${i+1}</td>
-                                <td style="display: flex"><div style="flex: 1">${pilar[i][0].nama_pilar}</div></td>
-                                <td style="text-align:right;">
-                                    ${ pilar[i][0].total ? parseInt(pilar[i][0].total).toLocaleString() : 0}
-                                    <br/>   
-                                    <span style="color: ${ pilar[i][0].total <= pilar[i][1].total_rka ? 'green' : 'red'}; font-size: smaller">RKA: ${parseInt(pilar[i][1].total_rka).toLocaleString()}</span>
-                                </td>
-                                <td></td>
-                                <td style="text-align:center;">
-                                    <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${pilar[i][0].inprogress ? 'In Progress' : (pilar[i][0].finish ? 'Finish' : 'Unfilled')}</a>
-                                </td>
-                                <td style="text-align:center;">                                            
-                                </td>                                
-                                <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                    <input disabled class="form-check-input pilar-check perusahaan-${value}" data-pilar-parent="pilar-${value}-${pilar[i][0].id_pilar}" type="checkbox">
-                                    </label></td>
-                            </tr>
-                            <tr class="treegrid-parent-bumn-${value}-pilar-${pilar[i][0].id_pilar}" id="treegrid-parent-bumn-${value}-pilar-${pilar[i][0].id_pilar}" style="visibility: hidden"><td style="text-align:center;"></td></tr>
-                            `;
-                            pilarRow += tempPilarRow;
+                                let tempPilarRow = `
+                                <tr class="treegrid-bumn-${value}-pilar-${pilar[i][0].id_pilar} ${parentClass}" data-type="pilar" data-value="${pilar[i][0].id_pilar}" data-perusahaan="${value}" id="perusahaan-${value}-pilar-${pilar[i][0].id_pilar}">
+                                    <td style="text-align:center;">${i+1}</td>
+                                    <td style="display: flex"><div style="flex: 1">${pilar[i][0].nama_pilar}</div></td>
+                                    <td style="text-align:right;">
+                                        ${ pilar[i][0].total ? parseInt(pilar[i][0].total).toLocaleString() : 0}
+                                        <br/>   
+                                        <span style="color: ${ pilar[i][0].total <= pilar[i][1].total_rka ? 'green' : 'red'}; font-size: smaller">RKA: ${parseInt(pilar[i][1].total_rka).toLocaleString()}</span>
+                                    </td>
+                                    <td></td>
+                                    <td style="text-align:center;">
+                                        <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${pilar[i][0].inprogress ? 'In Progress' : (pilar[i][0].finish ? 'Finish' : 'Unfilled')}</a>
+                                    </td>
+                                    <td style="text-align:center;">                                            
+                                    </td>                                
+                                    <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                        <input disabled class="form-check-input pilar-check perusahaan-${value}" data-pilar-parent="pilar-${value}-${pilar[i][0].id_pilar}" type="checkbox">
+                                        </label></td>
+                                </tr>
+                                <tr class="treegrid-parent-bumn-${value}-pilar-${pilar[i][0].id_pilar}" id="treegrid-parent-bumn-${value}-pilar-${pilar[i][0].id_pilar}" style="visibility: hidden"><td style="text-align:center;"></td></tr>
+                                `;
+                                pilarRow += tempPilarRow;
+                            }
+                            
                         }
 
                         $("#"+parentClass).before(pilarRow);
@@ -504,37 +520,40 @@
                         let tpb = data.joinData;
                         let parentClass = selectedClassTree.replace('treegrid-', 'treegrid-parent-')
                         for(let i=0; i<tpb.length; i++) {
-                            // defining progress status
-                            let status_class = ''
-                            if(tpb[i][0].inprogress) status_class = 'primary'
-                            else if(tpb[i][0].finish) status_class = 'success'
-                            else status_class = 'danger'
-
-                            let tempTpbRow = `
-                            <tr class="treegrid-bumn-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i][0].id_tpb} ${parentClass}" data-type="tpb" data-value="${tpb[i][0].id_tpb}" data-perusahaan="${tempPerusahaan}" data-pilar="${value}" id="perusahaan-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i][0].id_tpb}">
-                                <td style="text-align:center;"></td>
-                                <td style="display: flex"><div style="flex: 1">${tpb[i][0].no_tpb} - ${tpb[i][0].nama_tpb}</div></td>
-                                <td style="text-align:right;">
-                                    ${tpb[i][0].total ? parseInt(tpb[i][0].total).toLocaleString() : 0}
-                                    <br/>   
-                                    <span style="color: ${ tpb[i][0].total <= tpb[i][1].total_rka ? 'green' : 'red'}; font-size: smaller">RKA: ${parseInt(tpb[i][1].total_rka).toLocaleString()}</span>
-                                </td>
-                                <td></td>
-                                <td style="text-align:center;">
-                                    <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${tpb[i][0].inprogress ? 'In Progress' : (tpb[i][0].finish ? 'Finish' : 'Unfilled')}</a>
-                                </td>
-                                <td style="text-align:center;">                                   
-                                </td> 
-                                <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
-                                    <input disabled class="form-check-input tpb-check perusahaan-${tempPerusahaan}" data-pilar-parent="pilar-${tempPerusahaan}-${value}" type="checkbox">
-                                    </label></td>                                
-                            </tr>
-                            `;
-                            if(tpb[i][0].total) {
-                                tempTpbRow += `<tr class="treegrid-parent-bumn-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i][0].id_tpb}" id="treegrid-parent-bumn-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i][0].id_tpb}" style="visibility: hidden"><td style="text-align:center;"></td></tr>`
-                            }
                             
-                            tpbRow += tempTpbRow;
+                            if(tpb[i][0]) {
+                                // defining progress status
+                                let status_class = ''
+                                if(tpb[i][0].inprogress) status_class = 'primary'
+                                else if(tpb[i][0].finish) status_class = 'success'
+                                else status_class = 'danger'
+
+                                let tempTpbRow = `
+                                <tr class="treegrid-bumn-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i][0].id_tpb} ${parentClass}" data-type="tpb" data-value="${tpb[i][0].id_tpb}" data-perusahaan="${tempPerusahaan}" data-pilar="${value}" id="perusahaan-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i][0].id_tpb}">
+                                    <td style="text-align:center;"></td>
+                                    <td style="display: flex"><div style="flex: 1">${tpb[i][0].no_tpb} - ${tpb[i][0].nama_tpb}</div></td>
+                                    <td style="text-align:right;">
+                                        ${tpb[i][0].total ? parseInt(tpb[i][0].total).toLocaleString() : 0}
+                                        <br/>   
+                                        <span style="color: ${ tpb[i][0].total <= tpb[i][1].total_rka ? 'green' : 'red'}; font-size: smaller">RKA: ${parseInt(tpb[i][1].total_rka).toLocaleString()}</span>
+                                    </td>
+                                    <td></td>
+                                    <td style="text-align:center;">
+                                        <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${tpb[i][0].inprogress ? 'In Progress' : (tpb[i][0].finish ? 'Finish' : 'Unfilled')}</a>
+                                    </td>
+                                    <td style="text-align:center;">                                   
+                                    </td> 
+                                    <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                        <input disabled class="form-check-input tpb-check perusahaan-${tempPerusahaan}" data-pilar-parent="pilar-${tempPerusahaan}-${value}" type="checkbox">
+                                        </label></td>                                
+                                </tr>
+                                `;
+                                if(tpb[i][0].total) {
+                                    tempTpbRow += `<tr class="treegrid-parent-bumn-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i][0].id_tpb}" id="treegrid-parent-bumn-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i][0].id_tpb}" style="visibility: hidden"><td style="text-align:center;"></td></tr>`
+                                }
+                                
+                                tpbRow += tempTpbRow;
+                            }
                         }
 
                         $("#"+parentClass).before(tpbRow);

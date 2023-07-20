@@ -251,18 +251,21 @@
                                 @php
                                     $enable_input = false;
                                     if($isOkToInput || $isEnableInputBySuperadmin) $enable_input = true;
-                                    
+                                    $isFinisih = false;
+                                    if($countInprogress > 0) $isFinisih = false;
+                                    else if($countFinish > 0) $isFinisih = true;
                                 @endphp
                                 @can('view-kegiatan')
                                     <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data
                                     </button>
                                     @can('delete-kegiatan')
-                                    <button {{ $isSuperAdmin ? '' : ($enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
+                                    <button {{ $isSuperAdmin ? '' : ($enable_input ? (!$isFinisih ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
                                     </button>
                                     @endcan
                                     @can('edit-kegiatan')
-                                    <button {{ $isSuperAdmin ? '' : ($enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
+                                    <button {{ $isSuperAdmin ? '' : ($enable_input ? (!$isFinisih ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
                                     </button>
+                                    @endcan
                                     @endcan
                                 @endcan
                               

@@ -27,6 +27,9 @@
     <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">TPB</font></b></td>
     <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">Jenis Anggaran (TPB)</font></b></td>
     <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">Program</font></b></td>
+    <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">Prioritas</font></b></td>
+    <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">CSV</font></b></td>
+    <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">Umum</font></b></td>
     <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">Anggaran (Rp)</font></b></td>
     <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000" align="left" valign=middle ><b><font face="Arial" size=4 color="#000000">Status</font></b></td>
     
@@ -44,6 +47,9 @@
     <td>{{@$a->no_tpb}} - {{@$a->tpb_nama}}</td>
     <td>{{@$a->jenis_anggaran_tpb}}</td>
     <td>{{@$a->program}}</td>
+    <td>{{@$a->kriteria_program_prioritas ? 'TRUE' : 'FALSE'}}</td>
+    <td>{{@$a->kriteria_program_csv ? 'TRUE' : 'FALSE'}}</td>
+    <td>{{@$a->kriteria_program_umum ? 'TRUE' : 'FALSE'}}</td>
     <td>{{$a->anggaran_alokasi}}</td>
     <td>{{@$a->status->nama}}</td>
 </tr>

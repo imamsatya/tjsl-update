@@ -347,10 +347,19 @@
 
             //body
             $('body').on('click', '.delete-selected-data', function() {
-                console.log('halo')
                 var selectedData = $('input[name="selected-data[]"]:checked').map(function() {
                     return $(this).val();
                 }).get();
+
+                if(!selectedData.length) {
+                    Swal.fire({
+                        title: 'Warning!',
+                        text: 'Tidak ada data terpilih untuk dihapus!',
+                        icon: 'warning'
+                    })
+                    return
+                }
+
                 Swal.fire({
                     title: 'Apakah Anda Yakin?',
                     text: 'Apakah anda yakin akang menghapus data yang sudah dipilih?',
@@ -361,6 +370,7 @@
                     reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        $.blockUI();
                         // If the user confirmed the deletion, do something here
                         console.log('User confirmed deletion');
                         // Send an AJAX request to set the "selected" attribute in the database
@@ -371,15 +381,29 @@
                                 "_token": "{{ csrf_token() }}",
                                 selectedData: selectedData
                             },
-                            success: function(response) {
-                                window.location.reload();
-                                // console.log(`success : ${response}`)
-                                // toastr.success(
-                                //     `Status data <strong>${nama_tpb}</strong> dengan ID TPB <strong>${no_tpb}</strong> dan jenis anggaran <strong>${jenis_anggaran}</strong> berhasil diubah menjadi <strong>${finalStatus}</strong>!`
-                                // );
+                            dataType: 'json',
+                            success: function(data) {
+                                $.unblockUI();
+                                swal.fire({
+                                        title: data.title,
+                                        html: data.msg,
+                                        icon: data.flag,
+                                        buttonsStyling: true,
+                                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                                }).then(function() {
+                                    window.location.reload();
+                                })
                             },
-                            error: function(jqXHR, textStatus, errorThrown) {
-                                console.log(errorThrown);
+                            error: function(data) {
+                                console.log(data.err);
+                                $.unblockUI();
+                                swal.fire({
+                                        title: data.title,
+                                        html: data.msg,
+                                        icon: data.flag,
+                                        buttonsStyling: true,
+                                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                                })  
                             }
                         });
                     } else {
@@ -387,7 +411,7 @@
                         console.log('User cancelled deletion');
                     }
                 })
-                console.log(selectedData)
+                // console.log(selectedData)
 
 
             });
