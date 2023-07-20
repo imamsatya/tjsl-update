@@ -266,7 +266,7 @@
                                     <button {{ $isSuperAdmin ? '' : ($enable_input ? (!$isFinisih ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
                                     </button>
                                     @endcan
-                                    @endcan
+                                    
                                 @endcan
                               
                                 @can('view-verify')
