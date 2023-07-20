@@ -250,11 +250,11 @@ class KegiatanController extends Controller
         ])->sortByDesc(null);
         
         // dd($pilars);
-
+        // dd($perusahaan_id);
         //untuk View tabelnya
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
-        $perusahaan_id = $request->perusahaan_id ?? 1;
+        $perusahaan_id = $perusahaan_id ?? 1;
 
         $admin_bumn = false;
         $view_only = false;
