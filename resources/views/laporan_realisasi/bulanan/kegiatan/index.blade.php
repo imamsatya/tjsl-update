@@ -280,9 +280,9 @@
                                 <button id="proses" class="btn btn-success me-3">Proses</button>                                
                                 
                             </div>
-                            <div class="col-lg-6 text-end">
+                            {{-- <div class="col-lg-6 text-end">
                                 <button id="download" class="btn btn-sm btn-primary me-3"><i class="bi bi-download fs-3"></i>Download Template</button>                                
-                            </div>
+                            </div> --}}
                         </div>
                         <div class="separator border-gray-200 mb-10"></div>
                     </div>

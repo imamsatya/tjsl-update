@@ -910,9 +910,11 @@ class KegiatanController extends Controller
         // }catch(Exception $e){}
 
     public function downloadTemplate(Request $request) {
+        
         $perusahaan_id = ($request->perusahaan_id?$request->perusahaan_id:1);
-        $bulan = ($request->bulan?$request->bulan:date('m'));
-        $tahun = ($request->tahun?$request->tahun:date('Y'));
+        $bulan = ($request->bulan ?? date('m'));
+        $tahun = ($request->tahun ?? date('Y'));
+        
         $perusahaan = Perusahaan::where('id', $perusahaan_id)->first();
         $namaFile = "Template Laporan Realisasi.xlsx";
 

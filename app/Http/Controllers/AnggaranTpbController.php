@@ -626,9 +626,12 @@ class AnggaranTpbController extends Controller
                     // return redirect()->route('anggaran_tpb.index')->with('success', 'Berhasil Mengubah Input Data RKA');
                 }                
             } else { // insert
-                $data = AnggaranTpb::create((array)$param);
-                AnggaranTpbController::store_log($data->id, $param['status_id'], $param['anggaran'], 'RKA');
-                Session::flash('success', "Berhasil Menyimpan Input Data RKA");
+                if ($param['anggaran'] != null) {
+                    $data = AnggaranTpb::create((array)$param);
+                    AnggaranTpbController::store_log($data->id, $param['status_id'], $param['anggaran'], 'RKA');
+                    Session::flash('success', "Berhasil Menyimpan Input Data RKA");
+                }
+               
                 // return redirect()->route('anggaran_tpb.index')->with('success', 'Berhasil Menyimpan Input Data RKA');
             }
         }

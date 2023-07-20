@@ -46,8 +46,12 @@
                                         <label>File (*.xlsx)</label>
                                         <input class="form-control" type="file" name="file_name" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" required/>
                                     </div>
-                                    <div class="col-lg-4 pt-6">
+                                    <div class="col-lg-2 pt-6">
                                         <button value="upload-excel" id="submit-upload-excel" type="submit" class="btn btn-success me-3">Proses</button>
+                                    </div>
+                                    <div class="col-lg-4 pt-6">
+                                        <button id="download" type="button" class="btn btn-primary "><i
+                                                class="fa fa-download"></i> Download Template</button>
                                     </div>
                                 </div>
                             </form>
@@ -498,6 +502,7 @@
     <script>
         var urluploadstore = "{{route('laporan_realisasi.bulanan.kegiatan.upload_excel')}}";
         var urldatatable = "{{route('laporan_realisasi.bulanan.kegiatan.history_upload')}}";
+        var urldownloadtemplate = "{{route('laporan_realisasi.bulanan.kegiatan.download_template')}}";
 
         $(document).ready(function() {                        
             setFormValidateUpload();
@@ -513,6 +518,11 @@
                     $("#jenis-anggaran").val(checkJenisAnggaran).trigger('change')
                 }, 1000)
             }
+
+            $('body').on('click','#download',function(){
+                downloadTemplate();
+            });
+
             $("#jenis-anggaran").on('change', function(){
              
                 const jenisAnggaran = $(this).val()
@@ -628,7 +638,91 @@
                 $(this).find(".accordion-icon-off").toggleClass("d-none");
                 $(this).find(".accordion-icon-on").toggleClass("d-none");
             });
-        });        
+        });   
+        
+        function downloadTemplate()
+    {
+        var url = new URL(window.location.href);
+        var params = url.pathname.split('/').slice(-3);
+        var filter_perusahaan_id = params[0]; // "1"
+        var filter_tahun = params[1]; // "2023"
+        var filter_bulan = params[2]; // "7"
+
+        console.log(`perusahaan_id : ${filter_perusahaan_id} | tahun : ${filter_tahun} | bulan : ${filter_bulan}`)
+
+        // var filter_perusahaan_id = $("select[name='perusahaan_id']").val();
+        // var filter_tahun = $("select[name='tahun']").val();
+        // var filter_bulan = $("select[name='bulan_id']").val();
+
+        if(filter_perusahaan_id == '' || filter_tahun == '' || filter_bulan == ''){
+            onbtndisablevalidasi();
+        }else{
+            $.ajax({
+                type: 'post',
+                data: {
+                    'perusahaan_id' : filter_perusahaan_id,
+                    'tahun' : filter_tahun,
+                    // 'target_tpb_id' : $("select[name='program_id']").val(),
+                    // 'pilar_pembangunan_id' : $("select[name='pilar_pembangunan_id']").val(),
+                    // 'tpb_id' : $("select[name='tpb_id']").val(),
+                    'bulan' : filter_bulan,
+                },
+                beforeSend: function () {
+                    $.blockUI();
+                },
+                url: urldownloadtemplate,
+                xhrFields: {
+                    responseType: 'blob',
+                },
+                success: function(data){
+                    $.unblockUI();
+                    var filename = 'Template Input Data Laporan Realisasi Bulan '+ $("#bulan_id option:selected").text() +" Tahun "+`${filter_tahun}`+'.xlsx';
+
+                    var blob = new Blob([data], {
+                        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    });
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = filename;
+
+                    document.body.appendChild(link);
+
+                    link.click();
+                    document.body.removeChild(link);
+                },
+                error: function(jqXHR, exception){
+                    $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                });      
+                    
+                }
+            });
+        }
+        return false;
+    }
 
        
 

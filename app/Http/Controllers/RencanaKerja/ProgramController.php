@@ -488,9 +488,9 @@ class ProgramController extends Controller
 
             $target_tpb->pelaksanaan_program = $data['pelaksanaan_program_edit'];
             $target_tpb->mitra_bumn_id = $data['mitra_bumn_edit'];
-            if ($data['program_multiyears_edit'] === 'ya') {
-                $target_tpb->multi_years = true;
-            }
+            // if ($data['program_multiyears_edit'] === 'ya') {
+            //     $target_tpb->multi_years = true;
+            // }
             $target_tpb->save();            
             ProgramController::store_log($target_tpb->id,$target_tpb->status_id);
             DB::commit();
