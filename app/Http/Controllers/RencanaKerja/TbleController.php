@@ -284,7 +284,7 @@ class TbleController extends Controller
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress/unfilled
         if ($laporan_manajemen?->whereIn('status_id', [2, 3])->first()) {
             $data[3]['tanggal_update'] = $laporan_manajemen->whereIn('status_id', [2, 3])->first()->updated_at;
-            $data[3]['status'] = $laporan_manajemen->whereIn('status_id', [2, 3])->first()->stauts_id === 2 ? 'In Progress' : null;
+            $data[3]['status'] = $laporan_manajemen->whereIn('status_id', [2, 3])->first()->status_id === 2 ? 'In Progress' : null;
         }
         $tanggal_cetak = Carbon::now()->locale('id_ID')->isoFormat('D MMMM YYYY');
         $user = Auth::user();

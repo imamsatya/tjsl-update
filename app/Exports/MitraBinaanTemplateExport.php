@@ -10,12 +10,13 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\FromView;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Illuminate\Contracts\View\View;
 use DB;
 use App\Models\PumkMitraBinaan;
 use App\Models\Bulan;
 
-class MitraBinaanTemplateExport implements FromView , WithTitle
+class MitraBinaanTemplateExport implements FromView , WithTitle, ShouldAutoSize
 {
     public function __construct($perusahaan, $tahun, $periode){
         $this->perusahaan = $perusahaan ;

@@ -27,6 +27,7 @@
         top: 0;
         left: 0;
     }
+
     .percent {
         display: inline-block;
         line-height: 150px;
@@ -60,8 +61,8 @@
         display: inline-block;
         line-height: 150px;
         z-index: 2;
-        margin-left:60px;
-        padding-top:20px;
+        margin-left: 60px;
+        padding-top: 20px;
     }
 
     .percent2:after {
@@ -69,8 +70,79 @@
         margin-left: 0.1em;
         font-size: 16pt;
     }
+
 </style>
 
+
+<div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
+    <!--begin::Container-->
+    <div id="kt_content_container" class="container">
+        <div class="card" style="margin-bottom: 10px">
+            <div class="card-header pt-5">
+                <div class="card-title">
+                    <div class="accordion accordion-icon-collapse" id="kt_accordion_9">
+                        <div class="accordion-header py-3 d-flex" data-bs-toggle="collapse"
+                            data-bs-target="#kt_accordion_9_item_1">
+                            <div class="row mb-4">
+                                <div class="col-1" style="text-align: center">
+                                    <span class="accordion-icon">
+                                        <i class="bi-duotone bi-plus-square fs-3 accordion-icon-on"></i>
+                                        <i class="bi-duotone bi-dash-square fs-3 accordion-icon-off d-none"></i>
+                                    </span>
+                                </div>
+                                <div class="col-11" style="">
+                                    <h3>Status Pengisian Data Berdasarkan Menu </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="kt_accordion_9_item_1" class="fs-6 collapse">
+                <div class="card-body p-0">
+                    <div class="card-px py-10">
+                        <div class="table-responsive">
+                            <table class="table table-striped- table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Menu</th>
+                                        <th>RKA</th>
+                                        <th>TW I</th>
+                                        <th>TW II</th>
+                                        <th>TW III</th>
+                                        <th>Prognosa</th>
+                                        <th>TW 4</th>
+                                        <th>Audited</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($menuStatus as $item)
+                                    <tr>
+                                        <td>{{$item['menu']}}</td>
+                                        
+                                        <td>
+                                            {!! renderStatusBadge($item['rka']) !!}
+                                        </td>
+                                        <td>
+                                            {!! renderStatusBadge($item['tw1']) !!}
+                                        </td>
+                                        <td>{!! renderStatusBadge($item['tw2']) !!}</td>
+                                        <td>{!! renderStatusBadge($item['tw3']) !!}</td>
+                                        <td>{!! renderStatusBadge($item['prognosa']) !!}</td>
+                                        <td>{!! renderStatusBadge($item['tw4']) !!}</td>
+                                        <td>{!! renderStatusBadge($item['audited']) !!}</td>
+                                    </tr>
+                                    @endforeach
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
     <!--begin::Container-->
@@ -83,7 +155,7 @@
                 <!--begin::Card title-->
                 <div class="card-title">
                     <h3 class="d-flex align-items-center">Grafik Realisasi
-                    <span class="text-gray-600 fs-6 ms-1"></span></h3>
+                        <span class="text-gray-600 fs-6 ms-1"></span></h3>
                 </div>
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
@@ -100,81 +172,88 @@
                         <div class="col-lg-6">
                             <label>BUMN</label>
                             @php
-                                $disabled = (($admin_bumn) ? 'disabled="true"' : '');
+                            $disabled = (($admin_bumn) ? 'disabled="true"' : '');
                             @endphp
-                            <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
+                            <select class="form-select form-select-solid form-select2" id="perusahaan_id"
+                                name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN"
+                                {{ $disabled }}>
                                 <option></option>
                                 <option value="all">Semua BUMN</option>
-                                @foreach($perusahaan as $p)  
-                                    @php
-                                        $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
-                                    @endphp
-                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
+                                @foreach($perusahaan as $p)
+                                @php
+                                $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
+                                @endphp
+                                <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-lg-3">
                             <label> Jenis Anggaran</label>
-                            <select class="form-select form-select-solid form-select2" id="owner_id" name="owner_id" data-kt-select2="true" data-placeholder="Pilih">
-                                   {{-- @php
+                            <select class="form-select form-select-solid form-select2" id="owner_id" name="owner_id"
+                                data-kt-select2="true" data-placeholder="Pilih">
+                                {{-- @php
                                         $select = ($filter_owner_id ? 'selected="selected"' : '');
                                     @endphp
                                 <option value="all" {!! $select !!}>Semua Owner</option> --}}
-                                <option value="all" >Semua Jenis Anggaran</option>
+                                <option value="all">Semua Jenis Anggaran</option>
                                 {{-- @foreach($owner as $p)  
                                     <option value="{{ $p->id }}" >{{ $p->nama }}</option>
                                 @endforeach --}}
 
                                 <option value="CID">
                                     CID</option>
-                                <option value="non CID"
-                                    >
+                                <option value="non CID">
                                     non CID</option>
                             </select>
                         </div>
                         <div class="col-lg-3">
                             <label>Tahun</label>
-                            <select class="form-select form-select-solid form-select2" id="tahun" name="tahun" data-kt-select2="true" >
+                            <select class="form-select form-select-solid form-select2" id="tahun" name="tahun"
+                                data-kt-select2="true">
                                 @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
-                                    @php
-                                        $select = (($i == $tahun) ? 'selected="selected"' : '');
-                                    @endphp
-                                    <option value="{{$i}}" {!! $select !!}>{{$i}}</option>
+                                @php
+                                $select = (($i == $tahun) ? 'selected="selected"' : '');
+                                @endphp
+                                <option value="{{$i}}" {!! $select !!}>{{$i}}</option>
                                 @php } @endphp
                             </select>
                         </div>
                     </div>
-                        
+
                     <div class="form-group row mb-5">
                         <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 center" style="text-align: center;">
                             <span id="chart_pilar1" class="chart" data-percent="0">
                                 <span class="percent"></span>
                             </span><br>
-                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar Pembangunan <br>Sosial</span><br>
+                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar Pembangunan
+                                <br>Sosial</span><br>
                             <span id="chart_detail1" style="font-size:12px;"></span>
                         </div>
-                        
+
                         <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 center" style="text-align: center;">
                             <span id="chart_pilar2" class="chart" data-percent="0">
                                 <span class="percent"></span>
                             </span><br>
-                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar Pembangunan<br> Ekonomi</span><br>
+                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar
+                                Pembangunan<br> Ekonomi</span><br>
                             <span id="chart_detail2" style="font-size:12px;"></span>
                         </div>
-                        
+
                         <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 center" style="text-align: center;">
                             <span id="chart_pilar3" class="chart" data-percent="0">
                                 <span class="percent"></span>
                             </span><br>
-                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar Pembangunan<br> Lingkungan</span><br>
+                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar
+                                Pembangunan<br> Lingkungan</span><br>
                             <span id="chart_detail3" style="font-size:12px;"></span>
                         </div>
-                        
+
                         <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 center" style="text-align: center;">
                             <span id="chart_pilar4" class="chart" data-percent="0">
                                 <span class="percent"></span>
                             </span><br>
-                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar Pembangunan <br>Hukum dan Tata Kelola<br></span>
+                            <span class="caption-subject font-grey-gallery" style="font-weight:bold;">Pilar Pembangunan
+                                <br>Hukum dan Tata Kelola<br></span>
                             <span id="chart_detail4" style="font-size:12px;"></span>
                         </div>
                     </div>
@@ -196,7 +275,7 @@
                 <!--begin::Card title-->
                 <div class="card-title">
                     <h3 class="d-flex align-items-center">Grafik TPB
-                    <span class="text-gray-600 fs-6 ms-1"></span></h3>
+                        <span class="text-gray-600 fs-6 ms-1"></span></h3>
                 </div>
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
@@ -212,27 +291,31 @@
                     <div class="form-group row  mb-5">
                         <div class="col-lg-4">
                             <label>TPB</label>
-                            <select class="form-select form-select-solid form-select2" id="tpb_id" name="tpb_id" data-kt-select2="true" data-placeholder="Pilih TPB">
+                            <select class="form-select form-select-solid form-select2" id="tpb_id" name="tpb_id"
+                                data-kt-select2="true" data-placeholder="Pilih TPB">
                                 <option></option>
                                 <option value="all">Semua TPB</option>
-                                @foreach($tpb as $p)  
-                                    @php
-                                        $select = (($p->id == $tpb_id) ? 'selected="selected"' : '');
-                                    @endphp
-                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->no_tpb }} - {{ $p->nama }} - {{$p->jenis_anggaran}}</option>
+                                @foreach($tpb as $p)
+                                @php
+                                $select = (($p->id == $tpb_id) ? 'selected="selected"' : '');
+                                @endphp
+                                <option value="{{ $p->id }}" {!! $select !!}>{{ $p->no_tpb }} - {{ $p->nama }} -
+                                    {{$p->jenis_anggaran}}</option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
-                        
+
                     <div class="form-group row mb-5">
                         <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6 center" style="text-align: center;">
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 center" style="text-align: center;">
-                            <span id="chart_tpb" class="chart2" data-percent="0" style="margin-left: -50px; margin-bottom:60px;">
+                            <span id="chart_tpb" class="chart2" data-percent="0"
+                                style="margin-left: -50px; margin-bottom:60px;">
                                 <span class="percent2"></span>
                             </span><br>
-                            <span id="chart_title" class="caption-subject font-grey-gallery" style="font-weight:bold;">Semua TPB</span><br>
+                            <span id="chart_title" class="caption-subject font-grey-gallery"
+                                style="font-weight:bold;">Semua TPB</span><br>
                             <span id="chart_detail" style="font-size:12px;"></span>
                         </div>
                     </div>
@@ -254,16 +337,23 @@
                 <!--begin::Card title-->
                 <div class="card-title">
                     <h2 class="d-flex align-items-center">Pendanaan PUMK
-                    <span class="text-gray-600 fs-6 ms-1"></span></h2>
+                        <span class="text-gray-600 fs-6 ms-1"></span></h2>
                 </div>
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
                 <div class="card-toolbar">
                     <!--begin::Search-->
-                    <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
+                    <div class="d-flex align-items-center position-relative my-1"
+                        data-kt-view-roles-table-toolbar="base">
 
-                        <button type="button" class="btn btn-active btn-info btn-sm btn-icon btn-search-pumk cls-search-pumk btn-search-pumk-active" style="margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
-                        <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-search-pumk cls-search-pumk btn-search-pumk-unactive" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
+                        <button type="button"
+                            class="btn btn-active btn-info btn-sm btn-icon btn-search-pumk cls-search-pumk btn-search-pumk-active"
+                            style="margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i
+                                class="bi bi-search fs-3"></i></button>
+                        <button type="button"
+                            class="btn btn-active btn-light btn-sm btn-icon btn-search-pumk cls-search-pumk btn-search-pumk-unactive"
+                            style="display:none;margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i
+                                class="bi bi-search fs-3"></i></button>
 
                     </div>
                     <!--end::Search-->
@@ -274,57 +364,62 @@
             <!--begin::Card body-->
             <div class="card-body p-0">
                 <!--begin::Heading-->
-                <div class="card-px py-10" >
-                  <div class="row" id="form-cari-pumk">
-                    <div class="form-group row  mb-5" >
-                        <div class="col-lg-6">
-                            <label>BUMN</label>
-                            @php
+                <div class="card-px py-10">
+                    <div class="row" id="form-cari-pumk">
+                        <div class="form-group row  mb-5">
+                            <div class="col-lg-6">
+                                <label>BUMN</label>
+                                @php
                                 $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
-                            @endphp
-                            <select class="form-select form-select-solid form-select2" id="perusahaan_id_danapumk" name="perusahaan_id_danapumk" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
-                                <option></option>
-                                @foreach($perusahaan as $bumn)  
+                                @endphp
+                                <select class="form-select form-select-solid form-select2" id="perusahaan_id_danapumk"
+                                    name="perusahaan_id_danapumk" data-kt-select2="true" data-placeholder="Pilih BUMN"
+                                    {{ $disabled }}>
+                                    <option></option>
+                                    @foreach($perusahaan as $bumn)
                                     @php
-                                        $select = (($bumn->id == $filter_bumn_id) ? 'selected="selected"' : '');
+                                    $select = (($bumn->id == $filter_bumn_id) ? 'selected="selected"' : '');
                                     @endphp
                                     <option value="{{ $bumn->id }}" {!! $select !!}>{{ $bumn->nama_lengkap }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                                    @endforeach
+                                </select>
+                            </div>
 
-                        <div class="col-lg-2">
-                            <label>Tahun</label>
-                            <select class="form-select form-select-solid form-select2" id="tahun_danapumk" name="tahun_danapumk" data-kt-select2="true" data-placeholder="Pilih Tahun" data-allow-clear="true">
-                                @php
+                            <div class="col-lg-2">
+                                <label>Tahun</label>
+                                <select class="form-select form-select-solid form-select2" id="tahun_danapumk"
+                                    name="tahun_danapumk" data-kt-select2="true" data-placeholder="Pilih Tahun"
+                                    data-allow-clear="true">
+                                    @php
                                     for($i = date("Y"); $i>=2020; $i--){ @endphp
                                     <option value="{{$i}}">{{$i}}</option>
                                     @php }
                                     $select = (($i == date("Y")) ? 'selected="selected"' : '');
-                                @endphp
-                                <option></option>
-                            </select>
+                                    @endphp
+                                    <option></option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
 
-                    {{-- <div class="form-group row  mb-5">
+                        {{-- <div class="form-group row  mb-5">
                         <div class="col-lg-6">
                             <button id="proses" class="btn-small btn-success me-3 text-white"><i class="fa fa-search text-white"></i> Filter</button>
-                            <button  onclick="window.location.href='{{route('dashboard.index')}}'" class="btn-small btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
-                        </div>
-                    </div> --}}
-                    <div class="separator border-gray-200 mb-10"></div>
-                </div>
-                    <!--begin: Datatable -->
-                    <div>
-                        <div class="portlet-body" id="pumk_chart">
-                        </div>
+                            <button  onclick="window.location.href='{{route('dashboard.index')}}'" class="btn-small
+                        btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
                     </div>
+                </div> --}}
+                <div class="separator border-gray-200 mb-10"></div>
+            </div>
+            <!--begin: Datatable -->
+            <div>
+                <div class="portlet-body" id="pumk_chart">
                 </div>
             </div>
-            <!--end::Card body-->
         </div>
     </div>
+    <!--end::Card body-->
+</div>
+</div>
 </div>
 
 <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
@@ -338,16 +433,23 @@
                 <!--begin::Card title-->
                 <div class="card-title">
                     <h2 class="d-flex align-items-center">Realisasi PUMK
-                    <span class="text-gray-600 fs-6 ms-1"></span></h2>
+                        <span class="text-gray-600 fs-6 ms-1"></span></h2>
                 </div>
                 <!--end::Card title-->
                 <!--begin::Card toolbar-->
                 <div class="card-toolbar">
                     <!--begin::Search-->
-                    <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
+                    <div class="d-flex align-items-center position-relative my-1"
+                        data-kt-view-roles-table-toolbar="base">
 
-                        <button type="button" class="btn btn-active btn-info btn-sm btn-icon btn-search cls-search btn-search-active" style="margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
-                        <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-search cls-search btn-search-unactive" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
+                        <button type="button"
+                            class="btn btn-active btn-info btn-sm btn-icon btn-search cls-search btn-search-active"
+                            style="margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i
+                                class="bi bi-search fs-3"></i></button>
+                        <button type="button"
+                            class="btn btn-active btn-light btn-sm btn-icon btn-search cls-search btn-search-unactive"
+                            style="display:none;margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i
+                                class="bi bi-search fs-3"></i></button>
 
                     </div>
                     <!--end::Search-->
@@ -358,78 +460,85 @@
             <!--begin::Card body-->
             <div class="card-body p-0">
                 <!--begin::Heading-->
-                <div class="card-px py-10" >
-                  <div class="row" id="form-cari">
-                    <div class="form-group row  mb-5" >
-                        <div class="col-lg-6">
-                            <label>BUMN</label>
-                            @php
+                <div class="card-px py-10">
+                    <div class="row" id="form-cari">
+                        <div class="form-group row  mb-5">
+                            <div class="col-lg-6">
+                                <label>BUMN</label>
+                                @php
                                 $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
-                            @endphp
-                            <select class="form-select form-select-solid form-select2" id="perusahaan_id_pumk" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
-                                <option></option>
-                                @foreach($perusahaan as $bumn)  
+                                @endphp
+                                <select class="form-select form-select-solid form-select2" id="perusahaan_id_pumk"
+                                    name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN"
+                                    {{ $disabled }}>
+                                    <option></option>
+                                    @foreach($perusahaan as $bumn)
                                     @php
-                                        $select = (($bumn->id == $filter_bumn_id) ? 'selected="selected"' : '');
+                                    $select = (($bumn->id == $filter_bumn_id) ? 'selected="selected"' : '');
                                     @endphp
                                     <option value="{{ $bumn->id }}" {!! $select !!}>{{ $bumn->nama_lengkap }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-lg-4">
-                            <label>Bulan</label>
-                            <select id="bulan_id_pumk" class="form-select form-select-solid form-select2" name="bulan_id_pumk" data-kt-select2="true" data-placeholder="Pilih Bulan" data-allow-clear="true">
-                                <option></option>
-                                @foreach($bulan as $p)  
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-lg-4">
+                                <label>Bulan</label>
+                                <select id="bulan_id_pumk" class="form-select form-select-solid form-select2"
+                                    name="bulan_id_pumk" data-kt-select2="true" data-placeholder="Pilih Bulan"
+                                    data-allow-clear="true">
+                                    <option></option>
+                                    @foreach($bulan as $p)
                                     @php
-                                        $select = (($p->id == $filter_status_id) ? 'selected="selected"' : '');
+                                    $select = (($p->id == $filter_status_id) ? 'selected="selected"' : '');
                                     @endphp
                                     <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-lg-2">
-                            <label>Tahun</label>
-                            <select class="form-select form-select-solid form-select2" id="tahun_pumk" name="tahun_pumk" data-kt-select2="true" data-placeholder="Pilih Tahun" data-allow-clear="true">
-                                @php
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-lg-2">
+                                <label>Tahun</label>
+                                <select class="form-select form-select-solid form-select2" id="tahun_pumk"
+                                    name="tahun_pumk" data-kt-select2="true" data-placeholder="Pilih Tahun"
+                                    data-allow-clear="true">
+                                    @php
                                     for($i = date("Y"); $i>=2020; $i--){ @endphp
                                     <option value="{{$i}}">{{$i}}</option>
                                     @php }
                                     $select = (($i == date("Y")) ? 'selected="selected"' : '');
-                                @endphp
-                                <option></option>
-                            </select>
+                                    @endphp
+                                    <option></option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
 
-                    {{-- <div class="form-group row  mb-5">
+                        {{-- <div class="form-group row  mb-5">
                         <div class="col-lg-6">
                             <button id="proses" class="btn-small btn-success me-3 text-white"><i class="fa fa-search text-white"></i> Filter</button>
-                            <button  onclick="window.location.href='{{route('dashboard.index')}}'" class="btn-small btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
-                        </div>
-                    </div> --}}
-                    <div class="separator border-gray-200 mb-10"></div>
-                </div>
-                    <!--begin: Datatable -->
-                    <div>
-                        <div class="portlet-body" id="mb_chart">
-                        </div>
+                            <button  onclick="window.location.href='{{route('dashboard.index')}}'" class="btn-small
+                        btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
                     </div>
+                </div> --}}
+                <div class="separator border-gray-200 mb-10"></div>
+            </div>
+            <!--begin: Datatable -->
+            <div>
+                <div class="portlet-body" id="mb_chart">
                 </div>
             </div>
-            <!--end::Card body-->
         </div>
     </div>
+    <!--end::Card body-->
+</div>
+</div>
 </div>
 @endsection
 
 
 @section('addafterjs')
- <script src="{{ asset('plugins/Highcharts-9.2.2/code/highcharts.js') }}"></script>
- <script src="{{ asset('plugins/Highcharts-9.2.2/code/highcharts-3d.js') }}"></script>
- <script src="{{ asset('plugins/Highcharts-9.2.2/code/modules/exporting.js') }}"></script>
- <script src="{{ asset('plugins/Highcharts-9.2.2/code/modules/accessibility.js') }}"></script>
- <script src="{{ asset('plugins/Highcharts-9.2.2/code/modules/export-data.js') }}"></script>
+<script src="{{ asset('plugins/Highcharts-9.2.2/code/highcharts.js') }}"></script>
+<script src="{{ asset('plugins/Highcharts-9.2.2/code/highcharts-3d.js') }}"></script>
+<script src="{{ asset('plugins/Highcharts-9.2.2/code/modules/exporting.js') }}"></script>
+<script src="{{ asset('plugins/Highcharts-9.2.2/code/modules/accessibility.js') }}"></script>
+<script src="{{ asset('plugins/Highcharts-9.2.2/code/modules/export-data.js') }}"></script>
 
 <script>
     var urlchartrealisasi = "{{route('home.chartrealisasi')}}";
@@ -437,22 +546,22 @@
     var urlchartmb = "{{route('home.chartmb')}}";
     var urlchartpumk = "{{route('home.chartpumk')}}";
 
-    $(document).ready(function(){
+    $(document).ready(function () {
         $('#page-title').html("{{ $pagetitle }}");
         $('#page-breadcrumb').html("{{ $breadcrumb }}");
-        
-        $('#perusahaan_id').on('change', function(event){
+
+        $('#perusahaan_id').on('change', function (event) {
             updatechartrealisasi();
             updatecharttpb();
         });
-        $('#tahun').on('change', function(event){
+        $('#tahun').on('change', function (event) {
             updatechartrealisasi();
             updatecharttpb();
         });
-        $('#tpb_id').on('change', function(event){
+        $('#tpb_id').on('change', function (event) {
             updatecharttpb();
         });
-        $('#owner_id').on('change', function(event){
+        $('#owner_id').on('change', function (event) {
             updatechartrealisasi();
             updatecharttpb();
         });
@@ -461,97 +570,97 @@
         initcharttpb();
 
         //pumk mitra binaan
-        $('#perusahaan_id_pumk').on('change', function(event){
+        $('#perusahaan_id_pumk').on('change', function (event) {
             updatechartmb();
         });
-        $('#tahun_pumk').on('change', function(event){
+        $('#tahun_pumk').on('change', function (event) {
             updatechartmb();
         });
-        $('#bulan_id_pumk').on('change', function(event){
+        $('#bulan_id_pumk').on('change', function (event) {
             updatechartmb();
         });
 
         updatechartmb();
 
-       
+
         $('#form-cari').hide();
-        $('body').on('click','.btn-search-active',function(){
+        $('body').on('click', '.btn-search-active', function () {
             $('.btn-search-active').hide();
             $('.btn-search-unactive').show();
             $('#form-cari').toggle(600);
         });
 
-        $('body').on('click','.btn-search-unactive',function(){
+        $('body').on('click', '.btn-search-unactive', function () {
             $('.btn-search-active').show();
             $('.btn-search-unactive').hide();
             $('#form-cari').toggle(600);
-        }); 
+        });
 
 
         //pendanaan pumk
-        $('#perusahaan_id_danapumk').on('change', function(event){
+        $('#perusahaan_id_danapumk').on('change', function (event) {
             updatechartpumk();
         });
-        $('#tahun_danapumk').on('change', function(event){
+        $('#tahun_danapumk').on('change', function (event) {
             updatechartpumk();
         });
 
         updatechartpumk();
 
         $('#form-cari-pumk').hide();
-        $('body').on('click','.btn-search-pumk-active',function(){
+        $('body').on('click', '.btn-search-pumk-active', function () {
             $('.btn-search-pumk-active').hide();
             $('.btn-search-pumk-unactive').show();
             $('#form-cari-pumk').toggle(600);
         });
 
-        $('body').on('click','.btn-search-pumk-unactive',function(){
+        $('body').on('click', '.btn-search-pumk-unactive', function () {
             $('.btn-search-pumk-active').show();
             $('.btn-search-pumk-unactive').hide();
             $('#form-cari-pumk').toggle(600);
-        }); 
-        
+        });
+
 
     });
 
-    function updatechartmb(){
+    function updatechartmb() {
         $.ajax({
             url: urlchartmb,
             data: {
-                'perusahaan_id_pumk' : $("#perusahaan_id_pumk").val(),
-                'tahun_pumk' : $("#tahun_pumk").val(),
-                'bulan_pumk' : $("#bulan_id_pumk").val()
+                'perusahaan_id_pumk': $("#perusahaan_id_pumk").val(),
+                'tahun_pumk': $("#tahun_pumk").val(),
+                'bulan_pumk': $("#bulan_id_pumk").val()
             },
             type: "POST",
-            dataType: "json", 
-            success: function(data){
+            dataType: "json",
+            success: function (data) {
                 initmitra(data);
-            }                       
+            }
         });
     }
 
     function initmitra(data) {
-        let s_lancar = data.saldo_lancar? parseInt(data.saldo_lancar) : 0;
-        let s_kurang_lancar = data.saldo_kurang_lancar? parseInt(data.saldo_kurang_lancar) : 0;
-        let s_diragukan = data.saldo_diragukan? parseInt(data.saldo_diragukan) : 0;
-        let s_macet = data.saldo_macet? parseInt(data.saldo_macet) : 0;
-        let s_bermasalah = data.saldo_bermasalah? parseInt(data.saldo_bermasalah) : 0;
-     
+        let s_lancar = data.saldo_lancar ? parseInt(data.saldo_lancar) : 0;
+        let s_kurang_lancar = data.saldo_kurang_lancar ? parseInt(data.saldo_kurang_lancar) : 0;
+        let s_diragukan = data.saldo_diragukan ? parseInt(data.saldo_diragukan) : 0;
+        let s_macet = data.saldo_macet ? parseInt(data.saldo_macet) : 0;
+        let s_bermasalah = data.saldo_bermasalah ? parseInt(data.saldo_bermasalah) : 0;
+
         Highcharts.setOptions({
-            colors: ['#E67E22','#6495ED']
+            colors: ['#E67E22', '#6495ED']
         });
         Highcharts.chart('mb_chart', {
             chart: {
                 zoomType: 'xy'
             },
             title: {
-                text: 'Kualitas Piutang'+ data.bumn + ' ' + data.bulan + ' ' + data.tahun
+                text: 'Kualitas Piutang' + data.bumn + ' ' + data.bulan + ' ' + data.tahun
             },
             subtitle: {
                 text: ''
             },
             xAxis: [{
-                categories: ["Lancar","Kurang Lancar","Diragukan","Macet","Bermasalah"],
+                categories: ["Lancar", "Kurang Lancar", "Diragukan", "Macet", "Bermasalah"],
                 crosshair: true
             }],
             yAxis: [{
@@ -567,7 +676,7 @@
                         color: Highcharts.getOptions().colors[2]
                     }
                 }
-            }, { 
+            }, {
                 title: {
                     text: 'Saldo Pinjaman (Rp)',
                     style: {
@@ -575,7 +684,7 @@
                     }
                 },
                 labels: {
-                    formatter: function(){
+                    formatter: function () {
                         return this.value.toLocaleString("fi-FI");
                     },
                     style: {
@@ -594,8 +703,7 @@
                 verticalAlign: 'top',
                 y: 15,
                 floating: true,
-                backgroundColor:
-                    Highcharts.defaultOptions.legend.backgroundColor || 
+                backgroundColor: Highcharts.defaultOptions.legend.backgroundColor ||
                     'rgba(255,255,255,0.25)'
             },
             series: [{
@@ -604,18 +712,18 @@
                 yAxis: 1,
                 zIndex: 1,
                 data: [
-                        s_lancar,
-                        s_kurang_lancar,
-                        s_diragukan,
-                        s_macet,
-                        s_bermasalah
-                       ],
+                    s_lancar,
+                    s_kurang_lancar,
+                    s_diragukan,
+                    s_macet,
+                    s_bermasalah
+                ],
                 tooltip: {
                     valueSuffix: '{value}'
 
                 },
                 style: {
-                        color: Highcharts.getOptions().colors[0]
+                    color: Highcharts.getOptions().colors[0]
                 },
 
             }, {
@@ -623,34 +731,34 @@
                 type: 'column',
                 zIndex: 0,
                 data: [
-                        data.mitra_lancar, 
-                        data.mitra_kurang_lancar, 
-                        data.mitra_diragukan, 
-                        data.mitra_macet,
-                        data.mitra_bermasalah 
-                      ],
+                    data.mitra_lancar,
+                    data.mitra_kurang_lancar,
+                    data.mitra_diragukan,
+                    data.mitra_macet,
+                    data.mitra_bermasalah
+                ],
                 tooltip: {
                     valueSuffix: ''
                 },
                 style: {
-                        color: Highcharts.getOptions().colors[1]
+                    color: Highcharts.getOptions().colors[1]
                 }
             }]
         });
     }
 
-    function updatechartpumk(){
+    function updatechartpumk() {
         $.ajax({
             url: urlchartpumk,
             data: {
-                'perusahaan_id_danapumk' : $("#perusahaan_id_danapumk").val(),
-                'tahun_danapumk' : $("#tahun_danapumk").val()
+                'perusahaan_id_danapumk': $("#perusahaan_id_danapumk").val(),
+                'tahun_danapumk': $("#tahun_danapumk").val()
             },
             type: "POST",
-            dataType: "json", 
-            success: function(data){
+            dataType: "json",
+            success: function (data) {
                 initpumk(data);
-            }                       
+            }
         });
     }
 
@@ -661,14 +769,14 @@
         let tahun = data.tahun;
 
         Highcharts.setOptions({
-            colors: ['#24E500','#0093AD']
+            colors: ['#24E500', '#0093AD']
         });
         Highcharts.chart('pumk_chart', {
             chart: {
                 zoomType: 'xy'
             },
             title: {
-                text: 'Statistik Penyaluran Dana PUMK '+tahun
+                text: 'Statistik Penyaluran Dana PUMK ' + tahun
             },
             subtitle: {
                 text: ''
@@ -690,7 +798,7 @@
                         color: Highcharts.getOptions().colors[2]
                     }
                 }
-            }, { 
+            }, {
                 title: {
                     text: 'Nominal Pendanaan (Rp) dalam Miliar',
                     style: {
@@ -698,7 +806,7 @@
                     }
                 },
                 labels: {
-                    formatter: function(){
+                    formatter: function () {
                         return this.value.toLocaleString("fi-FI");
                     },
                     style: {
@@ -717,8 +825,7 @@
                 verticalAlign: 'top',
                 y: 15,
                 floating: true,
-                backgroundColor:
-                    Highcharts.defaultOptions.legend.backgroundColor || 
+                backgroundColor: Highcharts.defaultOptions.legend.backgroundColor ||
                     'rgba(255,255,255,0.25)'
             },
             series: [{
@@ -731,7 +838,7 @@
                     valueSuffix: '{value} Miliar'
                 },
                 style: {
-                        color: Highcharts.getOptions().colors[0]
+                    color: Highcharts.getOptions().colors[0]
                 },
 
             }, {
@@ -743,28 +850,32 @@
                     valueSuffix: '{value} Mitra'
                 },
                 style: {
-                        color: Highcharts.getOptions().colors[1]
+                    color: Highcharts.getOptions().colors[1]
                 }
             }]
         });
-    }    
+    }
 
-    function updatechartrealisasi(){
+    function updatechartrealisasi() {
         $.ajax({
             url: urlchartrealisasi,
             data: {
-                'tpb_id' : $("#tpb_id").val(),
-                'perusahaan_id' : $("#perusahaan_id").val(),
-                'tahun' : $("#tahun").val(),
-                'owner_id' : $("#owner_id").val()
+                'tpb_id': $("#tpb_id").val(),
+                'perusahaan_id': $("#perusahaan_id").val(),
+                'tahun': $("#tahun").val(),
+                'owner_id': $("#owner_id").val()
             },
             type: "POST",
-            dataType: "json", 
-            success: function(data){
-                var detail1 = "<i>Target :</i> Rp. "+data.target1+"<br><i>Realisasi :</i> Rp. "+data.realisasi1+"<br><i>Sisa :</i> Rp. "+data.sisa1;
-                var detail2 = "<i>Target :</i> Rp. "+data.target2+"<br><i>Realisasi :</i> Rp. "+data.realisasi2+"<br><i>Sisa :</i> Rp. "+data.sisa2;
-                var detail3 = "<i>Target :</i> Rp. "+data.target3+"<br><i>Realisasi :</i> Rp. "+data.realisasi3+"<br><i>Sisa :</i> Rp. "+data.sisa3;
-                var detail4 = "<i>Target :</i> Rp. "+data.target4+"<br><i>Realisasi :</i> Rp. "+data.realisasi4+"<br><i>Sisa :</i> Rp. "+data.sisa4;
+            dataType: "json",
+            success: function (data) {
+                var detail1 = "<i>Target :</i> Rp. " + data.target1 + "<br><i>Realisasi :</i> Rp. " + data
+                    .realisasi1 + "<br><i>Sisa :</i> Rp. " + data.sisa1;
+                var detail2 = "<i>Target :</i> Rp. " + data.target2 + "<br><i>Realisasi :</i> Rp. " + data
+                    .realisasi2 + "<br><i>Sisa :</i> Rp. " + data.sisa2;
+                var detail3 = "<i>Target :</i> Rp. " + data.target3 + "<br><i>Realisasi :</i> Rp. " + data
+                    .realisasi3 + "<br><i>Sisa :</i> Rp. " + data.sisa3;
+                var detail4 = "<i>Target :</i> Rp. " + data.target4 + "<br><i>Realisasi :</i> Rp. " + data
+                    .realisasi4 + "<br><i>Sisa :</i> Rp. " + data.sisa4;
                 $('#chart_detail1').html(detail1);
                 $('#chart_detail2').html(detail2);
                 $('#chart_detail3').html(detail3);
@@ -786,25 +897,29 @@
                 $('#chart_pilar4').data('easyPieChart').update(
                     Math.round(data.pilar4)
                 )
-            }                       
+            }
         });
     }
 
-    function initchartrealisasi(){
+    function initchartrealisasi() {
         $.ajax({
             url: urlchartrealisasi,
             data: {
-                'perusahaan_id' : $("#perusahaan_id").val(),
-                'tahun' : $("#tahun").val(),
-                'owner_id' : $("#owner_id").val()
+                'perusahaan_id': $("#perusahaan_id").val(),
+                'tahun': $("#tahun").val(),
+                'owner_id': $("#owner_id").val()
             },
             type: "POST",
-            dataType: "json", 
-            success: function(data){
-                var detail1 = "<i>Target :</i> Rp. "+data.target1+"<br><i>Realisasi :</i> Rp. "+data.realisasi1+"<br><i>Sisa :</i> Rp. "+data.sisa1;
-                var detail2 = "<i>Target :</i> Rp. "+data.target2+"<br><i>Realisasi :</i> Rp. "+data.realisasi2+"<br><i>Sisa :</i> Rp. "+data.sisa2;
-                var detail3 = "<i>Target :</i> Rp. "+data.target3+"<br><i>Realisasi :</i> Rp. "+data.realisasi3+"<br><i>Sisa :</i> Rp. "+data.sisa3;
-                var detail4 = "<i>Target :</i> Rp. "+data.target4+"<br><i>Realisasi :</i> Rp. "+data.realisasi4+"<br><i>Sisa :</i> Rp. "+data.sisa4;
+            dataType: "json",
+            success: function (data) {
+                var detail1 = "<i>Target :</i> Rp. " + data.target1 + "<br><i>Realisasi :</i> Rp. " + data
+                    .realisasi1 + "<br><i>Sisa :</i> Rp. " + data.sisa1;
+                var detail2 = "<i>Target :</i> Rp. " + data.target2 + "<br><i>Realisasi :</i> Rp. " + data
+                    .realisasi2 + "<br><i>Sisa :</i> Rp. " + data.sisa2;
+                var detail3 = "<i>Target :</i> Rp. " + data.target3 + "<br><i>Realisasi :</i> Rp. " + data
+                    .realisasi3 + "<br><i>Sisa :</i> Rp. " + data.sisa3;
+                var detail4 = "<i>Target :</i> Rp. " + data.target4 + "<br><i>Realisasi :</i> Rp. " + data
+                    .realisasi4 + "<br><i>Sisa :</i> Rp. " + data.sisa4;
                 $('#chart_detail1').html(detail1);
                 $('#chart_detail2').html(detail2);
                 $('#chart_detail3').html(detail3);
@@ -814,7 +929,7 @@
                 $('#chart_pilar2').attr('data-percent', data.pilar2);
                 $('#chart_pilar3').attr('data-percent', data.pilar3);
                 $('#chart_pilar4').attr('data-percent', data.pilar4);
-                
+
                 $('#chart_pilar1').easyPieChart({
                     size: 150,
                     easing: 'easeOutBounce',
@@ -825,7 +940,7 @@
                     lineWidth: 50,
                     trackWidth: 40,
                     lineCap: 'butt',
-                    onStep: function(from, to, percent) {
+                    onStep: function (from, to, percent) {
                         $(this.el).find('.percent').text(Math.round(percent));
                     }
                 });
@@ -840,11 +955,11 @@
                     lineWidth: 50,
                     trackWidth: 40,
                     lineCap: 'butt',
-                    onStep: function(from, to, percent) {
+                    onStep: function (from, to, percent) {
                         $(this.el).find('.percent').text(Math.round(percent));
                     }
                 });
-                
+
                 $('#chart_pilar3').easyPieChart({
                     size: 150,
                     easing: 'easeOutBounce',
@@ -855,11 +970,11 @@
                     lineWidth: 50,
                     trackWidth: 40,
                     lineCap: 'butt',
-                    onStep: function(from, to, percent) {
+                    onStep: function (from, to, percent) {
                         $(this.el).find('.percent').text(Math.round(percent));
                     }
                 });
-                
+
                 $('#chart_pilar4').easyPieChart({
                     size: 150,
                     easing: 'easeOutBounce',
@@ -870,30 +985,31 @@
                     lineWidth: 50,
                     trackWidth: 40,
                     lineCap: 'butt',
-                    onStep: function(from, to, percent) {
+                    onStep: function (from, to, percent) {
                         $(this.el).find('.percent').text(Math.round(percent));
                     }
                 });
-            }                       
+            }
         });
     }
-    
-    function initcharttpb(){
+
+    function initcharttpb() {
         $.ajax({
             url: urlcharttpb,
             data: {
-                'tpb_id' : $("#tpb_id").val(),
-                'perusahaan_id' : $("#perusahaan_id").val(),
-                'tahun' : $("#tahun").val(),
-                'owner_id' : $("#owner_id").val()
+                'tpb_id': $("#tpb_id").val(),
+                'perusahaan_id': $("#perusahaan_id").val(),
+                'tahun': $("#tahun").val(),
+                'owner_id': $("#owner_id").val()
             },
             type: "POST",
-            dataType: "json", 
-            success: function(data){
-                var detail = "<i>Target :</i> Rp. "+data.target+"<br><i>Realisasi :</i> Rp. "+data.realisasi+"<br><i>Sisa :</i> Rp. "+data.sisa;
+            dataType: "json",
+            success: function (data) {
+                var detail = "<i>Target :</i> Rp. " + data.target + "<br><i>Realisasi :</i> Rp. " + data
+                    .realisasi + "<br><i>Sisa :</i> Rp. " + data.sisa;
                 $('#chart_detail').html(detail);
                 $('#chart_tpb').attr('data-percent', data.tpb);
-                
+
                 $('#chart_tpb').easyPieChart({
                     size: 200,
                     easing: 'easeOutBounce',
@@ -904,39 +1020,40 @@
                     lineWidth: 60,
                     trackWidth: 50,
                     lineCap: 'butt',
-                    onStep: function(from, to, percent) {
+                    onStep: function (from, to, percent) {
                         $(this.el).find('.percent2').text(Math.round(percent));
                     }
                 });
-            }                       
+            }
         });
     }
-    
-    function updatecharttpb(){
+
+    function updatecharttpb() {
         $.ajax({
             url: urlcharttpb,
             data: {
-                'tpb_id' : $("#tpb_id").val(),
-                'perusahaan_id' : $("#perusahaan_id").val(),
-                'tahun' : $("#tahun").val(),
-                'owner_id' : $("#owner_id").val()
+                'tpb_id': $("#tpb_id").val(),
+                'perusahaan_id': $("#perusahaan_id").val(),
+                'tahun': $("#tahun").val(),
+                'owner_id': $("#owner_id").val()
             },
             type: "POST",
-            dataType: "json", 
-            success: function(data){
-                var detail = "<i>Target :</i> Rp. "+data.target+"<br><i>Realisasi :</i> Rp. "+data.realisasi+"<br><i>Sisa :</i> Rp. "+data.sisa;
+            dataType: "json",
+            success: function (data) {
+                var detail = "<i>Target :</i> Rp. " + data.target + "<br><i>Realisasi :</i> Rp. " + data
+                    .realisasi + "<br><i>Sisa :</i> Rp. " + data.sisa;
                 $('#chart_detail').html(detail);
                 $('#chart_tpb').data('easyPieChart').update(
                     Math.round(data.tpb)
                 )
                 var tpb = $("#tpb_id option:selected").text();
                 $('#chart_title').html(tpb);
-            }                       
+            }
         });
     }
+
 </script>
 <script src="{{ asset('plugins/easy-pie-chart/jquery.easypiechart.min.js') }}" type="text/javascript">
 </script>
 <script src="{{ asset('plugins/easy-pie-chart/jquery.easing.min.js') }}" type="text/javascript"></script>
 @endsection
-

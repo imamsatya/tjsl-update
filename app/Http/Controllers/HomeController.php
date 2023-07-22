@@ -22,7 +22,7 @@ use App\Models\Status;
 use App\Models\Bulan;
 use App\Models\PilarPembangunan;
 use App\Models\OwnerProgram;
-
+use App\Models\Menu;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -104,8 +104,600 @@ class HomeController extends Controller
             'filter_tahun' => $request->tahun,
             'filter_owner_id' => $request->owner_id,
             'bulan' => Bulan::get(),
-            'owner' => OwnerProgram::get()
+            'owner' => OwnerProgram::get(),
+            'menuStatus' => $this->getMenuStatus()
         ]);
+    }
+
+    public function getMenuStatus(){
+        $user = Auth::user();
+        $perusahaan_id = $user->id_bumn;
+        $tahun = 2023;
+        
+        //RKA
+        $rka_menu_anggaran = Menu::where('route_name', 'anggaran_tpb.rka')->first()->label;
+        $rka_menu_program = Menu::where('route_name', 'rencana_kerja.program.index2')->first()->label;
+        $rka_menu_spdpumk = Menu::where('route_name', 'rencana_kerja.spdpumk_rka.index')->first()->label;
+        $rka_laporan_manajemen = Menu::where('route_name', 'rencana_kerja.laporan_manajemen.index')->first()->label;
+
+        //Laporan Realisasi
+        $menu_kegiatan = Menu::where('route_name', 'laporan_realisasi.bulanan.kegiatan.index')->first()->label;
+        $menu_pumk = Menu::where('route_name', 'laporan_realisasi.bulanan.pumk.index')->first()->label;
+        $menu_spdpumk = Menu::where('route_name', 'laporan_realisasi.triwulan.spd_pumk.index')->first()->label;
+        $menu_laporan_manajemen = Menu::where('route_name', 'laporan_realisasi.triwulan.laporan_manajemen.index')->first()->label; 
+        
+
+        $data = [
+            //RKA
+            [
+                'menu' => $rka_menu_anggaran,
+                'rka' => true,
+                'tw1' => false,
+                'tw2' => false,
+                'tw3' => false,
+                'prognosa' => false,
+                'tw4' => false,
+                'audited' => false,
+            ],
+            [
+                'menu' => $rka_menu_program,
+                'rka' => true,
+                'tw1' => false,
+                'tw2' => false,
+                'tw3' => false,
+                'prognosa' => false,
+                'tw4' => false,
+                'audited' => false,
+            ],
+            [
+                'menu' => $rka_menu_spdpumk,
+                'rka' => true,
+                'tw1' => false,
+                'tw2' => false,
+                'tw3' => false,
+                'prognosa' => false,
+                'tw4' => false,
+                'audited' => false,
+            ],
+            [
+                'menu' => $rka_laporan_manajemen,
+                'rka' => true,
+                'tw1' => false,
+                'tw2' => false,
+                'tw3' => false,
+                'prognosa' => false,
+                'tw4' => false,
+                'audited' => false,
+            ],
+            //Laporan Realisasi
+            [
+                'menu' => $menu_kegiatan,
+                'rka' => false,
+                'tw1' => false,
+                'tw2' => false,
+                'tw3' => false,
+                'prognosa' => false,
+                'tw4' => false,
+                'audited' => false,
+            ],
+            [
+                'menu' => $menu_pumk,
+                'rka' => false,
+                'tw1' => false,
+                'tw2' => false,
+                'tw3' => false,
+                'prognosa' => false,
+                'tw4' => false,
+                'audited' => false,
+            ],
+            [
+                'menu' => $menu_spdpumk,
+                'rka' => false,
+                'tw1' => false,
+                'tw2' => false,
+                'tw3' => false,
+                'prognosa' => false,
+                'tw4' => false,
+                'audited' => false,
+            ],
+            [
+                'menu' => $menu_laporan_manajemen,
+                'rka' => false,
+                'tw1' => false,
+                'tw2' => false,
+                'tw3' => false,
+                'prognosa' => false,
+                'tw4' => false,
+                'audited' => false,
+            ],
+        ];
+        //rka
+        $anggaran = DB::table('anggaran_tpbs')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->orderBy('updated_at', 'desc')->get();
+        //cek ada atau tidak
+        if($anggaran?->first()){
+            $data[0]['rka'] = "Finish";
+        }
+        //kalau ada yg inprogress walaupun 1 sudah pasti in progress
+        if ($anggaran?->where('status_id', 2)->first()) {
+            $data[0]['rka'] = "In Progress";
+        }
+        if(count($anggaran) == 0){
+            $data[0]['rka'] = "Unfilled";
+        };
+
+        //program rka
+        $program_rka = DB::table('anggaran_tpbs')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->orderBy('target_tpbs.updated_at', 'desc')->join('target_tpbs', 'target_tpbs.anggaran_tpb_id', '=', 'anggaran_tpbs.id')->get();
+        if($program_rka?->first()){
+            $data[1]['rka'] = "Finish";
+        }
+        //kalau ada yg inprogress walaupun 1 sudah pasti in progress
+        if ($program_rka?->where('status_id', 2)->first()) {
+            $data[1]['rka'] = "In Progress";
+        }
+        if(count($program_rka) == 0){
+            $data[1]['rka'] = "Unfilled";
+        };
+
+        //spdpumk rka
+        $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
+        $spd_pumk = DB::table('pumk_anggarans')->where('bumn_id', $perusahaan_id)->where('tahun', $tahun)->where('periode_id', $periode_rka_id)->get();
+       
+        if($spd_pumk?->first()){
+            $data[2]['rka'] = "Finish";
+        }
+        //kalau ada yg inprogress walaupun 1 sudah pasti in progress
+        if ($spd_pumk?->where('status_id', 2)->first()) {
+            $data[2]['rka'] = "In Progress";
+        }
+        if(count($spd_pumk) == 0){
+            $data[2]['rka'] = "Unfilled";
+        };
+
+        //laporan manajemen rka
+        $laporan_manajemen = DB::table('laporan_manajemens')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->where('periode_laporan_id', $periode_rka_id)->get();
+        if($laporan_manajemen?->first() ){
+            $data[3]['rka'] = "Finish";
+        }
+        //kalau ada yg inprogress walaupun 1 sudah pasti in progress/unfilled
+        if ($laporan_manajemen?->whereIn('status_id', [2, 3])->first()) {
+            $data[3]['rka'] = $laporan_manajemen->whereIn('status_id', [2, 3])->first()->status_id === 2 ? 'In Progress' : null;
+        }
+
+
+        //Laporan Realisasi
+         $kegiatan = DB::table('kegiatans')
+                    ->join('kegiatan_realisasis', function($join) use ( $tahun) {
+                        $join->on('kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
+                            ->where('kegiatan_realisasis.tahun', $tahun);
+                    })
+                    ->join('target_tpbs', 'target_tpbs.id', 'kegiatans.target_tpb_id')
+                    ->join('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun) {
+                        $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                            ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
+                            ->where('anggaran_tpbs.tahun', $tahun);
+                    })
+                    ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                    ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
+                    ->leftJoin('jenis_kegiatans', 'jenis_kegiatans.id', '=', 'kegiatans.jenis_kegiatan_id')
+                    ->join('provinsis', 'provinsis.id', '=', 'kegiatans.provinsi_id')
+                    ->join('kotas', 'kotas.id', '=', 'kegiatans.kota_id')
+                    ->join('satuan_ukur', 'satuan_ukur.id', '=', 'kegiatans.satuan_ukur_id')
+                    ->join('bulans', 'bulans.id', '=', 'kegiatan_realisasis.bulan')
+                    ->orderBy('kegiatans.updated_at', 'desc')
+                    ->select(
+                        'kegiatans.*',
+                        'kegiatan_realisasis.bulan as kegiatan_realisasi_bulan',
+                        'kegiatan_realisasis.tahun as kegiatan_realisasi_tahun',
+                        'kegiatan_realisasis.anggaran as kegiatan_realisasi_anggaran',
+                        'kegiatan_realisasis.anggaran_total as kegiatan_realisasi_anggaran_total',
+                        'kegiatan_realisasis.status_id as kegiatan_realisasi_status_id',
+                        'target_tpbs.program as target_tpb_program',
+                        'jenis_kegiatans.nama as jenis_kegiatan_nama',
+                        'provinsis.nama as provinsi_nama',
+                        'kotas.nama as kota_nama',
+                        'anggaran_tpbs.id as anggaran_tpb_id',
+                        'relasi_pilar_tpbs.id as relasi_pilar_tpb_id',
+                        'tpbs.id as tpb_id',
+                        'tpbs.jenis_anggaran',
+                        'satuan_ukur.nama as satuan_ukur_nama',
+                        'bulans.nama as bulan_nama'
+                    )
+                    ->get();
+                    $spd_pumk = DB::table('pumk_anggarans')->where('bumn_id', $perusahaan_id)->where('tahun', $tahun)->orderBy('updated_at', 'desc')->get();
+                    $laporan_manajemen = DB::table('laporan_manajemens')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->orderBy('updated_at', 'desc')->get();
+                    $periode_laporan = DB::table('periode_laporans')->where('jenis_periode', 'standar')->where('nama', '!=', 'RKA')->orderBy('id', 'asc')->get();
+                    $pumk = DB::table('pumk_bulans')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->orderBy('updated_at', 'desc')->get();
+                    // dd($pumk);
+        //kegiatan, index 4
+        foreach ($periode_laporan as $key => $value) {
+            $periodeId = $value->id;
+            //TW 1
+            if ($periodeId === 1) {
+                $kegiatan_bulan = $kegiatan?->whereIn('kegiatan_realisasi_bulan', [1,2,3]);  
+                if (count($kegiatan_bulan) > 0) {
+                    if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)) > 0) {
+                        $data[4]['tw1'] = "In Progress";
+                    } else {
+                        if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 1)) == count($kegiatan_bulan)) {
+                            $data[4]['tw1'] = "Finish";
+                        }
+                    }
+                }else {
+                    $data[4]['tw1'] = "Unfilled";
+                }
+            }
+
+            //TW 2
+            if ($periodeId === 2) {
+                $kegiatan_bulan = $kegiatan?->whereIn('kegiatan_realisasi_bulan', [4,5,6]);  
+                if (count($kegiatan_bulan) > 0) {
+                    if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)) > 0) {
+                        $data[4]['tw2'] = "In Progress";
+                    } else {
+                        if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 1)) == count($kegiatan_bulan)) {
+                            $data[4]['tw2'] = "Finish";
+                        }
+                    }
+                }else {
+                    $data[4]['tw2'] = "Unfilled";
+                }
+            }
+
+            //TW 3
+            if ($periodeId === 3) {
+                $kegiatan_bulan = $kegiatan?->whereIn('kegiatan_realisasi_bulan', [7,8,9]);  
+                if (count($kegiatan_bulan) > 0) {
+                    if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)) > 0) {
+                        $data[4]['tw3'] = "In Progress";
+                    } else {
+                        if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 1)) == count($kegiatan_bulan)) {
+                            $data[4]['tw3'] = "Finish";
+                        }
+                    }
+                }else {
+                    $data[4]['tw3'] = "Unfilled";
+                }
+            }
+
+            //TW 4
+            if ($periodeId === 5) {
+                $kegiatan_bulan = $kegiatan?->whereIn('kegiatan_realisasi_bulan', [10,11,12]);  
+               
+                if (count($kegiatan_bulan) > 0) {
+                    if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)) > 0) {
+                        $data[4]['tw4'] = "In Progress";
+                    } else {
+                        if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 1)) == count($kegiatan_bulan)) {
+                            $data[4]['tw4'] = "Finish";
+                        }
+                    }
+                }else {
+                    $data[4]['tw4'] = "Unfilled";
+                }
+            }
+
+            //Prognosa
+            if ($periodeId === 6) {
+                // $kegiatan_bulan = $kegiatan?->whereIn('kegiatan_realisasi_bulan', [10,11,12]);  
+                // if ($kegiatan_bulan) {
+                //     if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)) > 0) {
+                //         $data[4]['prognosa'] = "In Progress";
+                //     } else {
+                //         if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 1)) == count($kegiatan_bulan)) {
+                //             $data[4]['prognosa'] = "Finish";
+                //         }
+                //     }
+                // }else {
+                //     $data[4]['prognosa'] = "Unfilled";
+                // }
+            }
+
+            //Audited
+            if ($periodeId === 7) {
+                $kegiatan_bulan = $kegiatan?->whereIn('kegiatan_realisasi_bulan', [10,11,12]);  
+                // if ($kegiatan_bulan) {
+                //     if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)) > 0) {
+                //         $data[4]['audited'] = "In Progress";
+                //     } else {
+                //         if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 1)) == count($kegiatan_bulan)) {
+                //             $data[4]['audited'] = "Finish";
+                //         }
+                //     }
+                // }else {
+                //     $data[4]['audited'] = "Unfilled";
+                // }
+            }
+        }
+        //pumk, index 5
+        foreach ($periode_laporan as $key => $value) {
+            $periodeId = $value->id;
+            //TW 1
+            if ($periodeId === 1) {
+                $pumk_bulan = $pumk?->whereIn('bulan_id', [1,2,3]);  
+                if (count($pumk_bulan) > 0) {
+                    if (count($pumk_bulan->where('status_id', 2)) > 0) {
+                        $data[5]['tw1'] = "In Progress";
+                    } else {
+                        if (count($pumk_bulan->where('status_id', 1)) == count($pumk_bulan)) {
+                            $data[5]['tw1'] = "Finish";
+                        }
+                    }
+                }else {
+                    $data[5]['tw1'] = "Unfilled";
+                }
+            }
+
+            //TW 2
+            if ($periodeId === 2) {
+                $pumk_bulan = $pumk?->whereIn('bulan_id', [4,5,6]);  
+                if (count($pumk_bulan) > 0) {
+                    if (count($pumk_bulan->where('status_id', 2)) > 0) {
+                        $data[5]['tw2'] = "In Progress";
+                    } else {
+                        if (count($pumk_bulan->where('status_id', 1)) == count($pumk_bulan)) {
+                            $data[5]['tw2'] = "Finish";
+                        }
+                    }
+                }else {
+                    $data[5]['tw2'] = "Unfilled";
+                }
+            }
+
+            //TW 3
+            if ($periodeId === 3) {
+                $pumk_bulan = $pumk?->whereIn('bulan_id', [7,8,9]);  
+                if (count($pumk_bulan) > 0) {
+                    if (count($pumk_bulan->where('status_id', 2)) > 0) {
+                        $data[5]['tw3'] = "In Progress";
+                    } else {
+                        if (count($pumk_bulan->where('status_id', 1)) == count($pumk_bulan)) {
+                            $data[5]['tw3'] = "Finish";
+                        }
+                    }
+                }else {
+                    $data[5]['tw3'] = "Unfilled";
+                }
+            }
+
+            //TW 4
+            if ($periodeId === 5) {
+                $pumk_bulan = $pumk?->whereIn('bulan_id', [10,11,12]);  
+               
+                if (count($pumk_bulan) > 0) {
+                    if (count($pumk_bulan->where('status_id', 2)) > 0) {
+                        $data[5]['tw4'] = "In Progress";
+                    } else {
+                        if (count($pumk_bulan->where('status_id', 1)) == count($pumk_bulan)) {
+                            $data[5]['tw4'] = "Finish";
+                        }
+                    }
+                }else {
+                    $data[5]['tw4'] = "Unfilled";
+                }
+            }
+
+            //Prognosa
+            if ($periodeId === 6) {
+                // $pumk_bulan = $pumk?->whereIn('bulan_id', [10,11,12]);  
+                // if ($pumk_bulan) {
+                //     if (count($pumk_bulan->where('status_id', 2)) > 0) {
+                //         $data[5]['prognosa'] = "In Progress";
+                //     } else {
+                //         if (count($pumk_bulan->where('status_id', 1)) == count($pumk_bulan)) {
+                //             $data[5]['prognosa'] = "Finish";
+                //         }
+                //     }
+                // }else {
+                //     $data[5]['prognosa'] = "Unfilled";
+                // }
+            }
+
+            //Audited
+            if ($periodeId === 7) {
+                //$pumk_bulan = $pumk?->whereIn('bulan_id', [10,11,12]);  
+                // if ($pumk_bulan) {
+                //     if (count($pumk_bulan->where('status_id', 2)) > 0) {
+                //         $data[5]['audited'] = "In Progress";
+                //     } else {
+                //         if (count($pumk_bulan->where('status_id', 1)) == count($pumk_bulan)) {
+                //             $data[5]['audited'] = "Finish";
+                //         }
+                //     }
+                // }else {
+                //     $data[5]['audited'] = "Unfilled";
+                // }
+            }
+        }
+        //spd pumk, index 6
+        foreach ($periode_laporan as $key => $value) {
+            $periodeId = $value->id;
+            //TW 1
+            if ($periodeId === 1) {
+                $spd_pumk_periode = $spd_pumk->where('periode_id', $periodeId)->first();
+            
+                if ($spd_pumk_periode) {
+                    if ($spd_pumk_periode->status_id == 2) {
+                        $data[6]['tw1'] = "In Progress";
+                    } else {
+                        $data[6]['tw1'] = $spd_pumk_periode->updated_at ? "Finish" : "Unfilled";
+                    }
+                }else {
+                    $data[6]['tw1'] = "Unfilled";
+                }
+            }
+
+            //TW 2
+            if ($periodeId === 2) {
+                
+                $spd_pumk_periode = $spd_pumk->where('periode_id', $periodeId)->first();
+                
+                if ($spd_pumk_periode) {
+                    if ($spd_pumk_periode->status_id == 2) {
+                        $data[6]['tw2'] = "In Progress";
+                    } else {
+                        $data[6]['tw2'] = $spd_pumk_periode->updated_at ? "Finish" : "Unfilled";
+                    }
+                }else {
+                    $data[6]['tw2'] = "Unfilled";
+                }
+            }
+
+            //TW 3
+            if ($periodeId === 3) {
+                $spd_pumk_periode = $spd_pumk->where('periode_id', $periodeId)->first();
+            
+                if ($spd_pumk_periode) {
+                    if ($spd_pumk_periode->status_id == 2) {
+                        $data[6]['tw3'] = "In Progress";
+                    } else {
+                        $data[6]['tw3'] = $spd_pumk_periode->updated_at ? "Finish" : "Unfilled";
+                    }
+                }else {
+                    $data[6]['tw3'] = "Unfilled";
+                }
+            }
+
+            //TW 4
+            if ($periodeId === 5) {
+                $spd_pumk_periode = $spd_pumk->where('periode_id', $periodeId)->first();
+            
+                if ($spd_pumk_periode) {
+                    if ($spd_pumk_periode->status_id == 2) {
+                        $data[6]['tw4'] = "In Progress";
+                    } else {
+                        $data[6]['tw4'] = $spd_pumk_periode->updated_at ? "Finish" : "Unfilled";
+                    }
+                }else {
+                    $data[6]['tw4'] = "Unfilled";
+                }
+            }
+
+            //Prognosa
+            if ($periodeId === 6) {
+                $spd_pumk_periode = $spd_pumk->where('periode_id', $periodeId)->first();
+            
+                if ($spd_pumk_periode) {
+                    if ($spd_pumk_periode->status_id == 2) {
+                        $data[6]['prognosa'] = "In Progress";
+                    } else {
+                        $data[6]['prognosa'] = $spd_pumk_periode->updated_at ? "Finish" : "Unfilled";
+                    }
+                }else {
+                    $data[6]['prognosa'] = "Unfilled";
+                }
+            }
+
+            //Audited
+            if ($periodeId === 7) {
+                $spd_pumk_periode = $spd_pumk->where('periode_id', $periodeId)->first();
+            
+                if ($spd_pumk_periode) {
+                    if ($spd_pumk_periode->status_id == 2) {
+                        $data[6]['audited'] = "In Progress";
+                    } else {
+                        $data[6]['audited'] = $spd_pumk_periode->updated_at ? "Finish" : "Unfilled";
+                    }
+                }else {
+                    $data[6]['audited'] = "Unfilled";
+                }
+            }
+        }
+        //laporan manajemen, index 7
+        foreach ($periode_laporan as $key => $value) {
+            $periodeId = $value->id;
+            //TW 1
+            if ($periodeId === 1) {
+                $laporan_manajemen_periode = $laporan_manajemen->where('periode_id', $periodeId)->first();
+            
+                if ($laporan_manajemen_periode) {
+                    if ($laporan_manajemen_periode->status_id == 2) {
+                        $data[7]['tw1'] = "In Progress";
+                    } else {
+                        $data[7]['tw1'] = $laporan_manajemen_periode->updated_at ? "Finish" : "Unfilled";
+                    }
+                }else {
+                    $data[7]['tw1'] = "Unfilled";
+                }
+            }
+
+            //TW 2
+            if ($periodeId === 2) {
+                
+                $laporan_manajemen_periode = $laporan_manajemen->where('periode_id', $periodeId)->first();
+                
+                if ($laporan_manajemen_periode) {
+                    if ($laporan_manajemen_periode->status_id == 2) {
+                        $data[7]['tw2'] = "In Progress";
+                    } else {
+                        $data[7]['tw2'] = $laporan_manajemen_periode->updated_at ? "Finish" : "Unfilled";
+                    }
+                }else {
+                    $data[7]['tw2'] = "Unfilled";
+                }
+            }
+
+            //TW 3
+            if ($periodeId === 3) {
+                $laporan_manajemen_periode = $laporan_manajemen->where('periode_id', $periodeId)->first();
+            
+                if ($laporan_manajemen_periode) {
+                    if ($laporan_manajemen_periode->status_id == 2) {
+                        $data[7]['tw3'] = "In Progress";
+                    } else {
+                        $data[7]['tw3'] = $laporan_manajemen_periode->updated_at ? "Finish" : "Unfilled";
+                    }
+                }else {
+                    $data[7]['tw3'] = "Unfilled";
+                }
+            }
+
+            //TW 4
+            if ($periodeId === 5) {
+                $laporan_manajemen_periode = $laporan_manajemen->where('periode_id', $periodeId)->first();
+            
+                if ($laporan_manajemen_periode) {
+                    if ($laporan_manajemen_periode->status_id == 2) {
+                        $data[7]['tw4'] = "In Progress";
+                    } else {
+                        $data[7]['tw4'] = $laporan_manajemen_periode->updated_at ? "Finish" : "Unfilled";
+                    }
+                }else {
+                    $data[7]['tw4'] = "Unfilled";
+                }
+            }
+
+            //Prognosa
+            if ($periodeId === 6) {
+                $laporan_manajemen_periode = $laporan_manajemen->where('periode_id', $periodeId)->first();
+            
+                if ($laporan_manajemen_periode) {
+                    if ($laporan_manajemen_periode->status_id == 2) {
+                        $data[7]['prognosa'] = "In Progress";
+                    } else {
+                        $data[7]['prognosa'] = $laporan_manajemen_periode->updated_at ? "Finish" : "Unfilled";
+                    }
+                }else {
+                    $data[7]['prognosa'] = "Unfilled";
+                }
+            }
+
+            //Audited
+            if ($periodeId === 7) {
+                $laporan_manajemen_periode = $laporan_manajemen->where('periode_id', $periodeId)->first();
+            
+                if ($laporan_manajemen_periode) {
+                    if ($laporan_manajemen_periode->status_id == 2) {
+                        $data[7]['audited'] = "In Progress";
+                    } else {
+                        $data[7]['audited'] = $laporan_manajemen_periode->updated_at ? "Finish" : "Unfilled";
+                    }
+                }else {
+                    $data[7]['audited'] = "Unfilled";
+                }
+            }
+        }
+       
+        return $data;
     }
 
     public function chartpumk(Request $request)

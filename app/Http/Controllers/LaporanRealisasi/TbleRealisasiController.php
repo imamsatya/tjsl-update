@@ -204,7 +204,7 @@ class TbleRealisasiController extends Controller
 
     public function cetakDataById( $id, $tahun, $periode_id) {
         $perusahaan = Perusahaan::where('id', $id)->first();
-        $kegiatan =  $kegiatan = DB::table('kegiatans')
+        $kegiatan = DB::table('kegiatans')
                     ->join('kegiatan_realisasis', function($join) use ( $tahun) {
                         $join->on('kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
                             ->where('kegiatan_realisasis.tahun', $tahun);

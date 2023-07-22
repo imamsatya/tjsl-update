@@ -41,6 +41,34 @@
                     <div class="card-body p-0">
                         <div class="card-px py-10">
                             <form class="kt-form kt-form--label-right" method="POST" id="form-upload-excel">
+                                <div class="form-group row  mb-5">
+
+                                    <div class="col-lg-2 offset-lg-8">
+                                        <label>Bulan</label>
+                                        <select id="bulan_template_id" class="form-select form-select-solid form-select2" name="bulan_template_id"
+                                            data-kt-select2="true" data-placeholder="Pilih Bulan" >
+                                            <option></option>
+                                            @foreach($bulan as $bulan_row)
+                                            @php
+                                                        $select = (($bulan_row->id == $bulan_id) ? 'selected="selected"' : '');
+                                                    @endphp
+                                            <option value="{{ $bulan_row->id }}" {!! $select !!}>{{ $bulan_row->nama }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <label>Tahun</label>
+                                        <select class="form-select form-select-solid form-select2" id="tahun_template" name="tahun_template"
+                                            data-kt-select2="true">
+                                            @php for($i = date("Y"); $i>=2020; $i--){ @endphp
+                                            @php
+                                            $select = (($i == $tahun) ? 'selected="selected"' : '');
+                                            @endphp
+                                            <option value="{{$i}}" {!! $select !!}>{{$i}}</option>
+                                            @php } @endphp
+                                        </select>
+                                    </div>
+                                </div>
                                 <div class="form-group row mb-5">
                                     <div class="col-lg-6 ">
                                         <label>File (*.xlsx)</label>
@@ -645,8 +673,8 @@
         var url = new URL(window.location.href);
         var params = url.pathname.split('/').slice(-3);
         var filter_perusahaan_id = params[0]; // "1"
-        var filter_tahun = params[1]; // "2023"
-        var filter_bulan = params[2]; // "7"
+        var filter_tahun = $("select[name='tahun']").val();
+        var filter_bulan = $("select[name='bulan_id']").val();
 
         console.log(`perusahaan_id : ${filter_perusahaan_id} | tahun : ${filter_tahun} | bulan : ${filter_bulan}`)
 
