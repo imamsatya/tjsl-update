@@ -74,6 +74,7 @@ class EnableInputBySuperadmin extends Controller
             $perusahaan_id = $request->perusahaan_id;
             $tahun = $request->tahun ? $request->tahun : (int)date('Y');
             $referensi = $request->referensi;
+            $periode = DB::table('periode_laporans')->where('jenis_periode', 'standar')->orderBy('urutan')->get();
 
             return view($this->__route . '.create', [
                 'master_referensi' => DB::table('referensi_enable_input_by_superadmin as rep')->select('rep.*', 'menus.label')->join('menus', 'menus.route_name', '=', 'rep.route_name')->get(),
@@ -83,7 +84,8 @@ class EnableInputBySuperadmin extends Controller
                 'isSuperAdmin' => $this->isSuperAdmin(),
                 'tahun' => $tahun,
                 'perusahaan_id' => $perusahaan_id,
-                'referensi_selected' => $referensi
+                'referensi_selected' => $referensi,
+                'periode' => $periode
             ]);
         } catch (Exception $e) {
         }

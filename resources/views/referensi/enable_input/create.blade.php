@@ -62,6 +62,27 @@
                 </div>
                 <!--end::Col-->
             </div>
+            <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-1 col-form-label fw-semibold fs-6">Periode</label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-11 fv-row">
+                    <select class="form-select form-select-solid form-select2" id="periode_add" name="periode_add"
+                        data-kt-select2="true" data-placeholder="Pilih Periode" data-allow-clear="true" data-dropdown-parent="#winform" multiple="multiple">
+                        <option></option>
+                        <option value="all">SELECT ALL</option>
+                        @foreach($periode as $p)
+                        {{-- @php
+                        $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
+                        @endphp --}}
+                        {{-- <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option> --}}
+                        <option value="{{ $p->id }}" >{{ $p->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <!--end::Col-->
+            </div>
         </div>
     </div>
 </div>
@@ -86,10 +107,11 @@
             const data = {
                  "tahun" : $("#tahun_add").val(),
                  "tipe" : $("#tipe_add").val(),
-                 "bumn" : $("#perusahaan_id_add").val()
+                 "bumn" : $("#perusahaan_id_add").val(),
+                 "periode_add" : $("#periode_add").val()
             }
 
-            if(data.tahun == '' || data.tipe == '' || !data.bumn.length ) {
+            if(data.tahun == '' || data.tipe == '' || !data.bumn.length  ) {
                 swal.fire({
                     icon: 'warning',
                     title: 'Warning',

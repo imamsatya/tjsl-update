@@ -2015,7 +2015,6 @@ class AnggaranTpbController extends Controller
             ->where('deskripsi', $this->tipeRouteName)
             ->where('route_name', $this->pageRouteName)
             ->first();
-
         return $data;
     }
 }
