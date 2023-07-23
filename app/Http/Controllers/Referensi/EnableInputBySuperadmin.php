@@ -39,8 +39,9 @@ class EnableInputBySuperadmin extends Controller
         $referensi = $request->referensi;
 
         $data_enable = DB::table('enable_input_by_superadmin as ep')
-            ->select('ep.*', 'rp.route_name', 'rp.deskripsi', 'pp.nama_lengkap')
+            ->select('ep.*', 'rp.route_name', 'rp.deskripsi', 'pp.nama_lengkap', 'menus.label')
             ->join('referensi_enable_input_by_superadmin as rp', 'ep.referensi_id', '=', 'rp.id')
+            ->join('menus', 'menus.route_name', '=', 'rp.route_name')
             ->join('perusahaans as pp', 'pp.id', '=', 'ep.perusahaan_id')
             ->when($tahun, function($query) use ($tahun) {
                 return $query->where('tahun', $tahun);
@@ -55,7 +56,7 @@ class EnableInputBySuperadmin extends Controller
             ->get();        
 
         return view($this->__route .'.index', [
-            'master_referensi' => DB::table('referensi_enable_input_by_superadmin')->get(),
+            'master_referensi' => DB::table('referensi_enable_input_by_superadmin as rep')->select('rep.*', 'menus.label')->join('menus', 'menus.route_name', '=', 'rep.route_name')->get(),
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
             'isSuperAdmin' => $this->isSuperAdmin(),
@@ -75,7 +76,7 @@ class EnableInputBySuperadmin extends Controller
             $referensi = $request->referensi;
 
             return view($this->__route . '.create', [
-                'master_referensi' => DB::table('referensi_enable_input_by_superadmin')->get(),
+                'master_referensi' => DB::table('referensi_enable_input_by_superadmin as rep')->select('rep.*', 'menus.label')->join('menus', 'menus.route_name', '=', 'rep.route_name')->get(),
                 'pagetitle' => $this->pagetitle,
                 'actionform' => 'add',
                 'perusahaan' => Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get(),
@@ -205,7 +206,7 @@ class EnableInputBySuperadmin extends Controller
         try {
 
             return view($this->__route . '.create_master', [
-                'master_referensi' => DB::table('referensi_enable_input_by_superadmin')->get(),
+                'master_referensi' => DB::table('referensi_enable_input_by_superadmin as rep')->select('rep.*', 'menus.label')->join('menus', 'menus.route_name', '=', 'rep.route_name')->get(),
                 'pagetitle' => $this->pagetitle,
                 'actionform' => 'add',
                 'isSuperAdmin' => $this->isSuperAdmin(),
@@ -221,7 +222,7 @@ class EnableInputBySuperadmin extends Controller
             $data = $request->data;
             DB::table('referensi_enable_input_by_superadmin')->insert([
                 'route_name' => $data['route_name'],
-                'deskripsi' => $data['deskripsi'],
+                // 'deskripsi' => $data['deskripsi'],
                 'created_at' => $currentDate,
                 'updated_at' => $currentDate
             ]);
