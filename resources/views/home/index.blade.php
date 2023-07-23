@@ -564,6 +564,10 @@
         $('#page-title').html("{{ $pagetitle }}");
         $('#page-breadcrumb').html("{{ $breadcrumb }}");
 
+        $(".accordion-header").click(function () {
+                $(this).find(".accordion-icon-off").toggleClass("d-none");
+                $(this).find(".accordion-icon-on").toggleClass("d-none");
+            });
         $('#perusahaan_id').on('change', function (event) {
             updatechartrealisasi();
             updatecharttpb();
