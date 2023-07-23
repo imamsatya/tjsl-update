@@ -1,7 +1,7 @@
 <div>
     <div class="row">
-        <div class="col-md-6">
-            <div class="row mb-6">
+        <div class="col-md-12">
+            <div class="row mb-12">
                 <!--begin::Label-->
                 <label class="col-lg-3 col-form-label fw-semibold fs-6">Route Name</label>
                 <!--end::Label-->
@@ -15,21 +15,17 @@
                 <!--end::Col-->
             </div>
         </div>
-        <div class="col-md-6">
+        <!-- <div class="col-md-6">
             <div class="row mb-6">
-                <!--begin::Label-->
                 <label class="col-lg-3 col-form-label fw-semibold fs-6">Deskripsi</label>
-                <!--end::Label-->
-                <!--begin::Col-->
                 <div class="col-lg-9 fv-row">
                     <input type="text" name="deskripsi" id="deskripsi"
                         class="form-control form-control-lg form-control-solid"
                         placeholder="Deskripsi"  
                         />                     
                 </div>
-                <!--end::Col-->
             </div>
-        </div>
+        </div> -->
     </div>
     <div style="text-align: right; margin-bottom: 30px">
         <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal"
@@ -47,7 +43,7 @@
                     <tr>
                         <th>No.</th>
                         <th>Route Name</th>
-                        <th>Deskripsi</th>
+                        <th>Label</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -56,7 +52,7 @@
                     <tr>
                         <td>{{ $index + 1 }}</td>
                         <td>{{ $data->route_name }}</td>
-                        <td>{{ $data->deskripsi }}</td>
+                        <td>{{ $data->label }}</td>
                         <td>
                             <button type="button" class="btn btn-sm btn-light btn-icon btn-danger cls-button-delete" data-id="{{$data->id}}" data-toggle="tooltip" title="Hapus Master"><i class="bi bi-trash fs-3"></i></button>
                         </td>
@@ -77,10 +73,10 @@
             
             const data = {
                  "route_name" : $("#route_name").val(),
-                 "deskripsi" : $("#deskripsi").val(),
+                //  "deskripsi" : $("#deskripsi").val(),
             }
 
-            if(data.route_name == '' || data.deskripsi == '') {
+            if(data.route_name == '') {
                 swal.fire({
                     icon: 'warning',
                     title: 'Warning',
