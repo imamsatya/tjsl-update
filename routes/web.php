@@ -27,6 +27,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
     Route::post('/charttpb', 'App\Http\Controllers\HomeController@charttpb')->name('home.charttpb');
     Route::post('/chartmb', 'App\Http\Controllers\HomeController@chartmb')->name('home.chartmb');
     Route::post('/chartpumk', 'App\Http\Controllers\HomeController@chartpumk')->name('home.chartpumk');
+    Route::post('/allstatus', 'App\Http\Controllers\HomeController@allstatus')->name('home.allstatus');
 
     Route::prefix('role')->group(function () {
         Route::get('index', 'App\Http\Controllers\RoleController@index')->name('role.index');

@@ -45,7 +45,9 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
+       
         $id_users = \Auth::user()->id;
+        $currentYear = date('Y');
         // $id_users = 16; // dummy
 
 
@@ -105,14 +107,14 @@ class HomeController extends Controller
             'filter_owner_id' => $request->owner_id,
             'bulan' => Bulan::get(),
             'owner' => OwnerProgram::get(),
-            'menuStatus' => $this->getMenuStatus()
+            'menuStatus' => $this->getMenuStatus($currentYear)
         ]);
     }
 
-    public function getMenuStatus(){
+    public function getMenuStatus($tahun){
         $user = Auth::user();
         $perusahaan_id = $user->id_bumn;
-        $tahun = 2023;
+        $tahun = $tahun ?? date('Y');
         
         //RKA
         $rka_menu_anggaran = Menu::where('route_name', 'anggaran_tpb.rka')->first()->label;
@@ -260,8 +262,11 @@ class HomeController extends Controller
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress/unfilled
         if ($laporan_manajemen?->whereIn('status_id', [2, 3])->first()) {
-            $data[3]['rka'] = $laporan_manajemen->whereIn('status_id', [2, 3])->first()->status_id === 2 ? 'In Progress' : null;
+            $data[3]['rka'] = $laporan_manajemen->whereIn('status_id', [2, 3])->first()->status_id === 2 ? 'In Progress' : 'Unfilled';
         }
+        if(count($laporan_manajemen) == 0){
+            $data[3]['rka'] = "Unfilled";
+        };
 
 
         //Laporan Realisasi
@@ -698,6 +703,11 @@ class HomeController extends Controller
         }
        
         return $data;
+    }
+
+    public function allstatus(Request $request){
+        
+        return $this->getMenuStatus($request->tahunStatus);
     }
 
     public function chartpumk(Request $request)

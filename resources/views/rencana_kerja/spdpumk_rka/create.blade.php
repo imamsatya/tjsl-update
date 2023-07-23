@@ -194,9 +194,23 @@
 
                                 </div>
                                 
+                                
                             </div>
                             <hr> 
-                            <div class="row mb-4 mt-8">
+                            <div class="row mb-2">
+                                <div class="col-lg-6 ">
+                                    {{-- <div class="ms-8">Saldo Awal</div> --}}
+
+
+                                </div>
+                                <div class="col-lg-6 ">
+                                    <h1>Rupiah</h1>
+
+
+                                </div>
+                             
+                            </div>
+                            <div class="row mb-4 ">
                                 <div class="col-lg-6 ">
                                     <div class="ms-8">Saldo Awal</div>
 

@@ -101,6 +101,19 @@
             <div id="kt_accordion_9_item_1" class="fs-6 collapse">
                 <div class="card-body p-0">
                     <div class="card-px py-10">
+                        <div class="col-lg-4 mb-20">
+                            <label>Tahun</label>
+
+                            <select class="form-select form-select-solid form-select2" id="tahunStatus"
+                                name="tahunStatus" data-kt-select2="true" data-placeholder="Pilih Tahun">
+                                @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
+                                @php
+                                $select = (($i == $tahun) ? 'selected="selected"' : '');
+                                @endphp
+                                <option value="{{$i}}" {!! $select !!}>{{$i}}</option>
+                                @php } @endphp
+                            </select>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-striped- table-bordered table-hover">
                                 <thead>
@@ -116,10 +129,10 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($menuStatus as $item)
-                                    <tr>
+                                    @foreach ($menuStatus as $index => $item)
+                                    <tr id="row_{{$index}}">
                                         <td>{{$item['menu']}}</td>
-                                        
+
                                         <td>
                                             {!! renderStatusBadge($item['rka']) !!}
                                         </td>
@@ -545,6 +558,7 @@
     var urlcharttpb = "{{route('home.charttpb')}}";
     var urlchartmb = "{{route('home.chartmb')}}";
     var urlchartpumk = "{{route('home.chartpumk')}}";
+    var urlallstatus = "{{route('home.allstatus')}}";
 
     $(document).ready(function () {
         $('#page-title').html("{{ $pagetitle }}");
@@ -620,8 +634,67 @@
             $('#form-cari-pumk').toggle(600);
         });
 
+        $('#tahunStatus').on('change', function (event) {
+            updateTableStatus();
+        });
+
+
+
 
     });
+
+    function renderStatusBadge(status) {
+        const classMapping = {
+            'Finish': 'badge-light-success',
+            'In Progress': 'badge-light-primary',
+            'Unfilled': 'badge-light-warning',
+        };
+
+        if (status in classMapping) {
+            const className = classMapping[status];
+            return `<span class="btn cls-log badge ${className} fw-bolder me-auto px-4 py-3">${status}</span>`;
+        }
+
+        return '';
+    }
+
+    function updateTableStatus() {
+        $.ajax({
+            url: urlallstatus,
+            data: {
+                'tahunStatus': $("#tahunStatus").val(),
+            },
+            type: "POST",
+            dataType: "json",
+            beforeSend: function () {
+                // Show the SweetAlert animation here
+                Swal.fire({
+                    title: 'Loading...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    onBeforeOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+            },
+            // Hide the SweetAlert when the AJAX request is completed
+            complete: function () {
+                Swal.close();
+            },
+            success: function (data) {
+                // initmitra(data);
+                $.each(data, function (index, item) {
+                    $("#row_" + index + " td:nth-child(2)").html(renderStatusBadge(item.rka));
+                    $("#row_" + index + " td:nth-child(3)").html(renderStatusBadge(item.tw1));
+                    $("#row_" + index + " td:nth-child(4)").html(renderStatusBadge(item.tw2));
+                    $("#row_" + index + " td:nth-child(5)").html(renderStatusBadge(item.tw3));
+                    $("#row_" + index + " td:nth-child(6)").html(renderStatusBadge(item.prognosa));
+                    $("#row_" + index + " td:nth-child(7)").html(renderStatusBadge(item.tw4));
+                    $("#row_" + index + " td:nth-child(8)").html(renderStatusBadge(item.audited));
+                });
+            }
+        });
+    }
 
     function updatechartmb() {
         $.ajax({
@@ -638,6 +711,7 @@
             }
         });
     }
+
 
     function initmitra(data) {
         let s_lancar = data.saldo_lancar ? parseInt(data.saldo_lancar) : 0;
