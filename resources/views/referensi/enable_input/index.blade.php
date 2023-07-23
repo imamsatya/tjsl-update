@@ -144,7 +144,7 @@
                                                     @php
                                                     $select = (($mp->id == $referensi_selected) ? 'selected="selected"' : '');
                                                     @endphp
-                                                    <option value="{{ $mp->id }}" {!! $select !!}>{{$mp->deskripsi}}</option>
+                                                    <option value="{{ $mp->id }}" {!! $select !!}>{{$mp->label}}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -249,7 +249,7 @@
                                 @foreach($data_enable as $index => $data) 
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
-                                    <td>{{ $data->deskripsi }} ({{ $data->route_name }})</td>
+                                    <td>{{ $data->label }} ({{ $data->route_name }})</td>
                                     <td>{{ $data->nama_lengkap }}</td>
                                     <td>{{ $data->tahun }}</td>
                                     <td>{{ $data->created_at }}</td>

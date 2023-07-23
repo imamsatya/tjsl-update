@@ -12,7 +12,7 @@
                         data-dropdown-parent="#winform">
                         <option></option>
                         @foreach($master_referensi as $mp)
-                            <option value="{{ $mp->id }}" {{ $mp->id === $referensi_selected ? 'selected' : ''}}>{{$mp->deskripsi}}</option>
+                            <option value="{{ $mp->id }}" {{ $mp->id === $referensi_selected ? 'selected' : ''}}>{{$mp->label}}</option>
                         @endforeach
                     </select>
                 </div>
