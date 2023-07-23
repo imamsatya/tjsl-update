@@ -33,6 +33,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Excel;
 use App\Exports\LaporanRealisasiTemplateExcelSheet;
+use App\Exports\LaporanRealisasiGagalUploadExcelSheet;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use App\Imports\LaporanRealisasiBulananImport;
 use DateTime;
@@ -918,20 +919,40 @@ class KegiatanController extends Controller
             $param2['user_id']  = \Auth::user()->id;
             $realisasi->update((array)$param2);
 
-            Session::flash('success', "Berhasil Upload Data");
-
-            DB::commit();
-            $result = [
-            'flag'  => 'success',
-            'msg' => 'Sukses tambah data',
-            'title' => 'Sukses'
-            ];
+            $result = LaporanRealisasiBulananUpload::find($realisasi->id);
+            if(!$result) {
+                DB::rollback();
+                $result = [
+                    'flag'  => 'warning',
+                    'msg' => 'Gagal upload File',
+                    'title' => 'Gagal'
+                ];   
+            } else {
+                if($result->berhasil > 0) {
+                    Session::flash('success', "Berhasil Upload Data");
+                    DB::commit();
+                    $result = [
+                        'flag'  => 'success',
+                        'msg' => 'Sukses tambah data',
+                        'title' => 'Sukses'
+                    ];                
+                } else {
+                    DB::rollback();
+                    $result = [
+                        'flag'  => 'warning',
+                        'msg' => 'Gagal upload File',
+                        'title' => 'Gagal'
+                    ];
+                }
+                
+            }
         }catch(\Exception $e){
-            DB::rollback();
+            DB::rollback();            
             $result = [
-            'flag'  => 'warning',
-            'msg' => $e->getMessage(),
-            'title' => 'Gagal'
+                'flag'  => 'warning',
+                'msg' => 'Something went wrong',
+                'title' => 'Gagal',
+                'err' => $e->getMessage()
             ];
         }
 
@@ -959,7 +980,7 @@ class KegiatanController extends Controller
             return datatables()->of($data)
             ->addColumn('tanggal', function ($row){
                 $dateTime = new DateTime($row->created_at);
-                $formattedDate = date_format($dateTime, 'j F Y');
+                $formattedDate = date_format($dateTime, 'j F Y H:i:s');
                 return $formattedDate;
             })
             ->addColumn('keterangan_trim', function($row) {
@@ -969,7 +990,24 @@ class KegiatanController extends Controller
 
                 return $truncatedText;
             })
-            ->rawColumns(['tanggal', 'keterangan_trim'])
+            ->addColumn('download_gagal', function($row) {                
+                $id = (int)$row->id;
+                $button = '<div align="center">';
+
+                $button .= '<button type="button" class="btn btn-sm btn-light btn-icon btn-warning cls-button-download" data-id="' . $id . '" data-toggle="tooltip" title="Download '  . '"><i class="bi bi-download fs-3"></i></button>';
+
+                $button .= '&nbsp;';
+
+                // $button .= '<button type="button" class="btn btn-sm btn-danger btn-icon cls-button-delete" data-id="' . $id . '" data-nama="' . $row->nama . '" data-toggle="tooltip" title="Hapus data ' . $row->nama . '"><i class="bi bi-trash fs-3"></i></button>';
+
+                $button .= '</div>';
+                
+                if($row->gagal === 0) {
+                    $button = '';
+                }
+                return $button;
+            })
+            ->rawColumns(['tanggal', 'keterangan_trim', 'download_gagal'])
             ->toJson();
         }catch(Exception $e){
             return response([
@@ -979,5 +1017,18 @@ class KegiatanController extends Controller
                 'data'            => []
             ]);
         }   
+    }
+
+    public function downloadGagalUpload(Request $request) {
+        $id_laporan = $request->id;
+        $laporan = LaporanRealisasiBulananUpload::find($id_laporan);
+
+        $perusahaan_id = $laporan->perusahaan_id;
+        $bulan = $laporan->bulan;
+        $tahun = $laporan->tahun;
+        $perusahaan = Perusahaan::where('id', $perusahaan_id)->first();
+        $namaFile = "Laporan Realisasi (Gagal Upload).xlsx";
+
+        return Excel::download(new LaporanRealisasiGagalUploadExcelSheet($perusahaan,$bulan,$tahun, $id_laporan), $namaFile);
     }
 }

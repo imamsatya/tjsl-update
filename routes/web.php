@@ -645,6 +645,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('download_template', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@downloadTemplate')->name('laporan_realisasi.bulanan.kegiatan.download_template');
                 Route::post('upload_excel', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@uploadExcel')->name('laporan_realisasi.bulanan.kegiatan.upload_excel');
                 Route::post('history_upload', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@historyUpload')->name('laporan_realisasi.bulanan.kegiatan.history_upload');
+                Route::post('download_gagal_upload', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@downloadGagalUpload')->name('laporan_realisasi.bulanan.kegiatan.download_gagal_upload');
             });
 
             Route::prefix('pumk')->group(function () {

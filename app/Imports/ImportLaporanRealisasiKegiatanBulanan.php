@@ -29,6 +29,7 @@ use App\Models\JenisKegiatan;
 use App\Models\SubKegiatan;
 use App\Models\RealisasiUploadGagal;
 use App\Models\LaporanRealisasiBulananUpload;
+use App\Models\LaporanRealisasiBulananUploadGagal;
 use App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController;
 use App\Http\Controllers\Realisasi\AdministrasiController;
 
@@ -68,53 +69,32 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
             // $val_keterangan_kegiatan = rtrim($ar['keterangan_kegiatan']);
             $val_provinsi = (int) rtrim($ar['id_provinsi_sheet_referensi_provinsi']);
             $val_kabupaten = (int) rtrim($ar['id_kabupatenkota_sheet_referensi_kota']);
-            $val_realisasi_anggaran = (int) rtrim($ar['realisasi_anggaran']);
+            $val_realisasi_anggaran = rtrim($ar['realisasi_anggaran']);
             $val_satuan_ukur = (int) rtrim($ar['id_satuan_ukur_sheet_referensi_satuan_ukur']);
             $val_realisasi_indikator = rtrim($ar['realisasi_indikator']);  
                
 
             // eksekusi data kalau kolom nomornya terisi angka
          
-            if( $no > 0) {
+            if($no > 0) {
                 // cek jenis anggaran
-                try {
-                    if(!in_array($val_jenis_anggaran, $range_jenis_anggaran)) {
-                        DB::rollback();
-                        $is_gagal = true;
-                        $keterangan .= 'Baris '.$no.' Data Jenis Anggaran tidak sesuai referensi<br/>';
-                    }
-
-                } catch (\Exception $e) {
+                if(!in_array($val_jenis_anggaran, $range_jenis_anggaran)) {
                     DB::rollback();
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no.' Data Jenis Anggaran tidak sesuai referensi<br/>';
                 }
 
                 // cek target tpb/program
-                try{
-                    $program = TargetTpb::find($val_program);
-                    if(!$program){
-                        DB::rollback();
-                        $is_gagal = true;
-                        $keterangan .= 'Baris '.$no.' Data Program tidak sesuai referensi<br>';
-                    }
-                }catch(\Exception $e){
-                    DB::rollback();
+                $program = TargetTpb::find($val_program);
+                if(!$program){
                     $is_gagal = true;
                     $keterangan .= 'Baris '.$no.' Data Program tidak sesuai referensi<br>';
                 }
 
                 // cek jenis kegiatan
                 if ($val_jenis_kegiatan) {
-                    try {
-                        $jenis_kegiatan = JenisKegiatan::find($val_jenis_kegiatan);
-                        if(!$jenis_kegiatan) {
-                            DB::rollback();
-                            $is_gagal = true;
-                            $keterangan .= 'Baris '.$no.' Data Jenis Kegiatan tidak sesuai referensi<br>';
-                        }
-                    } catch (\Exception $e) {
-                        DB::rollback();
+                    $jenis_kegiatan = JenisKegiatan::find($val_jenis_kegiatan);
+                    if(!$jenis_kegiatan) {
                         $is_gagal = true;
                         $keterangan .= 'Baris '.$no.' Data Jenis Kegiatan tidak sesuai referensi<br>';
                     }
@@ -122,109 +102,69 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
                
 
                 // cek provinsi 
-                if(!$is_gagal){
-                    try{
-                        $provinsi = Provinsi::find($val_provinsi);
-                        if(!$provinsi){
-                            DB::rollback();
-                            $is_gagal = true;
-                            $keterangan .= 'Baris '.$no.' Data Provinsi tidak sesuai referensi<br>';
-                        }
-                    }catch(\Exception $e){
-                        DB::rollback();
-                        $is_gagal = true;
-                        $keterangan .= 'Baris '.$no.' Data Provinsi tidak sesuai referensi<br>';
-                    }
+                $provinsi = Provinsi::find($val_provinsi);
+                if(!$provinsi){
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.$no.' Data Provinsi tidak sesuai referensi<br>';
                 }
 
                 // cek kota
-                if(!$is_gagal){
-                    try{
-                        $kota = Kota::find($val_kabupaten);
-                        if(!$kota){
-                            DB::rollback();
-                            $is_gagal = true;
-                            $keterangan .= 'Baris '.$no.' Data Kota tidak sesuai referensi<br>';
-                        }
-                    }catch(\Exception $e){
-                        DB::rollback();
-                        $is_gagal = true;
-                        $keterangan .= 'Baris '.$no.' Data Kota tidak sesuai referensi<br>';
-                    }
+                $kota = Kota::find($val_kabupaten);
+                if(!$kota){
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.$no.' Data Kota tidak sesuai referensi<br>';
                 }
 
                 // cek relasi provinsi kota
-                if(!$is_gagal){
-                    try{
-                        $kota = Kota::where('id',$val_kabupaten)
+                $kotaProvinsi = Kota::where('id',$val_kabupaten)
                                     ->where('provinsi_id',$val_provinsi)
                                     ->first();
-                        if(!$kota){
-                            DB::rollback();
-                            $is_gagal = true;
-                            $keterangan .= 'Baris '.$no.' Data Kota tidak sesuai Provinsi<br>';
-                        }
-                    }catch(\Exception $e){
-                        DB::rollback();
-                        $is_gagal = true;
-                        $keterangan .= 'Baris '.$no.' Data Kota tidak sesuai Provinsi<br>';
-                    }
+                if(!$kotaProvinsi){
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.$no.' Data Kota tidak sesuai Provinsi<br>';
                 }
                 
                 // cek input angka numeric
-                if(!$is_gagal){
-                    if(!is_int($val_realisasi_anggaran)){
-                        $is_gagal = true;
-                        $keterangan .= 'Baris '.$no.' Data Realisasi Anggaran harus angka<br>';
-                    }
+                if(preg_match('/^[0-9]+$/', $val_realisasi_anggaran) !== 1) {
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.$no.' Data Realisasi Anggaran harus angka<br>';
                 }
 
                 // cek satuan ukur
-                if(!$is_gagal){
-                    try{
-                        $ukur = SatuanUkur::find($val_satuan_ukur);
-                        if(!$ukur){
-                            DB::rollback();
-                            $is_gagal = true;
-                            $keterangan .= 'Baris '.$no.' Data Satuan Ukur tidak sesuai referensi<br>';
-                        }
-                    }catch(\Exception $e){
-                        DB::rollback();
-                        $is_gagal = true;
-                        $keterangan .= 'Baris '.$no.' Data Satuan Ukur tidak sesuai referensi<br>';
-                    }
+                $ukur = SatuanUkur::find($val_satuan_ukur);
+                if(!$ukur){
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.$no.' Data Satuan Ukur tidak sesuai referensi<br>';
                 }
 
                 // simpan data gagal
-                // if($is_gagal){
-                //     try{
-                //         $realisasi = RealisasiUploadGagal::create([
-                //             'realisasi_upload_id' => $this->realisasi_upload,
-                //             'target_tpb_id' => rtrim($ar['id_program']) ,
-                //             'kegiatan' => rtrim($ar['kegiatan']) ,
-                //             'provinsi_id' => rtrim($ar['id_provinsi_kegiatan']) ,
-                //             'kota_id' => rtrim($ar['id_kabupaten_kotamadya_kegiatan']) ,
-                //             'indikator' => rtrim($ar['indikator_capaian_kegiatan']) ,
-                //             'satuan_ukur_id' => rtrim($ar['id_satuan_ukur']) ,
-                //             'anggaran_alokasi' => rtrim($ar[$param_alokasi]) ,
-                //             'bulan' => $this->bulan,
-                //             'tahun' => $this->tahun,
-                //             'target' => rtrim($ar[$param_target]),
-                //             'realisasi' => rtrim($ar[$param_realisasi]),
-                //             'anggaran' => rtrim($ar[$param_anggaran]),
-                //         ]);
-                //         $gagal++;
-                //         DB::commit();
-                //     }catch(\Exception $e){dd($e->getMessage());
-                //         DB::rollback();
-                //     }
-                // } 
+                if($is_gagal){
+                    try{
+                        $realisasiGagal = LaporanRealisasiBulananUploadGagal::create([
+                            'realisasi_upload_id' => $this->realisasi_upload,
+                            'jenis_anggaran' => $val_jenis_anggaran,
+                            'id_program' => $val_program,
+                            'nama_kegiatan' => $val_nama_kegiatan,
+                            'id_jenis_kegiatan' => $val_jenis_kegiatan,
+                            'id_sub_kegiatan' => $val_sub_kegiatan,
+                            'id_provinsi' => $val_provinsi,
+                            'id_kabupaten' => $val_kabupaten,
+                            'realisasi_anggaran' => $val_realisasi_anggaran,
+                            'id_satuan_ukur' => $val_satuan_ukur,
+                            'realisasi_indikator' => $val_realisasi_indikator
+                        ]);
+                        $gagal++;
+                        DB::commit();
+                    }catch(\Exception $e){
+                        // dd($e->getMessage());
+                        DB::rollback();
+                    }
+                } 
 
                 // save data
-               
-                if(!$is_gagal){
+
+                if(!$is_gagal) {
                     try{
-                        
                         $kegiatan = new Kegiatan();
                         $kegiatan->target_tpb_id = $program->id;
                         $kegiatan->kegiatan = $val_nama_kegiatan;
@@ -232,7 +172,7 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
                         $kegiatan->kota_id = $kota->id;
                         $kegiatan->indikator = $val_realisasi_indikator;
                         $kegiatan->satuan_ukur_id = $ukur->id;
-                        $kegiatan->anggaran_alokasi = $val_realisasi_anggaran;
+                        $kegiatan->anggaran_alokasi = (int) $val_realisasi_anggaran;
                         $kegiatan->jenis_kegiatan_id = $jenis_kegiatan->id;
                         $kegiatan->keterangan_kegiatan = $val_sub_kegiatan;
                         $kegiatan->save();
@@ -248,14 +188,10 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
                             $kumulatif_anggaran = $kumulatif_anggaran + $kegiatanGroup->anggaran_total;
                         }
 
-                        // $tes = Kegiatan::find($kegiatan->id);
-                        // dd($tes);
-
                         $kegiatanRealisasi = new KegiatanRealisasi();
                         $kegiatanRealisasi->kegiatan_id = $kegiatan->id;
                         $kegiatanRealisasi->bulan = $this->bulan;
                         $kegiatanRealisasi->tahun = $this->tahun;
-                        // target,realisasi -> null
                         $kegiatanRealisasi->anggaran = $val_realisasi_anggaran;
                         $kegiatanRealisasi->anggaran_total = $kumulatif_anggaran;
                         $kegiatanRealisasi->status_id = 2;//in progress
@@ -266,16 +202,14 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
                         KegiatanController::store_log($kegiatanRealisasi->id,$kegiatanRealisasi->status_id);
                         $berhasil++;
                         DB::commit();  
-                        // dd($kegiatanRealisasi);                  
 
                     } catch(\Exception $e){
-                        dd($e->getMessage());
+                        // dd($e->getMessage());
                         DB::rollback();
                         $is_gagal = true;
                         $keterangan .= 'Gagal insert data pada baris '.$no.'<br>';
                     }
                 }
-
             } 
         }
         //update data realisasi upload
