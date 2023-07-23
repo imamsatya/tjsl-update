@@ -36,7 +36,6 @@ class AnggaranTpbController extends Controller
         $this->__route = 'anggaran_tpb';
         $this->pagetitle = 'RKA';
         $this->pageRouteName = 'anggaran_tpb.rka'; // dipake buat check periode menu + enable disable
-        $this->tipeRouteName = 'RKA'; // dipake buat enable disable
     }
 
     /**
@@ -2012,7 +2011,6 @@ class AnggaranTpbController extends Controller
 
     public function getReferensiEnable() {
         $data = DB::table('referensi_enable_input_by_superadmin')
-            ->where('deskripsi', $this->tipeRouteName)
             ->where('route_name', $this->pageRouteName)
             ->first();
         return $data;

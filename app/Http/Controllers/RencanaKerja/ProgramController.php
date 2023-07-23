@@ -27,7 +27,6 @@ class ProgramController extends Controller
         $this->__route = 'rencana_kerja.program';
         $this->pagetitle = 'Data Program - TPB';
         $this->pageRouteName = 'rencana_kerja.program.index2'; // dipake buat check periode menu + enable disable
-        $this->tipeRouteName = 'Program'; // dipake buat enable disable
     }
     /**
      * Display a listing of the resource.
@@ -1491,7 +1490,6 @@ class ProgramController extends Controller
 
     public function getReferensiEnable() {
         $data = DB::table('referensi_enable_input_by_superadmin')
-            ->where('deskripsi', $this->tipeRouteName)
             ->where('route_name', $this->pageRouteName)
             ->first();
 
