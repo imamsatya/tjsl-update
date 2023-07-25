@@ -49,7 +49,7 @@ class HomeController extends Controller
         $id_users = \Auth::user()->id;
         $currentYear = date('Y');
         // $id_users = 16; // dummy
-
+        
 
         // // Get the user instance you want to authenticate
         // $user = User::find($id_users);
@@ -62,7 +62,7 @@ class HomeController extends Controller
         $admin_bumn = false;
         $super_admin = false;
         $admin_tjsl = false;
-
+      
         if (!empty($users->getRoleNames())) {
             foreach ($users->getRoleNames() as $v) {
                 if ($v == 'Admin BUMN') {
@@ -107,13 +107,13 @@ class HomeController extends Controller
             'filter_owner_id' => $request->owner_id,
             'bulan' => Bulan::get(),
             'owner' => OwnerProgram::get(),
-            'menuStatus' => $this->getMenuStatus($currentYear)
+            'menuStatus' => $this->getMenuStatus($currentYear, $perusahaan_id)
         ]);
     }
 
-    public function getMenuStatus($tahun){
+    public function getMenuStatus($tahun, $perusahaan_id){
         $user = Auth::user();
-        $perusahaan_id = $user->id_bumn;
+        $perusahaan_id = $perusahaan_id ?? $user->id_bumn;
         $tahun = $tahun ?? date('Y');
         
         //RKA
@@ -707,7 +707,7 @@ class HomeController extends Controller
 
     public function allstatus(Request $request){
         
-        return $this->getMenuStatus($request->tahunStatus);
+        return $this->getMenuStatus($request->tahunStatus, $request->perusahaan_id);
     }
 
     public function chartpumk(Request $request)

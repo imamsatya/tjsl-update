@@ -485,8 +485,8 @@
                                 <div class="row mb-4">
                                     <div class="col-1" style="text-align: center">
                                         <span class="accordion-icon">
-                                            <i class="bi-duotone bi-plus-square fs-3 accordion-icon-on"></i>
-                                            <i class="bi-duotone bi-dash-square fs-3 accordion-icon-off d-none"></i>
+                                            <i class="bi-duotone bi-plus-square fs-3 accordion-icon-on d-none"></i>
+                                            <i class="bi-duotone bi-dash-square fs-3 accordion-icon-off "></i>
                                         </span>
                                     </div>
                                     <div class="col-11" style="">
@@ -498,7 +498,7 @@
                         
                     </div>
                 </div>
-                <div id="kt_accordion_6_item_1" class="fs-6 collapse" >
+                <div id="kt_accordion_6_item_1" class="fs-6 " >
                 <div class="card-body p-0">
                     <div class="card-px py-10">
                         <table class="table table-striped- table-bordered table-hover table-checkable" id="datatable">
@@ -675,8 +675,8 @@
             var url = new URL(window.location.href);
             var params = url.pathname.split('/').slice(-3);
             var filter_perusahaan_id = params[0]; // "1"
-            var filter_tahun = $("select[name='tahun']").val();
-            var filter_bulan = $("select[name='bulan_id']").val();
+            var filter_tahun = $("select[name='tahun_template']").val();
+            var filter_bulan = $("select[name='bulan_template_id']").val();
 
             console.log(`perusahaan_id : ${filter_perusahaan_id} | tahun : ${filter_tahun} | bulan : ${filter_bulan}`)
 

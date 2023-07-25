@@ -209,6 +209,23 @@
                                 
                             </div>
                             <hr> 
+                            <div class="row mb-2 me-2">
+                                <div class="col-lg-6 ">
+                                    {{-- <div class="ms-8">Saldo Awal</div> --}}
+
+
+                                </div>
+                                <div class="col-lg-6 text-end">
+                                    <h1>Rupiah</h1>
+
+
+                                </div>
+                                {{-- <input type="text"name="tes" id="tes"
+                                        class="form-control form-control-lg form-control-solid"
+                                        placeholder="Rp ... "  value="{{$data->income_mitra_binaan ?? ''}}"
+                                        style="text-align:right;" pattern="[0-9\-]*" /> --}}
+                             
+                            </div>
                             <div class="row mb-4 mt-8">
                                 <div class="col-lg-6 ">
                                     <div class="ms-8">Saldo Awal</div>
@@ -522,29 +539,48 @@
             // element.value = formattedValue;
 
             //ver 2
-            let value = element.value.replace(/[^\d-]/g, "");
-            let isNegative = false;
+            // let value = element.value.replace(/[^\d-]/g, "");
+            // let isNegative = false;
 
-            if (value.startsWith("-")) {
-                isNegative = true;
-                value = value.substring(1);
+            // if (value.startsWith("-")) {
+            //     isNegative = true;
+            //     value = value.substring(1);
+            // }
+
+            // let formatter = new Intl.NumberFormat("id-ID", {
+            //     style: "currency",
+            //     currency: "IDR",
+            //     minimumFractionDigits: 0,
+            //     maximumFractionDigits: 0
+            // });
+
+            // let formattedValue = formatter.format(value);
+            // formattedValue = formattedValue.replace(/,/g, ".");
+
+            // if (isNegative) {
+            //     formattedValue = "- " + formattedValue;
+            // }
+
+            // element.value = formattedValue;
+            const rawValue = element.value;
+
+            // Remove all non-digit characters from the input
+            const numericValue = rawValue.replace(/\D/g, '');
+
+            // Add a minus sign if the input had a minus sign at the beginning
+            const sign = rawValue.startsWith('-') ? '-' : '';
+
+            // Format the numeric value with dots for thousands separator
+            let formattedValue = "";
+            for (let i = 0; i < numericValue.length; i++) {
+                if (i > 0 && i % 3 === 0) {
+                    formattedValue = "." + formattedValue; // Add a dot every three digits from right to left
+                }
+                formattedValue = numericValue.charAt(numericValue.length - 1 - i) + formattedValue;
             }
 
-            let formatter = new Intl.NumberFormat("id-ID", {
-                style: "currency",
-                currency: "IDR",
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            });
-
-            let formattedValue = formatter.format(value);
-            formattedValue = formattedValue.replace(/,/g, ".");
-
-            if (isNegative) {
-                formattedValue = "- " + formattedValue;
-            }
-
-            element.value = formattedValue;
+            // Update the input field with the formatted value
+            element.value = sign + formattedValue;
             
         }
 

@@ -101,21 +101,44 @@
             <div id="kt_accordion_9_item_1" class="fs-6 collapse">
                 <div class="card-body p-0">
                     <div class="card-px py-10">
-                        <div class="col-lg-4 mb-20">
-                            <label>Tahun</label>
-
-                            <select class="form-select form-select-solid form-select2" id="tahunStatus"
-                                name="tahunStatus" data-kt-select2="true" data-placeholder="Pilih Tahun">
-                                @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
+                        <div class="form-group row mb-20">
+                            <div class="col-lg-6">
+                                <label>BUMN </label>
                                 @php
-                                $select = (($i == $tahun) ? 'selected="selected"' : '');
+                                $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
                                 @endphp
-                                <option value="{{$i}}" {!! $select !!}>{{$i}}</option>
-                                @php } @endphp
-                            </select>
+                                <select class="form-select form-select-solid form-select2" id="perusahaan_id_status"
+                                    name="perusahaan_id_status" data-kt-select2="true" data-placeholder="Pilih BUMN"
+                                    {{ $disabled }}>
+                                    <option></option>
+                                    @foreach($perusahaan as $bumn)
+                                    @php
+                                    if ($filter_bumn_id == null) {
+                                        $filter_bumn_id = $users->id_bumn;
+                                    }
+                                    $select = (($bumn->id == $filter_bumn_id) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{ $bumn->id }}" {!! $select !!}>{{ $bumn->nama_lengkap }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Tahun</label>
+    
+                                <select class="form-select form-select-solid form-select2" id="tahunStatus"
+                                    name="tahunStatus" data-kt-select2="true" data-placeholder="Pilih Tahun">
+                                    @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
+                                    @php
+                                    $select = (($i == $tahun) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{$i}}" {!! $select !!}>{{$i}}</option>
+                                    @php } @endphp
+                                </select>
+                            </div>
                         </div>
+                        
                         <div class="table-responsive">
-                            <table class="table table-striped- table-bordered table-hover">
+                            <table class="table  table-bordered table-hover">
                                 <thead>
                                     <tr>
                                         <th>Menu</th>
@@ -128,6 +151,7 @@
                                         <th>Audited</th>
                                     </tr>
                                 </thead>
+                                
                                 <tbody>
                                     @foreach ($menuStatus as $index => $item)
                                     <tr id="row_{{$index}}">
@@ -642,6 +666,10 @@
             updateTableStatus();
         });
 
+        $('#perusahaan_id_status').on('change', function (event) {
+            updateTableStatus();
+        });
+
 
 
 
@@ -667,6 +695,7 @@
             url: urlallstatus,
             data: {
                 'tahunStatus': $("#tahunStatus").val(),
+                'perusahaan_id': $("#perusahaan_id_status").val()
             },
             type: "POST",
             dataType: "json",
