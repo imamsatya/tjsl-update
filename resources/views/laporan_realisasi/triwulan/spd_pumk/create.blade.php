@@ -760,7 +760,12 @@
                     toastr.success(
                         `Berhasil!`
                     );
-                    window.location.reload();
+                    var url = window.location.pathname;
+                            var segments = url.split('/');
+                            console.log(segments)
+                            let routeTo = "{{route('laporan_realisasi.triwulan.spd_pumk.index')}}"+"?perusahaan_id="+segments[5]+"&tahun="+segments[6]+"&periode_laporan="+segments[7]
+                            window.location.href = routeTo
+                    // window.location.reload();
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     console.log(errorThrown);

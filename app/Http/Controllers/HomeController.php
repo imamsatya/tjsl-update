@@ -140,6 +140,7 @@ class HomeController extends Controller
                 'prognosa' => false,
                 'tw4' => false,
                 'audited' => false,
+                'class' => 'rka'
             ],
             [
                 'menu' => $rka_menu_program,
@@ -150,6 +151,7 @@ class HomeController extends Controller
                 'prognosa' => false,
                 'tw4' => false,
                 'audited' => false,
+                'class' => 'program'
             ],
             [
                 'menu' => $rka_menu_spdpumk,
@@ -160,6 +162,7 @@ class HomeController extends Controller
                 'prognosa' => false,
                 'tw4' => false,
                 'audited' => false,
+                'class' => 'spdpumk_rka'
             ],
             [
                 'menu' => $rka_laporan_manajemen,
@@ -170,6 +173,7 @@ class HomeController extends Controller
                 'prognosa' => false,
                 'tw4' => false,
                 'audited' => false,
+                'class' => 'laporan_manajemen_rka'
             ],
             //Laporan Realisasi
             [
@@ -215,6 +219,7 @@ class HomeController extends Controller
         ];
         //rka
         $anggaran = DB::table('anggaran_tpbs')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->orderBy('updated_at', 'desc')->get();
+        // dd($anggaran);
         //cek ada atau tidak
         if($anggaran?->first()){
             $data[0]['rka'] = "Finish";
@@ -229,16 +234,21 @@ class HomeController extends Controller
 
         //program rka
         $program_rka = DB::table('anggaran_tpbs')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->orderBy('target_tpbs.updated_at', 'desc')->join('target_tpbs', 'target_tpbs.anggaran_tpb_id', '=', 'anggaran_tpbs.id')->get();
+        
         if($program_rka?->first()){
             $data[1]['rka'] = "Finish";
+            $data[1]['id'] = $program_rka->first()->id;
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress
         if ($program_rka?->where('status_id', 2)->first()) {
             $data[1]['rka'] = "In Progress";
+            $data[1]['id'] = $program_rka?->where('status_id', 2)->first()->id;
         }
         if(count($program_rka) == 0){
             $data[1]['rka'] = "Unfilled";
+            $data[1]['id'] = null;
         };
+     
 
         //spdpumk rka
         $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
@@ -246,15 +256,18 @@ class HomeController extends Controller
        
         if($spd_pumk?->first()){
             $data[2]['rka'] = "Finish";
+            $data[2]['id'] = $spd_pumk->first()->id;
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress
         if ($spd_pumk?->where('status_id', 2)->first()) {
             $data[2]['rka'] = "In Progress";
+            $data[2]['id'] = $spd_pumk?->where('status_id', 2)->first()->id;
         }
         if(count($spd_pumk) == 0){
             $data[2]['rka'] = "Unfilled";
+            $data[2]['id'] = null;
         };
-
+        
         //laporan manajemen rka
         $laporan_manajemen = DB::table('laporan_manajemens')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->where('periode_laporan_id', $periode_rka_id)->get();
         if($laporan_manajemen?->first() ){
@@ -701,7 +714,7 @@ class HomeController extends Controller
                 }
             }
         }
-       
+        // dd($data);
         return $data;
     }
 

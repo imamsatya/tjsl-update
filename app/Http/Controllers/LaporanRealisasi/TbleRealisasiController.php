@@ -404,7 +404,7 @@ class TbleRealisasiController extends Controller
             }
             //kalau ada yg inprogress walaupun 1 sudah pasti in progress
             if ($laporan_manajemen?->whereIn('status_id', [2, 3])->first()) {
-                $data[2]['tanggal_update'] = $laporan_manajemen->whereIn('status_id', [2, 3])->first()->updated_at;
+                $data[2]['tanggal_update'] = $laporan_manajemen?->whereIn('status_id', [2, 3])->first()->status_id === 2 ? $laporan_manajemen->whereIn('status_id', [2, 3])->first()->updated_at : null;
                 $data[2]['status'] =  $laporan_manajemen?->whereIn('status_id', [2, 3])->first()->status_id === 2 ? "In Progress" : null;
             }
         }

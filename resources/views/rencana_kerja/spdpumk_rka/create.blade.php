@@ -732,10 +732,16 @@
                 },
                 success: function(response) {
                     
-                    console.log(`success : ${response}`)
+                    // console.log(`success : ${response}`)
                     toastr.success(
                         `Berhasil!`
                     );
+
+                    var url = window.location.pathname;
+                            var segments = url.split('/');
+                            // console.log(segments)
+                            let routeTo = "{{route('rencana_kerja.spdpumk_rka.index')}}"+"?perusahaan_id="+segments[4]+"&tahun="+segments[5]
+                            window.location.href = routeTo
                     // window.location.reload();
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -744,35 +750,36 @@
             });
         });
 
-          // Get the input field by its ID
-          const inputField = document.getElementById('tes');
+        //   // Get the input field by its ID
+        //   const inputField = document.getElementById('tes');
 
-// Function to format the input value
-function formatInputValue() {
-            const rawValue = inputField.value;
+        // // Function to format the input value
+        // function formatInputValue()
+        // {
+        //             const rawValue = inputField.value;
 
-            // Remove all non-digit characters from the input
-            const numericValue = rawValue.replace(/\D/g, '');
+        //             // Remove all non-digit characters from the input
+        //             const numericValue = rawValue.replace(/\D/g, '');
 
-            // Add a minus sign if the input had a minus sign at the beginning
-            const sign = rawValue.startsWith('-') ? '-' : '';
+        //             // Add a minus sign if the input had a minus sign at the beginning
+        //             const sign = rawValue.startsWith('-') ? '-' : '';
 
-            // Format the numeric value with dots for thousands separator
-            let formattedValue = "";
-            for (let i = 0; i < numericValue.length; i++) {
-                if (i > 0 && i % 3 === 0) {
-                    formattedValue = "." + formattedValue; // Add a dot every three digits from right to left
-                }
-                formattedValue = numericValue.charAt(numericValue.length - 1 - i) + formattedValue;
-            }
+        //             // Format the numeric value with dots for thousands separator
+        //             let formattedValue = "";
+        //             for (let i = 0; i < numericValue.length; i++) {
+        //                 if (i > 0 && i % 3 === 0) {
+        //                     formattedValue = "." + formattedValue; // Add a dot every three digits from right to left
+        //                 }
+        //                 formattedValue = numericValue.charAt(numericValue.length - 1 - i) + formattedValue;
+        //             }
 
-            // Update the input field with the formatted value
-            inputField.value = sign + formattedValue;
-        }
-        // Call the formatInputValue function once to format the initial data (if any)
-        formatInputValue();
-        // Attach an event listener to call the formatInputValue function whenever the input value changes
-        inputField.addEventListener('input', formatInputValue);
+        //             // Update the input field with the formatted value
+        //             inputField.value = sign + formattedValue;
+        // }
+        // // Call the formatInputValue function once to format the initial data (if any)
+        // formatInputValue();
+        // // Attach an event listener to call the formatInputValue function whenever the input value changes
+        // inputField.addEventListener('input', formatInputValue);
 </script>
 
 

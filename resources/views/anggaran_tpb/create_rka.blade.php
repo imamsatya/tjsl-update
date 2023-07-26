@@ -487,7 +487,7 @@
                             var segments = url.split('/');
                             console.log(segments)
                             let routeTo = "{{route('anggaran_tpb.rka')}}"+"?perusahaan_id="+segments[4]+"&tahun="+segments[5]
-                            // window.location.href = routeTo
+                            window.location.href = routeTo
                             
                                                 
                             // window.location.reload();

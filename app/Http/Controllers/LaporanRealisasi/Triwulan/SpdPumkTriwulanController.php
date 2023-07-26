@@ -191,7 +191,7 @@ class SpdPumkTriwulanController extends Controller
         //
      
         
-
+        
         $result = [
             'flag' => 'error',
             'msg' => 'Error System',
@@ -215,20 +215,20 @@ class SpdPumkTriwulanController extends Controller
                     $param['bumn_id'] = $request->perusahaan_id;
                     $param['periode_id'] = $request->periode_id;
                     //dana tersedia
-                    $param['saldo_awal'] = $request->spdpumk_rka['saldo_awal'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['saldo_awal']);
-                    $param['income_mitra_binaan'] = $request->spdpumk_rka['pengembalian_mitra_binaan'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pengembalian_mitra_binaan']);
-                    $param['income_bumn_pembina_lain'] = $request->spdpumk_rka['pengembalian_bumn_penyalur'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pengembalian_bumn_penyalur']);
-                    $param['income_jasa_adm_pumk'] = $request->spdpumk_rka['pendapatan_jasa_admin_pumk'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pendapatan_jasa_admin_pumk']);
-                    $param['income_adm_bank'] = $request->spdpumk_rka['pendapatan_jasa_bank'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pendapatan_jasa_bank']);
-                    $param['income_biaya_lainnya'] = $request->spdpumk_rka['pendapatan_biaya_lainnya'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pendapatan_biaya_lainnya']);
-                    $param['income_total'] = $request->spdpumk_rka['total_dana_tersedia'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['total_dana_tersedia']);
+                    $param['saldo_awal'] = $request->spdpumk_rka['saldo_awal'] == null || $request->spdpumk_rka['saldo_awal'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['saldo_awal']);
+                    $param['income_mitra_binaan'] = $request->spdpumk_rka['pengembalian_mitra_binaan'] == null || $request->spdpumk_rka['pengembalian_mitra_binaan'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pengembalian_mitra_binaan']);
+                    $param['income_bumn_pembina_lain'] = $request->spdpumk_rka['pengembalian_bumn_penyalur'] == null || $request->spdpumk_rka['pengembalian_bumn_penyalur'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pengembalian_bumn_penyalur']);
+                    $param['income_jasa_adm_pumk'] = $request->spdpumk_rka['pendapatan_jasa_admin_pumk'] == null || $request->spdpumk_rka['pendapatan_jasa_admin_pumk'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pendapatan_jasa_admin_pumk']);
+                    $param['income_adm_bank'] = $request->spdpumk_rka['pendapatan_jasa_bank'] == null || $request->spdpumk_rka['pendapatan_jasa_bank'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pendapatan_jasa_bank']);
+                    $param['income_biaya_lainnya'] = $request->spdpumk_rka['pendapatan_biaya_lainnya'] == null || $request->spdpumk_rka['pendapatan_biaya_lainnya'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pendapatan_biaya_lainnya']);
+                    $param['income_total'] = $request->spdpumk_rka['total_dana_tersedia'] == null || $request->spdpumk_rka['total_dana_tersedia'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['total_dana_tersedia']);
                     //dana disalurkan
-                    $param['outcome_mandiri'] = $request->spdpumk_rka['penyaluran_pumk_mandiri'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_mandiri']);
-                    $param['outcome_kolaborasi_bumn'] = $request->spdpumk_rka['penyaluran_pumk_kolaborasi'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_kolaborasi']);
-                    $param['outcome_bumn_khusus'] = $request->spdpumk_rka['penyaluran_pumk_khusus'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_khusus']);
-                    $param['outcome_bri'] = $request->spdpumk_rka['penyaluran_pumk_bri'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_bri']);
-                    $param['outcome_total'] = $request->spdpumk_rka['total_dana_disalurkan'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['total_dana_disalurkan']);
-                    $param['saldo_akhir'] = $request->spdpumk_rka['saldo_akhir'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['saldo_akhir']);
+                    $param['outcome_mandiri'] = $request->spdpumk_rka['penyaluran_pumk_mandiri'] == null || $request->spdpumk_rka['penyaluran_pumk_mandiri'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_mandiri']);
+                    $param['outcome_kolaborasi_bumn'] = $request->spdpumk_rka['penyaluran_pumk_kolaborasi'] == null || $request->spdpumk_rka['penyaluran_pumk_kolaborasi'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_kolaborasi']);
+                    $param['outcome_bumn_khusus'] = $request->spdpumk_rka['penyaluran_pumk_khusus'] == null || $request->spdpumk_rka['penyaluran_pumk_khusus'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_khusus']);
+                    $param['outcome_bri'] = $request->spdpumk_rka['penyaluran_pumk_bri'] == null || $request->spdpumk_rka['penyaluran_pumk_bri'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_bri']);
+                    $param['outcome_total'] = $request->spdpumk_rka['total_dana_disalurkan'] == null || $request->spdpumk_rka['total_dana_disalurkan'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['total_dana_disalurkan']);
+                    $param['saldo_akhir'] = $request->spdpumk_rka['saldo_akhir'] == null || $request->spdpumk_rka['saldo_akhir'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['saldo_akhir']);
                     $param['created_by'] = \Auth::user()->id;
                     $param['created_at'] = now();
                     // if($param['saldo_awal'] == 0 || $param['saldo_awal'] == null || $param['saldo_awal'] == ""){
@@ -279,20 +279,20 @@ class SpdPumkTriwulanController extends Controller
                         ->first();
 
                     //dana tersedia
-                    $current->saldo_awal = $request->spdpumk_rka['saldo_awal'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['saldo_awal']);
-                    $current->income_mitra_binaan = $request->spdpumk_rka['pengembalian_mitra_binaan'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pengembalian_mitra_binaan']);
-                    $current->income_bumn_pembina_lain = $request->spdpumk_rka['pengembalian_bumn_penyalur'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pengembalian_bumn_penyalur']);
-                    $current->income_jasa_adm_pumk = $request->spdpumk_rka['pendapatan_jasa_admin_pumk'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pendapatan_jasa_admin_pumk']);
-                    $current->income_adm_bank = $request->spdpumk_rka['pendapatan_jasa_bank'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pendapatan_jasa_bank']);
-                    $current->income_biaya_lainnya = $request->spdpumk_rka['pendapatan_biaya_lainnya'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pendapatan_biaya_lainnya']);
-                    $current->income_total = $request->spdpumk_rka['total_dana_tersedia'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['total_dana_tersedia']);
+                    $current->saldo_awal = $request->spdpumk_rka['saldo_awal'] == null || $request->spdpumk_rka['saldo_awal'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['saldo_awal']);
+                    $current->income_mitra_binaan = $request->spdpumk_rka['pengembalian_mitra_binaan'] == null || $request->spdpumk_rka['pengembalian_mitra_binaan'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pengembalian_mitra_binaan']);
+                    $current->income_bumn_pembina_lain = $request->spdpumk_rka['pengembalian_bumn_penyalur'] == null || $request->spdpumk_rka['pengembalian_bumn_penyalur'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pengembalian_bumn_penyalur']);
+                    $current->income_jasa_adm_pumk = $request->spdpumk_rka['pendapatan_jasa_admin_pumk'] == null || $request->spdpumk_rka['pendapatan_jasa_admin_pumk'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pendapatan_jasa_admin_pumk']);
+                    $current->income_adm_bank = $request->spdpumk_rka['pendapatan_jasa_bank'] == null || $request->spdpumk_rka['pendapatan_jasa_bank'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pendapatan_jasa_bank']);
+                    $current->income_biaya_lainnya = $request->spdpumk_rka['pendapatan_biaya_lainnya'] == null || $request->spdpumk_rka['pendapatan_biaya_lainnya'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pendapatan_biaya_lainnya']);
+                    $current->income_total = $request->spdpumk_rka['total_dana_tersedia'] == null || $request->spdpumk_rka['total_dana_tersedia'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['total_dana_tersedia']);
                     //dana disalurkan
-                    $current->outcome_mandiri = $request->spdpumk_rka['penyaluran_pumk_mandiri'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_mandiri']);
-                    $current->outcome_kolaborasi_bumn = $request->spdpumk_rka['penyaluran_pumk_kolaborasi'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_kolaborasi']);
-                    $current->outcome_bumn_khusus = $request->spdpumk_rka['penyaluran_pumk_khusus'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_khusus']);
-                    $current->outcome_bri = $request->spdpumk_rka['penyaluran_pumk_bri'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_bri']);
-                    $current->outcome_total = $request->spdpumk_rka['total_dana_disalurkan'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['total_dana_disalurkan']);
-                    $current->saldo_akhir = $request->spdpumk_rka['saldo_akhir'] == null ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['saldo_akhir']);
+                    $current->outcome_mandiri = $request->spdpumk_rka['penyaluran_pumk_mandiri'] == null || $request->spdpumk_rka['penyaluran_pumk_mandiri'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_mandiri']);
+                    $current->outcome_kolaborasi_bumn = $request->spdpumk_rka['penyaluran_pumk_kolaborasi'] == null || $request->spdpumk_rka['penyaluran_pumk_kolaborasi'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_kolaborasi']);
+                    $current->outcome_bumn_khusus = $request->spdpumk_rka['penyaluran_pumk_khusus'] == null || $request->spdpumk_rka['penyaluran_pumk_khusus'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_khusus']);
+                    $current->outcome_bri = $request->spdpumk_rka['penyaluran_pumk_bri'] == null || $request->spdpumk_rka['penyaluran_pumk_bri'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['penyaluran_pumk_bri']);
+                    $current->outcome_total = $request->spdpumk_rka['total_dana_disalurkan'] == null || $request->spdpumk_rka['total_dana_disalurkan'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['total_dana_disalurkan']);
+                    $current->saldo_akhir = $request->spdpumk_rka['saldo_akhir'] == null || $request->spdpumk_rka['saldo_akhir'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['saldo_akhir']);
                     $current->updated_at = now();
                     $current->updated_by = \Auth::user()->id;
                     $current->save();

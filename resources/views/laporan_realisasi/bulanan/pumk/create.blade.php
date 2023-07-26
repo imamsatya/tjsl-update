@@ -57,6 +57,7 @@
             </div>
         </div>
         @endif
+        @if($perusahaan_id == 3)
         <div class="row mb-6">
             <div class="col-lg-3">
                 <div class="ms-2 bulan-label">Jumlah MB baru pada Bulan<span style="color: red">*</span></div>
@@ -76,6 +77,7 @@
                     class="form-control form-control-lg form-control-solid" placeholder="Jumlah MB" />
             </div>
         </div>
+        @endif
         {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 
@@ -357,7 +359,7 @@
             };
 
             messagesRules = {
-                        tahun_create: 'tahun harus terisi!',
+                        tahun_create: 'Tahun harus terisi!',
                         bulan_id_create: 'Bulan harus terisi!',
                         nilai_penyaluran: 'Nilai Penyaluran harus terisi!',
                         jumlah_mb: 'Jumlah MB baru harus terisi!',
@@ -368,15 +370,15 @@
                 tahun_create: 'required',
                 bulan_id_create: 'required',
                 nilai_penyaluran_melalui_bri: 'required', // Add this rule for perusahaan_id !== '3'
-                jumlah_mb: 'required',
-                jumlah_mb_naik_kelas: 'required',
+                // jumlah_mb: 'required',
+                // jumlah_mb_naik_kelas: 'required',
             };
             messagesRules = {
-                        tahun_create: 'tahun harus terisi!',
+                        tahun_create: 'Tahun harus terisi!',
                         bulan_id_create: 'Bulan harus terisi!',
                         nilai_penyaluran_melalui_bri: 'Nilai Penyaluran Melalui BRI harus terisi!',
-                        jumlah_mb: 'Jumlah MB baru harus terisi!',
-                        jumlah_mb_naik_kelas: 'Jumlah MB Naik Kelas harus terisi!',
+                        // jumlah_mb: 'Jumlah MB baru harus terisi!',
+                        // jumlah_mb_naik_kelas: 'Jumlah MB Naik Kelas harus terisi!',
             };
         }
         $('#form-edit').validate({
@@ -457,12 +459,16 @@
                     if (perusahaan_id === '3') {
                         let nilai_penyaluran = $('#nilai_penyaluran').val()
                         $('#nilai_penyaluran').val(parseInt(nilai_penyaluran.replace(/[^0-9\-]/g, '')))
+
+                        let jumlah_mb = $('#jumlah_mb').val()
+                        let jumlah_mb_naik_kelas = $('#jumlah_mb_naik_kelas').val()
+                        $('#jumlah_mb').val(parseInt(jumlah_mb.replace(/[^0-9\-]/g, '')))
+                        $('#jumlah_mb_naik_kelas').val(parseInt(jumlah_mb_naik_kelas.replace(/[^0-9\-]/g, '')))
                     } else {
                         let nilai_penyaluran_melalui_bri = $('#nilai_penyaluran_melalui_bri').val()
                         $('#nilai_penyaluran_melalui_bri').val(parseInt(nilai_penyaluran_melalui_bri.replace(/[^0-9\-]/g, '')))
                     }
-                    let jumlah_mb = $('#jumlah_mb').val()
-                    let jumlah_mb_naik_kelas = $('#jumlah_mb_naik_kelas').val()
+                    
                     //
                     // let kolektabilitas_lancar = $('#kolektabilitas_lancar').val()
                     // let kolektabilitas_lancar_jumlah_mb = $('#kolektabilitas_lancar_jumlah_mb').val()
@@ -479,8 +485,7 @@
                     $('#bulan_id_create').val(parseInt(bulan_id_create.replace(/[^0-9\-]/g, '')))
                     
                    
-                    $('#jumlah_mb').val(parseInt(jumlah_mb.replace(/[^0-9\-]/g, '')))
-                    $('#jumlah_mb_naik_kelas').val(parseInt(jumlah_mb_naik_kelas.replace(/[^0-9\-]/g, '')))
+                    
                     // $('#kolektabilitas_lancar').val(parseInt(kolektabilitas_lancar.replace(/[^0-9\-]/g, '')))
                     // $('#kolektabilitas_lancar_jumlah_mb').val(parseInt(kolektabilitas_lancar_jumlah_mb.replace(/[^0-9\-]/g, '')))
                     // $('#kolektabilitas_kurang_lancar').val(parseInt(kolektabilitas_kurang_lancar.replace(/[^0-9\-]/g, '')))

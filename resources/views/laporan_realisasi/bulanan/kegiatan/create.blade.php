@@ -961,7 +961,7 @@
 
             var jenis_anggaran = document.getElementById('jenis-anggaran').value
 
-             var actionform = document.getElementById('actionform');
+            var actionform = document.getElementById('actionform');
             var actionform = actionform.getAttribute('data-variable');
             console.log(`perusahaan_id : ${perusahaan_id} | tahun : ${tahun} | jenis_anggaran : ${jenis_anggaran} | actionform : ${actionform}`)
             
@@ -1034,7 +1034,13 @@
                         confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
                     })
                     if( responseObject.result.flag == 'success'){
-                        window.location.reload();
+                        // window.location.reload();
+                        // var url = window.location.pathname;
+                        // var segments = url.split('/'); 
+                        
+                        let routeTo = "{{route('laporan_realisasi.bulanan.kegiatan.index')}}"+"?perusahaan_id="+perusahaan_id+"&tahun="+tahun+"&jenis_anggaran="+jenis_anggaran+"&bulan_id="+bulan
+                        window.location.href = routeTo
+                        
                     }
                    
                 },
