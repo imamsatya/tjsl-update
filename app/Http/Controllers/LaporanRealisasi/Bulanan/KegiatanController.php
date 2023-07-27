@@ -112,6 +112,7 @@ class KegiatanController extends Controller
         // $currentMonth = (int) date('n');
 
         $bulan = $request->bulan_id ??  (int) date('n');
+        // $bulan = $request->bulan_id ??  'all';
         $tahun = $request->tahun ?? date('Y');
         
         $kegiatan = DB::table('kegiatans')
@@ -548,7 +549,7 @@ class KegiatanController extends Controller
                 'kota_kabupaten' => Kota::where('is_luar_negeri', false)->get(),
                 'satuan_ukur' => SatuanUkur::where('is_active', true)->get(),
                 'subkegiatan' => SubKegiatan::all(),
-                
+
             ]);
         } catch (Exception $e) {
         }
