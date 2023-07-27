@@ -16,9 +16,9 @@
         <tbody>
             <tr>
                 <td><b>BUMN</b></td>
-                <td>{{ @$data->jenis_anggaran }}</td>
+                <td>{{ @$data->nama_perusahaan }}</td>
                 <td><b>Pilar</b></td>
-                <td>{{ @$data->no_tpb }} - {{ @$data->nama_tpb }}</td>
+                <td>{{ @$data->nama_pilar }}</td>
 
             </tr>
             <tr>
@@ -44,7 +44,7 @@
                 <td><b>Realisasi Anggaran</b></td>
                 <td>Rp. {{ number_format($anggaran_total, 0, ',', ',') }}</td>
                 <td><b>Bulan</b></td>
-                <td>{{ $realisasi[0]->bulan_nama . ' ' . $realisasi[0]->tahun }}</td>
+                <td>{{ $realisasi[0]?->bulan_nama . ' ' . $realisasi[0]?->tahun }}</td>
             </tr>
             <tr>
                 <td><b>Indikator Capaian</b></td>

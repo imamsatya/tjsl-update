@@ -54,13 +54,14 @@ class KegiatanController extends Controller
      */
     public function index(Request $request)
     {
+        
         // dd($request->kriteria_program);
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
 
         $admin_bumn = false;
         $view_only = false;
-        $perusahaan_id = $request->perusahaan_id ?? 1;
+        $perusahaan_id = $request->perusahaan_id ?? 'all';
         if (!empty($users->getRoleNames())) {
             foreach ($users->getRoleNames() as $v) {
                 if ($v == 'Admin BUMN' || $v == 'Verifikator BUMN') {
@@ -84,9 +85,18 @@ class KegiatanController extends Controller
         //Kegiatan
         $program = DB::table('target_tpbs')
         ->join('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun) {
-            $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+            if ($perusahaan_id != 'all') {
+                $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
                 ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
                 ->where('anggaran_tpbs.tahun', $tahun);
+            }
+
+            if ($perusahaan_id == 'all') {
+                $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                // ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
+                ->where('anggaran_tpbs.tahun', $tahun);
+            }
+            
         })
         ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
         ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
@@ -112,9 +122,17 @@ class KegiatanController extends Controller
         })
         ->join('target_tpbs', 'target_tpbs.id', 'kegiatans.target_tpb_id')
         ->join('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun) {
-            $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+            if ($perusahaan_id != 'all') {
+                $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
                 ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
                 ->where('anggaran_tpbs.tahun', $tahun);
+            }
+            if ($perusahaan_id == 'all') {
+                $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                // ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
+                ->where('anggaran_tpbs.tahun', $tahun);
+            }
+            
         })
         ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
         ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
@@ -140,8 +158,7 @@ class KegiatanController extends Controller
             'satuan_ukur.nama as satuan_ukur_nama'
         )
         ->get();
-
-        
+        // dd($request->perusahaan_id);
         // dd($kegiatan);
         // $pilar_pembangunan_id = $request->pilar_pembangunan ?? '';
         //     dd($pilar_pembangunan_id);
@@ -530,7 +547,8 @@ class KegiatanController extends Controller
                 'provinsi' => Provinsi::where('is_luar_negeri', false)->get(),
                 'kota_kabupaten' => Kota::where('is_luar_negeri', false)->get(),
                 'satuan_ukur' => SatuanUkur::where('is_active', true)->get(),
-                'subkegiatan' => SubKegiatan::all()
+                'subkegiatan' => SubKegiatan::all(),
+                
             ]);
         } catch (Exception $e) {
         }
@@ -640,11 +658,12 @@ class KegiatanController extends Controller
         // $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
         // $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')
         // ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')->where('periode_laporan_id', $periode_rka_id)->where('perusahaans.induk', 0);
-
-        $perusahaan_id = $request->perusahaan_id ?? 1;
+        
+        $perusahaan_id = $request->perusahaan_id ?? 'all';
         $bulan = $request->bulan ?? 1;
         $tahun = $request->tahun ?? date('Y');
         $jenis_anggaran = $request->jenis_anggaran ?? 'CID';
+        // dd($perusahaan_id);
         $kegiatan = DB::table('kegiatans')
         ->join('kegiatan_realisasis', function($join) use ($bulan, $tahun) {
             $join->on('kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
@@ -653,9 +672,18 @@ class KegiatanController extends Controller
         })
         ->join('target_tpbs', 'target_tpbs.id', 'kegiatans.target_tpb_id')
         ->join('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun) {
-            $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+            if ($perusahaan_id != 'all') {
+                $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
                 ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
                 ->where('anggaran_tpbs.tahun', $tahun);
+            }
+
+            if ($perusahaan_id == 'all') {
+                $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                // ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
+                ->where('anggaran_tpbs.tahun', $tahun);
+            }
+            
         })
         ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
     
@@ -857,17 +885,21 @@ class KegiatanController extends Controller
 
     public function detail(Request $request)
     {
-        
+        // dd($request);
         // try{
           
             // $kegiatan  = Kegiatan::find((int)$request->input('id'));
             $kegiatan = DB::table('kegiatans')->where('kegiatans.id', (int)$request->input('id'))
             ->join('target_tpbs', 'target_tpbs.id', 'kegiatans.target_tpb_id')
             ->join('tpbs', 'tpbs.id', 'target_tpbs.tpb_id')
+            ->join('anggaran_tpbs', 'anggaran_tpbs.id', 'target_tpbs.anggaran_tpb_id')
+            ->join('perusahaans', 'perusahaans.id', 'anggaran_tpbs.perusahaan_id')
+            ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
+            ->join('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
             ->join('provinsis', 'provinsis.id', 'kegiatans.provinsi_id')
             ->join('kotas', 'kotas.id', 'kegiatans.kota_id')
             ->join('satuan_ukur', 'satuan_ukur.id', 'kegiatans.satuan_ukur_id')
-            ->select('kegiatans.*','provinsis.nama as provinsi', 'kotas.nama as kota'
+            ->select('kegiatans.*', 'perusahaans.nama_lengkap as nama_perusahaan', 'pilar_pembangunans.nama as nama_pilar', 'provinsis.nama as provinsi', 'kotas.nama as kota'
             ,'satuan_ukur.nama as satuan_ukur','target_tpbs.program as program', 'tpbs.jenis_anggaran as jenis_anggaran', 'tpbs.no_tpb as no_tpb', 'tpbs.nama as nama_tpb')->first();
         //   dd($kegiatan);
             $tahun     = KegiatanRealisasi::select('tahun')->where('kegiatan_id', $kegiatan->id)->groupBy('tahun')->orderBy('tahun')->get();
