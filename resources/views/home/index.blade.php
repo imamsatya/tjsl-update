@@ -157,15 +157,28 @@
                                         <td colspan="8"><h3>Rencana Kerja Anggaran</h3></td>
                                     </tr>
                                     @for ($index = 0; $index < 4; $index++)
+
                                         <tr id="row_{{$index}}">
+                                            @if ($index == 0)
                                             <td>{{$menuStatus[$index]['menu']}}</td>
-                                            <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['rka']) !!}</span></td>
+                                            <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-no_tpb="{{$menuStatus[$index]['support_props']['no_tpb']}}" data-nama_pilar="{{$menuStatus[$index]['support_props']['nama_pilar']}}"  data-id="{{$menuStatus[$index]['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['rka']) !!}</span></td>
                                             <td>{!! renderStatusBadge($menuStatus[$index]['tw1']) !!}</td>
                                             <td>{!! renderStatusBadge($menuStatus[$index]['tw2']) !!}</td>
                                             <td>{!! renderStatusBadge($menuStatus[$index]['tw3']) !!}</td>
                                             <td>{!! renderStatusBadge($menuStatus[$index]['prognosa']) !!}</td>
                                             <td>{!! renderStatusBadge($menuStatus[$index]['tw4']) !!}</td>
                                             <td>{!! renderStatusBadge($menuStatus[$index]['audited']) !!}</td>
+                                            @else
+                                            <td>{{$menuStatus[$index]['menu']}}</td>
+                                            <td ><span class="cls-log-{{$menuStatus[$index]['class']}}"  data-id="{{$menuStatus[$index]['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['rka']) !!}</span></td>
+                                            <td>{!! renderStatusBadge($menuStatus[$index]['tw1']) !!}</td>
+                                            <td>{!! renderStatusBadge($menuStatus[$index]['tw2']) !!}</td>
+                                            <td>{!! renderStatusBadge($menuStatus[$index]['tw3']) !!}</td>
+                                            <td>{!! renderStatusBadge($menuStatus[$index]['prognosa']) !!}</td>
+                                            <td>{!! renderStatusBadge($menuStatus[$index]['tw4']) !!}</td>
+                                            <td>{!! renderStatusBadge($menuStatus[$index]['audited']) !!}</td>
+                                            @endif
+                                            
                                         </tr>
                                     @endfor
                                     <tr class="group-header">
@@ -173,14 +186,20 @@
                                     </tr>
                                     @for ($index = 4; $index < 8; $index++)
                                     <tr id="row_{{$index}}">
+                                        {{-- {{dd($menuStatus[$index]['rka'])}} --}}
+                                        
+                                        
                                         <td>{{$menuStatus[$index]['menu']}}</td>
                                         <td>{!! renderStatusBadge($menuStatus[$index]['rka']) !!}</td>
-                                        <td>{!! renderStatusBadge($menuStatus[$index]['tw1']) !!}</td>
-                                        <td>{!! renderStatusBadge($menuStatus[$index]['tw2']) !!}</td>
-                                        <td>{!! renderStatusBadge($menuStatus[$index]['tw3']) !!}</td>
-                                        <td>{!! renderStatusBadge($menuStatus[$index]['prognosa']) !!}</td>
-                                        <td>{!! renderStatusBadge($menuStatus[$index]['tw4']) !!}</td>
-                                        <td>{!! renderStatusBadge($menuStatus[$index]['audited']) !!}</td>
+                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw1']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw1']['value']) !!}</span></td>
+                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw2']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw2']['value']) !!}</span></td>
+                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw3']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw3']['value']) !!}</span></td>
+                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['prognosa']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['prognosa']['value']) !!}</span></td>
+                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw4']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw4']['value']) !!}</span></td>
+                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['audited']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['audited']['value']) !!}</span></td>
+                                        
+
+                                       
                                     </tr>
                                 @endfor
 
@@ -596,16 +615,25 @@
     var urlchartmb = "{{route('home.chartmb')}}";
     var urlchartpumk = "{{route('home.chartpumk')}}";
     var urlallstatus = "{{route('home.allstatus')}}";
+
+    var urllog_rka = "{{route('anggaran_tpb.log_status2')}}";
     var urllog_program = "{{ route('rencana_kerja.program.log') }}";
     var urllog_spdpumk_rka = "{{route('rencana_kerja.spdpumk_rka.log')}}";
+    var urllog_laporan_rka = "{{route('rencana_kerja.laporan_manajemen.log')}}";
 
-
+    //laporan realisasi
+    var urllog_kegiatan = "{{route('laporan_realisasi.bulanan.kegiatan.log')}}";
+    var urllog_pumk = "{{ route('laporan_realisasi.bulanan.pumk.log') }}";
+    var urllog_spdpumk_bulan = "{{route('laporan_realisasi.triwulan.spd_pumk.log')}}";
+    var urllog_laporan_bulan = "{{route('laporan_realisasi.triwulan.laporan_manajemen.log')}}";
     $(document).ready(function () {
         $('#page-title').html("{{ $pagetitle }}");
         $('#page-breadcrumb').html("{{ $breadcrumb }}");
         //logs
         //rka
-
+        $('body').on('click','.cls-log-rka',function(){
+            winform(urllog_rka, {'tahun': $("#tahunStatus").val(), 'no_tpb':$(this).data('no_tpb'), 'nama_pilar':$(this).data('nama_pilar'), 'perusahaan': $("#perusahaan_id_status").val()}, 'Log Status');
+        });
         //program
             $('body').on('click', '.cls-log-program',function(){
             console.log(`program ${$(this).data('id')}`)
@@ -616,10 +644,35 @@
             console.log('Clicked element ID:', id);
                 winform(urllog_program, {'id':$(this).data('id')}, 'Log Data');
             });
+        //spdpumk_rka
             $('body').on('click','.cls-log-spdpumk_rka',function(){
                 console.log(`spdpumk_rka ${$(this).data('id')}`)
                 winform(urllog_spdpumk_rka, {'id':$(this).data('id')}, 'Log Data');
             });
+        //laporan manajemen rka
+        $('body').on('click','.cls-log-laporan_manajemen_rka',function(){
+            
+                winform(urllog_laporan_rka, {'id':$(this).data('id')}, 'Log Data');
+            });
+
+        //laporan realisasi
+        //kegiatan
+        $('body').on('click','.cls-log-kegiatan',function(){
+            console.log($(this).data('id'))
+                winform(urllog_kegiatan, {'id':$(this).data('id')}, 'Log Data');
+        });
+        $('body').on('click','.cls-log-pumk',function(){
+            console.log($(this).data('id'))
+                winform(urllog_pumk, {'id':$(this).data('id')}, 'Log Data');
+        });
+        $('body').on('click','.cls-log-spdpumk_bulan',function(){
+            console.log($(this).data('id'))
+                winform(urllog_spdpumk_bulan, {'id':$(this).data('id')}, 'Log Data');
+        });
+        $('body').on('click','.cls-log-laporan_manajemen_bulan',function(){
+            console.log($(this).data('id'))
+                winform(urllog_laporan_bulan, {'id':$(this).data('id')}, 'Log Data');
+        });
         $(".accordion-header").click(function () {
                 $(this).find(".accordion-icon-off").toggleClass("d-none");
                 $(this).find(".accordion-icon-on").toggleClass("d-none");
@@ -736,7 +789,8 @@
                     const classAttribute =`cls-log-${data[index].class}`;
                     const dataIdAttribute = data[index].id ?? null;
                     console.log(`${rkaData} | ${classAttribute} | ${dataIdAttribute}`)
-                    $("#row_" + index + " td:nth-child(2)").html(`<span class="${classAttribute}" data-id="${dataIdAttribute}">` + renderStatusBadge(rkaData) + '</span>');
+                    if (index == 0) {
+                        $("#row_" + index + " td:nth-child(2)").html(`<span class="${classAttribute}" data-no_tpb="${data[index].support_props.no_tpb}" data-nama_pilar="${data[index].support_props.nama_pilar}" data-id="${dataIdAttribute}">` + renderStatusBadge(rkaData) + '</span>');
                     
                     $("#row_" + index + " td:nth-child(3)").html(renderStatusBadge(data[index].tw1));
                     $("#row_" + index + " td:nth-child(4)").html(renderStatusBadge(data[index].tw2));
@@ -744,19 +798,35 @@
                     $("#row_" + index + " td:nth-child(6)").html(renderStatusBadge(data[index].prognosa));
                     $("#row_" + index + " td:nth-child(7)").html(renderStatusBadge(data[index].tw4));
                     $("#row_" + index + " td:nth-child(8)").html(renderStatusBadge(data[index].audited));
-                }
-
-                // Loop for index 4 to 7
-                for (let index = 4; index < 8; index++) {
-                    // const dataIndex = index - 4; // Adjusting the data index to access correct data element
-
-                    $("#row_" + index + " td:nth-child(2)").html(renderStatusBadge(data[index].rka));
+                    }
+                    else{
+                        $("#row_" + index + " td:nth-child(2)").html(`<span class="${classAttribute}" data-id="${dataIdAttribute}">` + renderStatusBadge(rkaData) + '</span>');
+                    
                     $("#row_" + index + " td:nth-child(3)").html(renderStatusBadge(data[index].tw1));
                     $("#row_" + index + " td:nth-child(4)").html(renderStatusBadge(data[index].tw2));
                     $("#row_" + index + " td:nth-child(5)").html(renderStatusBadge(data[index].tw3));
                     $("#row_" + index + " td:nth-child(6)").html(renderStatusBadge(data[index].prognosa));
                     $("#row_" + index + " td:nth-child(7)").html(renderStatusBadge(data[index].tw4));
                     $("#row_" + index + " td:nth-child(8)").html(renderStatusBadge(data[index].audited));
+                    }
+              
+                }
+
+                // Loop for index 4 to 7
+                for (let index = 4; index < 8; index++) {
+                    // const dataIndex = index - 4; // Adjusting the data index to access correct data element
+                    
+                    // const  = data[index].rka ?? null;
+                    // const classAttribute =`cls-log-${data[index].class}`;
+                    // const dataIdAttribute = data[index].id ?? null;
+                    
+                    $("#row_" + index + " td:nth-child(2)").html(renderStatusBadge(data[index].rka));
+                    $("#row_" + index + " td:nth-child(3)").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].tw1.id}">` + renderStatusBadge(data[index].tw1.value) + '</span>');
+                    $("#row_" + index + " td:nth-child(4)").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].tw2.id}">` + renderStatusBadge(data[index].tw2.value) + '</span>');
+                    $("#row_" + index + " td:nth-child(5)").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].tw3.id}">` + renderStatusBadge(data[index].tw3.value) + '</span>');
+                    $("#row_" + index + " td:nth-child(6)").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].prognosa.id}">` + renderStatusBadge(data[index].prognosa.value) + '</span>');
+                    $("#row_" + index + " td:nth-child(7)").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].tw4.id}">` + renderStatusBadge(data[index].tw4.value) + '</span>');
+                    $("#row_" + index + " td:nth-child(8)").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].audited.id}">` + renderStatusBadge(data[index].audited.value) + '</span>');
                 }
             }
         });

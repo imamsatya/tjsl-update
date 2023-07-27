@@ -15,6 +15,13 @@
     <table class="table table-striped- table-bordered table-hover table-checkable" id="datatable_log">
         <tbody>
             <tr>
+                <td><b>BUMN</b></td>
+                <td>{{ @$data->jenis_anggaran }}</td>
+                <td><b>Pilar</b></td>
+                <td>{{ @$data->no_tpb }} - {{ @$data->nama_tpb }}</td>
+
+            </tr>
+            <tr>
                 <td><b>Jenis Anggaran</b></td>
                 <td>{{ @$data->jenis_anggaran }}</td>
                 <td><b>TPB</b></td>

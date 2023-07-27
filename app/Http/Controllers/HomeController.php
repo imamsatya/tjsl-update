@@ -140,7 +140,8 @@ class HomeController extends Controller
                 'prognosa' => false,
                 'tw4' => false,
                 'audited' => false,
-                'class' => 'rka'
+                'class' => 'rka',
+                'support_props' => null
             ],
             [
                 'menu' => $rka_menu_program,
@@ -182,9 +183,16 @@ class HomeController extends Controller
                 'tw1' => false,
                 'tw2' => false,
                 'tw3' => false,
-                'prognosa' => false,
+                'prognosa' => [
+                    'value' => null,
+                    'id'=>null
+                ],
                 'tw4' => false,
-                'audited' => false,
+                'audited' => [
+                    'value' => null,
+                    'id'=>null
+                ],
+                'class' => 'kegiatan'
             ],
             [
                 'menu' => $menu_pumk,
@@ -192,9 +200,16 @@ class HomeController extends Controller
                 'tw1' => false,
                 'tw2' => false,
                 'tw3' => false,
-                'prognosa' => false,
+                'prognosa' => [
+                    'value' => null,
+                    'id'=>null
+                ],
                 'tw4' => false,
-                'audited' => false,
+                'audited' => [
+                    'value' => null,
+                    'id'=>null
+                ],
+                'class' => 'pumk'
             ],
             [
                 'menu' => $menu_spdpumk,
@@ -205,6 +220,7 @@ class HomeController extends Controller
                 'prognosa' => false,
                 'tw4' => false,
                 'audited' => false,
+                'class' => 'spdpumk_bulan'
             ],
             [
                 'menu' => $menu_laporan_manajemen,
@@ -215,25 +231,43 @@ class HomeController extends Controller
                 'prognosa' => false,
                 'tw4' => false,
                 'audited' => false,
+                'class' => 'laporan_manajemen_bulan'
             ],
         ];
         //rka
-        $anggaran = DB::table('anggaran_tpbs')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->orderBy('updated_at', 'desc')->get();
-        // dd($anggaran);
+        // $anggaran = DB::table('anggaran_tpbs')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->orderBy('updated_at', 'asc')->get();
+        $anggaran = DB::table('anggaran_tpbs as atpb')
+        ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
+            ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+            ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+        ->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->orderBy('atpb.updated_at', 'asc')->get();
+        
         //cek ada atau tidak
         if($anggaran?->first()){
+            
             $data[0]['rka'] = "Finish";
+
+            $pilar = DB::table('pilar_pembangunans')->where('id', $anggaran?->first()->pilar_pembangunan_id)->first();
+            $data[0]['support_props']['no_tpb'] = $anggaran?->first()->no_tpb;
+            $data[0]['support_props']['nama_pilar'] = $pilar->nama;
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress
         if ($anggaran?->where('status_id', 2)->first()) {
             $data[0]['rka'] = "In Progress";
+
+            $pilar = DB::table('pilar_pembangunans')->where('id', $anggaran?->where('status_id', 2)->first()->pilar_pembangunan_id)->first();
+            $data[0]['support_props']['no_tpb'] = $anggaran?->where('status_id', 2)->first()->no_tpb;
+            $data[0]['support_props']['nama_pilar'] = $pilar->nama;
+          
         }
         if(count($anggaran) == 0){
             $data[0]['rka'] = "Unfilled";
+            $data[0]['support_props']['no_tpb'] = null;
+            $data[0]['support_props']['nama_pilar'] = null;
         };
 
         //program rka
-        $program_rka = DB::table('anggaran_tpbs')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->orderBy('target_tpbs.updated_at', 'desc')->join('target_tpbs', 'target_tpbs.anggaran_tpb_id', '=', 'anggaran_tpbs.id')->get();
+        $program_rka = DB::table('anggaran_tpbs')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->orderBy('target_tpbs.updated_at', 'asc')->join('target_tpbs', 'target_tpbs.anggaran_tpb_id', '=', 'anggaran_tpbs.id')->get();
         
         if($program_rka?->first()){
             $data[1]['rka'] = "Finish";
@@ -272,13 +306,16 @@ class HomeController extends Controller
         $laporan_manajemen = DB::table('laporan_manajemens')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->where('periode_laporan_id', $periode_rka_id)->get();
         if($laporan_manajemen?->first() ){
             $data[3]['rka'] = "Finish";
+            $data[3]['id'] = $laporan_manajemen->first()->id;
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress/unfilled
         if ($laporan_manajemen?->whereIn('status_id', [2, 3])->first()) {
             $data[3]['rka'] = $laporan_manajemen->whereIn('status_id', [2, 3])->first()->status_id === 2 ? 'In Progress' : 'Unfilled';
+            $data[3]['id'] = $laporan_manajemen->whereIn('status_id', [2, 3])->first()->id;
         }
         if(count($laporan_manajemen) == 0){
             $data[3]['rka'] = "Unfilled";
+            $data[3]['id'] = null;
         };
 
 
@@ -301,7 +338,7 @@ class HomeController extends Controller
                     ->join('kotas', 'kotas.id', '=', 'kegiatans.kota_id')
                     ->join('satuan_ukur', 'satuan_ukur.id', '=', 'kegiatans.satuan_ukur_id')
                     ->join('bulans', 'bulans.id', '=', 'kegiatan_realisasis.bulan')
-                    ->orderBy('kegiatans.updated_at', 'desc')
+                    ->orderBy('kegiatans.updated_at', 'asc')
                     ->select(
                         'kegiatans.*',
                         'kegiatan_realisasis.bulan as kegiatan_realisasi_bulan',
@@ -334,14 +371,17 @@ class HomeController extends Controller
                 $kegiatan_bulan = $kegiatan?->whereIn('kegiatan_realisasi_bulan', [1,2,3]);  
                 if (count($kegiatan_bulan) > 0) {
                     if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)) > 0) {
-                        $data[4]['tw1'] = "In Progress";
+                        $data[4]['tw1']['value'] = "In Progress";
+                        $data[4]['tw1']['id'] = $kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)->first()->id;
                     } else {
                         if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 1)) == count($kegiatan_bulan)) {
-                            $data[4]['tw1'] = "Finish";
+                            $data[4]['tw1']['value'] = "Finish";
+                            $data[4]['tw1']['id'] = $kegiatan_bulan->first()->id;
                         }
                     }
                 }else {
-                    $data[4]['tw1'] = "Unfilled";
+                    $data[4]['tw1']['value'] = "Unfilled";
+                    $data[4]['tw1']['id'] = null;
                 }
             }
 
@@ -350,14 +390,17 @@ class HomeController extends Controller
                 $kegiatan_bulan = $kegiatan?->whereIn('kegiatan_realisasi_bulan', [4,5,6]);  
                 if (count($kegiatan_bulan) > 0) {
                     if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)) > 0) {
-                        $data[4]['tw2'] = "In Progress";
+                        $data[4]['tw2']['value'] = "In Progress";
+                        $data[4]['tw2']['id'] = $kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)->first()->id;
                     } else {
                         if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 1)) == count($kegiatan_bulan)) {
-                            $data[4]['tw2'] = "Finish";
+                            $data[4]['tw2']['value'] = "Finish";
+                            $data[4]['tw2']['id'] = $kegiatan_bulan->first()->id;
                         }
                     }
                 }else {
-                    $data[4]['tw2'] = "Unfilled";
+                    $data[4]['tw2']['value'] = "Unfilled";
+                    $data[4]['tw2']['id'] = null;
                 }
             }
 
@@ -366,14 +409,17 @@ class HomeController extends Controller
                 $kegiatan_bulan = $kegiatan?->whereIn('kegiatan_realisasi_bulan', [7,8,9]);  
                 if (count($kegiatan_bulan) > 0) {
                     if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)) > 0) {
-                        $data[4]['tw3'] = "In Progress";
+                        $data[4]['tw3']['value'] = "In Progress";
+                        $data[4]['tw3']['id'] = $kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)->first()->id;
                     } else {
                         if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 1)) == count($kegiatan_bulan)) {
-                            $data[4]['tw3'] = "Finish";
+                            $data[4]['tw3']['value'] = "Finish";
+                            $data[4]['tw3']['id'] = $kegiatan_bulan->first()->id;
                         }
                     }
                 }else {
-                    $data[4]['tw3'] = "Unfilled";
+                    $data[4]['tw3']['value'] = "Unfilled";
+                    $data[4]['tw3']['id'] = null;
                 }
             }
 
@@ -383,17 +429,20 @@ class HomeController extends Controller
                
                 if (count($kegiatan_bulan) > 0) {
                     if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)) > 0) {
-                        $data[4]['tw4'] = "In Progress";
+                        $data[4]['tw4']['value'] = "In Progress";
+                        $data[4]['tw4']['id'] = $kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)->first()->id;
                     } else {
                         if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 1)) == count($kegiatan_bulan)) {
-                            $data[4]['tw4'] = "Finish";
+                            $data[4]['tw4']['value'] = "Finish";
+                            $data[4]['tw4']['id'] = $kegiatan_bulan->first()->id;
                         }
                     }
                 }else {
-                    $data[4]['tw4'] = "Unfilled";
+                    $data[4]['tw4']['value'] = "Unfilled";
+                    $data[4]['tw4']['id'] = null;
                 }
             }
-
+            
             //Prognosa
             if ($periodeId === 6) {
                 // $kegiatan_bulan = $kegiatan?->whereIn('kegiatan_realisasi_bulan', [10,11,12]);  
@@ -434,14 +483,17 @@ class HomeController extends Controller
                 $pumk_bulan = $pumk?->whereIn('bulan_id', [1,2,3]);  
                 if (count($pumk_bulan) > 0) {
                     if (count($pumk_bulan->where('status_id', 2)) > 0) {
-                        $data[5]['tw1'] = "In Progress";
+                        $data[5]['tw1']['value'] = "In Progress";
+                        $data[5]['tw1']['id'] = $pumk_bulan->where('status_id', 2)->first()->id;
                     } else {
                         if (count($pumk_bulan->where('status_id', 1)) == count($pumk_bulan)) {
-                            $data[5]['tw1'] = "Finish";
+                            $data[5]['tw1']['value'] = "Finish";
+                            $data[5]['tw1']['id'] = $pumk_bulan->first()->id;
                         }
                     }
                 }else {
-                    $data[5]['tw1'] = "Unfilled";
+                    $data[5]['tw1']['value'] = "Unfilled";
+                    $data[5]['tw1']['id'] = null;
                 }
             }
 
@@ -450,14 +502,17 @@ class HomeController extends Controller
                 $pumk_bulan = $pumk?->whereIn('bulan_id', [4,5,6]);  
                 if (count($pumk_bulan) > 0) {
                     if (count($pumk_bulan->where('status_id', 2)) > 0) {
-                        $data[5]['tw2'] = "In Progress";
+                        $data[5]['tw2']['value'] = "In Progress";
+                        $data[5]['tw2']['id'] = $pumk_bulan->where('status_id', 2)->first()->id;
                     } else {
                         if (count($pumk_bulan->where('status_id', 1)) == count($pumk_bulan)) {
-                            $data[5]['tw2'] = "Finish";
+                            $data[5]['tw2']['value'] = "Finish";
+                            $data[5]['tw2']['id'] = $pumk_bulan->first()->id;
                         }
                     }
                 }else {
-                    $data[5]['tw2'] = "Unfilled";
+                    $data[5]['tw2']['value'] = "Unfilled";
+                    $data[5]['tw2']['id'] = null;
                 }
             }
 
@@ -466,14 +521,17 @@ class HomeController extends Controller
                 $pumk_bulan = $pumk?->whereIn('bulan_id', [7,8,9]);  
                 if (count($pumk_bulan) > 0) {
                     if (count($pumk_bulan->where('status_id', 2)) > 0) {
-                        $data[5]['tw3'] = "In Progress";
+                        $data[5]['tw3']['value'] = "In Progress";
+                        $data[5]['tw3']['id'] = $pumk_bulan->where('status_id', 2)->first()->id;
                     } else {
                         if (count($pumk_bulan->where('status_id', 1)) == count($pumk_bulan)) {
-                            $data[5]['tw3'] = "Finish";
+                            $data[5]['tw3']['value'] = "Finish";
+                            $data[5]['tw3']['id'] = $pumk_bulan->first()->id;
                         }
                     }
                 }else {
-                    $data[5]['tw3'] = "Unfilled";
+                    $data[5]['tw3']['value'] = "Unfilled";
+                    $data[5]['tw3']['id'] = null;
                 }
             }
 
@@ -483,14 +541,17 @@ class HomeController extends Controller
                
                 if (count($pumk_bulan) > 0) {
                     if (count($pumk_bulan->where('status_id', 2)) > 0) {
-                        $data[5]['tw4'] = "In Progress";
+                        $data[5]['tw4']['value'] = "In Progress";
+                        $data[5]['tw4']['id'] = $pumk_bulan->where('status_id', 2)->first()->id;
                     } else {
                         if (count($pumk_bulan->where('status_id', 1)) == count($pumk_bulan)) {
-                            $data[5]['tw4'] = "Finish";
+                            $data[5]['tw4']['value'] = "Finish";
+                            $data[5]['tw4']['id'] = $pumk_bulan->first()->id;
                         }
                     }
                 }else {
-                    $data[5]['tw4'] = "Unfilled";
+                    $data[5]['tw4']['value'] = "Unfilled";
+                    $data[5]['tw4']['null'] = null;
                 }
             }
 
@@ -535,12 +596,16 @@ class HomeController extends Controller
             
                 if ($spd_pumk_periode) {
                     if ($spd_pumk_periode->status_id == 2) {
-                        $data[6]['tw1'] = "In Progress";
+                        $data[6]['tw1']['value'] = "In Progress";
+                        $data[6]['tw1']['id'] = $spd_pumk_periode->id;
+
                     } else {
-                        $data[6]['tw1'] = $spd_pumk_periode->updated_at ? "Finish" : "Unfilled";
+                        $data[6]['tw1']['value'] = $spd_pumk_periode->status_id == 1 ? "Finish" : "Unfilled";
+                        $data[6]['tw1']['id'] = $spd_pumk_periode->status_id == 1 ? $spd_pumk_periode->id : null;
                     }
                 }else {
-                    $data[6]['tw1'] = "Unfilled";
+                    $data[6]['tw1']['value'] = "Unfilled";
+                    $data[6]['tw1']['id'] = null;
                 }
             }
 
@@ -551,12 +616,16 @@ class HomeController extends Controller
                 
                 if ($spd_pumk_periode) {
                     if ($spd_pumk_periode->status_id == 2) {
-                        $data[6]['tw2'] = "In Progress";
+                        $data[6]['tw2']['value'] = "In Progress";
+                        $data[6]['tw2']['id'] = $spd_pumk_periode->id;
+
                     } else {
-                        $data[6]['tw2'] = $spd_pumk_periode->updated_at ? "Finish" : "Unfilled";
+                        $data[6]['tw2']['value'] = $spd_pumk_periode->status_id == 1 ? "Finish" : "Unfilled";
+                        $data[6]['tw2']['id'] = $spd_pumk_periode->status_id == 1 ? $spd_pumk_periode->id : null;
                     }
                 }else {
-                    $data[6]['tw2'] = "Unfilled";
+                    $data[6]['tw2']['value'] = "Unfilled";
+                    $data[6]['tw2']['id'] = null;
                 }
             }
 
@@ -566,12 +635,16 @@ class HomeController extends Controller
             
                 if ($spd_pumk_periode) {
                     if ($spd_pumk_periode->status_id == 2) {
-                        $data[6]['tw3'] = "In Progress";
+                        $data[6]['tw3']['value'] = "In Progress";
+                        $data[6]['tw3']['id'] = $spd_pumk_periode->id;
+
                     } else {
-                        $data[6]['tw3'] = $spd_pumk_periode->updated_at ? "Finish" : "Unfilled";
+                        $data[6]['tw3']['value'] = $spd_pumk_periode->status_id == 1 ? "Finish" : "Unfilled";
+                        $data[6]['tw3']['id'] = $spd_pumk_periode->status_id == 1 ? $spd_pumk_periode->id : null;
                     }
                 }else {
-                    $data[6]['tw3'] = "Unfilled";
+                    $data[6]['tw3']['value'] = "Unfilled";
+                    $data[6]['tw3']['id'] = null;
                 }
             }
 
@@ -581,12 +654,16 @@ class HomeController extends Controller
             
                 if ($spd_pumk_periode) {
                     if ($spd_pumk_periode->status_id == 2) {
-                        $data[6]['tw4'] = "In Progress";
+                        $data[6]['tw4']['value'] = "In Progress";
+                        $data[6]['tw4']['id'] = $spd_pumk_periode->id;
+
                     } else {
-                        $data[6]['tw4'] = $spd_pumk_periode->updated_at ? "Finish" : "Unfilled";
+                        $data[6]['tw4']['value'] = $spd_pumk_periode->status_id == 1 ? "Finish" : "Unfilled";
+                        $data[6]['tw4']['id'] = $spd_pumk_periode->status_id == 1 ? $spd_pumk_periode->id : null;
                     }
                 }else {
-                    $data[6]['tw4'] = "Unfilled";
+                    $data[6]['tw4']['value'] = "Unfilled";
+                    $data[6]['tw4']['id'] = null;
                 }
             }
 
@@ -596,12 +673,16 @@ class HomeController extends Controller
             
                 if ($spd_pumk_periode) {
                     if ($spd_pumk_periode->status_id == 2) {
-                        $data[6]['prognosa'] = "In Progress";
+                        $data[6]['prognosa']['value'] = "In Progress";
+                        $data[6]['prognosa']['id'] = $spd_pumk_periode->id;
+
                     } else {
-                        $data[6]['prognosa'] = $spd_pumk_periode->updated_at ? "Finish" : "Unfilled";
+                        $data[6]['prognosa']['value'] = $spd_pumk_periode->status_id == 1 ? "Finish" : "Unfilled";
+                        $data[6]['prognosa']['id'] = $spd_pumk_periode->status_id == 1 ? $spd_pumk_periode->id : null;
                     }
                 }else {
-                    $data[6]['prognosa'] = "Unfilled";
+                    $data[6]['prognosa']['value'] = "Unfilled";
+                    $data[6]['prognosa']['id'] = null;
                 }
             }
 
@@ -611,12 +692,16 @@ class HomeController extends Controller
             
                 if ($spd_pumk_periode) {
                     if ($spd_pumk_periode->status_id == 2) {
-                        $data[6]['audited'] = "In Progress";
+                        $data[6]['audited']['value'] = "In Progress";
+                        $data[6]['audited']['id'] = $spd_pumk_periode->id;
+
                     } else {
-                        $data[6]['audited'] = $spd_pumk_periode->updated_at ? "Finish" : "Unfilled";
+                        $data[6]['audited']['value'] = $spd_pumk_periode->status_id == 1 ? "Finish" : "Unfilled";
+                        $data[6]['audited']['id'] = $spd_pumk_periode->status_id == 1 ? $spd_pumk_periode->id : null;
                     }
                 }else {
-                    $data[6]['audited'] = "Unfilled";
+                    $data[6]['audited']['value'] = "Unfilled";
+                    $data[6]['audited']['id'] = null;
                 }
             }
         }
@@ -629,12 +714,16 @@ class HomeController extends Controller
             
                 if ($laporan_manajemen_periode) {
                     if ($laporan_manajemen_periode->status_id == 2) {
-                        $data[7]['tw1'] = "In Progress";
+                        $data[7]['tw1']['value'] = "In Progress";
+                        $data[7]['tw1']['id'] = $laporan_manajemen_periode->id;
                     } else {
-                        $data[7]['tw1'] = $laporan_manajemen_periode->updated_at ? "Finish" : "Unfilled";
+                        $data[7]['tw1']['value'] = $laporan_manajemen_periode->status_id == 1 ? "Finish" : "Unfilled";
+                        $data[7]['tw1']['id'] = $laporan_manajemen_periode->status_id == 1 ? $laporan_manajemen_periode->id : null;
                     }
                 }else {
-                    $data[7]['tw1'] = "Unfilled";
+                    $data[7]['tw1']['value'] = "Unfilled";
+                    $data[7]['tw1']['id'] = null;
+
                 }
             }
 
@@ -645,12 +734,16 @@ class HomeController extends Controller
                 
                 if ($laporan_manajemen_periode) {
                     if ($laporan_manajemen_periode->status_id == 2) {
-                        $data[7]['tw2'] = "In Progress";
+                        $data[7]['tw2']['value'] = "In Progress";
+                        $data[7]['tw2']['id'] = $laporan_manajemen_periode->id;
                     } else {
-                        $data[7]['tw2'] = $laporan_manajemen_periode->updated_at ? "Finish" : "Unfilled";
+                        $data[7]['tw2']['value'] = $laporan_manajemen_periode->status_id == 1 ? "Finish" : "Unfilled";
+                        $data[7]['tw2']['id'] = $laporan_manajemen_periode->status_id == 1 ? $laporan_manajemen_periode->id : null;
                     }
                 }else {
-                    $data[7]['tw2'] = "Unfilled";
+                    $data[7]['tw2']['value'] = "Unfilled";
+                    $data[7]['tw2']['id'] = null;
+
                 }
             }
 
@@ -660,12 +753,16 @@ class HomeController extends Controller
             
                 if ($laporan_manajemen_periode) {
                     if ($laporan_manajemen_periode->status_id == 2) {
-                        $data[7]['tw3'] = "In Progress";
+                        $data[7]['tw3']['value'] = "In Progress";
+                        $data[7]['tw3']['id'] = $laporan_manajemen_periode->id;
                     } else {
-                        $data[7]['tw3'] = $laporan_manajemen_periode->updated_at ? "Finish" : "Unfilled";
+                        $data[7]['tw3']['value'] = $laporan_manajemen_periode->status_id == 1 ? "Finish" : "Unfilled";
+                        $data[7]['tw3']['id'] = $laporan_manajemen_periode->status_id == 1 ? $laporan_manajemen_periode->id : null;
                     }
                 }else {
-                    $data[7]['tw3'] = "Unfilled";
+                    $data[7]['tw3']['value'] = "Unfilled";
+                    $data[7]['tw3']['id'] = null;
+
                 }
             }
 
@@ -675,12 +772,16 @@ class HomeController extends Controller
             
                 if ($laporan_manajemen_periode) {
                     if ($laporan_manajemen_periode->status_id == 2) {
-                        $data[7]['tw4'] = "In Progress";
+                        $data[7]['tw4']['value'] = "In Progress";
+                        $data[7]['tw4']['id'] = $laporan_manajemen_periode->id;
                     } else {
-                        $data[7]['tw4'] = $laporan_manajemen_periode->updated_at ? "Finish" : "Unfilled";
+                        $data[7]['tw4']['value'] = $laporan_manajemen_periode->status_id == 1 ? "Finish" : "Unfilled";
+                        $data[7]['tw4']['id'] = $laporan_manajemen_periode->status_id == 1 ? $laporan_manajemen_periode->id : null;
                     }
                 }else {
-                    $data[7]['tw4'] = "Unfilled";
+                    $data[7]['tw4']['value'] = "Unfilled";
+                    $data[7]['tw4']['id'] = null;
+
                 }
             }
 
@@ -690,12 +791,16 @@ class HomeController extends Controller
             
                 if ($laporan_manajemen_periode) {
                     if ($laporan_manajemen_periode->status_id == 2) {
-                        $data[7]['prognosa'] = "In Progress";
+                        $data[7]['prognosa']['value'] = "In Progress";
+                        $data[7]['prognosa']['id'] = $laporan_manajemen_periode->id;
                     } else {
-                        $data[7]['prognosa'] = $laporan_manajemen_periode->updated_at ? "Finish" : "Unfilled";
+                        $data[7]['prognosa']['value'] = $laporan_manajemen_periode->status_id == 1 ? "Finish" : "Unfilled";
+                        $data[7]['prognosa']['id'] = $laporan_manajemen_periode->status_id == 1 ? $laporan_manajemen_periode->id : null;
                     }
                 }else {
-                    $data[7]['prognosa'] = "Unfilled";
+                    $data[7]['prognosa']['value'] = "Unfilled";
+                    $data[7]['prognosa']['id'] = null;
+
                 }
             }
 
@@ -705,16 +810,20 @@ class HomeController extends Controller
             
                 if ($laporan_manajemen_periode) {
                     if ($laporan_manajemen_periode->status_id == 2) {
-                        $data[7]['audited'] = "In Progress";
+                        $data[7]['audited']['value'] = "In Progress";
+                        $data[7]['audited']['id'] = $laporan_manajemen_periode->id;
                     } else {
-                        $data[7]['audited'] = $laporan_manajemen_periode->updated_at ? "Finish" : "Unfilled";
+                        $data[7]['audited']['value'] = $laporan_manajemen_periode->status_id == 1 ? "Finish" : "Unfilled";
+                        $data[7]['audited']['id'] = $laporan_manajemen_periode->status_id == 1 ? $laporan_manajemen_periode->id : null;
                     }
                 }else {
-                    $data[7]['audited'] = "Unfilled";
+                    $data[7]['audited']['value'] = "Unfilled";
+                    $data[7]['audited']['id'] = null;
+
                 }
             }
         }
-        // dd($data);
+        
         return $data;
     }
 
