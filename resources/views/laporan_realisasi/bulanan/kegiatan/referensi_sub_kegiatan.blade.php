@@ -64,14 +64,14 @@
                 align="left" valign=middle><b>
                     <font face="Arial" color="#000000">Jenis Kegiatan</font>
                 </b></td>
-            <td style="background-color : #e3e3e3 ;border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
+            {{-- <td style="background-color : #e3e3e3 ;border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
                 align="left" valign=middle><b>
                     <font face="Arial" color="#000000">Satuan Ukur ID</font>
                 </b></td>
             <td style="background-color : #e3e3e3 ;border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
                 align="left" valign=middle><b>
                     <font face="Arial" color="#000000">Satuan Ukur</font>
-                </b></td>
+                </b></td> --}}
         </tr>
 
 
@@ -94,14 +94,14 @@
                     align="left" valign=middle>
                     <font face="Arial" color="#000000">{{ $sk->nama_jenis_kegiatan }}</font>
                 </td>
-                <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
+                {{-- <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
                     align="left" valign=middle>
                     <font face="Arial" color="#000000">{{ $sk->satuan_ukur_id }}</font>
                 </td>
                 <td style="border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
                     align="left" valign=middle>
                     <font face="Arial" color="#000000">{{ $sk->nama_satuan_ukur }}</font>
-                </td>
+                </td> --}}
             </tr>
         @endforeach
 
