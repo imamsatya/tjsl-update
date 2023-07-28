@@ -706,7 +706,7 @@
                     },
                     success: function(data){
                         $.unblockUI();
-                        var filename = 'Template Input Data Laporan Realisasi Bulan '+ $("#bulan_id option:selected").text() +" Tahun "+`${filter_tahun}`+'.xlsx';
+                        var filename = 'Template Input Data Laporan Realisasi Bulan '+ $("#bulan_template_id option:selected").text() +" Tahun "+`${filter_tahun}`+'.xlsx';
 
                         var blob = new Blob([data], {
                             type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
