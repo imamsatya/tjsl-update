@@ -160,23 +160,23 @@
 
                                         <tr id="row_{{$index}}">
                                             @if ($index == 0)
-                                            <td>{{$menuStatus[$index]['menu']}}</td>
+                                            <td >{{$menuStatus[$index]['menu']}}</td>
                                             <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-no_tpb="{{$menuStatus[$index]['support_props']['no_tpb']}}" data-nama_pilar="{{$menuStatus[$index]['support_props']['nama_pilar']}}"  data-id="{{$menuStatus[$index]['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['rka']) !!}</span></td>
-                                            <td>{!! renderStatusBadge($menuStatus[$index]['tw1']) !!}</td>
-                                            <td>{!! renderStatusBadge($menuStatus[$index]['tw2']) !!}</td>
-                                            <td>{!! renderStatusBadge($menuStatus[$index]['tw3']) !!}</td>
-                                            <td>{!! renderStatusBadge($menuStatus[$index]['prognosa']) !!}</td>
-                                            <td>{!! renderStatusBadge($menuStatus[$index]['tw4']) !!}</td>
-                                            <td>{!! renderStatusBadge($menuStatus[$index]['audited']) !!}</td>
+                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw1']) !!}</td>
+                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw2']) !!}</td>
+                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw3']) !!}</td>
+                                            <td >{!! renderStatusBadge($menuStatus[$index]['prognosa']) !!}</td>
+                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw4']) !!}</td>
+                                            <td >{!! renderStatusBadge($menuStatus[$index]['audited']) !!}</td>
                                             @else
-                                            <td>{{$menuStatus[$index]['menu']}}</td>
+                                            <td >{{$menuStatus[$index]['menu']}}</td>
                                             <td ><span class="cls-log-{{$menuStatus[$index]['class']}}"  data-id="{{$menuStatus[$index]['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['rka']) !!}</span></td>
-                                            <td>{!! renderStatusBadge($menuStatus[$index]['tw1']) !!}</td>
-                                            <td>{!! renderStatusBadge($menuStatus[$index]['tw2']) !!}</td>
-                                            <td>{!! renderStatusBadge($menuStatus[$index]['tw3']) !!}</td>
-                                            <td>{!! renderStatusBadge($menuStatus[$index]['prognosa']) !!}</td>
-                                            <td>{!! renderStatusBadge($menuStatus[$index]['tw4']) !!}</td>
-                                            <td>{!! renderStatusBadge($menuStatus[$index]['audited']) !!}</td>
+                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw1']) !!}</td>
+                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw2']) !!}</td>
+                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw3']) !!}</td>
+                                            <td >{!! renderStatusBadge($menuStatus[$index]['prognosa']) !!}</td>
+                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw4']) !!}</td>
+                                            <td >{!! renderStatusBadge($menuStatus[$index]['audited']) !!}</td>
                                             @endif
                                             
                                         </tr>
@@ -189,14 +189,14 @@
                                         {{-- {{dd($menuStatus[$index]['rka'])}} --}}
                                         
                                         
-                                        <td>{{$menuStatus[$index]['menu']}}</td>
-                                        <td>{!! renderStatusBadge($menuStatus[$index]['rka']) !!}</td>
-                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw1']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw1']['value']) !!}</span></td>
-                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw2']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw2']['value']) !!}</span></td>
-                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw3']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw3']['value']) !!}</span></td>
-                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['prognosa']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['prognosa']['value']) !!}</span></td>
-                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw4']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw4']['value']) !!}</span></td>
-                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['audited']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['audited']['value']) !!}</span></td>
+                                        <td >{{$menuStatus[$index]['menu']}}</td>
+                                        <td >{!! renderStatusBadge($menuStatus[$index]['rka']) !!}</td>
+                                        <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw1']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw1']['value']) !!}</span></td>
+                                        <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw2']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw2']['value']) !!}</span></td>
+                                        <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw3']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw3']['value']) !!}</span></td>
+                                        <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['prognosa']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['prognosa']['value']) !!}</span></td>
+                                        <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw4']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw4']['value']) !!}</span></td>
+                                        <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['audited']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['audited']['value']) !!}</span></td>
                                         
 
                                        
@@ -631,48 +631,48 @@
         $('#page-breadcrumb').html("{{ $breadcrumb }}");
         //logs
         //rka
-        $('body').on('click','.cls-log-rka',function(){
-            winform(urllog_rka, {'tahun': $("#tahunStatus").val(), 'no_tpb':$(this).data('no_tpb'), 'nama_pilar':$(this).data('nama_pilar'), 'perusahaan': $("#perusahaan_id_status").val()}, 'Log Status');
-        });
-        //program
-            $('body').on('click', '.cls-log-program',function(){
-            console.log(`program ${$(this).data('id')}`)
-            // console.log($(this).data('id'))
-            // let id = $(this).data('id')
-            // console.log(id)
-            const id = $(this).data('id');
-            console.log('Clicked element ID:', id);
-                winform(urllog_program, {'id':$(this).data('id')}, 'Log Data');
-            });
-        //spdpumk_rka
-            $('body').on('click','.cls-log-spdpumk_rka',function(){
-                console.log(`spdpumk_rka ${$(this).data('id')}`)
-                winform(urllog_spdpumk_rka, {'id':$(this).data('id')}, 'Log Data');
-            });
-        //laporan manajemen rka
-        $('body').on('click','.cls-log-laporan_manajemen_rka',function(){
+        // $('body').on('click','.cls-log-rka',function(){
+        //     winform(urllog_rka, {'tahun': $("#tahunStatus").val(), 'no_tpb':$(this).data('no_tpb'), 'nama_pilar':$(this).data('nama_pilar'), 'perusahaan': $("#perusahaan_id_status").val()}, 'Log Status');
+        // });
+        // //program
+        //     $('body').on('click', '.cls-log-program',function(){
+        //     console.log(`program ${$(this).data('id')}`)
+        //     // console.log($(this).data('id'))
+        //     // let id = $(this).data('id')
+        //     // console.log(id)
+        //     const id = $(this).data('id');
+        //     console.log('Clicked element ID:', id);
+        //         winform(urllog_program, {'id':$(this).data('id')}, 'Log Data');
+        //     });
+        // //spdpumk_rka
+        //     $('body').on('click','.cls-log-spdpumk_rka',function(){
+        //         console.log(`spdpumk_rka ${$(this).data('id')}`)
+        //         winform(urllog_spdpumk_rka, {'id':$(this).data('id')}, 'Log Data');
+        //     });
+        // //laporan manajemen rka
+        // $('body').on('click','.cls-log-laporan_manajemen_rka',function(){
             
-                winform(urllog_laporan_rka, {'id':$(this).data('id')}, 'Log Data');
-            });
+        //         winform(urllog_laporan_rka, {'id':$(this).data('id')}, 'Log Data');
+        //     });
 
-        //laporan realisasi
-        //kegiatan
-        $('body').on('click','.cls-log-kegiatan',function(){
-            console.log($(this).data('id'))
-                winform(urllog_kegiatan, {'id':$(this).data('id')}, 'Log Data');
-        });
-        $('body').on('click','.cls-log-pumk',function(){
-            console.log($(this).data('id'))
-                winform(urllog_pumk, {'id':$(this).data('id')}, 'Log Data');
-        });
-        $('body').on('click','.cls-log-spdpumk_bulan',function(){
-            console.log($(this).data('id'))
-                winform(urllog_spdpumk_bulan, {'id':$(this).data('id')}, 'Log Data');
-        });
-        $('body').on('click','.cls-log-laporan_manajemen_bulan',function(){
-            console.log($(this).data('id'))
-                winform(urllog_laporan_bulan, {'id':$(this).data('id')}, 'Log Data');
-        });
+        // //laporan realisasi
+        // //kegiatan
+        // $('body').on('click','.cls-log-kegiatan',function(){
+        //     console.log($(this).data('id'))
+        //         winform(urllog_kegiatan, {'id':$(this).data('id')}, 'Log Data');
+        // });
+        // $('body').on('click','.cls-log-pumk',function(){
+        //     console.log($(this).data('id'))
+        //         winform(urllog_pumk, {'id':$(this).data('id')}, 'Log Data');
+        // });
+        // $('body').on('click','.cls-log-spdpumk_bulan',function(){
+        //     console.log($(this).data('id'))
+        //         winform(urllog_spdpumk_bulan, {'id':$(this).data('id')}, 'Log Data');
+        // });
+        // $('body').on('click','.cls-log-laporan_manajemen_bulan',function(){
+        //     console.log($(this).data('id'))
+        //         winform(urllog_laporan_bulan, {'id':$(this).data('id')}, 'Log Data');
+        // });
         $(".accordion-header").click(function () {
                 $(this).find(".accordion-icon-off").toggleClass("d-none");
                 $(this).find(".accordion-icon-on").toggleClass("d-none");
@@ -846,7 +846,7 @@
 
         if (status in classMapping) {
             const className = classMapping[status];
-            return `<span class="btn badge ${className} fw-bolder me-auto px-4 py-3">${status}</span>`;
+            return `<span class="btn badge ${className} fw-bolder me-auto px-4 py-3" style='cursor: default;'>${status}</span>`;
         }
 
         return '';

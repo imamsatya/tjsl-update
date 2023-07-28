@@ -9,7 +9,7 @@ function renderStatusBadge($status) {
 
     if (array_key_exists($status, $classMapping)) {
         $class = $classMapping[$status];
-        return "<span class='btn badge {$class} fw-bolder me-auto px-4 py-3'>{$status}</span>";
+        return "<span class='btn badge {$class} fw-bolder me-auto px-4 py-3' style='cursor: default;'>{$status}</span>";
     }
 
     return '';
