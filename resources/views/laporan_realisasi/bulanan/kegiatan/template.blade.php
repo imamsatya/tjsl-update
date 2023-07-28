@@ -42,14 +42,14 @@
 <body>
     <table cellspacing="0" border="0">
         <tr>
-            <td colspan="11"
+            <td colspan="10"
                 style="background-color : #e3e3e3 ;border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000"
                 align="center" valign=middle><b>
                     <font face="Arial" size=4 color="#000000">LAPORAN REALISASI</font>
                 </b></td>
         </tr>
         <tr>
-            <td colspan="11"
+            <td colspan="10"
                 style="background-color : #e3e3e3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000"
                 align="center" valign=middle><b>
                     <font face="Arial" size=4 color="#000000">{{ @$perusahaan->nama_lengkap }}</font>
@@ -57,7 +57,7 @@
             <td style="color:#ffffff;">{{ $perusahaan->id }}</td>
         </tr>
         <tr>
-            <td colspan="11"
+            <td colspan="10"
                 style="background-color : #e3e3e3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000"
                 align="center" valign=middle><b>
                     <font face="Arial" size=4 color="#000000">Bulan {{ $bulan_string }} Tahun {{ $tahun }}
@@ -70,10 +70,6 @@
             <td style="background-color : #e3e3e3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000"
                 align="center" valign=middle><b>
                     <font face="Arial" size=4 color="#000000">No</font>
-                </b></td>
-            <td style="background-color : #e3e3e3 ;border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
-                align="center" valign=middle><b>
-                    <font face="Arial" size=4 color="#000000">Jenis Anggaran <br />[1. CID] <br />[2. non CID]</font>
                 </b></td>
             <td style="background-color : #e3e3e3 ; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
                 align="center" valign=middle><b>

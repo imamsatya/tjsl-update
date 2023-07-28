@@ -18,7 +18,7 @@ use PhpOffice\PhpSpreadsheet\Style\Protection;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use DB;
 
-class LaporanRealisasiGagalUploadExport implements FromView , WithTitle, ShouldAutoSize, WithEvents
+class LaporanRealisasiGagalUploadExport implements FromView , WithTitle, WithEvents
 {
     public function __construct($perusahaan,$bulan,$tahun, $id_laporan){
         $this->perusahaan = $perusahaan;
@@ -69,10 +69,12 @@ class LaporanRealisasiGagalUploadExport implements FromView , WithTitle, ShouldA
         return [
             AfterSheet::class => function (AfterSheet $event) {
                 $event->sheet->getDelegate()->getProtection()->setSheet(true);
-                $event->sheet->getDelegate()->getStyle('A5:K50')->getProtection()->setLocked(Protection::PROTECTION_UNPROTECTED);
-                $event->sheet->getDelegate()->getStyle('A5:K50')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
-                $event->sheet->getDelegate()->getStyle('A5:K50')->getFill()->getStartColor()->setRGB('FAFAFD');
-                $event->sheet->getDelegate()->getStyle('A5:K50')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+                $event->sheet->getDelegate()->getStyle('A5:J50')->getProtection()->setLocked(Protection::PROTECTION_UNPROTECTED);
+                $event->sheet->getDelegate()->getStyle('A5:J50')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
+                $event->sheet->getDelegate()->getStyle('A5:J50')->getFill()->getStartColor()->setRGB('FAFAFD');
+                $event->sheet->getDelegate()->getStyle('A5:J50')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+                $event->sheet->getDelegate()->getColumnDimension('C')->setWidth(100);
             },
         ];
     }
