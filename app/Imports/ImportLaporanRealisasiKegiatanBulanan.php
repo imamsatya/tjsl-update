@@ -56,13 +56,11 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
         $berhasil = 0;
         $gagal = 0;
         $keterangan = '';
-        $range_jenis_anggaran = ['1', '2', 'CID', 'non CID'];
         foreach ($row as $ar) {
          
             $is_gagal = false;
             
             $no = (int) rtrim($ar['no']);
-            $val_jenis_anggaran = rtrim($ar['jenis_anggaran_1_cid_2_non_cid']);            
             $val_program = (int) rtrim($ar['id_program_sheet_referensi_program']);
             $val_nama_kegiatan = rtrim($ar['nama_kegiatan']);
             $val_jenis_kegiatan = $ar['id_jenis_kegiatan_sheet_referensi_jenis_kegiatan'] ? (int) rtrim($ar['id_jenis_kegiatan_sheet_referensi_jenis_kegiatan']) : null;
@@ -78,12 +76,6 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
             // eksekusi data kalau kolom nomornya terisi angka
          
             if($no > 0) {
-                // cek jenis anggaran
-                if(!in_array($val_jenis_anggaran, $range_jenis_anggaran)) {
-                    DB::rollback();
-                    $is_gagal = true;
-                    $keterangan .= 'Baris '.$no.' Data Jenis Anggaran tidak sesuai referensi<br/>';
-                }
 
                 // cek target tpb/program
                 $program = TargetTpb::find($val_program);
@@ -144,7 +136,6 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
                     try{
                         $realisasiGagal = LaporanRealisasiBulananUploadGagal::create([
                             'realisasi_upload_id' => $this->realisasi_upload,
-                            'jenis_anggaran' => $val_jenis_anggaran,
                             'id_program' => $val_program,
                             'nama_kegiatan' => $val_nama_kegiatan,
                             'id_jenis_kegiatan' => $val_jenis_kegiatan,
