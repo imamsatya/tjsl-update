@@ -48,9 +48,9 @@ class LaporanRealisasiBulananImport implements ToCollection, WithMultipleSheets,
     public function mapping(): array
     {
         return [
-            'perusahaan' => 'L2',
-            'bulan'  => 'L3',
-            'tahun'  => 'M3',
+            'perusahaan' => 'K2',
+            'bulan'  => 'K3',
+            'tahun'  => 'L3',
         ];
     }
 
