@@ -42,7 +42,11 @@ class ProvinsiKotaSync extends Command
         $client = new \GuzzleHttp\Client();
 
         // sync provinsi
-        $response = $client->request('GET', env('SIMANIS_HOST') . 'api/provinsi');
+        $response = $client->request('GET', env('SATUDATA_HOST') . 'api/provinsi', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('SATUDATA_TOKEN'),
+            ],
+        ]);
         $body = json_decode($response->getBody());
         if($body){
             $now = Carbon::now()->format('Y-m-d H:i:s');
@@ -51,8 +55,8 @@ class ProvinsiKotaSync extends Command
                 $data[] = [
                       'id' => $value->id,
                       'nama' => $value->nama,
-                      'is_luar_negeri' => $value->is_luar_negeri,
-                      'api_id' => $value->api_id,
+                    //   'is_luar_negeri' => $value->is_luar_negeri,
+                    //   'api_id' => $value->api_id,
                       'created_at' => $now,
                       'tgl_sinkronisasi' => $now
                     ];
@@ -64,21 +68,27 @@ class ProvinsiKotaSync extends Command
         }
         
         // sync kota
-        $response = $client->request('GET', env('SIMANIS_HOST') . 'api/kota');
+        $response = $client->request('GET', env('SATUDATA_HOST') . 'api/kota', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('SATUDATA_TOKEN'),
+            ],
+        ]);
         $body = json_decode($response->getBody());
         if($body){
             $now = Carbon::now()->format('Y-m-d H:i:s');
             $data = array();
             foreach ($body->data as $value) {
-                $data[] = [
-                      'id' => $value->id,
-                      'nama' => $value->nama,
-                      'provinsi_id' => $value->provinsi_id,
-                      'api_id' => $value->api_id,
-                      'is_luar_negeri' => $value->is_luar_negeri,
-                      'created_at' => $now,
-                      'tgl_sinkronisasi' => $now
-                    ];
+                if($value->provinsi_id) { // cuman ambil kabupaten/kota di indonesia
+                    $data[] = [
+                          'id' => $value->id,
+                          'nama' => $value->nama,
+                          'provinsi_id' => $value->provinsi_id,
+                        //   'api_id' => $value->api_id,
+                        //   'is_luar_negeri' => $value->is_luar_negeri,
+                          'created_at' => $now,
+                          'tgl_sinkronisasi' => $now
+                        ];
+                }
             }
             if(count($data) > 0){
                 \DB::table('kotas')->delete();

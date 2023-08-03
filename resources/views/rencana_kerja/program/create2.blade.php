@@ -617,6 +617,10 @@
                 
             })
 
+            $("#unit_owner").on('keydown', function(event) {
+                if(event.keyCode == 13) event.preventDefault()
+            })
+
             $(".cls-button-edit").on('click', function() {
                 const program = $(this).data('id')
                 winform(urledit, {'program':program}, 'Ubah Data');

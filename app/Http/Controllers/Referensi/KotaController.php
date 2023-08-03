@@ -47,7 +47,7 @@ class KotaController extends Controller
     public function datatable(Request $request)
     {
         try{
-            return datatables()->of(Kota::where('is_luar_negeri', 'false')->get())
+            return datatables()->of(Kota::whereNotNull('provinsi_id')->get())
             ->addColumn('provinsi', function($row){
                 return @$row->provinsi->nama;
             })

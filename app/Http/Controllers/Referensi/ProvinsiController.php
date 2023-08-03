@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Provinsi;
 use DB;
+use GuzzleHttp\Client;
 
 class ProvinsiController extends Controller
 {
@@ -46,7 +47,7 @@ class ProvinsiController extends Controller
     public function datatable(Request $request)
     {
         try{
-            return datatables()->of(Provinsi::where('is_luar_negeri', 'false')->get())
+            return datatables()->of(Provinsi::all())
             ->addColumn('action', function ($row){
                 $id = (int)$row->id;
                 $button = '<div align="center">';
