@@ -289,7 +289,8 @@
                                 <label>Bulan</label>
                                 @php
                                 // $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
-                                $disabled = 'disabled="true"';
+                                // $disabled = 'disabled="true"';
+                                $disabled = '';
                             @endphp
                                 <select id="bulan_id" class="form-select form-select-solid form-select2" name="bulan_id" data-kt-select2="true"  data-placeholder="Pilih Bulan" data-allow-clear="true" {{$disabled}}>
                                     <option></option>
@@ -454,7 +455,7 @@
                                         <div class="col-lg-9">
                                             <input type="text" name="realisasi_indikator" id="realisasi_indikator"
                                                 class="form-control form-control-lg form-control-solid"
-                                                placeholder="Berdasarkan Satuan Ukur"  
+                                                placeholder="Berdasarkan Satuan Ukur" onkeypress="return onlyNumbers(event)"  
                                                 />
                                         </div>
                                     </div>

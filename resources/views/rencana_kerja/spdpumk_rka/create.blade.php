@@ -224,7 +224,7 @@
                                     <input type="text"name="saldo_awal"
                                         class="form-control form-control-lg form-control-solid"
                                         placeholder="Rp ... "  value="{{$data->saldo_awal ?? ''}}"
-                                       oninput="formatCurrency(this)" 
+                                       oninput="formatCurrency(this)"
                                                         onkeypress="return onlyNumbers(event)" style="text-align:right;" />
 
                                 </div>
@@ -780,7 +780,7 @@
         // formatInputValue();
         // // Attach an event listener to call the formatInputValue function whenever the input value changes
         // inputField.addEventListener('input', formatInputValue);
-</script>
+
 
 
        

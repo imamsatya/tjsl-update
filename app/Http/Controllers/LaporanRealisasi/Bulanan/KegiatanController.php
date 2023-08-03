@@ -317,7 +317,7 @@ class KegiatanController extends Controller
         //     ->select('target_tpbs.*', 'tpbs.jenis_anggaran')
         //     ->get();
         // dd($targetTpbs);
-       
+    //    dd($bulan);
         return view(
             $this->__route . '.create',
             [
@@ -328,7 +328,7 @@ class KegiatanController extends Controller
                 'tahun' => $tahun,
                 'actionform' => '-',
                 'nama_perusahaan' => Perusahaan::find($perusahaan_id)->nama_lengkap,
-                'bulan' => Bulan::all(),
+                'bulan' => Bulan::where('id', '<=', $bulan)->get(),
                 // 'pilar' => PilarPembangunan::get(),
                 // 'versi_pilar_id' => $versi_pilar_id,
                 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
