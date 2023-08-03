@@ -459,6 +459,11 @@
                                 else if(pilar[i][0].finish) status_class = 'success'
                                 else status_class = 'danger'
 
+                                let color_status = '';
+                                if(pilar[i][0].total < pilar[i][1].total_rka) color_status = 'orange';
+                                else if(pilar[i][0].total > pilar[i][1].total_rka) color_status = 'red';
+                                else color_status = 'green';
+
                                 let tempPilarRow = `
                                 <tr class="treegrid-bumn-${value}-pilar-${pilar[i][0].id_pilar} ${parentClass}" data-type="pilar" data-value="${pilar[i][0].id_pilar}" data-perusahaan="${value}" id="perusahaan-${value}-pilar-${pilar[i][0].id_pilar}">
                                     <td style="text-align:center;">${i+1}</td>
@@ -466,7 +471,7 @@
                                     <td style="text-align:right;">
                                         ${ pilar[i][0].total ? parseInt(pilar[i][0].total).toLocaleString() : 0}
                                         <br/>   
-                                        <span style="color: ${ pilar[i][0].total <= pilar[i][1].total_rka ? 'green' : 'red'}; font-size: smaller">RKA: ${parseInt(pilar[i][1].total_rka).toLocaleString()}</span>
+                                        <span style="color: ${ color_status }; font-size: smaller">RKA: ${parseInt(pilar[i][1].total_rka).toLocaleString()}</span>
                                     </td>
                                     <td></td>
                                     <td style="text-align:center;">
@@ -528,6 +533,11 @@
                                 else if(tpb[i][0].finish) status_class = 'success'
                                 else status_class = 'danger'
 
+                                let color_status = '';
+                                if(tpb[i][0].total < tpb[i][1].total_rka) color_status = 'orange';
+                                else if(tpb[i][0].total > tpb[i][1].total_rka) color_status = 'red';
+                                else color_status = 'green';
+
                                 let tempTpbRow = `
                                 <tr class="treegrid-bumn-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i][0].id_tpb} ${parentClass}" data-type="tpb" data-value="${tpb[i][0].id_tpb}" data-perusahaan="${tempPerusahaan}" data-pilar="${value}" id="perusahaan-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i][0].id_tpb}">
                                     <td style="text-align:center;"></td>
@@ -535,7 +545,7 @@
                                     <td style="text-align:right;">
                                         ${tpb[i][0].total ? parseInt(tpb[i][0].total).toLocaleString() : 0}
                                         <br/>   
-                                        <span style="color: ${ tpb[i][0].total <= tpb[i][1].total_rka ? 'green' : 'red'}; font-size: smaller">RKA: ${parseInt(tpb[i][1].total_rka).toLocaleString()}</span>
+                                        <span style="color: ${ color_status }; font-size: smaller">RKA: ${parseInt(tpb[i][1].total_rka).toLocaleString()}</span>
                                     </td>
                                     <td></td>
                                     <td style="text-align:center;">

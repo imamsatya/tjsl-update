@@ -223,6 +223,10 @@
 
         formValidate()
 
+        $("#unit_owner_edit").on('keydown', function(event) {
+            if(event.keyCode == 13) event.preventDefault();
+        })
+
         $(".modal").on('hidden.bs.modal', function() {
             const jenisAnggaran = $("#jenis-anggaran").val()
             $("#tpb_id").val('').trigger('change')
