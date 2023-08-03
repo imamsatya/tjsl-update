@@ -560,11 +560,11 @@ class KegiatanController extends Controller
         // dd($request);
         // dd($request->data['kegiatan_data']['id']);
        
-        
-        
+        // dd(Kegiatan::where('id', 84372)->first());
+        // dd($request);
         DB::beginTransaction();
         try {
-            $kegiatan = Kegiatan::where('id', $request->data['kegiatan_data']['kegiatan_id'])->first();
+            $kegiatan = Kegiatan::where('id', $request->data['kegiatan_data']['id'])->first();
             $kegiatan->target_tpb_id = $request->data['program_id_edit'];
             $kegiatan->kegiatan = $request->data['nama_kegiatan_edit'];
             $kegiatan->provinsi_id = $request->data['provinsi_edit'];
@@ -574,7 +574,7 @@ class KegiatanController extends Controller
             $kegiatan->anggaran_alokasi = $request->data['realisasi_anggaran_edit'];
             $kegiatan->save();
 
-            $kegiatanRealisasi = KegiatanRealisasi::where('kegiatan_id',$request->data['kegiatan_data']['kegiatan_id'] )->first();
+            $kegiatanRealisasi = KegiatanRealisasi::where('kegiatan_id',$request->data['kegiatan_data']['id'] )->first();
             $kegiatanRealisasi->anggaran = $kegiatan->anggaran_alokasi;
             $kegiatanRealisasi->save();
             KegiatanController::store_log( $kegiatanRealisasi->id, 2);//in progress

@@ -148,7 +148,7 @@
                 <input type="text" name="realisasi_anggaran_edit" id="realisasi_anggaran_edit"
                     class="form-control form-control-lg form-control-solid" placeholder="Rp ... "
                     oninput="formatCurrency(this)" onkeypress="return onlyNumbers(event)" style="text-align:right;"
-                    value="{{ $kegiatan->anggaran ?? '' }}" />
+                    value="{{ $kegiatan->anggaran_alokasi ?? '' }}" />
             </div>
         </div>
         <div class="row mb-6">
@@ -571,7 +571,7 @@
                         // console.log('data', data.data)
                         swal.fire({
                             title: 'Sukses',
-                            html: data.data.msg,
+                            html: data.msg,
                             icon: 'success',
 
                             buttonsStyling: true,
