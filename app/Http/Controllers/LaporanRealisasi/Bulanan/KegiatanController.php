@@ -679,6 +679,7 @@ class KegiatanController extends Controller
                 })
                 ->where('kegiatan_realisasis.tahun', $tahun);
         })
+        ->join('bulans', 'bulans.id', 'kegiatan_realisasis.bulan')
         ->join('target_tpbs', 'target_tpbs.id', 'kegiatans.target_tpb_id')
         ->join('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun) {
             if ($perusahaan_id != 'all') {
@@ -719,7 +720,8 @@ class KegiatanController extends Controller
             'relasi_pilar_tpbs.id as relasi_pilar_tpb_id',
             'tpbs.id as tpb_id',
             'tpbs.jenis_anggaran',
-            'satuan_ukur.nama as satuan_ukur_nama'
+            'satuan_ukur.nama as satuan_ukur_nama',
+            'bulans.nama as bulan_nama'
         );
 
         if ($request->pilar_pembangunan_id) {
@@ -743,6 +745,7 @@ class KegiatanController extends Controller
         }
 
         $kegiatan = $kegiatan->get();
+        // dd($kegiatan);
        
         try {
             return datatables()->of($kegiatan)
