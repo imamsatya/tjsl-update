@@ -353,7 +353,7 @@
                                         <div class="col-lg-9">
                                             <div class="form-floating">
                                                 <textarea class="form-control" placeholder="Leave a comment here" id="nama_kegiatan" name="nama_kegiatan" style="height: 100px"></textarea>
-                                                <label for="nama_kegiatan">Nama Kegiatan</label>
+                                                {{-- <label for="nama_kegiatan">Nama Kegiatan</label> --}}
                                             </div>
 
                                         </div>
@@ -370,7 +370,7 @@
                                                 {{-- @php
                                                     $select = (($p->no_tpb == $tpb_id) ? 'selected="selected"' : '');
                                                 @endphp --}}
-                                                <option  value="{{ $jenis_kegiatan_row->id }}" {!! $select !!}>{{ $jenis_kegiatan_row->nama }}</option>
+                                                <option  value="{{ $jenis_kegiatan_row->id }}" >{{ $jenis_kegiatan_row->nama }}</option>
                                             @endforeach
                                             </select>
 
