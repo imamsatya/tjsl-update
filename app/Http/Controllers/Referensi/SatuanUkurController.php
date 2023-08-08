@@ -79,17 +79,21 @@ class SatuanUkurController extends Controller
             'msg' => 'Error System',
             'title' => 'Error'
         ];
-
+        
         $validator = $this->validateform($request);
         if (!$validator->fails()) {
             $param['nama'] = $request->input('nama');
             $param['keterangan'] = $request->input('keterangan');
-            $param['is_active'] = $request->input('is_active');
-
+            $param['is_active'] = $request->input('is_active') == 'aktif' ? true : false ;
+          
             switch ($request->input('actionform')) {
                 case 'insert': DB::beginTransaction();
                                try{
-                                  $satuanukur = SatuanUkur::create((array)$param);
+                                  $satuanukur = new SatuanUkur();
+                                  $satuanukur->nama = $request->nama;
+                                  $satuanukur->is_active = $request->is_active == 'aktif' ? true : false;
+                                  $satuanukur->keterangan = $request->keterangan;
+                                  $satuanukur->save();
 
                                   DB::commit();
                                   $result = [
@@ -185,11 +189,12 @@ class SatuanUkurController extends Controller
 
     protected function validateform($request)
     {
+      
         $required['nama'] = 'required';
-        $required['status'] = 'required';
+        $required['is_active'] = 'required';
 
         $message['nama.required'] = 'Nama wajib diinput';
-        $message['status.required'] = 'Status wajib diinput';
+        $message['is_active.required'] = 'Status wajib diinput';
 
         return Validator::make($request->all(), $required, $message);
     }
