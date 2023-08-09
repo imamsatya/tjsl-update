@@ -14,7 +14,8 @@ class ReferensiKota implements FromView , WithTitle
         return view('pumk.upload_data_mitra.referensi_kota', [
             'kota' => Kota::select('kotas.*','provinsis.nama as provinsi')
             ->leftjoin('provinsis','provinsis.id','=','kotas.provinsi_id')
-            ->orderby('kotas.nama','asc')->get() 
+            // ->where('kotas.is_luar_negeri',false)->orderby('kotas.nama','asc')->get() 
+            ->whereNotNull('kotas.provinsi_id')->orderby('kotas.nama','asc')->get() 
         ]);
     }
 
