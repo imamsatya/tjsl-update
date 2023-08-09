@@ -73,6 +73,8 @@ class LaporanRealisasiTemplateExport implements FromView , WithTitle, WithEvents
                 $event->sheet->getDelegate()->getStyle('A5:J50')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
                 $event->sheet->getDelegate()->getColumnDimension('C')->setWidth(100);
+                $event->sheet->getDelegate()->getProtection()->setFormatColumns(false);
+                $event->sheet->getDelegate()->getProtection()->setDeleteRows(false);
             },
         ];
     }

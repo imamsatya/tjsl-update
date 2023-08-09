@@ -12,7 +12,8 @@ class ReferensiProvinsi implements FromView , WithTitle
      public function view(): View
     {
         return view('pumk.upload_data_mitra.referensi_provinsi', [
-            'provinsi' => Provinsi::where('is_luar_negeri',false)->orderby('nama','asc')->get()
+            // 'provinsi' => Provinsi::where('is_luar_negeri',false)->orderby('nama','asc')->get()
+            'provinsi' => Provinsi::where('is_luar_negeri',false)->orWhereNull('is_luar_negeri')->orderby('nama','asc')->get()
         ]);
     }
 
