@@ -289,7 +289,8 @@
                                 <label>Bulan</label>
                                 @php
                                 // $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
-                                $disabled = 'disabled="true"';
+                                // $disabled = 'disabled="true"';
+                                $disabled = '';
                             @endphp
                                 <select id="bulan_id" class="form-select form-select-solid form-select2" name="bulan_id" data-kt-select2="true"  data-placeholder="Pilih Bulan" data-allow-clear="true" {{$disabled}}>
                                     <option></option>
@@ -352,7 +353,7 @@
                                         <div class="col-lg-9">
                                             <div class="form-floating">
                                                 <textarea class="form-control" placeholder="Leave a comment here" id="nama_kegiatan" name="nama_kegiatan" style="height: 100px"></textarea>
-                                                <label for="nama_kegiatan">Nama Kegiatan</label>
+                                                {{-- <label for="nama_kegiatan">Nama Kegiatan</label> --}}
                                             </div>
 
                                         </div>
@@ -369,7 +370,7 @@
                                                 {{-- @php
                                                     $select = (($p->no_tpb == $tpb_id) ? 'selected="selected"' : '');
                                                 @endphp --}}
-                                                <option  value="{{ $jenis_kegiatan_row->id }}" {!! $select !!}>{{ $jenis_kegiatan_row->nama }}</option>
+                                                <option  value="{{ $jenis_kegiatan_row->id }}" >{{ $jenis_kegiatan_row->nama }}</option>
                                             @endforeach
                                             </select>
 
@@ -454,7 +455,7 @@
                                         <div class="col-lg-9">
                                             <input type="text" name="realisasi_indikator" id="realisasi_indikator"
                                                 class="form-control form-control-lg form-control-solid"
-                                                placeholder="Berdasarkan Satuan Ukur"  
+                                                placeholder="Berdasarkan Satuan Ukur" onkeypress="return onlyNumbers(event)"  
                                                 />
                                         </div>
                                     </div>

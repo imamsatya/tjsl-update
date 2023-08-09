@@ -23,11 +23,12 @@
             <div class="d-flex mt-2">
                 <div class="form-check mr-3 me-4">
                     <input class="form-check-input" type="radio" name="is_active" id="option1" value="aktif"
-                        required>
+                        {{ $data->is_active ? 'checked' : '' }} required>
                     <label class="form-check-label" for="option1">Aktif</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="is_active" id="option2" value="tidak aktif">
+                    <input class="form-check-input" type="radio" name="is_active" id="option2" value="tidak aktif"
+                        {{ !$data->is_active ? 'checked' : '' }}>
                     <label class="form-check-label" for="option2">Tidak Aktif</label>
                 </div>
             </div>

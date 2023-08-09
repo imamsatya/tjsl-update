@@ -192,9 +192,9 @@
                                     <option></option>
                                     <option></option>
                                     @foreach($program as $program_row)
-                                        @php
-                                            $select = (($program_row->id == $program_id) ? 'selected="selected"' : '');
-                                        @endphp
+                                    @php
+                                    $select = (($program_row->id == $program_id) ? 'selected="selected"' : '');
+                                    @endphp
                                     <option data-jenis-anggaran="{{ $program_row->jenis_anggaran }}"
                                         value="{{ $program_row->id }}" {!! $select !!}>{{ $program_row->program }} -
                                         {{$program_row->jenis_anggaran}}</option>
@@ -227,8 +227,8 @@
                                     <option></option>
                                     @foreach($bulan as $bulan_row)
                                     @php
-                                                $select = (($bulan_row->id == $bulan_id) ? 'selected="selected"' : '');
-                                            @endphp
+                                    $select = (($bulan_row->id == $bulan_id) ? 'selected="selected"' : '');
+                                    @endphp
                                     <option value="{{ $bulan_row->id }}" {!! $select !!}>{{ $bulan_row->nama }}</option>
                                     @endforeach
                                 </select>
@@ -277,8 +277,8 @@
                         </div>
                         <div class="form-group row  mb-5">
                             <div class="col-lg-6">
-                                <button id="proses" class="btn btn-success me-3">Proses</button>                                
-                                
+                                <button id="proses" class="btn btn-success me-3">Proses</button>
+
                             </div>
                             {{-- <div class="col-lg-6 text-end">
                                 <button id="download" class="btn btn-sm btn-primary me-3"><i class="bi bi-download fs-3"></i>Download Template</button>                                
@@ -348,6 +348,7 @@
                         <thead>
                             <tr>
                                 <th>No.</th>
+                                <th>Bulan</th>
                                 <th>Program</th>
                                 <th>Kegiatan </th>
                                 <th>Jenis Kegiatan</th>
@@ -357,10 +358,9 @@
                                 <th>Status</th>
                                 <th style="text-align:center; ">Aksi</th>
                                 <th><label
-                                    class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
-                                        class="form-check-input addCheck" type="checkbox"
-                                        id="select-all"></label>
-                            </th>
+                                        class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
+                                            class="form-check-input addCheck" type="checkbox" id="select-all"></label>
+                                </th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -370,7 +370,7 @@
             <!--end::Card body-->
         </div>
     </div>
-    
+
 </div>
 @endsection
 
@@ -386,7 +386,7 @@
     var urldelete = "{{ route('laporan_realisasi.bulanan.kegiatan.delete') }}";
     var urldatatable = "{{ route('laporan_realisasi.bulanan.kegiatan.datatable') }}";
     var urllog = "{{route('laporan_realisasi.bulanan.kegiatan.log')}}";
-    var urledit = "{{route('laporan_realisasi.bulanan.kegiatan.edit')}}";  
+    var urledit = "{{route('laporan_realisasi.bulanan.kegiatan.edit')}}";
     var urlverifikasidata = "{{route('laporan_realisasi.bulanan.kegiatan.verifikasi_data')}}";
     var urldetail = "{{route('laporan_realisasi.bulanan.kegiatan.detail')}}";
     var urldownloadtemplate = "{{route('laporan_realisasi.bulanan.kegiatan.download_template')}}";
@@ -407,9 +407,9 @@
         $('body').on('click', '.cls-button-edit', function () {
             winform(urledit, {
                 'id': $(this).data('id'),
-                'perusahaan_id' : $("select[name='perusahaan_id']").val(),
-                'tahun' : $("select[name='tahun']").val(),
-                'jenis_anggaran' : $('#jenis-anggaran').val()
+                'perusahaan_id': $("select[name='perusahaan_id']").val(),
+                'tahun': $("select[name='tahun']").val(),
+                'jenis_anggaran': $('#jenis-anggaran').val()
             }, 'Ubah Data');
         });
 
@@ -417,14 +417,18 @@
             onbtndelete(this);
         });
 
-        $('body').on('click','.cls-log',function(){
-                winform(urllog, {'id':$(this).data('id')}, 'Log Data');
+        $('body').on('click', '.cls-log', function () {
+            winform(urllog, {
+                'id': $(this).data('id')
+            }, 'Log Data');
         });
 
-        $('body').on('click','.cls-button-detail',function(){
-            winform(urldetail, {'id':$(this).data('id')}, 'Ubah Data');
+        $('body').on('click', '.cls-button-detail', function () {
+            winform(urldetail, {
+                'id': $(this).data('id')
+            }, 'Ubah Data');
         });
-        $('body').on('click','#download',function(){
+        $('body').on('click', '#download', function () {
             downloadTemplate();
         });
 
@@ -443,15 +447,15 @@
             var jenis_kegiatan = $('#jenis_kegiatan').val()
             const jenisAnggaran = $("#jenis-anggaran").val()
             // const statusAnggaran = $("#status-anggaran").val()   
-           
-            window.location.href = url + '?perusahaan_id=' + perusahaan_id 
-                + '&tahun=' + tahun 
-                +'&pilar_pembangunan=' + pilar_pembangunan_id 
-                + '&tpb=' + tpb_id 
-                + '&jenis_anggaran=' + jenisAnggaran 
-                + '&program_id=' + program_id 
-                +'&bulan_id=' + bulan_id 
-                + '&jenis_kegiatan=' + jenis_kegiatan;
+
+            window.location.href = url + '?perusahaan_id=' + perusahaan_id +
+                '&tahun=' + tahun +
+                '&pilar_pembangunan=' + pilar_pembangunan_id +
+                '&tpb=' + tpb_id +
+                '&jenis_anggaran=' + jenisAnggaran +
+                '&program_id=' + program_id +
+                '&bulan_id=' + bulan_id +
+                '&jenis_kegiatan=' + jenis_kegiatan;
         });
 
 
@@ -590,43 +594,43 @@
         })
         $("#jenis-anggaran").trigger('change');
 
-        $(".delete-selected-data").on('click', function() {
-                var selectedProgram = $('input[name="selected-data[]"]:checked').map(function () {
-                         return $(this).val();
-                     }).get();
-               
-               
-                if(!selectedProgram.length) {
-                    swal.fire({
-                        icon: 'warning',
-                        title: 'Warning',
-                        html: 'Tidak ada data terpilih untuk dihapus!',
-                        buttonsStyling: true,
-                        confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
-                    })
-                    return
-                }
-                deleteSelectedProgram(selectedProgram)
-            })
+        $(".delete-selected-data").on('click', function () {
+            var selectedProgram = $('input[name="selected-data[]"]:checked').map(function () {
+                return $(this).val();
+            }).get();
 
-            $("#verify-data").on('click', function() {
-                var selectedProgram = $('input[name="selected-data[]"]:checked').map(function () {
-                         return $(this).val();
-                     }).get();
 
-                     if(!selectedProgram.length) {
-                    swal.fire({
-                        icon: 'warning',
-                        title: 'Warning',
-                        html: 'Tidak ada data terpilih untuk dihapus!',
-                        buttonsStyling: true,
-                        confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
-                    })
-                    return
-                }
-            
-            verifySelectedData(selectedProgram) 
-            
+            if (!selectedProgram.length) {
+                swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    html: 'Tidak ada data terpilih untuk dihapus!',
+                    buttonsStyling: true,
+                    confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                })
+                return
+            }
+            deleteSelectedProgram(selectedProgram)
+        })
+
+        $("#verify-data").on('click', function () {
+            var selectedProgram = $('input[name="selected-data[]"]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            if (!selectedProgram.length) {
+                swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    html: 'Tidak ada data terpilih untuk dihapus!',
+                    buttonsStyling: true,
+                    confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                })
+                return
+            }
+
+            verifySelectedData(selectedProgram)
+
         })
 
 
@@ -642,7 +646,7 @@
                 data: function (d) {
                     d.perusahaan_id = $("select[name='perusahaan_id']").val(),
                         d.tahun = $("select[name='tahun']").val(),
-                       
+
                         d.jenis_anggaran = $('#jenis-anggaran').val(),
                         d.program_id = $('#program_id').val(),
                         d.pilar_pembangunan_id = $('#pilar_pembangunan_id').val(),
@@ -659,6 +663,13 @@
                     searchable: false
                 },
                 {
+                    data: 'kegiatan_realisasi_bulan',
+                    name: 'kegiatan_realisasi_bulan',
+                    render: function (data, type, row) {
+                        return row.bulan_nama;
+                    }
+                },
+                {
                     data: 'target_tpb_program',
                     name: 'target_tpb_program',
                     render: function (data, type, row) {
@@ -669,17 +680,18 @@
                 {
                     data: 'kegiatan',
                     name: 'kegiatan',
-                    render: function (data, type, row){
-                        
-                        detailKegiatan = `<a href="javascript:void(0)"><div class="cls-button-detail" data-id=${row.id}>${data}</div></a>`
+                    render: function (data, type, row) {
+
+                        detailKegiatan =
+                            `<a href="javascript:void(0)"><div class="cls-button-detail" data-id=${row.id}>${data}</div></a>`
                         return detailKegiatan;
                     }
                 },
                 {
                     data: 'jenis_kegiatan_nama',
                     name: 'jenis_kegiatan_nama',
-                    render: function (data, type, row){
-                        
+                    render: function (data, type, row) {
+
                         jenisKegiatan = data ? `${data}` : `--`
                         return jenisKegiatan;
                     }
@@ -728,27 +740,29 @@
                 {
                     data: 'action',
                     name: 'action',
-                    render: function(data, type, row){
-                            // console.log(row)
-                            let button = null;
-                            if (row.kegiatan_realisasi_status_id === 2) {
-                                button = `@can('edit-kegiatan')<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>@endcan`
-                            }
-
-                            if (row.kegiatan_realisasi_status_id === 1) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info" data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
-                            }
-                            return button
+                    render: function (data, type, row) {
+                        // console.log(row)
+                        let button = null;
+                        if (row.kegiatan_realisasi_status_id === 2) {
+                            button =
+                                `@can('edit-kegiatan')<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>@endcan`
                         }
+
+                        if (row.kegiatan_realisasi_status_id === 1) {
+                            button =
+                                `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info" data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                        }
+                        return button
+                    }
                 },
                 {
-                        data: null,
-                        orderable: false,
-                        searchable: false,
-                        render: function(data, type, row) {
-                            return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input class="form-check-input row-check" type="checkbox" name="selected-data[]" value="${row.id}"></label>`;
-                        }
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, row) {
+                        return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input class="form-check-input row-check" type="checkbox" name="selected-data[]" value="${row.id}"></label>`;
                     }
+                }
             ],
             // footerCallback: function (row, data, start, end, display) {
             //     var api = this.api();
@@ -878,49 +892,51 @@
         // Use the Laravel's built-in route function to generate the new URL
         var url =
             "{{ route('laporan_realisasi.bulanan.kegiatan.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'bulan' => ':bulan_id']) }}";
-        url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(':bulan_id', selectedBulan)
+        url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(':bulan_id',
+            selectedBulan)
         // Redirect the user to the new page
         window.location.href = url;
     }
 
     function deleteSelectedProgram(selectedProgram) {
-            const jumlahDataDeleted = selectedProgram.length
-            swal.fire({
-                title: "Pemberitahuan",
-                html: "Yakin hapus data ? <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahDataDeleted+" rows]</span>",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Ya, hapus data",
-                cancelButtonText: "Tidak"
-            }).then(function(result) {
-                if (result.value) {
-                    $.ajax({
+        const jumlahDataDeleted = selectedProgram.length
+        swal.fire({
+            title: "Pemberitahuan",
+            html: "Yakin hapus data ? <br/><span style='color: red; font-weight: bold'>[Data selected: " +
+                jumlahDataDeleted + " rows]</span>",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, hapus data",
+            cancelButtonText: "Tidak"
+        }).then(function (result) {
+            if (result.value) {
+                $.ajax({
                     url: urldelete,
-                    data:{
+                    data: {
                         "kegiatan_deleted": selectedProgram
                     },
-                    type:'post',
-                    dataType:'json',
-                    beforeSend: function(){
+                    type: 'post',
+                    dataType: 'json',
+                    beforeSend: function () {
                         $.blockUI();
                     },
-                    success: function(data){
+                    success: function (data) {
                         $.unblockUI();
 
                         swal.fire({
-                                title: data.title,
-                                html: data.msg,
-                                icon: data.flag,
-                                buttonsStyling: true,
-                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                            title: data.title,
+                            html: data.msg,
+                            icon: data.flag,
+                            buttonsStyling: true,
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                         });
 
-                        if(data.flag == 'success') {
-                            location.reload(); 
+                        if (data.flag == 'success') {
+                            location.reload();
                         }
-                        
+
                     },
-                    error: function(jqXHR, exception) {
+                    error: function (jqXHR, exception) {
                         $.unblockUI();
                         var msgerror = '';
                         if (jqXHR.status === 0) {
@@ -940,44 +956,45 @@
                         }
                         swal.fire({
                             title: "Error System",
-                            html: msgerror+', coba ulangi kembali !!!',
+                            html: msgerror + ', coba ulangi kembali !!!',
                             icon: 'error',
 
                             buttonsStyling: true,
 
                             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
-                        });  
-                        }
-                    });
-                }
-            });  
-    } 
+                        });
+                    }
+                });
+            }
+        });
+    }
 
     function verifySelectedData(selectedData) {
         const jumlahSelected = selectedData.length
         swal.fire({
             title: "Pemberitahuan",
-            html: "Yakin verifikasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahSelected+" rows]</span>",
+            html: "Yakin verifikasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: " +
+                jumlahSelected + " rows]</span>",
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, verifikasi data",
             cancelButtonText: "Tidak"
-        }).then(function(result) {
+        }).then(function (result) {
             if (result.value) {
                 $.ajax({
-                url: urlverifikasidata,
-                data:{
-                    "kegiatan_verifikasi": selectedData
-                },
-                type:'post',
-                dataType:'json',
-                beforeSend: function(){
-                    $.blockUI();
-                },
-                success: function(data){
-                    $.unblockUI();
+                    url: urlverifikasidata,
+                    data: {
+                        "kegiatan_verifikasi": selectedData
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    beforeSend: function () {
+                        $.blockUI();
+                    },
+                    success: function (data) {
+                        $.unblockUI();
 
-                    swal.fire({
+                        swal.fire({
                             title: data.title,
                             html: data.msg,
                             icon: data.flag,
@@ -985,15 +1002,90 @@
                             buttonsStyling: true,
 
                             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
-                    });
+                        });
 
-                    if(data.flag == 'success') {
-                        // datatable.ajax.reload( null, false );
-                        location.reload(); 
+                        if (data.flag == 'success') {
+                            // datatable.ajax.reload( null, false );
+                            location.reload();
+                        }
+
+                    },
+                    error: function (jqXHR, exception) {
+                        $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                        swal.fire({
+                            title: "Error System",
+                            html: msgerror + ', coba ulangi kembali !!!',
+                            icon: 'error',
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });
                     }
-                    
+                });
+            }
+        });
+    }
+
+    function downloadTemplate() {
+        var filter_perusahaan_id = $("select[name='perusahaan_id']").val();
+        var filter_tahun = $("select[name='tahun']").val();
+        var filter_bulan = $("select[name='bulan_id']").val();
+
+        if (filter_perusahaan_id == '' || filter_tahun == '' || filter_bulan == '') {
+            onbtndisablevalidasi();
+        } else {
+            $.ajax({
+                type: 'post',
+                data: {
+                    'perusahaan_id': filter_perusahaan_id,
+                    'tahun': filter_tahun,
+                    'target_tpb_id': $("select[name='program_id']").val(),
+                    'pilar_pembangunan_id': $("select[name='pilar_pembangunan_id']").val(),
+                    'tpb_id': $("select[name='tpb_id']").val(),
+                    'bulan': filter_bulan,
                 },
-                error: function(jqXHR, exception) {
+                beforeSend: function () {
+                    $.blockUI();
+                },
+                url: urldownloadtemplate,
+                xhrFields: {
+                    responseType: 'blob',
+                },
+                success: function (data) {
+                    $.unblockUI();
+                    var filename = 'Template Input Data Laporan Realisasi Bulan ' + $(
+                        "#bulan_id option:selected").text() + " Tahun " + $("#tahun").val() + '.xlsx';
+
+                    var blob = new Blob([data], {
+                        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    });
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = filename;
+
+                    document.body.appendChild(link);
+
+                    link.click();
+                    document.body.removeChild(link);
+                },
+                error: function (jqXHR, exception) {
                     $.unblockUI();
                     var msgerror = '';
                     if (jqXHR.status === 0) {
@@ -1013,96 +1105,21 @@
                     }
                     swal.fire({
                         title: "Error System",
-                        html: msgerror+', coba ulangi kembali !!!',
-                        icon: 'error',
-
-                        buttonsStyling: true,
-
-                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
-                    });  
-                    }
-                });
-            }
-        });
-    }    
-
-    function downloadTemplate()
-    {
-        var filter_perusahaan_id = $("select[name='perusahaan_id']").val();
-        var filter_tahun = $("select[name='tahun']").val();
-        var filter_bulan = $("select[name='bulan_id']").val();
-
-        if(filter_perusahaan_id == '' || filter_tahun == '' || filter_bulan == ''){
-            onbtndisablevalidasi();
-        }else{
-            $.ajax({
-                type: 'post',
-                data: {
-                    'perusahaan_id' : filter_perusahaan_id,
-                    'tahun' : filter_tahun,
-                    'target_tpb_id' : $("select[name='program_id']").val(),
-                    'pilar_pembangunan_id' : $("select[name='pilar_pembangunan_id']").val(),
-                    'tpb_id' : $("select[name='tpb_id']").val(),
-                    'bulan' : filter_bulan,
-                },
-                beforeSend: function () {
-                    $.blockUI();
-                },
-                url: urldownloadtemplate,
-                xhrFields: {
-                    responseType: 'blob',
-                },
-                success: function(data){
-                    $.unblockUI();
-                    var filename = 'Template Input Data Laporan Realisasi Bulan '+ $("#bulan_id option:selected").text() +" Tahun "+$("#tahun").val()+'.xlsx';
-
-                    var blob = new Blob([data], {
-                        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                    });
-                    var link = document.createElement('a');
-                    link.href = window.URL.createObjectURL(blob);
-                    link.download = filename;
-
-                    document.body.appendChild(link);
-
-                    link.click();
-                    document.body.removeChild(link);
-                },
-                error: function(jqXHR, exception){
-                    $.unblockUI();
-                        var msgerror = '';
-                        if (jqXHR.status === 0) {
-                            msgerror = 'jaringan tidak terkoneksi.';
-                        } else if (jqXHR.status == 404) {
-                            msgerror = 'Halaman tidak ditemukan. [404]';
-                        } else if (jqXHR.status == 500) {
-                            msgerror = 'Internal Server Error [500].';
-                        } else if (exception === 'parsererror') {
-                            msgerror = 'Requested JSON parse gagal.';
-                        } else if (exception === 'timeout') {
-                            msgerror = 'RTO.';
-                        } else if (exception === 'abort') {
-                            msgerror = 'Gagal request ajax.';
-                        } else {
-                            msgerror = 'Error.\n' + jqXHR.responseText;
-                        }
-                swal.fire({
-                        title: "Error System",
-                        html: msgerror+', coba ulangi kembali !!!',
+                        html: msgerror + ', coba ulangi kembali !!!',
                         icon: 'error',
 
                         buttonsStyling: true,
 
                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-                });      
-                    
+                    });
+
                 }
             });
         }
         return false;
     }
 
-    function onbtndisablevalidasi(){
+    function onbtndisablevalidasi() {
         swal.fire({
             title: "Gagal",
             html: 'Pilihan BUMN, Bulan dan Tahun wajib diisi!',
@@ -1111,7 +1128,7 @@
             buttonsStyling: true,
 
             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
-        }); 
+        });
     }
 
 </script>

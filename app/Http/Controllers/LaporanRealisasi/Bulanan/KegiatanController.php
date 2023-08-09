@@ -111,14 +111,18 @@ class KegiatanController extends Controller
         ->get();
         // $currentMonth = (int) date('n');
 
-        $bulan = $request->bulan_id ??  (int) date('n');
+        $bulan = $request->bulan_id;
         // $bulan = $request->bulan_id ??  'all';
         $tahun = $request->tahun ?? date('Y');
         
         $kegiatan = DB::table('kegiatans')
         ->join('kegiatan_realisasis', function($join) use ($bulan, $tahun) {
             $join->on('kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
-                ->where('kegiatan_realisasis.bulan', $bulan)
+                ->where(function($query) use ($bulan) {
+                    if ($bulan !== null) {
+                        $query->where('kegiatan_realisasis.bulan', $bulan);
+                    }
+                })
                 ->where('kegiatan_realisasis.tahun', $tahun);
         })
         ->join('target_tpbs', 'target_tpbs.id', 'kegiatans.target_tpb_id')
@@ -317,7 +321,7 @@ class KegiatanController extends Controller
         //     ->select('target_tpbs.*', 'tpbs.jenis_anggaran')
         //     ->get();
         // dd($targetTpbs);
-       
+    //    dd($bulan);
         return view(
             $this->__route . '.create',
             [
@@ -328,14 +332,14 @@ class KegiatanController extends Controller
                 'tahun' => $tahun,
                 'actionform' => '-',
                 'nama_perusahaan' => Perusahaan::find($perusahaan_id)->nama_lengkap,
-                'bulan' => Bulan::all(),
+                'bulan' => Bulan::where('id', '<=', $bulan)->get(),
                 // 'pilar' => PilarPembangunan::get(),
                 // 'versi_pilar_id' => $versi_pilar_id,
                 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
                 'admin_bumn' => $admin_bumn,
                 'jenis_kegiatan' => JenisKegiatan::where('is_active', true)->get(),
-                'provinsi' => Provinsi::where('is_luar_negeri', false)->get(),
-                'kota_kabupaten' => Kota::where('is_luar_negeri', false)->get(),
+                'provinsi' => Provinsi::all(),
+                'kota_kabupaten' => Kota::all(),
                 'satuan_ukur' => SatuanUkur::where('is_active', true)->get(),
                 'program' => $program,
                 'bulan_id' =>$bulan ?? 1,
@@ -545,8 +549,8 @@ class KegiatanController extends Controller
                 'program' => $program,
                 'jenis_kegiatan' => $jenis_kegiatan,
                 'jenis_anggaran' => $jenis_anggaran,
-                'provinsi' => Provinsi::where('is_luar_negeri', false)->get(),
-                'kota_kabupaten' => Kota::where('is_luar_negeri', false)->get(),
+                'provinsi' => Provinsi::all(),
+                'kota_kabupaten' => Kota::all(),
                 'satuan_ukur' => SatuanUkur::where('is_active', true)->get(),
                 'subkegiatan' => SubKegiatan::all(),
 
@@ -661,16 +665,21 @@ class KegiatanController extends Controller
         // ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')->where('periode_laporan_id', $periode_rka_id)->where('perusahaans.induk', 0);
         
         $perusahaan_id = $request->perusahaan_id ?? 'all';
-        $bulan = $request->bulan ?? 1;
+        $bulan = $request->bulan;
         $tahun = $request->tahun ?? date('Y');
         $jenis_anggaran = $request->jenis_anggaran ?? 'CID';
         // dd($perusahaan_id);
         $kegiatan = DB::table('kegiatans')
         ->join('kegiatan_realisasis', function($join) use ($bulan, $tahun) {
             $join->on('kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
-                ->where('kegiatan_realisasis.bulan', $bulan)
+                ->where(function($query) use ($bulan) {
+                    if ($bulan !== null) {
+                        $query->where('kegiatan_realisasis.bulan', $bulan);
+                    }
+                })
                 ->where('kegiatan_realisasis.tahun', $tahun);
         })
+        ->join('bulans', 'bulans.id', 'kegiatan_realisasis.bulan')
         ->join('target_tpbs', 'target_tpbs.id', 'kegiatans.target_tpb_id')
         ->join('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun) {
             if ($perusahaan_id != 'all') {
@@ -711,7 +720,8 @@ class KegiatanController extends Controller
             'relasi_pilar_tpbs.id as relasi_pilar_tpb_id',
             'tpbs.id as tpb_id',
             'tpbs.jenis_anggaran',
-            'satuan_ukur.nama as satuan_ukur_nama'
+            'satuan_ukur.nama as satuan_ukur_nama',
+            'bulans.nama as bulan_nama'
         );
 
         if ($request->pilar_pembangunan_id) {
@@ -735,6 +745,7 @@ class KegiatanController extends Controller
         }
 
         $kegiatan = $kegiatan->get();
+        // dd($kegiatan);
        
         try {
             return datatables()->of($kegiatan)
@@ -902,18 +913,24 @@ class KegiatanController extends Controller
             ->join('satuan_ukur', 'satuan_ukur.id', 'kegiatans.satuan_ukur_id')
             ->select('kegiatans.*', 'perusahaans.nama_lengkap as nama_perusahaan', 'pilar_pembangunans.nama as nama_pilar', 'provinsis.nama as provinsi', 'kotas.nama as kota'
             ,'satuan_ukur.nama as satuan_ukur','target_tpbs.program as program', 'tpbs.jenis_anggaran as jenis_anggaran', 'tpbs.no_tpb as no_tpb', 'tpbs.nama as nama_tpb')->first();
+            
+            $kumpulanKegiatan = DB::table('kegiatans')->where('kegiatan', $kegiatan->kegiatan)->where('target_tpb_id', $kegiatan->target_tpb_id)->where('provinsi_id', $kegiatan->provinsi_id)->where('kota_id', $kegiatan->kota_id)->get();
+            $kumpulanKegiatanId = $kumpulanKegiatan->pluck('id');
+            // dd($kumpulanKegiatan->pluck('id'));
         //   dd($kegiatan);
             $tahun     = KegiatanRealisasi::select('tahun')->where('kegiatan_id', $kegiatan->id)->groupBy('tahun')->orderBy('tahun')->get();
+            
             $realisasi = KegiatanRealisasi::select('kegiatan_realisasis.*','kegiatans.target_tpb_id','kegiatans.kegiatan', 'bulans.nama as bulan_nama', 'jenis_kegiatans.nama as jenis_kegiatan_nama', 'sub_kegiatans.subkegiatan as sub_kegiatan_nama')
                         ->leftjoin('kegiatans','kegiatans.id','kegiatan_realisasis.kegiatan_id')
-                        ->join('bulans', 'bulans.id', 'kegiatan_realisasis.bulan')->where('kegiatan_realisasis.kegiatan_id', $kegiatan->id)
+                        ->join('bulans', 'bulans.id', 'kegiatan_realisasis.bulan')->whereIn('kegiatan_realisasis.kegiatan_id', $kumpulanKegiatanId)
                         ->leftjoin('jenis_kegiatans', 'jenis_kegiatans.id', '=', 'kegiatans.jenis_kegiatan_id')
                         ->leftJoin('sub_kegiatans', function ($join) {
                             $join->on('sub_kegiatans.id', '=', DB::raw("CAST(kegiatans.keterangan_kegiatan AS bigint)"));
                         })
                         ->get();
-            $realisasi_total = KegiatanRealisasi::where('kegiatan_id', $kegiatan->id)->select(DB::Raw('sum(anggaran) as total'))->first();
-
+                        
+            $realisasi_total = KegiatanRealisasi::whereIn('kegiatan_id', $kumpulanKegiatanId)->select(DB::Raw('sum(anggaran) as total'))->first();
+            // dd($realisasi);
 
             $realisasi_by_api = [];
             if($realisasi){
@@ -931,7 +948,7 @@ class KegiatanController extends Controller
                 }
 
             }
-
+                // dd($kegiatan);
                 return view($this->__route.'.detail',[
                     'pagetitle' => $this->pagetitle,
                     'actionform' => 'update',

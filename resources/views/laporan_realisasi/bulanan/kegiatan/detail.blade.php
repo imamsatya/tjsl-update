@@ -42,7 +42,7 @@
             </tr>
             <tr>
                 <td><b>Realisasi Anggaran</b></td>
-                <td>Rp. {{ number_format($anggaran_total, 0, ',', ',') }}</td>
+                <td>Rp. {{ number_format(@$data->anggaran_alokasi, 0, ',', ',') }}</td>
                 <td><b>Bulan</b></td>
                 <td>{{ $realisasi[0]?->bulan_nama . ' ' . $realisasi[0]?->tahun }}</td>
             </tr>
