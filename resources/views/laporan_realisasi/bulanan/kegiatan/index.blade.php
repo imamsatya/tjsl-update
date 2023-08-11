@@ -320,6 +320,9 @@
                                 data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
                         {{-- <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
+                            
+                        <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
+                            
                         @can('delete-kegiatan')
                         <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                         </button>
@@ -390,6 +393,7 @@
     var urlverifikasidata = "{{route('laporan_realisasi.bulanan.kegiatan.verifikasi_data')}}";
     var urldetail = "{{route('laporan_realisasi.bulanan.kegiatan.detail')}}";
     var urldownloadtemplate = "{{route('laporan_realisasi.bulanan.kegiatan.download_template')}}";
+    var urlexport = "{{route('laporan_realisasi.bulanan.kegiatan.export')}}";
 
     $(document).ready(function () {
         $('.tree').treegrid({
@@ -632,6 +636,88 @@
             verifySelectedData(selectedProgram)
 
         })
+
+        $(".rekap-data").on('click', function(){
+                exportExcel();
+            })
+
+            function exportExcel()
+        {
+            $.ajax({
+                type: 'post',
+                data: {
+                    'perusahaan_id' : $("select[name='perusahaan_id']").val(),
+                        'tahun' : $("select[name='tahun']").val(),
+
+                        'jenis_anggaran' : $('#jenis-anggaran').val(),
+                        'program_id' : $('#program_id').val(),
+                        'pilar_pembangunan_id' : $('#pilar_pembangunan_id').val(),
+                        'bulan' : $('#bulan_id').val(),
+                        'tpb_id' : $('#tpb_id').val(),
+                        'jenis_kegiatan' : $('#jenis_kegiatan').val()
+                },
+                beforeSend: function () {
+                    $.blockUI();
+                },
+                url: urlexport,
+                xhrFields: {
+                    responseType: 'blob',
+                },
+                success: function(data){
+                    $.unblockUI();
+
+                    var today = new Date();
+                    var dd = String(today.getDate()).padStart(2, '0');
+                    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                    var yyyy = today.getFullYear();
+                    
+                    today = dd + '-' + mm + '-' + yyyy;
+                    var filename = 'Kegiatan '+today+'.xlsx';
+
+                    var blob = new Blob([data], {
+                        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    });
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = filename;
+
+                    document.body.appendChild(link);
+
+                    link.click();
+                    document.body.removeChild(link);
+                },
+                error: function(jqXHR, exception){
+                    $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                });      
+                    
+                }
+            });
+            return false;
+        }
 
 
     });
