@@ -1055,19 +1055,19 @@ class KegiatanController extends Controller
 
         //Versi 2
         $fileName = $file->getClientOriginalName();
-    $fileRaw = $id . '_' . $fileName;
-    $filePath = 'file_upload/laporan_realisasi/kegiatan/bulanan/' . $fileRaw;
+        $fileRaw = $id . '_' . $fileName;
+        $filePath = 'file_upload/laporan_realisasi/kegiatan/bulanan/' . $fileRaw;
 
-    // Store the file using Laravel Storage
-    Storage::put($filePath, file_get_contents($file));
+        // Store the file using Laravel Storage
+        Storage::put($filePath, file_get_contents($file));
 
-    $data = (object) [
-        'fileName' => $fileName,
-        'fileRaw' => $fileRaw,
-        'filePath' => $filePath,
-    ];
+        $data = (object) [
+            'fileName' => $fileName,
+            'fileRaw' => $fileRaw,
+            'filePath' => $filePath,
+        ];
 
-    return $data;
+        return $data;
     }
 
     public function historyUpload(Request $request) {
