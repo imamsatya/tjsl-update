@@ -38,6 +38,9 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use App\Imports\LaporanRealisasiBulananImport;
 use DateTime;
 
+// use Illuminate\Support\Facades\Storage;
+// use Illuminate\Http\UploadedFile;
+
 use App\Exports\KegiatanBulanExport;
 
 class KegiatanController extends Controller
@@ -987,8 +990,14 @@ class KegiatanController extends Controller
             $realisasi = LaporanRealisasiBulananUpload::create((array)$param);
 
             $dataUpload = $this->uploadFile($request->file('file_name'), $realisasi->id);
-            Excel::import(new LaporanRealisasiBulananImport($dataUpload->fileRaw, $realisasi->id), public_path('file_upload/laporan_realisasi/kegiatan/bulanan/'.$dataUpload->fileRaw));
+            //Versi1
+            // Excel::import(new LaporanRealisasiBulananImport($dataUpload->fileRaw, $realisasi->id), public_path('file_upload/laporan_realisasi/kegiatan/bulanan/'.$dataUpload->fileRaw));
 
+            //Versi 2
+            $file = 'file_upload/laporan_realisasi/kegiatan/bulanan/' . $dataUpload->fileRaw;
+            // Import data from Excel using Laravel Excel
+            Excel::import(new LaporanRealisasiBulananImport($dataUpload->fileRaw, $realisasi->id), Storage::path($file));
+            
             $param2['file_name']  = $dataUpload->fileRaw;
             $param2['user_id']  = \Auth::user()->id;
             $realisasi->update((array)$param2);
@@ -1034,14 +1043,31 @@ class KegiatanController extends Controller
     }    
 
     protected function uploadFile(UploadedFile $file, $id)
-    {
+    {   
+        //Versi 1
+        // $fileName = $file->getClientOriginalName();
+        // $fileRaw  =$fileName = $id.'_'.$fileName;
+        // $filePath = 'file_upload'.DIRECTORY_SEPARATOR.'laporan_realisasi'.DIRECTORY_SEPARATOR.'kegiatan'.DIRECTORY_SEPARATOR.'bulanan'.DIRECTORY_SEPARATOR.$fileName;
+        // $destinationPath = public_path().DIRECTORY_SEPARATOR.'file_upload'.DIRECTORY_SEPARATOR.'laporan_realisasi'.DIRECTORY_SEPARATOR.'kegiatan'.DIRECTORY_SEPARATOR.'bulanan'.DIRECTORY_SEPARATOR;
+        // $fileUpload      = $file->move($destinationPath, $fileRaw);
+        // $data = (object) array('fileName' => $fileName, 'fileRaw' => $fileRaw, 'filePath' => $filePath);
+        // return $data;
+
+        //Versi 2
         $fileName = $file->getClientOriginalName();
-        $fileRaw  =$fileName = $id.'_'.$fileName;
-        $filePath = 'file_upload'.DIRECTORY_SEPARATOR.'laporan_realisasi'.DIRECTORY_SEPARATOR.'kegiatan'.DIRECTORY_SEPARATOR.'bulanan'.DIRECTORY_SEPARATOR.$fileName;
-        $destinationPath = public_path().DIRECTORY_SEPARATOR.'file_upload'.DIRECTORY_SEPARATOR.'laporan_realisasi'.DIRECTORY_SEPARATOR.'kegiatan'.DIRECTORY_SEPARATOR.'bulanan'.DIRECTORY_SEPARATOR;
-        $fileUpload      = $file->move($destinationPath, $fileRaw);
-        $data = (object) array('fileName' => $fileName, 'fileRaw' => $fileRaw, 'filePath' => $filePath);
-        return $data;
+    $fileRaw = $id . '_' . $fileName;
+    $filePath = 'file_upload/laporan_realisasi/kegiatan/bulanan/' . $fileRaw;
+
+    // Store the file using Laravel Storage
+    Storage::put($filePath, file_get_contents($file));
+
+    $data = (object) [
+        'fileName' => $fileName,
+        'fileRaw' => $fileRaw,
+        'filePath' => $filePath,
+    ];
+
+    return $data;
     }
 
     public function historyUpload(Request $request) {
