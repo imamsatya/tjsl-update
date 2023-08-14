@@ -43,10 +43,10 @@
 <body>
     <table cellspacing="0" border="0">
         <tr>
-            <td colspan="9"
+            <td colspan="14"
                 style="width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000"
                 align="center" valign=middle><b>
-                    <font face="Arial" size=4 color="#000000">Kegiatan {{ $tahun }}
+                    <font face="Arial" size=4 color="#000000">Rekapitulasi Data Program dan Kegiatan TJSL
                     </font>
                 </b></td>
         </tr>
@@ -57,7 +57,19 @@
                 </b></td>
             <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
                 align="left" valign=middle><b>
-                    <font face="Arial" size=4 color="#000000">Bulan</font>
+                    <font face="Arial" size=4 color="#000000">Perusahaan</font>
+                </b></td>
+            <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
+                align="left" valign=middle><b>
+                    <font face="Arial" size=4 color="#000000">Pilar Pembangunan</font>
+                </b></td>
+            <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
+                align="left" valign=middle><b>
+                    <font face="Arial" size=4 color="#000000">TPB</font>
+                </b></td>
+            <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
+                align="left" valign=middle><b>
+                    <font face="Arial" size=4 color="#000000">ID Program</font>
                 </b></td>
             <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
                 align="left" valign=middle><b>
@@ -69,11 +81,19 @@
                 </b></td>
             <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
                 align="left" valign=middle><b>
-                    <font face="Arial" size=4 color="#000000">Jenis Kegiatan</font>
+                    <font face="Arial" size=4 color="#000000">Provinsi Kegiatan</font>
                 </b></td>
             <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
                 align="left" valign=middle><b>
-                    <font face="Arial" size=4 color="#000000">Provinsi - Kabupaten/Kota</font>
+                    <font face="Arial" size=4 color="#000000">Kabupaten/Kotamadya Kegiatan</font>
+                </b></td>
+            <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
+                align="left" valign=middle><b>
+                    <font face="Arial" size=4 color="#000000">Bulan</font>
+                </b></td>
+            <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
+                align="left" valign=middle><b>
+                    <font face="Arial" size=4 color="#000000">Tahun</font>
                 </b></td>
             <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
                 align="left" valign=middle><b>
@@ -81,11 +101,11 @@
                 </b></td>
             <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
                 align="left" valign=middle><b>
-                    <font face="Arial" size=4 color="#000000">Indikator Capaian</font>
+                    <font face="Arial" size=4 color="#000000">Satuan Ukur</font>
                 </b></td>
             <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
                 align="left" valign=middle><b>
-                    <font face="Arial" size=4 color="#000000">Status</font>
+                    <font face="Arial" size=4 color="#000000">Realisasi Anggaran</font>
                 </b></td>
 
 
@@ -97,14 +117,19 @@
             @if ($kegiatan)
                 <tr>
                     <td>{{ $num++ }}</td>
-                    <td>{{ @$kegiatan->bulan_nama }}</td>
-                    <td>{{ @$kegiatan->target_tpb_program }} - {{ @$kegiatan->jenis_anggaran }}</td>
+                    <td>{{ @$kegiatan->perusahaan_nama_lengkap }}</td>
+                    <td>{{ @$kegiatan->pilar_pembangunan_nama }}</td>
+                    <td>{{ @$kegiatan->tpb_nama }}</td>
+                    <td>{{ @$kegiatan->target_tpb_id }}</td>
+                    <td>{{ @$kegiatan->target_tpb_program }}</td>
                     <td>{{ @$kegiatan->kegiatan }}</td>
-                    <td>{{ @$kegiatan->jenis_kegiatan_nama }}</td>
-                    <td>{{ @$kegiatan->provinsi_nama }} - {{ @$kegiatan->kota_nama }}</td>
+                    <td>{{ @$kegiatan->provinsi_nama }}</td>
+                    <td>{{ @$kegiatan->kota_nama }}</td>
+                    <td>{{ @$kegiatan->bulan_nama }}</td>
+                    <td>{{ @$kegiatan->kegiatan_realisasi_tahun }}</td>
+                    <td>{{ @$kegiatan->indikator }}</td>
+                    <td>{{ @$kegiatan->satuan_ukur_nama }}</td>
                     <td>{{ @$kegiatan->anggaran_alokasi }}</td>
-                    <td>{{ @$kegiatan->indikator }} - {{ @$kegiatan->satuan_ukur_nama }}</td>
-                    <td>{{ @$kegiatan->nama_status }}</td>
                 </tr>
             @endif
         @endforeach

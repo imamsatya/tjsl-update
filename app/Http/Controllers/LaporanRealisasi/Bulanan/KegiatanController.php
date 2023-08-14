@@ -991,12 +991,12 @@ class KegiatanController extends Controller
 
             $dataUpload = $this->uploadFile($request->file('file_name'), $realisasi->id);
             //Versi1
-            // Excel::import(new LaporanRealisasiBulananImport($dataUpload->fileRaw, $realisasi->id), public_path('file_upload/laporan_realisasi/kegiatan/bulanan/'.$dataUpload->fileRaw));
+            Excel::import(new LaporanRealisasiBulananImport($dataUpload->fileRaw, $realisasi->id), public_path('file_upload/laporan_realisasi/kegiatan/bulanan/'.$dataUpload->fileRaw));
 
             //Versi 2
-            $file = 'file_upload/laporan_realisasi/kegiatan/bulanan/' . $dataUpload->fileRaw;
-            // Import data from Excel using Laravel Excel
-            Excel::import(new LaporanRealisasiBulananImport($dataUpload->fileRaw, $realisasi->id), Storage::path($file));
+            // $file = 'file_upload/laporan_realisasi/kegiatan/bulanan/' . $dataUpload->fileRaw;
+            // // Import data from Excel using Laravel Excel
+            // Excel::import(new LaporanRealisasiBulananImport($dataUpload->fileRaw, $realisasi->id), Storage::path($file));
             
             $param2['file_name']  = $dataUpload->fileRaw;
             $param2['user_id']  = \Auth::user()->id;
@@ -1045,29 +1045,29 @@ class KegiatanController extends Controller
     protected function uploadFile(UploadedFile $file, $id)
     {   
         //Versi 1
-        // $fileName = $file->getClientOriginalName();
-        // $fileRaw  =$fileName = $id.'_'.$fileName;
-        // $filePath = 'file_upload'.DIRECTORY_SEPARATOR.'laporan_realisasi'.DIRECTORY_SEPARATOR.'kegiatan'.DIRECTORY_SEPARATOR.'bulanan'.DIRECTORY_SEPARATOR.$fileName;
-        // $destinationPath = public_path().DIRECTORY_SEPARATOR.'file_upload'.DIRECTORY_SEPARATOR.'laporan_realisasi'.DIRECTORY_SEPARATOR.'kegiatan'.DIRECTORY_SEPARATOR.'bulanan'.DIRECTORY_SEPARATOR;
-        // $fileUpload      = $file->move($destinationPath, $fileRaw);
-        // $data = (object) array('fileName' => $fileName, 'fileRaw' => $fileRaw, 'filePath' => $filePath);
-        // return $data;
+        $fileName = $file->getClientOriginalName();
+        $fileRaw  =$fileName = $id.'_'.$fileName;
+        $filePath = 'file_upload'.DIRECTORY_SEPARATOR.'laporan_realisasi'.DIRECTORY_SEPARATOR.'kegiatan'.DIRECTORY_SEPARATOR.'bulanan'.DIRECTORY_SEPARATOR.$fileName;
+        $destinationPath = public_path().DIRECTORY_SEPARATOR.'file_upload'.DIRECTORY_SEPARATOR.'laporan_realisasi'.DIRECTORY_SEPARATOR.'kegiatan'.DIRECTORY_SEPARATOR.'bulanan'.DIRECTORY_SEPARATOR;
+        $fileUpload      = $file->move($destinationPath, $fileRaw);
+        $data = (object) array('fileName' => $fileName, 'fileRaw' => $fileRaw, 'filePath' => $filePath);
+        return $data;
 
         //Versi 2
-        $fileName = $file->getClientOriginalName();
-        $fileRaw = $id . '_' . $fileName;
-        $filePath = 'file_upload/laporan_realisasi/kegiatan/bulanan/' . $fileRaw;
+        // $fileName = $file->getClientOriginalName();
+        // $fileRaw = $id . '_' . $fileName;
+        // $filePath = 'file_upload/laporan_realisasi/kegiatan/bulanan/' . $fileRaw;
 
-        // Store the file using Laravel Storage
-        Storage::put($filePath, file_get_contents($file));
+        // // Store the file using Laravel Storage
+        // Storage::put($filePath, file_get_contents($file));
 
-        $data = (object) [
-            'fileName' => $fileName,
-            'fileRaw' => $fileRaw,
-            'filePath' => $filePath,
-        ];
+        // $data = (object) [
+        //     'fileName' => $fileName,
+        //     'fileRaw' => $fileRaw,
+        //     'filePath' => $filePath,
+        // ];
 
-        return $data;
+        // return $data;
     }
 
     public function historyUpload(Request $request) {
@@ -1175,13 +1175,17 @@ class KegiatanController extends Controller
         ->join('kotas', 'kotas.id', '=', 'kegiatans.kota_id')
         ->join('satuan_ukur', 'satuan_ukur.id', '=', 'kegiatans.satuan_ukur_id')
         ->join('statuses', 'statuses.id', '=', 'kegiatan_realisasis.status_id')
+        ->join('perusahaans', 'perusahaans.id', '=', 'anggaran_tpbs.perusahaan_id')
+        ->join('pilar_pembangunans', 'pilar_pembangunans.id', '=', 'relasi_pilar_tpbs.pilar_pembangunan_id')
         ->select(
             'kegiatans.*',
             'kegiatan_realisasis.bulan as kegiatan_realisasi_bulan',
             'kegiatan_realisasis.tahun as kegiatan_realisasi_tahun',
+            'kegiatan_realisasis.realisasi as kegiatan_realisasi_realisasi', 
             'kegiatan_realisasis.anggaran as kegiatan_realisasi_anggaran',
             'kegiatan_realisasis.anggaran_total as kegiatan_realisasi_anggaran_total',
             'kegiatan_realisasis.status_id as kegiatan_realisasi_status_id',
+            'target_tpbs.id as target_tpb_id',
             'target_tpbs.program as target_tpb_program',
             'jenis_kegiatans.nama as jenis_kegiatan_nama',
             'provinsis.nama as provinsi_nama',
@@ -1189,10 +1193,15 @@ class KegiatanController extends Controller
             'anggaran_tpbs.id as anggaran_tpb_id',
             'relasi_pilar_tpbs.id as relasi_pilar_tpb_id',
             'tpbs.id as tpb_id',
+            'tpbs.nama as tpb_nama',
             'tpbs.jenis_anggaran',
             'satuan_ukur.nama as satuan_ukur_nama',
             'bulans.nama as bulan_nama',
-            'statuses.nama as nama_status'
+            'statuses.nama as nama_status',
+            'perusahaans.nama_lengkap as perusahaan_nama_lengkap',
+            'pilar_pembangunans.nama as pilar_pembangunan_nama',
+            
+
         );
 
         if ($request->pilar_pembangunan_id) {
