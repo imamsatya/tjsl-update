@@ -942,7 +942,7 @@ class AnggaranTpbController extends Controller
             $id_bumn = $request->input('bumn');
             $tahun = $request->input('tahun');
 
-            $allDataUpdated = AnggaranTpb::where('status_id', '!=', 1)
+            $allDataUpdated = AnggaranTpb::where('status_id', '=', 2) // inprogress
                             ->where('anggaran', '>=', 0)
                             ->where('tahun', $tahun)
                             ->when($id_bumn, function($query) use ($id_bumn) {
@@ -953,7 +953,7 @@ class AnggaranTpbController extends Controller
             if($allDataUpdated->count()) {
                 foreach($allDataUpdated as $data) {  
                     AnggaranTpb::where('id', $data->id)->update(['status_id' => 1]);
-                    AnggaranTpbController::store_log($data->id, 1, $data->anggaran, 'RKA Revisi - Verifikasi');
+                    AnggaranTpbController::store_log($data->id, 1, $data->anggaran, 'RKA Revisi - Completed');
                 }
             }                                            
             
@@ -961,7 +961,7 @@ class AnggaranTpbController extends Controller
 
             $result = [
                 'flag' => 'success',
-                'msg' => 'Sukses verifikasi data',
+                'msg' => 'Sukses set data completed',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
@@ -1215,8 +1215,9 @@ class AnggaranTpbController extends Controller
             ->select('pp.order_pilar', 'pp.nama as nama_pilar', 
                 DB::raw("sum(case when pp.jenis_anggaran = 'CID' then atpb.anggaran else 0 end) sum_cid"),
                 DB::raw("sum(case when pp.jenis_anggaran = 'non CID' then atpb.anggaran else 0 end) sum_noncid"),
-                DB::raw("count(case when status_id = 1 then 1 end) finish"),
-                DB::raw("count(case when status_id = 2 then 1 end) inprogress")
+                DB::raw("count(case when status_id = 1 then 1 end) completed"),
+                DB::raw("count(case when status_id = 2 then 1 end) inprogress"),
+                DB::raw("count(case when status_id = 4 then 1 end) verified"),
             )
             ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
             ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
@@ -1264,7 +1265,7 @@ class AnggaranTpbController extends Controller
             if($allDataUpdated->count()) {
                 foreach($allDataUpdated as $data) {  
                     AnggaranTpb::where('id', $data->id)->update(['status_id' => 2]);
-                    AnggaranTpbController::store_log($data->id, 2, $data->anggaran, 'RKA Revisi - Batal Verifikasi');
+                    AnggaranTpbController::store_log($data->id, 2, $data->anggaran, 'RKA Revisi - Batal Set Completed');
                 }
             }                                            
             
@@ -1272,7 +1273,7 @@ class AnggaranTpbController extends Controller
 
             $result = [
                 'flag' => 'success',
-                'msg' => 'Sukses batalkan verifikasi data',
+                'msg' => 'Sukses batalkan set completed data',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
@@ -1378,8 +1379,9 @@ class AnggaranTpbController extends Controller
         $data = DB::table('anggaran_tpbs as atpb')
             ->select('atpb.perusahaan_id', 'perusahaans.nama_lengkap', DB::raw("sum(case when pp.jenis_anggaran = 'CID' then atpb.anggaran end) as sum_cid"),
             DB::raw("sum(case when pp.jenis_anggaran = 'non CID' then atpb.anggaran end) as sum_noncid"),
-            DB::raw("count(case when status_id = 1 then 1 end) finish"),
+            DB::raw("count(case when status_id = 1 then 1 end) completed"),
             DB::raw("count(case when status_id = 2 then 1 end) inprogress"),
+            DB::raw("count(case when status_id = 4 then 1 end) verified"),
             DB::raw("(case when epp.id is not null then 1 else 0 end) enable_by_admin")
             // DB::raw("count(case when atpb.is_enable_input_by_superadmin = true then 1 end) enable_by_admin"),
             // DB::raw("count(case when atpb.is_enable_input_by_superadmin = false then 1 end) disable_by_admin")
@@ -1427,8 +1429,12 @@ class AnggaranTpbController extends Controller
             return $row->inprogress > 0;
         })->count();
         
-        $countFinish = $data->filter(function($row) {
-            return $row->finish > 0;
+        $countCompleted = $data->filter(function($row) {
+            return $row->completed > 0;
+        })->count();
+
+        $countVerified = $data->filter(function($row) {
+            return $row->verified > 0;
         })->count();
                 
         $list_perusahaan = Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get();
@@ -1483,12 +1489,13 @@ class AnggaranTpbController extends Controller
             'view_only' => $view_only,
             'countInprogress' => $countInprogress,
             'perusahaan_nama' => $currentNamaPerusahaan,
-            'countFinish' => $countFinish,
+            'countCompleted' => $countCompleted,
             'isOkToInput' => $isOkToInput,
             'isEnableInputBySuperadmin' => $isEnableInputBySuperadmin,
             'isSuperAdmin' => $isSuperAdmin,
             'data' => $data,
-            'list_enable' => $list_enable
+            'list_enable' => $list_enable,
+            'countVerified' => $countVerified
         ]);
     }
 
@@ -1503,8 +1510,9 @@ class AnggaranTpbController extends Controller
             ->select('tpbs.no_tpb', 'tpbs.nama as nama_tpb',
                 DB::raw("sum(case when tpbs.jenis_anggaran = 'CID' then anggaran end) sum_cid"),
                 DB::raw("sum(case when tpbs.jenis_anggaran = 'non CID' then anggaran end) sum_noncid"),
-                DB::raw("count(case when status_id = 1 then 1 end) finish"),
+                DB::raw("count(case when status_id = 1 then 1 end) completed"),
                 DB::raw("count(case when status_id = 2 then 1 end) inprogress"),
+                DB::raw("count(case when status_id = 4 then 1 end) verified"),
                 DB::raw("(case when epp.id is not null then 1 else 0 end) enable_by_admin")
                 // DB::raw("count(case when atpb.is_enable_input_by_superadmin = true then 1 end) enable_by_admin"),
                 // DB::raw("count(case when atpb.is_enable_input_by_superadmin = false then 1 end) disable_by_admin")
@@ -2014,5 +2022,44 @@ class AnggaranTpbController extends Controller
             ->where('route_name', $this->pageRouteName)
             ->first();
         return $data;
+    }
+
+    public function verifikasiDataFinal(Request $request) {
+        DB::beginTransaction();
+        try {
+            $id_bumn = $request->input('bumn');
+            $tahun = $request->input('tahun');
+
+            $allDataUpdated = AnggaranTpb::where('status_id', '=', 1) // completed
+                            ->where('anggaran', '>=', 0)
+                            ->where('tahun', $tahun)
+                            ->when($id_bumn, function($query) use ($id_bumn) {
+                                return $query->where('perusahaan_id', $id_bumn);
+                            })
+                            ->get();
+
+            if($allDataUpdated->count()) {
+                foreach($allDataUpdated as $data) {  
+                    AnggaranTpb::where('id', $data->id)->update(['status_id' => 4]);
+                    AnggaranTpbController::store_log($data->id, 1, $data->anggaran, 'RKA Revisi - Verified');
+                }
+            }                                            
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses set data verified',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);        
     }
 }

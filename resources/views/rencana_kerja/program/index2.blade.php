@@ -264,9 +264,9 @@
                             @php
                                 $enable_input = false;
                                 if($isOkToInput || $isEnableInputBySuperadmin) $enable_input = true;
-                                $isFinisih = false;
-                                if($countInprogress > 0) $isFinisih = false;
-                                else if($countFinish > 0) $isFinisih = true;
+                                $isVerified = false;
+                                if($countInprogress > 0) $isVerified = false;
+                                else if($countVerified > 0) $isVerified = true;
                             @endphp
                             @can('view-kegiatan')
                             <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
@@ -281,15 +281,24 @@
                             @endcan
                           
                             @can('view-verify')
-                            @if($countInprogress || !$data->count())
-                                <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
-                                </button>
-                            @endif
+                                @if($countInprogress || !$data->count())
+                                    <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="completed-data" >Completed
+                                    </button>
+                                @endif 
+                           @endcan
 
-                            @if(!$countInprogress && $data->count())
-                            <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
-                            </button>  
-                            @endif  
+                           @can('view-unverify')
+                                @if(!$countInprogress && $data->count())
+                                    <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="uncompleted-data" >Un-Completed
+                                    </button>  
+                                @endif 
+                           @endcan
+
+                           @can('view-finalVerify')
+                                @if($countInprogress || !$data->count())
+                                    <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
+                                    </button>    
+                                @endif
                            @endcan
                         </div>
                         <!--end::Search-->
@@ -330,7 +339,8 @@
                                             $draw+=1;
                                             $total += $perusahaan[0]->total;
                                             if($perusahaan[0]->inprogress) $status_class = 'primary';
-                                            else if($perusahaan[0]->finish) $status_class = 'success';
+                                            else if($perusahaan[0]->completed) $status_class = 'success';
+                                            else if($perusahaan[0]->verified) $status_class = 'success';
                                             else $status_class = 'danger';
                                         @endphp
                                     <tr class="treegrid-perusahaan-{{ $perusahaan[0]->perusahaan_id }}" id="perusahaan-{{ $perusahaan[0]->perusahaan_id }}" data-type="perusahaan" data-value="{{ $perusahaan[0]->perusahaan_id }}">
@@ -349,7 +359,7 @@
                                         </td>
                                         <td></td>
                                         <td style="text-align: center">
-                                            <a class="badge badge-light-{{ $status_class }} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{ $perusahaan[0]->inprogress ? 'In Progress' : ($perusahaan[0]->finish ? 'Finish' : 'Unfilled') }}</a>
+                                            <a class="badge badge-light-{{ $status_class }} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{ $perusahaan[0]->inprogress ? 'In Progress' : ($perusahaan[0]->completed ? 'Completed' : ($perusahaan[0]->verified ? 'Verified' : 'Unfilled') ) }}</a>
                                         </td>
                                         <td></td>
                                     </tr>
@@ -395,13 +405,14 @@
         var urlgetdataperusahaanpilar = "{{ route('rencana_kerja.program.get_data_perusahaan_pilar_tree') }}";
         var urlgetdataperusahaanpilartpb = "{{ route('rencana_kerja.program.get_data_perusahaan_pilar_tpb_tree') }}";
         var urlenableinputdata = "{{route('rencana_kerja.program.enable_disable_input_data')}}";
+        var urlverifikasidataFinal = "{{route('rencana_kerja.program.verifikasi_data_final')}}";
 
         $(document).ready(function() {
 
             const viewOnly = "{{ $view_only }}";
             const isOkToInput = "{{ $isOkToInput }}";  
             const countInprogress = parseInt("{{ $countInprogress }}")
-            const countFinish = parseInt("{{ $countFinish }}")
+            const countCompleted = parseInt("{{ $countCompleted }}")
             const isSuperAdmin = "{{ $isSuperAdmin }}";
 
             $(".tree-new").treegrid({            
@@ -456,7 +467,8 @@
                                 // defining progress status
                                 let status_class = ''
                                 if(pilar[i][0].inprogress) status_class = 'primary'
-                                else if(pilar[i][0].finish) status_class = 'success'
+                                else if(pilar[i][0].completed) status_class = 'success'
+                                else if(pilar[i][0].verified) status_class = 'success'
                                 else status_class = 'danger'
 
                                 let color_status = '';
@@ -475,7 +487,7 @@
                                     </td>
                                     <td></td>
                                     <td style="text-align:center;">
-                                        <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${pilar[i][0].inprogress ? 'In Progress' : (pilar[i][0].finish ? 'Finish' : 'Unfilled')}</a>
+                                        <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${pilar[i][0].inprogress ? 'In Progress' : (pilar[i][0].completed ? 'Completed' : (pilar[i][0].verified ? 'Verified' : 'Unfilled'))}</a>
                                     </td>
                                     <td style="text-align:center;">                                            
                                     </td>                                
@@ -530,7 +542,8 @@
                                 // defining progress status
                                 let status_class = ''
                                 if(tpb[i][0].inprogress) status_class = 'primary'
-                                else if(tpb[i][0].finish) status_class = 'success'
+                                else if(tpb[i][0].completed) status_class = 'success'
+                                else if(tpb[i][0].verified) status_class = 'success'
                                 else status_class = 'danger'
 
                                 let color_status = '';
@@ -549,7 +562,7 @@
                                     </td>
                                     <td></td>
                                     <td style="text-align:center;">
-                                        <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${tpb[i][0].inprogress ? 'In Progress' : (tpb[i][0].finish ? 'Finish' : 'Unfilled')}</a>
+                                        <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${tpb[i][0].inprogress ? 'In Progress' : (tpb[i][0].completed ? 'Completed' : (tpb[i][0].verified ? 'Verified': 'Unfilled'))}</a>
                                     </td>
                                     <td style="text-align:center;">                                   
                                     </td> 
@@ -603,7 +616,8 @@
                             // defining progres status
                             let status_class = ''
                             if(target[i].inprogress) status_class = 'primary'
-                            else if(target[i].finish) status_class = 'success'
+                            else if(target[i].completed) status_class = 'success'
+                            else if(target[i].verified) status_class = 'success'
                             else status_class = 'danger'
 
                             let isCheckAll = $("#select-all").prop('checked');
@@ -632,7 +646,7 @@
                                     ${!target[i].kriteria_program_csv && !target[i].kriteria_program_prioritas && !target[i].kriteria_program_umum ? '-' : ''}
                                 </td>
                                 <td style="text-align:center;">
-                                    <span class="btn cls-log badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-id="${target[i].id_target}">${target[i].inprogress ? 'In Progress' : (target[i].finish ? 'Finish' : '-')}</span>
+                                    <span class="btn cls-log badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-id="${target[i].id_target}">${target[i].inprogress ? 'In Progress' : (target[i].completed ? 'Completed' : (target[i].verified ? 'Verified' : '-'))}</span>
                                 </td>
                                 <td style="text-align:center;">    
                                     ${!viewOnly && target[i].inprogress ? btnEdit : ''}
@@ -743,11 +757,11 @@
 
             settingOptionOnLoad()
 
-            $("#verify-data").on('click', function() {
+            $("#completed-data").on('click', function() {
                 if(!countInprogress) {
                     swal.fire({
                         title: "Pemberitahuan",
-                        html: "Tidak ada data yang bisa diverifikasi!",
+                        html: "Tidak ada data yang bisa di-set completed!",
                         icon: "warning",
                         showCancelButton: false,
                         confirmButtonText: "Close",
@@ -762,7 +776,7 @@
 
                 swal.fire({
                     title: "Pemberitahuan",
-                    html: `<span style="color: red; font-weight: bold">Yakin verifikasi data ? </span><br/>
+                    html: `<span style="color: red; font-weight: bold">Yakin set data completed ? </span><br/>
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped">
                                 <tbody>
@@ -855,11 +869,11 @@
                 exportExcel();
             })
 
-            $("#unverify-data").on('click', function() {
+            $("#uncompleted-data").on('click', function() {
                 if(countInprogress) {
                     swal.fire({
                         title: "Pemberitahuan",
-                        html: "Tidak ada data yang bisa di-unverify!",
+                        html: "Tidak ada data yang bisa di-set uncompleted!",
                         icon: "warning",
                         showCancelButton: false,
                         confirmButtonText: "Close",
@@ -874,7 +888,7 @@
 
                 swal.fire({
                     title: "Pemberitahuan",
-                    html: `<span style="color: red; font-weight: bold">Yakin batalkan verifikasi data ? </span><br/>
+                    html: `<span style="color: red; font-weight: bold">Yakin set data uncompleted ? </span><br/>
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped">
                                 <tbody>
@@ -888,7 +902,7 @@
                                     </tr>
                                     <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
                                         <td>Jumlah Un-Verify</td>
-                                        <td>${countFinish} rows</td>
+                                        <td>${countCompleted} rows</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1072,6 +1086,114 @@
                     }
                 })
                 
+            })
+
+            $("#verify-data").on('click', function() {
+                if(!countInprogress) {
+                    swal.fire({
+                        title: "Pemberitahuan",
+                        html: "Tidak ada data yang bisa di-verified!",
+                        icon: "warning",
+                        showCancelButton: false,
+                        confirmButtonText: "Close",
+                    })
+
+                    return
+                }
+
+                const bumn = "{{ $perusahaan_id }}"
+                const tahun = "{{ $tahun }}"
+                const nama_bumn = "{{ $perusahaan_nama }}"
+
+                swal.fire({
+                    title: "Pemberitahuan",
+                    html: `<span style="color: red; font-weight: bold">Yakin verify data ? </span><br/>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <tbody>
+                                    <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                        <td>Perusahaan</td>
+                                        <td>${nama_bumn}</td>
+                                    </tr>
+                                    <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                        <td>Tahun</td>
+                                        <td>${tahun}</td>
+                                    </tr>
+                                    <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                        <td>Jumlah Verifikasi</td>
+                                        <td>${countCompleted} rows</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                            `,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Ya, verifikasi data",
+                    cancelButtonText: "Tidak"
+                }).then(function(result) {
+                    if (result.value) {
+                        $.ajax({
+                            url: urlverifikasidataFinal,
+                            data:{
+                                "bumn": bumn,
+                                "tahun": tahun
+                            },
+                            type:'post',
+                            dataType:'json',
+                            beforeSend: function(){
+                                $.blockUI();
+                            },
+                            success: function(data){
+                                $.unblockUI();
+
+                                swal.fire({
+                                        title: data.title,
+                                        html: data.msg,
+                                        icon: data.flag,
+
+                                        buttonsStyling: true,
+
+                                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                                });
+
+                                if(data.flag == 'success') {
+                                    // datatable.ajax.reload( null, false );
+                                    location.reload(); 
+                                }
+                                
+                            },
+                            error: function(jqXHR, exception) {
+                                $.unblockUI();
+                                var msgerror = '';
+                                if (jqXHR.status === 0) {
+                                    msgerror = 'jaringan tidak terkoneksi.';
+                                } else if (jqXHR.status == 404) {
+                                    msgerror = 'Halaman tidak ditemukan. [404]';
+                                } else if (jqXHR.status == 500) {
+                                    msgerror = 'Internal Server Error [500].';
+                                } else if (exception === 'parsererror') {
+                                    msgerror = 'Requested JSON parse gagal.';
+                                } else if (exception === 'timeout') {
+                                    msgerror = 'RTO.';
+                                } else if (exception === 'abort') {
+                                    msgerror = 'Gagal request ajax.';
+                                } else {
+                                    msgerror = 'Error.\n' + jqXHR.responseText;
+                                }
+                                swal.fire({
+                                    title: "Error System",
+                                    html: msgerror+', coba ulangi kembali !!!',
+                                    icon: 'error',
+
+                                    buttonsStyling: true,
+
+                                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                                });  
+                            }
+                        });
+                    }
+                });
             })
 
         });  

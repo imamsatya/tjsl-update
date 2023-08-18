@@ -1014,9 +1014,10 @@ class KegiatanController extends Controller
                 if($result->berhasil > 0) {
                     Session::flash('success', "Berhasil Upload Data");
                     DB::commit();
+                    $message = 'Sukses tambah data: '.$result->berhasil.' BERHASIL & '.$result->gagal.' GAGAL.';
                     $result = [
                         'flag'  => 'success',
-                        'msg' => 'Sukses tambah data',
+                        'msg' => $message,
                         'title' => 'Sukses'
                     ];                
                 } else {
