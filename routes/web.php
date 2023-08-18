@@ -571,6 +571,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('delete', 'App\Http\Controllers\RencanaKerja\SpdPumkRkaController@delete')->name('rencana_kerja.spdpumk_rka.delete');
             Route::post('verifikasi_data', 'App\Http\Controllers\RencanaKerja\SpdPumkRkaController@verifikasiData')->name('rencana_kerja.spdpumk_rka.verifikasi_data');
             Route::post('batal_verifikasi_data', 'App\Http\Controllers\RencanaKerja\SpdPumkRkaController@batalVerifikasiData')->name('rencana_kerja.spdpumk_rka.batal_verifikasi_data');
+            Route::post('final_verifikasi_data', 'App\Http\Controllers\RencanaKerja\SpdPumkRkaController@finalVerifikasiData')->name('rencana_kerja.spdpumk_rka.final_verifikasi_data');
             Route::post('show', 'App\Http\Controllers\RencanaKerja\SpdPumkRkaController@show')->name('rencana_kerja.spdpumk_rka.show');
         });
 
@@ -603,6 +604,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('log', 'App\Http\Controllers\RencanaKerja\LaporanManajemenController@log_status')->name('rencana_kerja.laporan_manajemen.log');
             Route::post('verifikasi_data', 'App\Http\Controllers\RencanaKerja\LaporanManajemenController@verifikasiData')->name('rencana_kerja.laporan_manajemen.verifikasi_data');
             Route::post('batal_verifikasi_data', 'App\Http\Controllers\RencanaKerja\LaporanManajemenController@batalVerifikasiData')->name('rencana_kerja.laporan_manajemen.batal_verifikasi_data');
+            Route::post('final_verifikasi_data', 'App\Http\Controllers\RencanaKerja\LaporanManajemenController@finalVerifikasiData')->name('rencana_kerja.laporan_manajemen.final_verifikasi_data');
         });
 
         Route::prefix('tble')->group(function () {
@@ -642,6 +644,8 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('delete', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@delete')->name('laporan_realisasi.bulanan.kegiatan.delete');
                 Route::post('log', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@log_status')->name('laporan_realisasi.bulanan.kegiatan.log');
                 Route::post('verifikasi_data', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@verifikasiData')->name('laporan_realisasi.bulanan.kegiatan.verifikasi_data');
+                Route::post('batal_verifikasi_data', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@batalVerifikasiData')->name('laporan_realisasi.bulanan.kegiatan.batal_verifikasi_data');
+                Route::post('final_verifikasi_data', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@finalVerifikasiData')->name('laporan_realisasi.bulanan.kegiatan.final_verifikasi_data');
                 Route::post('detail', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@detail')->name('laporan_realisasi.bulanan.kegiatan.detail');
                 Route::post('download_template', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@downloadTemplate')->name('laporan_realisasi.bulanan.kegiatan.download_template');
                 Route::post('upload_excel', 'App\Http\Controllers\LaporanRealisasi\Bulanan\KegiatanController@uploadExcel')->name('laporan_realisasi.bulanan.kegiatan.upload_excel');
@@ -659,6 +663,8 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('kolektabilitas', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@kolektabilitas_view')->name('laporan_realisasi.bulanan.pumk.kolektabilitas');
                 Route::post('delete', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@delete')->name('laporan_realisasi.bulanan.pumk.delete');
                 Route::post('verifikasi_data', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@verifikasiData')->name('laporan_realisasi.bulanan.pumk.verifikasi_data');
+                Route::post('batal_verifikasi_data', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@batalVerifikasiData')->name('laporan_realisasi.bulanan.pumk.batal_verifikasi_data');
+                Route::post('final_verifikasi_data', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@finalVerifikasiData')->name('laporan_realisasi.bulanan.pumk.final_verifikasi_data');
                 Route::post('get_data', 'App\Http\Controllers\LaporanRealisasi\Bulanan\PumkController@getData')->name('laporan_realisasi.bulanan.pumk.get_data');
             });
         });
@@ -672,6 +678,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('log', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@log_status')->name('laporan_realisasi.triwulan.spd_pumk.log');
                 Route::post('verifikasi_data', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@verifikasiData')->name('laporan_realisasi.triwulan.spd_pumk.verifikasi_data');
                 Route::post('batal_verifikasi_data', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@batalVerifikasiData')->name('laporan_realisasi.triwulan.spd_pumk.batal_verifikasi_data');
+                Route::post('final_verifikasi_data', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@finalVerifikasiData')->name('laporan_realisasi.triwulan.spd_pumk.final_verifikasi_data');
                 Route::post('show', 'App\Http\Controllers\LaporanRealisasi\Triwulan\SpdPumkTriwulanController@show')->name('laporan_realisasi.triwulan.spd_pumk.show');
             });
             Route::prefix('laporan_manajemen')->group(function () {
@@ -682,6 +689,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 Route::post('log', 'App\Http\Controllers\LaporanRealisasi\Triwulan\LaporanManajemenTriwulanController@log_status')->name('laporan_realisasi.triwulan.laporan_manajemen.log');
                 Route::post('verifikasi_data', 'App\Http\Controllers\LaporanRealisasi\Triwulan\LaporanManajemenTriwulanController@verifikasiData')->name('laporan_realisasi.triwulan.laporan_manajemen.verifikasi_data');
                 Route::post('batal_verifikasi_data', 'App\Http\Controllers\LaporanRealisasi\Triwulan\LaporanManajemenTriwulanController@batalVerifikasiData')->name('laporan_realisasi.triwulan.laporan_manajemen.batal_verifikasi_data');
+                Route::post('final_verifikasi_data', 'App\Http\Controllers\LaporanRealisasi\Triwulan\LaporanManajemenTriwulanController@finalVerifikasiData')->name('laporan_realisasi.triwulan.laporan_manajemen.final_verifikasi_data');
             });
         });
 

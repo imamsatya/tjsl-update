@@ -255,7 +255,7 @@ class SpdPumkRkaController extends Controller
                     $log['pumk_anggaran_id'] = (int)$data->id;
                     $log['status_id'] = (int)$data->status_id;
                     $log['nilai_rka'] = (int)$data->saldo_awal;
-                    $log['created_by_id'] = (int)$data->updated_by;
+                    $log['created_by_id'] = (int)$data->created_by;
                     $log['created_at'] = now();
 
                     SpdPumkRkaController::store_log($log);
@@ -491,14 +491,14 @@ class SpdPumkRkaController extends Controller
 
     public function log_status(Request $request)
     {
-
+        
         $log = LogPumkAnggaran::select('log_pumk_anggarans.*', 'users.name AS user', 'statuses.nama AS status')
             ->leftjoin('users', 'users.id', '=', 'log_pumk_anggarans.created_by_id')
             ->leftjoin('statuses', 'statuses.id', '=', 'log_pumk_anggarans.status_id')
             ->where('pumk_anggaran_id', (int)$request->input('id'))
             ->orderBy('created_at')
             ->get();
-
+            // dd($log);
         return view($this->__route . '.log_status', [
             'pagetitle' => 'Log Status',
             'log' => $log
@@ -519,7 +519,7 @@ class SpdPumkRkaController extends Controller
                     $log['pumk_anggaran_id'] = (int)$current->id;
                     $log['status_id'] = (int)$current->status_id;
                     $log['nilai_rka'] = (int)$current->saldo_awal;
-                    $log['created_by_id'] = (int)$current->updated_by;
+                    $log['created_by_id'] = (int)\Auth::user()->id;
                     $log['created_at'] = now();
 
                     SpdPumkRkaController::store_log($log);
@@ -533,7 +533,7 @@ class SpdPumkRkaController extends Controller
 
             $result = [
                 'flag' => 'success',
-                'msg' => 'Sukses verifikasi data',
+                'msg' => 'Sukses melakukan complete data',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
@@ -561,7 +561,7 @@ class SpdPumkRkaController extends Controller
                     $log['pumk_anggaran_id'] = (int)$current->id;
                     $log['status_id'] = (int)$current->status_id;
                     $log['nilai_rka'] = (int)$current->saldo_awal;
-                    $log['created_by_id'] = (int)$current->updated_by;
+                    $log['created_by_id'] = (int)\Auth::user()->id;
                     $log['created_at'] = now();
 
                     SpdPumkRkaController::store_log($log);
@@ -575,7 +575,49 @@ class SpdPumkRkaController extends Controller
 
             $result = [
                 'flag' => 'success',
-                'msg' => 'Sukses membatalkan verifikasi data',
+                'msg' => 'Sukses membatalkan complete data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function finalVerifikasiData(Request $request) {
+        // dd($request->selectedData);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->selectedData as $selectedData) {
+                $current = PumkAnggaran::where('id', $selectedData)->first();
+                if ($current->status_id == 1) {
+                    $current->status_id = 4;
+                    $current->save();
+
+                    $log['pumk_anggaran_id'] = (int)$current->id;
+                    $log['status_id'] = (int)$current->status_id;
+                    $log['nilai_rka'] = (int)$current->saldo_awal;
+                    $log['created_by_id'] = (int)\Auth::user()->id;
+                    $log['created_at'] = now();
+
+                    SpdPumkRkaController::store_log($log);
+
+                }
+            }
+           
+                               
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses verifikasi data',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {

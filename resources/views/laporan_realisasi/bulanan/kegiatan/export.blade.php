@@ -43,7 +43,7 @@
 <body>
     <table cellspacing="0" border="0">
         <tr>
-            <td colspan="14"
+            <td colspan="16"
                 style="width:5px; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 2px solid #000000; border-right: 1px solid #000000"
                 align="center" valign=middle><b>
                     <font face="Arial" size=4 color="#000000">Rekapitulasi Data Program dan Kegiatan TJSL
@@ -78,6 +78,14 @@
             <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
                 align="left" valign=middle><b>
                     <font face="Arial" size=4 color="#000000">Kegiatan</font>
+                </b></td>
+            <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
+                align="left" valign=middle><b>
+                    <font face="Arial" size=4 color="#000000">Jenis Kegiatan</font>
+                </b></td>
+            <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
+                align="left" valign=middle><b>
+                    <font face="Arial" size=4 color="#000000">Sub Kegiatan</font>
                 </b></td>
             <td style=" border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-left: 1px solid #000000; border-right: 2px solid #000000"
                 align="left" valign=middle><b>
@@ -123,6 +131,8 @@
                     <td>{{ @$kegiatan->target_tpb_id }}</td>
                     <td>{{ @$kegiatan->target_tpb_program }}</td>
                     <td>{{ @$kegiatan->kegiatan }}</td>
+                    <td>{{ @$kegiatan->jenis_kegiatan_nama }}</td>
+                    <td>{{ @$kegiatan->sub_kegiatan_nama }}</td>
                     <td>{{ @$kegiatan->provinsi_nama }}</td>
                     <td>{{ @$kegiatan->kota_nama }}</td>
                     <td>{{ @$kegiatan->bulan_nama }}</td>

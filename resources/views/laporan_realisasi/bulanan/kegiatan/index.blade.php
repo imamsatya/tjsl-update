@@ -320,7 +320,10 @@
                                 data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
                         {{-- <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
-                            
+                                @can('view-finalVerify')
+                                <button type="button" class="btn btn-success btn-sm me-2" id="finalVerify-data">Verify Data
+                                </button>
+                                @endcan
                         <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
                             
                         @can('delete-kegiatan')
@@ -333,7 +336,11 @@
                         </button>
                         @endcan
                         @can('view-verify')
-                        <button type="button" class="btn btn-primary btn-sm " id="verify-data">Verify
+                        <button type="button" class="btn btn-primary btn-sm me-2" id="verify-data">Complete
+                        </button>
+                        @endcan
+                        @can('view-unverify')
+                        <button type="button" class="btn btn-warning btn-sm " id="unverify-data">Un-Complete
                         </button>
                         @endcan
                     </div>
@@ -391,6 +398,8 @@
     var urllog = "{{route('laporan_realisasi.bulanan.kegiatan.log')}}";
     var urledit = "{{route('laporan_realisasi.bulanan.kegiatan.edit')}}";
     var urlverifikasidata = "{{route('laporan_realisasi.bulanan.kegiatan.verifikasi_data')}}";
+    var urlbatalverifikasidata = "{{route('laporan_realisasi.bulanan.kegiatan.batal_verifikasi_data')}}";
+    var urlfinalverifikasidata = "{{route('laporan_realisasi.bulanan.kegiatan.final_verifikasi_data')}}";
     var urldetail = "{{route('laporan_realisasi.bulanan.kegiatan.detail')}}";
     var urldownloadtemplate = "{{route('laporan_realisasi.bulanan.kegiatan.download_template')}}";
     var urlexport = "{{route('laporan_realisasi.bulanan.kegiatan.export')}}";
@@ -617,6 +626,26 @@
             deleteSelectedProgram(selectedProgram)
         })
 
+        $("#finalVerify-data").on('click', function () {
+            var selectedProgram = $('input[name="selected-data[]"]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            if (!selectedProgram.length) {
+                swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    html: 'Tidak ada data terpilih untuk di complete!',
+                    buttonsStyling: true,
+                    confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                })
+                return
+            }
+
+            finalVerifySelectedData(selectedProgram)
+
+        })
+
         $("#verify-data").on('click', function () {
             var selectedProgram = $('input[name="selected-data[]"]:checked').map(function () {
                 return $(this).val();
@@ -626,7 +655,7 @@
                 swal.fire({
                     icon: 'warning',
                     title: 'Warning',
-                    html: 'Tidak ada data terpilih untuk dihapus!',
+                    html: 'Tidak ada data terpilih untuk di complete!',
                     buttonsStyling: true,
                     confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
                 })
@@ -634,6 +663,26 @@
             }
 
             verifySelectedData(selectedProgram)
+
+        })
+
+        $("#unverify-data").on('click', function () {
+            var selectedProgram = $('input[name="selected-data[]"]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            if (!selectedProgram.length) {
+                swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    html: 'Tidak ada data terpilih untuk di uncomplete!',
+                    buttonsStyling: true,
+                    confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                })
+                return
+            }
+
+            unverifySelectedData(selectedProgram)
 
         })
 
@@ -814,11 +863,15 @@
                         let status = null
                         if (data === 1) {
                             status =
-                                `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Finish</span>`
+                                `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Complete</span>`
                         }
                         if (data === 2) {
                             status =
                                 `<span class="btn cls-log badge badge-light-primary fw-bolder me-auto px-4 py-3" data-id="${row.id}">In Progress</span>`
+                        }
+                        if (data === 4) {
+                            status =
+                                `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Verified</span>`
                         }
                         return status;
                     }
@@ -834,9 +887,9 @@
                                 `@can('edit-kegiatan')<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>@endcan`
                         }
 
-                        if (row.kegiatan_realisasi_status_id === 1) {
+                        if (row.kegiatan_realisasi_status_id === 1 || row.kegiatan_realisasi_status_id === 4) {
                             button =
-                                `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info" data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                                `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info cls-button-detail" data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                         }
                         return button
                     }
@@ -1055,11 +1108,11 @@
         });
     }
 
-    function verifySelectedData(selectedData) {
+    function finalVerifySelectedData(selectedData) {
         const jumlahSelected = selectedData.length
         swal.fire({
             title: "Pemberitahuan",
-            html: "Yakin verifikasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: " +
+            html: "Yakin Verifikasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: " +
                 jumlahSelected + " rows]</span>",
             icon: "warning",
             showCancelButton: true,
@@ -1068,7 +1121,155 @@
         }).then(function (result) {
             if (result.value) {
                 $.ajax({
+                    url: urlfinalverifikasidata,
+                    data: {
+                        "kegiatan_verifikasi": selectedData
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    beforeSend: function () {
+                        $.blockUI();
+                    },
+                    success: function (data) {
+                        $.unblockUI();
+
+                        swal.fire({
+                            title: data.title,
+                            html: data.msg,
+                            icon: data.flag,
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });
+
+                        if (data.flag == 'success') {
+                            // datatable.ajax.reload( null, false );
+                            location.reload();
+                        }
+
+                    },
+                    error: function (jqXHR, exception) {
+                        $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                        swal.fire({
+                            title: "Error System",
+                            html: msgerror + ', coba ulangi kembali !!!',
+                            icon: 'error',
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    function verifySelectedData(selectedData) {
+        const jumlahSelected = selectedData.length
+        swal.fire({
+            title: "Pemberitahuan",
+            html: "Yakin Complete data ? <br/><span style='color: red; font-weight: bold'>[Data selected: " +
+                jumlahSelected + " rows]</span>",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, complete data",
+            cancelButtonText: "Tidak"
+        }).then(function (result) {
+            if (result.value) {
+                $.ajax({
                     url: urlverifikasidata,
+                    data: {
+                        "kegiatan_verifikasi": selectedData
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    beforeSend: function () {
+                        $.blockUI();
+                    },
+                    success: function (data) {
+                        $.unblockUI();
+
+                        swal.fire({
+                            title: data.title,
+                            html: data.msg,
+                            icon: data.flag,
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });
+
+                        if (data.flag == 'success') {
+                            // datatable.ajax.reload( null, false );
+                            location.reload();
+                        }
+
+                    },
+                    error: function (jqXHR, exception) {
+                        $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                        swal.fire({
+                            title: "Error System",
+                            html: msgerror + ', coba ulangi kembali !!!',
+                            icon: 'error',
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    function unverifySelectedData(selectedData) {
+        const jumlahSelected = selectedData.length
+        swal.fire({
+            title: "Pemberitahuan",
+            html: "Yakin Un-Complete data ? <br/><span style='color: red; font-weight: bold'>[Data selected: " +
+                jumlahSelected + " rows]</span>",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, Un-Complete data",
+            cancelButtonText: "Tidak"
+        }).then(function (result) {
+            if (result.value) {
+                $.ajax({
+                    url: urlbatalverifikasidata,
                     data: {
                         "kegiatan_verifikasi": selectedData
                     },

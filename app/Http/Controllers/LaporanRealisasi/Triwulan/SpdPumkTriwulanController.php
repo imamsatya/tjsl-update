@@ -517,7 +517,7 @@ class SpdPumkTriwulanController extends Controller
 
             $result = [
                 'flag' => 'success',
-                'msg' => 'Sukses verifikasi data',
+                'msg' => 'Sukses complete data',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
@@ -559,7 +559,49 @@ class SpdPumkTriwulanController extends Controller
 
             $result = [
                 'flag' => 'success',
-                'msg' => 'Sukses membatalkan verifikasi data',
+                'msg' => 'Sukses membatalkan complete data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function finalVerifikasiData(Request $request) {
+        // dd($request->selectedData);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->selectedData as $selectedData) {
+                $current = PumkAnggaran::where('id', $selectedData)->first();
+                if ($current->status_id == 1) {
+                    $current->status_id = 4;
+                    $current->save();
+
+                    $log['pumk_anggaran_id'] = (int)$current->id;
+                    $log['status_id'] = (int)$current->status_id;
+                    $log['nilai_rka'] = (int)$current->saldo_awal;
+                    $log['created_by_id'] = (int)$current->updated_by;
+                    $log['created_at'] = now();
+
+                    SpdPumkTriwulanController::store_log($log);
+
+                }
+            }
+           
+                               
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses  verifikasi data',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {

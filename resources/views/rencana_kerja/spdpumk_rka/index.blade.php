@@ -237,6 +237,10 @@
                                 data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
                             {{-- <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
+                            @can('view-finalVerify')
+                                <button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-success btn-sm finalVerify-selected-data me-2" id="finalVerify-data"> Verify
+                                </button>
+                             @endcan
                             @can('delete-kegiatan')
                             <button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                             </button>
@@ -248,12 +252,16 @@
 
                             @can('view-verify')
                             {{-- @if($countInprogress || !$anggaran->count()) --}}
-                            <button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="verify-data" >Verify
-                            </button>    
-                            <button {{ $isOkToInput  ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
-                            </button> 
-                            {{-- @endif --}}
+                            <button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="verify-data" >Complete
+                            </button>  
                             @endcan
+                            
+                            @can('view-unverify')
+                            <button {{ $isOkToInput  ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Complete
+                            </button> 
+                            @endcan
+                            {{-- @endif --}}
+                          
                         </div>
                         <!--end::Search-->
                         <!--end::Group actions-->
@@ -320,6 +328,7 @@
         var urllog = "{{route('rencana_kerja.spdpumk_rka.log')}}";
         var urlverifikasidata = "{{route('rencana_kerja.spdpumk_rka.verifikasi_data')}}";
         var urlbatalverifikasidata = "{{route('rencana_kerja.spdpumk_rka.batal_verifikasi_data')}}";
+        var urlfinalverifikasidata = "{{route('rencana_kerja.spdpumk_rka.final_verifikasi_data')}}";
         var urlshow = "{{route('rencana_kerja.spdpumk_rka.show')}}";
         $(document).ready(function() {
             $('#page-title').html("{{ $pagetitle }}");
@@ -463,6 +472,67 @@
 
 
             });
+
+            $('body').on('click', '#finalVerify-data', function() {
+            
+            var selectedData = $('input[name="selected-data[]"]:checked').map(function() {
+                return $(this).val();
+            }).get();
+            Swal.fire({
+                title: 'Apakah Anda Yakin?',
+                html: "Apakah anda yakin akan memverifikasi data yang sudah dipilih? <br/><span style='color: red; font-weight: bold'>[Data selected: "+selectedData.length+" rows]</span>" ,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user confirmed the deletion, do something here
+                    console.log('User confirmed deletion');
+                    // Send an AJAX request to set the "selected" attribute in the database
+                    $.ajax({
+                        url: urlfinalverifikasidata,
+                        type: 'POST',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            selectedData: selectedData
+                        },
+                        beforeSend: function(){
+                        $.blockUI();
+                    },
+                    success: function(data){
+                        $.unblockUI();
+
+                        swal.fire({
+                                title: data.title,
+                                html: data.msg,
+                                icon: data.flag,
+
+                                buttonsStyling: true,
+
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });
+
+                        if(data.flag == 'success') {
+                            // datatable.ajax.reload( null, false );
+                            location.reload(); 
+                        }
+                        
+                    },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            console.log(errorThrown);
+                        }
+                    });
+                } else {
+                    // If the user cancelled the deletion, do something here
+                    console.log('User cancelled deletion');
+                }
+            })
+            
+
+
+        });
 
             $('body').on('click', '#verify-data', function() {
             
@@ -669,10 +739,13 @@
                          
                             let status = null
                             if (data === 1) {
-                                 status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Finish</span>`
+                                 status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Completed</span>`
                             }
                             if (data === 2) {
                                  status = `<span class="btn cls-log badge badge-light-primary fw-bolder me-auto px-4 py-3" data-id="${row.id}">In Progress</span>`
+                            }
+                            if (data === 4) {
+                                 status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Verified</span>`
                             }
                             return status;
                         }
@@ -701,7 +774,7 @@
                                 button = button+`<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-show" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                             }
 
-                            if (row.status_id === 1) {
+                            if (row.status_id === 1 || row.status_id === 4) {
                                 button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-show" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                             }
                             return button

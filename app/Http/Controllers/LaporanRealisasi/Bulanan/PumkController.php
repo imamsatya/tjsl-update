@@ -460,9 +460,78 @@ class PumkController extends Controller
         try {
             foreach ($request->pumk_verifikasi as $key => $pumk_id) {
                 $pumk = PumkBulan::where('id', $pumk_id)->first();
-                $pumk->status_id = 1;
-                $pumk->save();
-                PumkController::store_log($pumk->id,$pumk->status_id);
+                if ($pumk->status_id == 2) {
+                    $pumk->status_id = 1;
+                    $pumk->save();
+                    PumkController::store_log($pumk->id,$pumk->status_id);
+                }
+                
+                
+               
+                
+        }
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses Complete data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal Complete data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function batalVerifikasiData(Request $request) {
+
+        
+        DB::beginTransaction();
+        try {
+            foreach ($request->pumk_verifikasi as $key => $pumk_id) {
+                $pumk = PumkBulan::where('id', $pumk_id)->first();
+                if ($pumk->status_id == 1) {
+                    $pumk->status_id = 2;
+                    $pumk->save();
+                    PumkController::store_log($pumk->id,$pumk->status_id);
+                }
+                
+               
+                
+        }
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses Un-Complete data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal Un-Complete data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function finalVerifikasiData(Request $request) {
+
+        
+        DB::beginTransaction();
+        try {
+            foreach ($request->pumk_verifikasi as $key => $pumk_id) {
+                $pumk = PumkBulan::where('id', $pumk_id)->first();
+                if ($pumk->status_id == 1) {
+                    $pumk->status_id = 4;
+                    $pumk->save();
+                    PumkController::store_log($pumk->id,$pumk->status_id);
+                }
                 
                
                 

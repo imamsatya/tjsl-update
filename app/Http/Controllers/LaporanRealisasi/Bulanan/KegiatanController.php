@@ -899,6 +899,84 @@ class KegiatanController extends Controller
         }
         return response()->json($result);
     }
+    public function batalVerifikasiData(Request $request) {
+
+      
+        DB::beginTransaction();
+        try {
+            foreach ($request->kegiatan_verifikasi as $key => $kegiatan_id) {
+                $kegiatan = Kegiatan::where('id', $kegiatan_id)->first();
+                
+                //save old kegiatan nama dan target_tpb_id
+                $kegiatan_nama = $kegiatan->kegiatan;
+                $target_tpb_id = $kegiatan->target_tpb_id;
+    
+                //delete kegiatan dan kegiatan realisasis
+                $kegiatan_realisasi = KegiatanRealisasi::where('kegiatan_id', $kegiatan_id)->first();
+                if($kegiatan_realisasi && $kegiatan_realisasi->status_id == 1) {
+                    $kegiatan_realisasi->status_id = 2;
+                    $kegiatan_realisasi->save();
+                    KegiatanController::store_log($kegiatan_realisasi->id, 2);//in Progress
+
+
+                }
+                
+        }
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal verifikasi data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+    public function finalVerifikasiData(Request $request) {
+
+      
+        DB::beginTransaction();
+        try {
+            foreach ($request->kegiatan_verifikasi as $key => $kegiatan_id) {
+                $kegiatan = Kegiatan::where('id', $kegiatan_id)->first();
+                
+                //save old kegiatan nama dan target_tpb_id
+                $kegiatan_nama = $kegiatan->kegiatan;
+                $target_tpb_id = $kegiatan->target_tpb_id;
+    
+                //delete kegiatan dan kegiatan realisasis
+                $kegiatan_realisasi = KegiatanRealisasi::where('kegiatan_id', $kegiatan_id)->first();
+                if($kegiatan_realisasi && $kegiatan_realisasi->status_id == 1) {
+                    $kegiatan_realisasi->status_id = 4;
+                    $kegiatan_realisasi->save();
+                    KegiatanController::store_log($kegiatan_realisasi->id, 4);//Verified
+
+
+                }
+                
+        }
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal verifikasi data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
 
     public function detail(Request $request)
     {
@@ -1171,6 +1249,7 @@ class KegiatanController extends Controller
                 ->where('tpbs.jenis_anggaran', $jenis_anggaran);
         })
         ->leftJoin('jenis_kegiatans', 'jenis_kegiatans.id', '=', 'kegiatans.jenis_kegiatan_id')
+        ->leftjoin('sub_kegiatans', 'sub_kegiatans.id', '=', DB::raw('CAST(kegiatans.keterangan_kegiatan AS BIGINT)'))
         ->join('provinsis', 'provinsis.id', '=', 'kegiatans.provinsi_id')
         ->join('kotas', 'kotas.id', '=', 'kegiatans.kota_id')
         ->join('satuan_ukur', 'satuan_ukur.id', '=', 'kegiatans.satuan_ukur_id')
@@ -1188,6 +1267,7 @@ class KegiatanController extends Controller
             'target_tpbs.id as target_tpb_id',
             'target_tpbs.program as target_tpb_program',
             'jenis_kegiatans.nama as jenis_kegiatan_nama',
+            'sub_kegiatans.subkegiatan as sub_kegiatan_nama',
             'provinsis.nama as provinsi_nama',
             'kotas.nama as kota_nama',
             'anggaran_tpbs.id as anggaran_tpb_id',
