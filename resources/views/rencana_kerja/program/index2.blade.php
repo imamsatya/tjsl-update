@@ -282,21 +282,21 @@
                           
                             @can('view-verify')
                                 @if($countInprogress || !$data->count())
-                                    <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="completed-data" >Completed
+                                    <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="completed-data" >Complete
                                     </button>
                                 @endif 
                            @endcan
 
                            @can('view-unverify')
                                 @if(!$countInprogress && $data->count())
-                                    <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="uncompleted-data" >Un-Completed
+                                    <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm me-2" id="uncompleted-data" >Un-Complete
                                     </button>  
                                 @endif 
                            @endcan
 
                            @can('view-finalVerify')
                                 @if($countInprogress || !$data->count())
-                                    <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
+                                    <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-success btn-sm" id="verify-data" >Verify
                                     </button>    
                                 @endif
                            @endcan
