@@ -678,7 +678,7 @@ class ProgramController extends Controller
 
             $allDataUpdated = TargetTpb::select('target_tpbs.*')
                             ->join('anggaran_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
-                            ->where('target_tpbs.status_id', '!=', 1)
+                            ->where('target_tpbs.status_id', '=', 2)
                             ->where('anggaran_tpbs.tahun', $tahun)
                             ->when($id_bumn, function($query) use ($id_bumn) {
                                 return $query->where('anggaran_tpbs.perusahaan_id', $id_bumn);
@@ -695,14 +695,14 @@ class ProgramController extends Controller
             DB::commit();
             $result = [
                 'flag'  => 'success',
-                'msg' => 'Sukses verifikasi data',
+                'msg' => 'Sukses set data completed',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
             DB::rollback();
             $result = [
                 'flag'  => 'warning',
-                'msg' => 'Gagal verifikasi data',
+                'msg' => 'Gagal set data completed',
                 'title' => 'Gagal'
             ];
         }
@@ -809,7 +809,7 @@ class ProgramController extends Controller
 
             $result = [
                 'flag' => 'success',
-                'msg' => 'Sukses batalkan verifikasi data',
+                'msg' => 'Sukses set data uncompleted',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
@@ -854,8 +854,9 @@ class ProgramController extends Controller
         $data = DB::table('anggaran_tpbs as atpb')
             ->select('atpb.perusahaan_id', 'perusahaans.nama_lengkap',
             DB::raw("sum(tt.anggaran_alokasi) as total"),
-            DB::raw("count(case when tt.status_id = 1 then 1 end) finish"),
+            DB::raw("count(case when tt.status_id = 1 then 1 end) completed"),
             DB::raw("count(case when tt.status_id = 2 then 1 end) inprogress"),
+            DB::raw("count(case when tt.status_id = 4 then 1 end) verified"),
             DB::raw("(case when epp.id is not null then 1 else 0 end) enable_by_admin")
             // DB::raw("count(case when tt.is_enable_input_by_superadmin = true then 1 end) enable_by_admin"),
             // DB::raw("count(case when tt.is_enable_input_by_superadmin = false then 1 end) disable_by_admin")
@@ -941,8 +942,12 @@ class ProgramController extends Controller
             return $row->inprogress > 0;
         })->count();
         
-        $countFinish = $data->filter(function($row) {
-            return $row->finish > 0;
+        $countCompleted = $data->filter(function($row) {
+            return $row->completed > 0;
+        })->count();
+
+        $countVerified = $data->filter(function($row) {
+            return $row->verified > 0;
         })->count();
 
         $list_perusahaan = Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get();
@@ -982,10 +987,11 @@ class ProgramController extends Controller
             'view_only' => $view_only,
             'countInprogress' => $countInprogress,
             'perusahaan_nama' => $currentNamaPerusahaan,
-            'countFinish' => $countFinish,
+            'countCompleted' => $countCompleted,
             'isOkToInput' => $isOkToInput,
             'isEnableInputBySuperadmin' => $isEnableInputBySuperadmin,
-            'isSuperAdmin' => $isSuperAdmin
+            'isSuperAdmin' => $isSuperAdmin,
+            'countVerified' => $countVerified
         ]);
     }
 
@@ -997,8 +1003,9 @@ class ProgramController extends Controller
         $result = DB::table('anggaran_tpbs as atpb')
             ->select('pp.order_pilar', 'pp.id as id_pilar', 'pp.nama as nama_pilar', 
                 DB::raw("sum(tt.anggaran_alokasi) total"),
-                DB::raw("count(case when tt.status_id = 1 then 1 end) finish"),
-                DB::raw("count(case when tt.status_id = 2 then 1 end) inprogress")
+                DB::raw("count(case when tt.status_id = 1 then 1 end) completed"),
+                DB::raw("count(case when tt.status_id = 2 then 1 end) inprogress"),
+                DB::raw("count(case when tt.status_id = 4 then 1 end) verified"),
             )
             ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
             ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
@@ -1070,8 +1077,9 @@ class ProgramController extends Controller
         $result = DB::table('anggaran_tpbs as atpb')
             ->select('tpbs.id as id_tpb', 'tpbs.no_tpb', 'tpbs.nama as nama_tpb',
                 DB::raw("sum(tt.anggaran_alokasi) total"),
-                DB::raw("count(case when tt.status_id = 1 then 1 end) finish"),
-                DB::raw("count(case when tt.status_id = 2 then 1 end) inprogress")
+                DB::raw("count(case when tt.status_id = 1 then 1 end) completed"),
+                DB::raw("count(case when tt.status_id = 2 then 1 end) inprogress"),
+                DB::raw("count(case when tt.status_id = 4 then 1 end) verified"),
             )
             ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
             ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
@@ -1141,8 +1149,9 @@ class ProgramController extends Controller
         $result = DB::table('anggaran_tpbs as atpb')
             ->select('tt.id as id_target', 'tt.program', 'tt.kriteria_program_csv', 'tt.kriteria_program_umum', 'tt.kriteria_program_prioritas',
                 DB::raw("sum(tt.anggaran_alokasi) total"),
-                DB::raw("count(case when tt.status_id = 1 then 1 end) finish"),
+                DB::raw("count(case when tt.status_id = 1 then 1 end) completed"),
                 DB::raw("count(case when tt.status_id = 2 then 1 end) inprogress"),
+                DB::raw("count(case when tt.status_id = 4 then 1 end) verified"),
                 DB::raw("(case when epp.id is not null then 1 else 0 end) enable_by_admin")
                 // DB::raw("count(case when tt.is_enable_input_by_superadmin = true then 1 end) enable_by_admin"),
                 // DB::raw("count(case when tt.is_enable_input_by_superadmin = false then 1 end) disable_by_admin")
@@ -1157,7 +1166,7 @@ class ProgramController extends Controller
                     ->where('epp.referensi_id', '=', $refEnable?->id);
             })
             ->where('atpb.perusahaan_id', $perusahaan_id)
-            ->where('anggaran', '>', 0)
+            ->where('anggaran', '>=', 0)
             ->where('atpb.tahun', $tahun)
             ->where('pp.id', $pilar)
             ->where('tpbs.id', $tpb);
@@ -1494,5 +1503,45 @@ class ProgramController extends Controller
             ->first();
 
         return $data;
+    }
+
+    public function verifikasiDataFinal(Request $request) {
+        DB::beginTransaction();
+        try {
+
+            $id_bumn = $request->input('bumn');
+            $tahun = $request->input('tahun');
+
+            $allDataUpdated = TargetTpb::select('target_tpbs.*')
+                            ->join('anggaran_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                            ->where('target_tpbs.status_id', '=', 1)
+                            ->where('anggaran_tpbs.tahun', $tahun)
+                            ->when($id_bumn, function($query) use ($id_bumn) {
+                                return $query->where('anggaran_tpbs.perusahaan_id', $id_bumn);
+                            })
+                            ->get();
+            
+            if($allDataUpdated->count()) {
+                foreach($allDataUpdated as $data) {  
+                    TargetTpb::where('id', $data->id)->update(['status_id' => 4]);
+                    ProgramController::store_log($data->id,4);
+                }
+            } 
+
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal verifikasi data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);        
     }
 }

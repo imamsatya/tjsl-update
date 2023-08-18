@@ -219,10 +219,12 @@
                                 <label>Status</label>
                                 <select  id="status-anggaran" class="form-select form-select-solid form-select2" name="status_anggaran" data-kt-select2="true" data-placeholder="Pilih Status Anggaran" data-allow-clear="true">
                                     <option></option>
-                                    <option value="Finish" {{ request('status') === 'Finish' ? 'selected="selected"' : '' }}  >
-                                            Finish</option>
                                     <option value="In Progress" {{ request('status') === 'In Progress' ? 'selected="selected"' : '' }} >
                                         In Progress</option>
+                                    <option value="Completed" {{ request('status') === 'Completed' ? 'selected="selected"' : '' }}  >
+                                            Completed</option>
+                                    <option value="Verified" {{ request('status') === 'Verified' ? 'selected="selected"' : '' }}  >
+                                            Verified</option>
                                 </select>                                
                             </div>
                         </div>
@@ -251,37 +253,43 @@
                                 @php
                                     $enable_input = false;
                                     if($isOkToInput || $isEnableInputBySuperadmin) $enable_input = true;
-                                    $isFinisih = false;
-                                    if($countInprogress > 0) $isFinisih = false;
-                                    else if($countFinish > 0) $isFinisih = true;
+                                    $isVerified = false;
+                                    if($countInprogress > 0) $isVerified = false;
+                                    else if($countVerified > 0) $isVerified = true;
                                 @endphp
                                 @can('view-kegiatan')
                                     <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data
                                     </button>
                                     @can('delete-kegiatan')
-                                    <button {{ $isSuperAdmin ? '' : ($enable_input ? (!$isFinisih ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
+                                    <button {{ $isSuperAdmin ? '' : ($enable_input ? (!$isVerified ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
                                     </button>
                                     @endcan
                                     @can('edit-kegiatan')
-                                    <button {{ $isSuperAdmin ? '' : ($enable_input ? (!$isFinisih ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
+                                    <button {{ $isSuperAdmin ? '' : ($enable_input ? (!$isVerified ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
                                     </button>
                                     @endcan
                                     
                                 @endcan
                               
                                 @can('view-verify')
-                                @if($countInprogress || !$data->count())
-                                <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
-                                </button>    
-                                @endif
-                                
+                                    @if($countInprogress || !$data->count())
+                                    <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="completed-data" >Completed
+                                    </button>    
+                                    @endif
+                                @endcan
 
-                                
-                                @if(!$countInprogress && $data->count())
-                                <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
-                                </button>  
-                                @endif    
+                                @can('view-unverify')
+                                    @if(!$countInprogress && $data->count())
+                                    <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="uncompleted-data" >Un-Completed
+                                    </button>  
+                                    @endif
+                                @endcan
 
+                                @can('view-finalVerify')
+                                    @if($countInprogress || !$data->count())
+                                        <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm" id="verify-data" >Verify
+                                        </button>    
+                                    @endif
                                 @endcan
                             </div>
                             <!--end::Search-->
@@ -319,7 +327,8 @@
                                         $total_noncid += $perusahaan->sum_noncid;
                                         
                                         if($perusahaan->inprogress) $status_class = 'primary';
-                                        else if($perusahaan->finish) $status_class = 'success';
+                                        else if($perusahaan->completed) $status_class = 'success';
+                                        else if($perusahaan->verified) $status_class = 'success';
                                         else $status_class = 'danger';
                                     @endphp
                                 <tr class="treegrid-perusahaan-{{ $perusahaan->perusahaan_id }}" id="perusahaan-{{ $perusahaan->perusahaan_id }}" data-type="perusahaan" data-value="{{ $perusahaan->perusahaan_id }}">
@@ -335,7 +344,7 @@
                                         {{number_format($perusahaan->sum_cid + $perusahaan->sum_noncid,0,',',',')}}
                                     </td>
                                     <td style="text-align:center;">
-                                        <a class="badge badge-light-{{ $status_class }} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{ $perusahaan->inprogress ? 'In Progress' : ($perusahaan->finish ? 'Finish' : '-') }}</a>
+                                        <a class="badge badge-light-{{ $status_class }} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{ $perusahaan->inprogress ? 'In Progress' : ($perusahaan->completed ? 'Completed' : ($perusahaan->verified ? 'Verified' : '-') ) }}</a>
                                     </td>
                                     <td></td>
                                     <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
@@ -392,13 +401,14 @@
     var urlbatalverifikasidata = "{{route('anggaran_tpb.batal_verifikasi_data')}}";
     var urlenableinputdata = "{{route('anggaran_tpb.enable_disable_input_data')}}";
     var urlgetdataperusahaanpilar = "{{ route('anggaran_tpb.get_data_perusahaan_pilar_tree') }}";
+    var urlverifikasidataFinal = "{{route('anggaran_tpb.verifikasi_data_final')}}";
 
     $(document).ready(function(){
         
         const viewOnly = "{{ $view_only }}";
         const isOkToInput = "{{ $isOkToInput }}";  
         const countInprogress = parseInt("{{ $countInprogress }}")
-        const countFinish = parseInt("{{ $countFinish }}")
+        const countCompleted = parseInt("{{ $countCompleted }}")
         const isSuperAdmin = "{{ $isSuperAdmin }}";
 
         $(".tree-new").treegrid({            
@@ -471,7 +481,8 @@
                         // defining progress status
                         let status_class = ''
                         if(pilar[i].inprogress) status_class = 'primary'
-                        else if(pilar[i].finish) status_class = 'success'
+                        else if(pilar[i].completed) status_class = 'success'
+                        else if(pilar[i].verified) status_class = 'success'
                         else status_class = 'danger'
 
                         let tempPilarRow = `
@@ -482,7 +493,7 @@
                             <td style="text-align:right;">${parseInt(pilar[i].sum_noncid).toLocaleString()}</td>
                             <td style="text-align:right;">${(parseInt(pilar[i].sum_cid) + parseInt(pilar[i].sum_noncid)).toLocaleString()}</td>
                             <td style="text-align:center;">
-                                <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${pilar[i].inprogress ? 'In Progress' : (pilar[i].finish ? 'Finish' : '-')}</a>
+                                <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${pilar[i].inprogress ? 'In Progress' : (pilar[i].completed ? 'Completed' : (pilar[i].verified ? 'Verified' : '-') )}</a>
                             </td>
                             <td style="text-align:center;">                                            
                             </td>
@@ -535,7 +546,8 @@
                         // defining progress status
                         let status_class = ''
                         if(tpb[i].inprogress) status_class = 'primary'
-                        else if(tpb[i].finish) status_class = 'success'
+                        else if(tpb[i].completed) status_class = 'success'
+                        else if(tpb[i].verified) status_class = 'success'
                         else status_class = 'danger'
 
                         let btnEdit = `<button ${isOkToInput || tpb[i].enable_by_admin > 0 || isSuperAdmin ? '' : 'disabled'} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${selectedYear}" data-notpb="${tpb[i].no_tpb}" data-namapilar="${value}" data-perusahaan="${tempPerusahaan}" data-toggle="tooltip" title="Ubah data ${tpb[i].no_tpb}"><i class="bi bi-pencil fs-3"></i></button>`;
@@ -561,7 +573,7 @@
                             <td style="text-align:right;">${tpb[i].sum_noncid ? parseInt(tpb[i].sum_noncid).toLocaleString() : '-'}</td>
                             <td style="text-align:right;">${totalTpb.toLocaleString()}</td>
                             <td style="text-align:center;">
-                                <span class="btn cls-log badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-tahun="${selectedYear}" data-notpb="${tpb[i].no_tpb}" data-namapilar="${value}" data-perusahaan="${tempPerusahaan}">${tpb[i].inprogress ? 'In Progress' : (tpb[i].finish ? 'Finish' : '-')}</span>
+                                <span class="btn cls-log badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-tahun="${selectedYear}" data-notpb="${tpb[i].no_tpb}" data-namapilar="${value}" data-perusahaan="${tempPerusahaan}">${tpb[i].inprogress ? 'In Progress' : (tpb[i].completed ? 'Completed' : (tpb[i].verified ? 'Verified' : '-'))}</span>
                             </td>
                             <td style="text-align:center;">    
                                 ${!viewOnly && tpb[i].inprogress ? btnEdit : ''}
@@ -726,7 +738,7 @@
         })
     
 
-        $("#verify-data").on('click', function() {  
+        $("#completed-data").on('click', function() {  
 
             
             if(!countInprogress) {
@@ -748,7 +760,7 @@
 
             swal.fire({
                 title: "Pemberitahuan",
-                html: `<span style="color: red; font-weight: bold">Yakin verifikasi data ? </span><br/>
+                html: `<span style="color: red; font-weight: bold">Yakin set status completed data ? </span><br/>
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <tbody>
@@ -842,11 +854,11 @@
             exportExcel();
         })
 
-        $("#unverify-data").on('click', function() {
+        $("#uncompleted-data").on('click', function() {
             if(countInprogress) {
                 swal.fire({
                     title: "Pemberitahuan",
-                    html: "Tidak ada data yang bisa di-unverify!",
+                    html: "Tidak ada data yang bisa di-uncompleted!",
                     icon: "warning",
                     showCancelButton: false,
                     confirmButtonText: "Close",
@@ -861,7 +873,7 @@
 
             swal.fire({
                 title: "Pemberitahuan",
-                html: `<span style="color: red; font-weight: bold">Yakin batalkan verifikasi data ? </span><br/>
+                html: `<span style="color: red; font-weight: bold">Yakin batalkan status completed data ? </span><br/>
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <tbody>
@@ -874,8 +886,8 @@
                                     <td>${tahun}</td>
                                 </tr>
                                 <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
-                                    <td>Jumlah Un-Verify</td>
-                                    <td>${countFinish} rows</td>
+                                    <td>Jumlah Un-Completed</td>
+                                    <td>${countCompleted} rows</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1043,7 +1055,118 @@
                     });
                 }
             });
-        })        
+        }) 
+        
+        $("#verify-data").on('click', function() {  
+            
+            if(!countInprogress) {
+                swal.fire({
+                    title: "Pemberitahuan",
+                    html: "Tidak ada data yang bisa diverifikasi!",
+                    icon: "warning",
+                    showCancelButton: false,
+                    confirmButtonText: "Close",
+                })
+
+                return
+            }
+
+            const bumn = "{{ $perusahaan_id }}"
+            const tahun = "{{ $tahun }}"
+            const nama_bumn = "{{ $perusahaan_nama }}"
+
+
+            swal.fire({
+                title: "Pemberitahuan",
+                html: `<span style="color: red; font-weight: bold">Yakin verifikasi data ? </span><br/>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <tbody>
+                                <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                    <td>Perusahaan</td>
+                                    <td>${nama_bumn}</td>
+                                </tr>
+                                <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                    <td>Tahun</td>
+                                    <td>${tahun}</td>
+                                </tr>
+                                <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                    <td>Jumlah Verifikasi</td>
+                                    <td>${countCompleted} rows</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                        `,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Ya, verifikasi data",
+                cancelButtonText: "Tidak"
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                        url: urlverifikasidataFinal,
+                        data:{
+                            "bumn": bumn,
+                            "tahun": tahun
+                        },
+                        type:'post',
+                        dataType:'json',
+                        beforeSend: function(){
+                            $.blockUI();
+                        },
+                        success: function(data){
+                            $.unblockUI();
+
+                            swal.fire({
+                                    title: data.title,
+                                    html: data.msg,
+                                    icon: data.flag,
+
+                                    buttonsStyling: true,
+
+                                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                            });
+
+                            if(data.flag == 'success') {
+                                // datatable.ajax.reload( null, false );
+                                location.reload(); 
+                            }
+                            
+                        },
+                        error: function(jqXHR, exception) {
+                            $.unblockUI();
+                            var msgerror = '';
+                            if (jqXHR.status === 0) {
+                                msgerror = 'jaringan tidak terkoneksi.';
+                            } else if (jqXHR.status == 404) {
+                                msgerror = 'Halaman tidak ditemukan. [404]';
+                            } else if (jqXHR.status == 500) {
+                                msgerror = 'Internal Server Error [500].';
+                            } else if (exception === 'parsererror') {
+                                msgerror = 'Requested JSON parse gagal.';
+                            } else if (exception === 'timeout') {
+                                msgerror = 'RTO.';
+                            } else if (exception === 'abort') {
+                                msgerror = 'Gagal request ajax.';
+                            } else {
+                                msgerror = 'Error.\n' + jqXHR.responseText;
+                            }
+                            swal.fire({
+                                title: "Error System",
+                                html: msgerror+', coba ulangi kembali !!!',
+                                icon: 'error',
+
+                                buttonsStyling: true,
+
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                            });  
+                        }
+                    });
+                }
+            });
+
+            })
       
     });    
 
