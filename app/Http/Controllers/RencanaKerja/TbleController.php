@@ -77,7 +77,7 @@ class TbleController extends Controller
             'breadcrumb' => 'Rencana Kerja - Tanda Bukti Lapor Elektronik - RKA',
             // 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
             'tahun' => ($request->tahun ?? Carbon::now()->year),
-            'perusahaan' => Perusahaan::where('induk', 0)->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
             'status' => $status,
