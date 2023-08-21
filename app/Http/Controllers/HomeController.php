@@ -247,7 +247,7 @@ class HomeController extends Controller
         $statusAnggaranCompletedCount = count($anggaran->where('status_id', 1));
         $statusAnggaranVerifiedCount = count($anggaran->where('status_id', 4));
         //Completed
-        if($totalAnggaranCount == $statusAnggaranCompletedCount){
+        if($totalAnggaranCount == $statusAnggaranCompletedCount && $totalAnggaranCount != 0){
             $data[0]['rka'] = "Completed";
 
             $pilar = DB::table('pilar_pembangunans')->where('id', $anggaran?->first()->pilar_pembangunan_id)->first();
@@ -255,7 +255,7 @@ class HomeController extends Controller
             $data[0]['support_props']['nama_pilar'] = $pilar->nama;
         }
         //Verified
-        if($totalAnggaranCount == $statusAnggaranVerifiedCount){
+        if($totalAnggaranCount == $statusAnggaranVerifiedCount && $totalAnggaranCount != 0){
             $data[0]['rka'] = "Verified";
             $pilar = DB::table('pilar_pembangunans')->where('id', $anggaran?->first()->pilar_pembangunan_id)->first();
             $data[0]['support_props']['no_tpb'] = $anggaran?->first()->no_tpb;
@@ -282,12 +282,12 @@ class HomeController extends Controller
         $statusProgramRKACompletedCount = count($program_rka->where('status_id', 1));
         $statusProgramRKAVerifiedCount = count($program_rka->where('status_id', 4));
         //Completed
-        if($totalProgramRKACount == $statusProgramRKACompletedCount){
+        if($totalProgramRKACount == $statusProgramRKACompletedCount && $totalProgramRKACount != 0){
             $data[1]['rka'] = "Completed";
             $data[1]['id'] = $program_rka->first()->id;
         }
         //Verified
-        if($totalProgramRKACount == $statusProgramRKAVerifiedCount){
+        if($totalProgramRKACount == $statusProgramRKAVerifiedCount && $totalProgramRKACount != 0){
             $data[1]['rka'] = "Verified";
             $data[1]['id'] = $program_rka->first()->id;
         }
@@ -310,12 +310,12 @@ class HomeController extends Controller
         $statusSpdpumkCompletedCount = count($spd_pumk->where('status_id', 1));
         $statusSpdpumkVerifiedCount = count($spd_pumk->where('status_id', 4));
         //Completed
-        if($totalSpdpumkCount == $statusProgramRKACompletedCount){
+        if($totalSpdpumkCount == $statusProgramRKACompletedCount && $totalSpdpumkCount != 0){
             $data[2]['rka'] = "Completed";
             $data[2]['id'] = $spd_pumk->first()->id;
         }
         //Verified
-        if ($totalSpdpumkCount == $statusSpdpumkVerifiedCount) {
+        if ($totalSpdpumkCount == $statusSpdpumkVerifiedCount && $totalSpdpumkCount != 0) {
             $data[2]['rka'] = "Verified";
             $data[2]['id'] = $spd_pumk->first()->id;
         }
@@ -335,12 +335,12 @@ class HomeController extends Controller
         $statusLaporanManajemenCompletedCount = count($laporan_manajemen->where('status_id', 1));
         $statusLaporanManajemenVerifiedCount = count($laporan_manajemen->where('status_id', 4));
         //Completed
-        if($totalLaporanManajemenCount == $statusLaporanManajemenCompletedCount ){
+        if($totalLaporanManajemenCount == $statusLaporanManajemenCompletedCount && $totalLaporanManajemenCount != 0){
             $data[3]['rka'] = "Completed";
             $data[3]['id'] = $laporan_manajemen->first()->id;
         }
         //Verified
-        if($totalLaporanManajemenCount == $statusLaporanManajemenVerifiedCount ){
+        if($totalLaporanManajemenCount == $statusLaporanManajemenVerifiedCount && $totalLaporanManajemenCount != 0){
             $data[3]['rka'] = "Verified";
             $data[3]['id'] = $laporan_manajemen->first()->id;
         }
