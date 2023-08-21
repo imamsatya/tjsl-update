@@ -666,8 +666,8 @@ class KegiatanController extends Controller
         // dd($request);
         
         // $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
-        // $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')
-        // ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')->where('periode_laporan_id', $periode_rka_id)->where('perusahaans.induk', 0);
+        // $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaan_masters.id as perusahaan_id, perusahaan_masters.nama_lengkap as nama_lengkap')
+        // ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'laporan_manajemens.perusahaan_id')->where('periode_laporan_id', $periode_rka_id)->where('perusahaan_masters.induk', 0);
         
         $perusahaan_id = $request->perusahaan_id ?? 'all';
         $bulan = $request->bulan;
@@ -988,13 +988,13 @@ class KegiatanController extends Controller
             ->join('target_tpbs', 'target_tpbs.id', 'kegiatans.target_tpb_id')
             ->join('tpbs', 'tpbs.id', 'target_tpbs.tpb_id')
             ->join('anggaran_tpbs', 'anggaran_tpbs.id', 'target_tpbs.anggaran_tpb_id')
-            ->join('perusahaans', 'perusahaans.id', 'anggaran_tpbs.perusahaan_id')
+            ->join('perusahaan_masters', 'perusahaan_masters.id', 'anggaran_tpbs.perusahaan_id')
             ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
             ->join('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
             ->join('provinsis', 'provinsis.id', 'kegiatans.provinsi_id')
             ->join('kotas', 'kotas.id', 'kegiatans.kota_id')
             ->join('satuan_ukur', 'satuan_ukur.id', 'kegiatans.satuan_ukur_id')
-            ->select('kegiatans.*', 'perusahaans.nama_lengkap as nama_perusahaan', 'pilar_pembangunans.nama as nama_pilar', 'provinsis.nama as provinsi', 'kotas.nama as kota'
+            ->select('kegiatans.*', 'perusahaan_masters.nama_lengkap as nama_perusahaan', 'pilar_pembangunans.nama as nama_pilar', 'provinsis.nama as provinsi', 'kotas.nama as kota'
             ,'satuan_ukur.nama as satuan_ukur','target_tpbs.program as program', 'tpbs.jenis_anggaran as jenis_anggaran', 'tpbs.no_tpb as no_tpb', 'tpbs.nama as nama_tpb')->first();
             
             $kumpulanKegiatan = DB::table('kegiatans')->where('kegiatan', $kegiatan->kegiatan)->where('target_tpb_id', $kegiatan->target_tpb_id)->where('provinsi_id', $kegiatan->provinsi_id)->where('kota_id', $kegiatan->kota_id)->get();
@@ -1255,7 +1255,7 @@ class KegiatanController extends Controller
         ->join('kotas', 'kotas.id', '=', 'kegiatans.kota_id')
         ->join('satuan_ukur', 'satuan_ukur.id', '=', 'kegiatans.satuan_ukur_id')
         ->join('statuses', 'statuses.id', '=', 'kegiatan_realisasis.status_id')
-        ->join('perusahaans', 'perusahaans.id', '=', 'anggaran_tpbs.perusahaan_id')
+        ->join('perusahaan_masters', 'perusahaan_masters.id', '=', 'anggaran_tpbs.perusahaan_id')
         ->join('pilar_pembangunans', 'pilar_pembangunans.id', '=', 'relasi_pilar_tpbs.pilar_pembangunan_id')
         ->select(
             'kegiatans.*',
@@ -1279,7 +1279,7 @@ class KegiatanController extends Controller
             'satuan_ukur.nama as satuan_ukur_nama',
             'bulans.nama as bulan_nama',
             'statuses.nama as nama_status',
-            'perusahaans.nama_lengkap as perusahaan_nama_lengkap',
+            'perusahaan_masters.nama_lengkap as perusahaan_nama_lengkap',
             'pilar_pembangunans.nama as pilar_pembangunan_nama',
             
 

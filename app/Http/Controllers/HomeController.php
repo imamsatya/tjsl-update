@@ -243,18 +243,28 @@ class HomeController extends Controller
         ->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->orderBy('atpb.updated_at', 'asc')->get();
         
         //cek ada atau tidak
-        if($anggaran?->first()){
-            
-            $data[0]['rka'] = "Finish";
+        $totalAnggaranCount = count($anggaran);
+        $statusAnggaranCompletedCount = count($anggaran->where('status_id', 1));
+        $statusAnggaranVerifiedCount = count($anggaran->where('status_id', 4));
+        //Completed
+        if($totalAnggaranCount == $statusAnggaranCompletedCount){
+            $data[0]['rka'] = "Completed";
 
             $pilar = DB::table('pilar_pembangunans')->where('id', $anggaran?->first()->pilar_pembangunan_id)->first();
             $data[0]['support_props']['no_tpb'] = $anggaran?->first()->no_tpb;
             $data[0]['support_props']['nama_pilar'] = $pilar->nama;
         }
+        //Verified
+        if($totalAnggaranCount == $statusAnggaranVerifiedCount){
+            $data[0]['rka'] = "Verified";
+            $pilar = DB::table('pilar_pembangunans')->where('id', $anggaran?->first()->pilar_pembangunan_id)->first();
+            $data[0]['support_props']['no_tpb'] = $anggaran?->first()->no_tpb;
+            $data[0]['support_props']['nama_pilar'] = $pilar->nama;
+        }
+
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress
         if ($anggaran?->where('status_id', 2)->first()) {
             $data[0]['rka'] = "In Progress";
-
             $pilar = DB::table('pilar_pembangunans')->where('id', $anggaran?->where('status_id', 2)->first()->pilar_pembangunan_id)->first();
             $data[0]['support_props']['no_tpb'] = $anggaran?->where('status_id', 2)->first()->no_tpb;
             $data[0]['support_props']['nama_pilar'] = $pilar->nama;
@@ -268,9 +278,17 @@ class HomeController extends Controller
 
         //program rka
         $program_rka = DB::table('anggaran_tpbs')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->orderBy('target_tpbs.updated_at', 'asc')->join('target_tpbs', 'target_tpbs.anggaran_tpb_id', '=', 'anggaran_tpbs.id')->get();
-        
-        if($program_rka?->first()){
-            $data[1]['rka'] = "Finish";
+        $totalProgramRKACount = count($program_rka);
+        $statusProgramRKACompletedCount = count($program_rka->where('status_id', 1));
+        $statusProgramRKAVerifiedCount = count($program_rka->where('status_id', 4));
+        //Completed
+        if($totalProgramRKACount == $statusProgramRKACompletedCount){
+            $data[1]['rka'] = "Completed";
+            $data[1]['id'] = $program_rka->first()->id;
+        }
+        //Verified
+        if($totalProgramRKACount == $statusProgramRKAVerifiedCount){
+            $data[1]['rka'] = "Verified";
             $data[1]['id'] = $program_rka->first()->id;
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress
@@ -287,9 +305,18 @@ class HomeController extends Controller
         //spdpumk rka
         $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
         $spd_pumk = DB::table('pumk_anggarans')->where('bumn_id', $perusahaan_id)->where('tahun', $tahun)->where('periode_id', $periode_rka_id)->get();
-       
-        if($spd_pumk?->first()){
-            $data[2]['rka'] = "Finish";
+        
+        $totalSpdpumkCount = count($spd_pumk);
+        $statusSpdpumkCompletedCount = count($spd_pumk->where('status_id', 1));
+        $statusSpdpumkVerifiedCount = count($spd_pumk->where('status_id', 4));
+        //Completed
+        if($totalSpdpumkCount == $statusProgramRKACompletedCount){
+            $data[2]['rka'] = "Completed";
+            $data[2]['id'] = $spd_pumk->first()->id;
+        }
+        //Verified
+        if ($totalSpdpumkCount == $statusSpdpumkVerifiedCount) {
+            $data[2]['rka'] = "Verified";
             $data[2]['id'] = $spd_pumk->first()->id;
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress
@@ -304,8 +331,17 @@ class HomeController extends Controller
         
         //laporan manajemen rka
         $laporan_manajemen = DB::table('laporan_manajemens')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->where('periode_laporan_id', $periode_rka_id)->get();
-        if($laporan_manajemen?->first() ){
-            $data[3]['rka'] = "Finish";
+        $totalLaporanManajemenCount = count($laporan_manajemen);
+        $statusLaporanManajemenCompletedCount = count($laporan_manajemen->where('status_id', 1));
+        $statusLaporanManajemenVerifiedCount = count($laporan_manajemen->where('status_id', 4));
+        //Completed
+        if($totalLaporanManajemenCount == $statusLaporanManajemenCompletedCount ){
+            $data[3]['rka'] = "Completed";
+            $data[3]['id'] = $laporan_manajemen->first()->id;
+        }
+        //Verified
+        if($totalLaporanManajemenCount == $statusLaporanManajemenVerifiedCount ){
+            $data[3]['rka'] = "Verified";
             $data[3]['id'] = $laporan_manajemen->first()->id;
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress/unfilled
@@ -403,6 +439,7 @@ class HomeController extends Controller
                     $data[4]['tw2']['id'] = null;
                 }
             }
+            // dd($data);
 
             //TW 3
             if ($periodeId === 3) {

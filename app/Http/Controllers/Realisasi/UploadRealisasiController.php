@@ -280,7 +280,7 @@ class UploadRealisasiController extends Controller
                                     'target_tpbs.program',
                                     'pilar_pembangunans.nama as pilar_pembangunan',
                                     'tpbs.nama as tpb',
-                                    'perusahaans.nama_lengkap as perusahaan',
+                                    'perusahaan_masters.nama_lengkap as perusahaan',
                                     'provinsis.nama as provinsi',
                                     'kotas.nama as kota',
                                     'bulans.nama as bulan_nama')
@@ -291,7 +291,7 @@ class UploadRealisasiController extends Controller
                                 ->leftJoin('bulans','bulans.id','kegiatan_realisasis.bulan')
                                 ->leftJoin('target_tpbs','target_tpbs.id','kegiatans.target_tpb_id')
                                 ->leftJoin('anggaran_tpbs','anggaran_tpbs.id','target_tpbs.anggaran_tpb_id')
-                                ->leftJoin('perusahaans','perusahaans.id','anggaran_tpbs.perusahaan_id')
+                                ->leftJoin('perusahaan_masters','perusahaan_masters.id','anggaran_tpbs.perusahaan_id')
                                 ->leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
                                 ->leftJoin('pilar_pembangunans','pilar_pembangunans.id','relasi_pilar_tpbs.pilar_pembangunan_id')
                                 ->leftJoin('tpbs','tpbs.id','relasi_pilar_tpbs.tpb_id')

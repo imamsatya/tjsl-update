@@ -244,26 +244,26 @@ class LaporanManajemenTriwulanController extends Controller
         $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->get();
         if(Auth::user()->getRoleNames()->contains('Super Admin') || Auth::user()->getRoleNames()->contains('Admin TJSL')){
             $laporan_manajemen = DB::table('laporan_manajemens')
-            ->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap, periode_laporans.nama as periode_laporan_nama,
+            ->selectRaw('laporan_manajemens.*, perusahaan_masters.id as perusahaan_id, perusahaan_masters.nama_lengkap as nama_lengkap, periode_laporans.nama as periode_laporan_nama,
               TRUE AS isoktoinput')
-            ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')
+            ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'laporan_manajemens.perusahaan_id')
             ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'laporan_manajemens.periode_laporan_id')
             ->whereIn('periode_laporan_id', $periode->pluck('id')->toArray())
-            ->where('perusahaans.induk', 0);
+            ->where('perusahaan_masters.induk', 0);
         }
         else{
             $laporan_manajemen = DB::table('laporan_manajemens')
-            ->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap, periode_laporans.nama as periode_laporan_nama,
+            ->selectRaw('laporan_manajemens.*, perusahaan_masters.id as perusahaan_id, perusahaan_masters.nama_lengkap as nama_lengkap, periode_laporans.nama as periode_laporan_nama,
                CASE
                   WHEN CURRENT_DATE BETWEEN periode_laporans.tanggal_awal AND periode_laporans.tanggal_akhir
                   OR periode_laporans.is_active = FALSE
                   THEN TRUE
                ELSE FALSE
                END AS isoktoinput')
-            ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')
+            ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'laporan_manajemens.perusahaan_id')
             ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'laporan_manajemens.periode_laporan_id')
             ->whereIn('periode_laporan_id', $periode->pluck('id')->toArray())
-            ->where('perusahaans.induk', 0);
+            ->where('perusahaan_masters.induk', 0);
         }
        
         $perusahaan_id = $request->perusahaan_id ?? 1; //default id 1

@@ -66,12 +66,12 @@ class ProgramController extends Controller
             ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id');            
             
         $anggaran_bumn  = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
-            ->leftJoin('perusahaans', 'perusahaans.id', 'anggaran_tpbs.perusahaan_id')
+            ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', 'anggaran_tpbs.perusahaan_id')
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
             ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id');
 
         $anggaran_program  = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
-            ->leftJoin('perusahaans', 'perusahaans.id', 'anggaran_tpbs.perusahaan_id')
+            ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', 'anggaran_tpbs.perusahaan_id')
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
             ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
             ->leftJoin('target_tpbs', 'target_tpbs.anggaran_tpb_id', 'anggaran_tpbs.id');
@@ -155,14 +155,14 @@ class ProgramController extends Controller
 
         $anggaran_bumn = $anggaran_bumn->select(
             'anggaran_tpbs.perusahaan_id',
-            'perusahaans.nama_lengkap',
-            'perusahaans.id',            
+            'perusahaan_masters.nama_lengkap',
+            'perusahaan_masters.id',            
             DB::Raw('sum(case when tpbs.jenis_anggaran = \'CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_cid'),
             DB::Raw('sum(case when tpbs.jenis_anggaran = \'non CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_noncid')
         )
             ->groupBy('anggaran_tpbs.perusahaan_id')
-            ->groupBy('perusahaans.nama_lengkap')
-            ->groupBy('perusahaans.id')
+            ->groupBy('perusahaan_masters.nama_lengkap')
+            ->groupBy('perusahaan_masters.id')
             ->get();
 
         $anggaran_program = $anggaran_program->select('target_tpbs.*', 'tpbs.*', 'target_tpbs.id as id_target_tpbs', 'pilar_pembangunans.nama as pilar_nama','tpbs.nama as tpb_nama', 
@@ -263,7 +263,7 @@ class ProgramController extends Controller
                       
 
         $anggaran_program  = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
-            ->leftJoin('perusahaans', 'perusahaans.id', 'anggaran_tpbs.perusahaan_id')
+            ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', 'anggaran_tpbs.perusahaan_id')
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
             ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
             ->leftJoin('target_tpbs', 'target_tpbs.anggaran_tpb_id', 'anggaran_tpbs.id')
@@ -712,7 +712,7 @@ class ProgramController extends Controller
     public function export(Request $request) {
 
         $anggaran_program  = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
-            ->leftJoin('perusahaans', 'perusahaans.id', 'anggaran_tpbs.perusahaan_id')
+            ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', 'anggaran_tpbs.perusahaan_id')
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
             ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
             ->leftJoin('target_tpbs', 'target_tpbs.anggaran_tpb_id', 'anggaran_tpbs.id');
@@ -761,7 +761,7 @@ class ProgramController extends Controller
       
 
         $anggaran_program = $anggaran_program->select('target_tpbs.*', 'tpbs.*', 'target_tpbs.id as id_target_tpbs', 'pilar_pembangunans.nama as pilar_nama','tpbs.nama as tpb_nama', 
-            'perusahaans.nama_lengkap as nama_perusahaan',
+            'perusahaan_masters.nama_lengkap as nama_perusahaan',
             'pilar_pembangunans.jenis_anggaran as jenis_anggaran_pilar',
             'tpbs.jenis_anggaran as jenis_anggaran_tpb',
             'anggaran_tpbs.anggaran as anggaran_tpb',
@@ -770,7 +770,7 @@ class ProgramController extends Controller
             DB::Raw('(case when tpbs.jenis_anggaran = \'non CID\' then anggaran_alokasi end) as anggaran_alokasi_noncid'), 
             DB::Raw('(case when tpbs.jenis_anggaran = \'CID\' then anggaran_alokasi end) as anggaran_alokasi_cid')
         )
-        ->orderBy('perusahaans.id')
+        ->orderBy('perusahaan_masters.id')
         ->orderBy('pilar_pembangunans.jenis_anggaran')
         ->orderBy('pilar_pembangunans.nama')
         ->orderBy('tpbs.id')
@@ -852,7 +852,7 @@ class ProgramController extends Controller
         $refEnable = $this->getReferensiEnable();
 
         $data = DB::table('anggaran_tpbs as atpb')
-            ->select('atpb.perusahaan_id', 'perusahaans.nama_lengkap',
+            ->select('atpb.perusahaan_id', 'perusahaan_masters.nama_lengkap',
             DB::raw("sum(tt.anggaran_alokasi) as total"),
             DB::raw("count(case when tt.status_id = 1 then 1 end) completed"),
             DB::raw("count(case when tt.status_id = 2 then 1 end) inprogress"),
@@ -862,7 +862,7 @@ class ProgramController extends Controller
             // DB::raw("count(case when tt.is_enable_input_by_superadmin = false then 1 end) disable_by_admin")
             )
             ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
-            ->join('perusahaans', 'perusahaans.id', '=', 'atpb.perusahaan_id')
+            ->join('perusahaan_masters', 'perusahaan_masters.id', '=', 'atpb.perusahaan_id')
             ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
             ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
             ->leftJoin('target_tpbs as tt', 'tt.anggaran_tpb_id', '=', 'atpb.id')
@@ -874,9 +874,9 @@ class ProgramController extends Controller
             ->where('anggaran', '>=', 0);
 
         $rka = DB::table('anggaran_tpbs as atpb')
-            ->select('perusahaan_id', 'perusahaans.nama_lengkap', DB::raw("SUM(atpb.anggaran) as total_rka"))
+            ->select('perusahaan_id', 'perusahaan_masters.nama_lengkap', DB::raw("SUM(atpb.anggaran) as total_rka"))
             ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
-            ->join('perusahaans', 'perusahaans.id', '=', 'atpb.perusahaan_id')
+            ->join('perusahaan_masters', 'perusahaan_masters.id', '=', 'atpb.perusahaan_id')
             ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
             ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
             ->where('anggaran', '>=', 0);
@@ -928,11 +928,11 @@ class ProgramController extends Controller
         }
 
 
-        $data = $data->groupBy('atpb.perusahaan_id', 'perusahaans.nama_lengkap', 'epp.id')
+        $data = $data->groupBy('atpb.perusahaan_id', 'perusahaan_masters.nama_lengkap', 'epp.id')
             ->orderBy('atpb.perusahaan_id')
             ->get();
 
-        $rka = $rka->groupBy('perusahaan_id', 'perusahaans.nama_lengkap')
+        $rka = $rka->groupBy('perusahaan_id', 'perusahaan_masters.nama_lengkap')
             ->orderBy('perusahaan_id')
             ->get();
 
@@ -1300,7 +1300,7 @@ class ProgramController extends Controller
                       
 
         $anggaran_program  = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
-            ->leftJoin('perusahaans', 'perusahaans.id', 'anggaran_tpbs.perusahaan_id')
+            ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', 'anggaran_tpbs.perusahaan_id')
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
             ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
             ->leftJoin('target_tpbs', 'target_tpbs.anggaran_tpb_id', 'anggaran_tpbs.id')

@@ -350,6 +350,17 @@
 
 
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th>Total</th>
+                                    <th class="text-end"></th>
+                                    <th class="text-end"></th>
+                                    <th class="text-end"></th>
+                                    <th class="text-end"></th>
+                                    <th class="text-end"></th>
+                                </tr>
+                            </tfoot>
 
                         </table>
 
@@ -747,6 +758,34 @@
                 }
             ]
         }
+        columns.push(
+        // Total columns for footer
+        {
+            data: 'id',
+            visible: false
+        },
+        {
+            data: 'bulan_id',
+            visible: false
+        },
+        {
+            data: 'nilai_penyaluran',
+            visible: false
+        },
+        {
+            data: 'jumlah_mb',
+            visible: false
+        },
+        {
+            data: 'jumlah_mb_naik_kelas',
+            visible: false
+        },
+        {
+            data: 'nilai_penyaluran_melalui_bri',
+            visible: false
+        }
+    );
+
         datatable = $('#datatable').DataTable({
             processing: true,
             serverSide: true,
@@ -763,18 +802,32 @@
                 }
             },
             columns: columns,
-            // footerCallback: function (row, data, start, end, display) {
-            //     var api = this.api();
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            pageLength: 10,
+            footerCallback: function (tfoot, data, start, end, display) {
+                var api = this.api();
 
-            //     var intVal = function ( i ) {
-            //         return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ? i : 0;
-            //     };
+                var getColumnTotal = function (columnIndex) {
+                    return api
+                        .column(columnIndex, { page: 'current' })
+                        .data()
+                        .reduce(function (acc, val) {
+                            return acc + parseFloat(val);
+                        }, 0);
+                };
 
-            //     $(api.column(3).footer()).html(api.column(3).data().reduce(function (a, b) {
-            //             return addCommas(intVal(a) + intVal(b));
-            //         }, 0)
-            //     );
-            // },
+                $(api.column(1).footer()).html('Total');
+                $(api.column(2).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(2).toFixed(0)) + '</div>');
+
+                if (perusahaan_id =='3') {
+                    $(api.column(3).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(3).toFixed(0)) + '</div>');
+                    $(api.column(4).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(4).toFixed(0)) + '</div>');
+                }
+
+                // Add the rest of the total columns here if needed
+
+                // $(api.column(X).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(X).toFixed(0)) + '</div>');
+            },
             drawCallback: function (settings) {
                 var info = datatable.page.info();
                 $('[data-toggle="tooltip"]').tooltip();
@@ -786,7 +839,8 @@
                 });
 
 
-            }
+            },
+            
         });
     }
 

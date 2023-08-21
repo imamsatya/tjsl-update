@@ -84,7 +84,7 @@ class AdministrasiController extends Controller
         $anggaran_pilar = AnggaranTpb::leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
                                         ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id');
         $anggaran_bumn  = AnggaranTpb::leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
-                                        ->leftJoin('perusahaans','perusahaans.id','anggaran_tpbs.perusahaan_id');
+                                        ->leftJoin('perusahaan_masters','perusahaan_masters.id','anggaran_tpbs.perusahaan_id');
         
         if($perusahaan_id){
             $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
@@ -126,13 +126,13 @@ class AdministrasiController extends Controller
                             ->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
                             ->get();
         $anggaran_bumn = $anggaran_bumn->select('anggaran_tpbs.perusahaan_id', 
-                                                'perusahaans.nama_lengkap',
-                                                'perusahaans.id',
+                                                'perusahaan_masters.nama_lengkap',
+                                                'perusahaan_masters.id',
                                                 DB::Raw('sum(anggaran_tpbs.anggaran) as sum_anggaran'))
                            // ->where('anggaran_tpbs.status_id',$is_finish)
                             ->groupBy('anggaran_tpbs.perusahaan_id')
-                            ->groupBy('perusahaans.nama_lengkap')
-                            ->groupBy('perusahaans.id')
+                            ->groupBy('perusahaan_masters.nama_lengkap')
+                            ->groupBy('perusahaan_masters.id')
                             ->get();
         $anggaran = $anggaran->orderBy('relasi_pilar_tpbs.pilar_pembangunan_id')
                             ->orderBy('relasi_pilar_tpbs.tpb_id')->get();

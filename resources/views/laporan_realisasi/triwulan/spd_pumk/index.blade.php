@@ -327,6 +327,19 @@
                                     
                                 @endforeach --}}
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th>Total</th>
+                                    <th>Total</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -848,6 +861,8 @@
                         }
                     }
                 ],
+                lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                pageLength: 10,
                 drawCallback: function(settings) {
                     var info = datatable.page.info();
                     $('[data-toggle="tooltip"]').tooltip();
@@ -857,6 +872,28 @@
                     }).nodes().each(function(cell, i) {
                         cell.innerHTML = info.start + i + 1;
                     });
+                },
+                footerCallback: function(row, data, start, end, display) {
+                    var api = this.api();
+                    
+                    var getColumnTotal = function(columnIndex) {
+                        return api
+                            .column(columnIndex, { page: 'current' })
+                            .data()
+                            .reduce(function(acc, val) {
+                                return acc + parseFloat(val);
+                            }, 0);
+                    };
+                  
+
+                    var incomeTotal = getColumnTotal(3);
+                    var outcomeTotal = getColumnTotal(4);
+                    var saldoAkhirTotal = getColumnTotal(5);
+
+                    $(api.column(1).footer()).html('Total');
+                    $(api.column(3).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(3).toFixed(0)) + '</div>');
+                    $(api.column(4).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(4).toFixed(0)) + '</div>');
+                    $(api.column(5).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(5).toFixed(0)) + '</div>');
                 }
             });
         }

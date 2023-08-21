@@ -57,8 +57,8 @@ class SpdPumkRkaController extends Controller
         }
         $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
         $anggaran = DB::table('pumk_anggarans')
-            ->selectRaw('pumk_anggarans.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')
-            ->leftJoin('perusahaans', 'perusahaans.id', '=', 'pumk_anggarans.bumn_id')
+            ->selectRaw('pumk_anggarans.*, perusahaan_masters.id as perusahaan_id, perusahaan_masters.nama_lengkap as nama_lengkap')
+            ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'pumk_anggarans.bumn_id')
             ->where('periode_id', $periode_rka_id);
         if ($request->perusahaan_id) {
 
@@ -361,8 +361,8 @@ class SpdPumkRkaController extends Controller
     public function show(Request $request)
     {
         $pumk_anggaran = DB::table('pumk_anggarans')
-        ->selectRaw('pumk_anggarans.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')
-        ->leftJoin('perusahaans', 'perusahaans.id', '=', 'pumk_anggarans.bumn_id')
+        ->selectRaw('pumk_anggarans.*, perusahaan_masters.id as perusahaan_id, perusahaan_masters.nama_lengkap as nama_lengkap')
+        ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'pumk_anggarans.bumn_id')
         ->where('pumk_anggarans.id', $request->id)->first();
         // dd($pumk_anggaran);
 
@@ -440,8 +440,8 @@ class SpdPumkRkaController extends Controller
 
         $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
         $anggaran = DB::table('pumk_anggarans')
-            ->selectRaw('pumk_anggarans.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')
-            ->leftJoin('perusahaans', 'perusahaans.id', '=', 'pumk_anggarans.bumn_id')
+            ->selectRaw('pumk_anggarans.*, perusahaan_masters.id as perusahaan_id, perusahaan_masters.nama_lengkap as nama_lengkap')
+            ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'pumk_anggarans.bumn_id')
             ->where('periode_id', $periode_rka_id);
         if ($request->perusahaan_id) {
 

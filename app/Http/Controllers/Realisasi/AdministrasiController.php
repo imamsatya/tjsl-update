@@ -93,13 +93,13 @@ class AdministrasiController extends Controller
         $tahun = ($request->tahun?$request->tahun:date('Y'));
         $pilar = PilarPembangunan::get();
         $tpb = Tpb::get();
-        $target_tpb = $admin_bumn && $perusahaan_id? TargetTpb::select('anggaran_tpbs.perusahaan_id','anggaran_tpbs.tahun','perusahaans.nama_lengkap AS bumn','target_tpbs.*')
+        $target_tpb = $admin_bumn && $perusahaan_id? TargetTpb::select('anggaran_tpbs.perusahaan_id','anggaran_tpbs.tahun','perusahaan_masters.nama_lengkap AS bumn','target_tpbs.*')
                     ->leftjoin('anggaran_tpbs','anggaran_tpbs.id','target_tpbs.anggaran_tpb_id')
-                    ->leftjoin('perusahaans','perusahaans.id','anggaran_tpbs.perusahaan_id')
+                    ->leftjoin('perusahaan_masters','perusahaan_masters.id','anggaran_tpbs.perusahaan_id')
                     ->where('anggaran_tpbs.perusahaan_id',$perusahaan_id)
-                    ->get() : TargetTpb::select('anggaran_tpbs.perusahaan_id','anggaran_tpbs.tahun','perusahaans.nama_lengkap AS bumn','target_tpbs.*')
+                    ->get() : TargetTpb::select('anggaran_tpbs.perusahaan_id','anggaran_tpbs.tahun','perusahaan_masters.nama_lengkap AS bumn','target_tpbs.*')
                     ->leftjoin('anggaran_tpbs','anggaran_tpbs.id','target_tpbs.anggaran_tpb_id')
-                    ->leftjoin('perusahaans','perusahaans.id','anggaran_tpbs.perusahaan_id')
+                    ->leftjoin('perusahaan_masters','perusahaan_masters.id','anggaran_tpbs.perusahaan_id')
                     ->get();
 
         $owner = OwnerProgram::get();
@@ -563,7 +563,7 @@ class AdministrasiController extends Controller
                                     'target_tpbs.program',
                                     'pilar_pembangunans.nama as pilar_pembangunan',
                                     'tpbs.nama as tpb',
-                                    'perusahaans.nama_lengkap as perusahaan',
+                                    'perusahaan_masters.nama_lengkap as perusahaan',
                                     'provinsis.nama as provinsi',
                                     'kotas.nama as kota',
                                     'bulans.nama as bulan_nama')
@@ -574,11 +574,11 @@ class AdministrasiController extends Controller
                                 ->leftJoin('bulans','bulans.id','kegiatan_realisasis.bulan')
                                 ->leftJoin('target_tpbs','target_tpbs.id','kegiatans.target_tpb_id')
                                 ->leftJoin('anggaran_tpbs','anggaran_tpbs.id','target_tpbs.anggaran_tpb_id')
-                                ->leftJoin('perusahaans','perusahaans.id','anggaran_tpbs.perusahaan_id')
+                                ->leftJoin('perusahaan_masters','perusahaan_masters.id','anggaran_tpbs.perusahaan_id')
                                 ->leftJoin('relasi_pilar_tpbs','relasi_pilar_tpbs.id','anggaran_tpbs.relasi_pilar_tpb_id')
                                 ->leftJoin('pilar_pembangunans','pilar_pembangunans.id','relasi_pilar_tpbs.pilar_pembangunan_id')
                                 ->leftJoin('tpbs','tpbs.id','relasi_pilar_tpbs.tpb_id')
-                                ->orderBy('perusahaans.id','asc')
+                                ->orderBy('perusahaan_masters.id','asc')
                                 ->orderBy('pilar_pembangunans.nama','asc')
                                 ->orderBy('tpbs.nama','asc')
                                 ->orderBy('target_tpbs.program','asc')

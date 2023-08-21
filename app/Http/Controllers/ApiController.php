@@ -301,11 +301,11 @@ class ApiController extends Controller
             return response()->json(['message' => $result]);            
         }else{
             $select = [
-                "users.*","perusahaans.nama_lengkap AS perusahaan"
+                "users.*","perusahaan_masters.nama_lengkap AS perusahaan"
             ];
     
             $result = User::select($select)
-                    ->leftjoin('perusahaans','perusahaans.id','=','users.id_bumn')
+                    ->leftjoin('perusahaan_masters','perusahaan_masters.id','=','users.id_bumn')
                     ->whereNotNull('id_bumn')
                     ->get();
     
@@ -437,7 +437,7 @@ class ApiController extends Controller
             return response()->json(['message' => $result]);            
         }else{   
             $result = DB::select('select "anggaran_tpbs"."perusahaan_id",
-            "perusahaans"."nama_lengkap" AS "perusahaan_text",
+            "perusahaan_masters"."nama_lengkap" AS "perusahaan_text",
             "anggaran_tpbs"."tahun" AS "tahun_anggaran",
             "anggaran_tpbs"."anggaran" AS "nilai_anggaran",
             "target_tpbs"."jenis_program_id",
@@ -460,7 +460,7 @@ class ApiController extends Controller
             
             from "target_tpbs" 
             left join "anggaran_tpbs" on "anggaran_tpbs"."id" = "target_tpbs"."anggaran_tpb_id" 
-            left join "perusahaans" on "anggaran_tpbs"."perusahaan_id" = "perusahaans"."id" 
+            left join "perusahaan_masters" on "anggaran_tpbs"."perusahaan_id" = "perusahaan_masters"."id" 
             left join "jenis_program" on "target_tpbs"."jenis_program_id" = "jenis_program"."id" 
             left join "core_subject" on "target_tpbs"."core_subject_id" = "core_subject"."id" 
             left join "tpbs" on "target_tpbs"."tpb_id" = "tpbs"."id" 
@@ -509,7 +509,7 @@ class ApiController extends Controller
                 'kode_indikators.kode_tujuan_tpb',
                 'kode_indikators.keterangan_tujuan_tpb',
                 'anggaran_tpbs.perusahaan_id',
-                'perusahaans.nama_lengkap AS perusahaan_text',
+                'perusahaan_masters.nama_lengkap AS perusahaan_text',
                 'anggaran_tpbs.anggaran',
                 'anggaran_tpbs.status_id AS anggaran_status_id',
                 'anggaran_tpbs.tahun AS anggaran_tahun'
@@ -521,7 +521,7 @@ class ApiController extends Controller
              ->leftjoin('core_subject','target_tpbs.core_subject_id','=','core_subject.id')
              ->leftjoin('tpbs','tpbs.id','=','target_tpbs.tpb_id')
              ->leftjoin('referensi_owners','referensi_owners.id','=','target_tpbs.id_owner')
-             ->leftjoin('perusahaans','perusahaans.id','=','anggaran_tpbs.perusahaan_id')
+             ->leftjoin('perusahaan_masters','perusahaan_masters.id','=','anggaran_tpbs.perusahaan_id')
              ->leftjoin('cara_penyalurans','cara_penyalurans.id','=','target_tpbs.cara_penyaluran_id')
              ->leftjoin('kode_indikators','kode_indikators.id','=','target_tpbs.kode_indikator_id')
              ->whereNotNull('anggaran_tpbs.anggaran')
@@ -569,7 +569,7 @@ class ApiController extends Controller
                 'kode_indikators.kode_tujuan_tpb',
                 'kode_indikators.keterangan_tujuan_tpb',
                 'anggaran_tpbs.perusahaan_id',
-                'perusahaans.nama_lengkap AS perusahaan_text',
+                'perusahaan_masters.nama_lengkap AS perusahaan_text',
                 'anggaran_tpbs.anggaran',
                 'anggaran_tpbs.status_id AS anggaran_status_id',
                 'anggaran_tpbs.tahun AS anggaran_tahun'
@@ -581,7 +581,7 @@ class ApiController extends Controller
              ->leftjoin('core_subject','target_tpbs.core_subject_id','=','core_subject.id')
              ->leftjoin('tpbs','tpbs.id','=','target_tpbs.tpb_id')
              ->leftjoin('referensi_owners','referensi_owners.id','=','target_tpbs.id_owner')
-             ->leftjoin('perusahaans','perusahaans.id','=','anggaran_tpbs.perusahaan_id')
+             ->leftjoin('perusahaan_masters','perusahaan_masters.id','=','anggaran_tpbs.perusahaan_id')
              ->leftjoin('cara_penyalurans','cara_penyalurans.id','=','target_tpbs.cara_penyaluran_id')
              ->leftjoin('kode_indikators','kode_indikators.id','=','target_tpbs.kode_indikator_id')
              ->whereNotNull('anggaran_tpbs.anggaran')
@@ -630,7 +630,7 @@ class ApiController extends Controller
                 'kode_indikators.kode_tujuan_tpb',
                 'kode_indikators.keterangan_tujuan_tpb',
                 'anggaran_tpbs.perusahaan_id',
-                'perusahaans.nama_lengkap AS perusahaan_text',
+                'perusahaan_masters.nama_lengkap AS perusahaan_text',
                 'anggaran_tpbs.anggaran',
                 'anggaran_tpbs.status_id AS anggaran_status_id',
                 'anggaran_tpbs.tahun AS anggaran_tahun'
@@ -642,7 +642,7 @@ class ApiController extends Controller
              ->leftjoin('core_subject','target_tpbs.core_subject_id','=','core_subject.id')
              ->leftjoin('tpbs','tpbs.id','=','target_tpbs.tpb_id')
              ->leftjoin('referensi_owners','referensi_owners.id','=','target_tpbs.id_owner')
-             ->leftjoin('perusahaans','perusahaans.id','=','anggaran_tpbs.perusahaan_id')
+             ->leftjoin('perusahaan_masters','perusahaan_masters.id','=','anggaran_tpbs.perusahaan_id')
              ->leftjoin('cara_penyalurans','cara_penyalurans.id','=','target_tpbs.cara_penyaluran_id')
              ->leftjoin('kode_indikators','kode_indikators.id','=','target_tpbs.kode_indikator_id')
              ->whereNotNull('anggaran_tpbs.anggaran')

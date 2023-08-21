@@ -75,7 +75,7 @@ class AnggaranTpbController extends Controller
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
             ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id'); 
         $anggaran_bumn  = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
-            ->leftJoin('perusahaans', 'perusahaans.id', 'anggaran_tpbs.perusahaan_id')
+            ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', 'anggaran_tpbs.perusahaan_id')
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
             ->leftJoin('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id');            
 
@@ -146,14 +146,14 @@ class AnggaranTpbController extends Controller
 
         $anggaran_bumn = $anggaran_bumn->select(
             'anggaran_tpbs.perusahaan_id',
-            'perusahaans.nama_lengkap',
-            'perusahaans.id',            
+            'perusahaan_masters.nama_lengkap',
+            'perusahaan_masters.id',            
             DB::Raw('sum(case when tpbs.jenis_anggaran = \'CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_cid'),
             DB::Raw('sum(case when tpbs.jenis_anggaran = \'non CID\' then anggaran_tpbs.anggaran else 0 end) as sum_anggaran_noncid')
         )
             ->groupBy('anggaran_tpbs.perusahaan_id')
-            ->groupBy('perusahaans.nama_lengkap')
-            ->groupBy('perusahaans.id')
+            ->groupBy('perusahaan_masters.nama_lengkap')
+            ->groupBy('perusahaan_masters.id')
             ->get();
         $anggaran = $anggaran->select('*', 'anggaran_tpbs.id as id_anggaran','pilar_pembangunans.nama as pilar_nama', 'tpbs.nama as tpb_nama', DB::Raw('(case when tpbs.jenis_anggaran = \'non CID\' then anggaran end) as anggaran_noncid'), DB::Raw('(case when tpbs.jenis_anggaran = \'CID\' then anggaran end) as anggaran_cid'))
                 ->orderBy('pilar_pembangunans.nama')
@@ -1377,7 +1377,7 @@ class AnggaranTpbController extends Controller
         $tahun = $request->tahun ? $request->tahun : (int)date('Y');
         
         $data = DB::table('anggaran_tpbs as atpb')
-            ->select('atpb.perusahaan_id', 'perusahaans.nama_lengkap', DB::raw("sum(case when pp.jenis_anggaran = 'CID' then atpb.anggaran end) as sum_cid"),
+            ->select('atpb.perusahaan_id', 'perusahaan_masters.nama_lengkap', DB::raw("sum(case when pp.jenis_anggaran = 'CID' then atpb.anggaran end) as sum_cid"),
             DB::raw("sum(case when pp.jenis_anggaran = 'non CID' then atpb.anggaran end) as sum_noncid"),
             DB::raw("count(case when status_id = 1 then 1 end) completed"),
             DB::raw("count(case when status_id = 2 then 1 end) inprogress"),
@@ -1387,7 +1387,7 @@ class AnggaranTpbController extends Controller
             // DB::raw("count(case when atpb.is_enable_input_by_superadmin = false then 1 end) disable_by_admin")
             )
             ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
-            ->join('perusahaans', 'perusahaans.id', '=', 'atpb.perusahaan_id')
+            ->join('perusahaan_masters', 'perusahaan_masters.id', '=', 'atpb.perusahaan_id')
             ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
             ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
             ->leftJoin('enable_input_by_superadmin as epp', function($join) use ($refEnable) {
@@ -1421,7 +1421,7 @@ class AnggaranTpbController extends Controller
             }
         } 
 
-        $data = $data->groupBy('atpb.perusahaan_id', 'perusahaans.nama_lengkap', 'epp.id')
+        $data = $data->groupBy('atpb.perusahaan_id', 'perusahaan_masters.nama_lengkap', 'epp.id')
             ->orderBy('atpb.perusahaan_id')
             ->get();
 

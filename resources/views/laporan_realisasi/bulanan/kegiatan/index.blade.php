@@ -374,6 +374,17 @@
                             </tr>
                         </thead>
                         <tbody></tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="6">Total</th>
+                                
+                                <th class="text-end"></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -843,7 +854,12 @@
                 },
                 {
                     data: 'anggaran_alokasi',
-                    name: 'anggaran_alokasi'
+                    name: 'anggaran_alokasi',
+                    render: function (data, type, row) {
+
+                        let formattedValue = formatCurrency2(data.toString());
+                            return `<div class="text-end">${formattedValue}</div>`;
+                    }
                 },
                 {
                     data: 'indikator',
@@ -915,6 +931,23 @@
             //         }, 0)
             //     );
             // },
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                pageLength: 10,
+                footerCallback: function (tfoot, data, start, end, display) {
+            var api = this.api();
+
+            var getColumnTotal = function (columnIndex) {
+                return api
+                    .column(columnIndex, { page: 'current' })
+                    .data()
+                    .reduce(function (acc, val) {
+                        return acc + parseFloat(val);
+                    }, 0);
+            };
+
+            // Calculate and display the total in the footer
+            $(api.column(6).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(6).toFixed(0)) + '</div>');
+        },
             drawCallback: function (settings) {
                 var info = datatable.page.info();
                 $('[data-toggle="tooltip"]').tooltip();
@@ -1417,6 +1450,27 @@
             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
         });
     }
+
+    function formatCurrency2(element) {
+         
+         let value = element.replace(/[^\d-]/g, ""); // Remove all non-numeric characters except for hyphen "-"
+         const isNegative = value.startsWith("-");
+         value = value.replace("-", ""); // Remove hyphen if it exists
+         const formatter = new Intl.NumberFormat("id-ID", {
+             style: "currency",
+             currency: "IDR",
+             minimumFractionDigits: 0,
+             maximumFractionDigits: 0
+         });
+         let formattedValue = formatter.format(value);
+         formattedValue = formattedValue.replace(/,/g, ".");
+         if (isNegative) {
+             formattedValue = "( " + formattedValue + " )";
+         } 
+         element = formattedValue;
+         return element
+      
+     }
 
 </script>
 @endsection

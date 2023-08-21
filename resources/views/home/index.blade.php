@@ -188,18 +188,27 @@
                                     <tr id="row_{{$index}}">
                                         {{-- {{dd($menuStatus[$index]['rka'])}} --}}
                                         
-                                        
-                                        <td >{{$menuStatus[$index]['menu']}}</td>
-                                        <td >{!! renderStatusBadge($menuStatus[$index]['rka']) !!}</td>
-                                        <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw1']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw1']['value']) !!}</span></td>
-                                        <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw2']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw2']['value']) !!}</span></td>
-                                        <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw3']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw3']['value']) !!}</span></td>
-                                        <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['prognosa']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['prognosa']['value']) !!}</span></td>
-                                        <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw4']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['tw4']['value']) !!}</span></td>
-                                        <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['audited']['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['audited']['value']) !!}</span></td>
-                                        
-
-                                       
+                                        {{-- {{dd($menuStatus)}} --}}
+                                        <td>{{$menuStatus[$index]['menu']}}</td>
+                                        <td>{!! isset($menuStatus[$index]['rka']) ? renderStatusBadge($menuStatus[$index]['rka']) : '' !!}</td>
+                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw1']['id'] ?? null}}">
+                                            {!! isset($menuStatus[$index]['tw1']['value']) ? renderStatusBadge($menuStatus[$index]['tw1']['value']) : '' !!}
+                                        </span></td>
+                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw2']['id'] ?? null}}">
+                                            {!! isset($menuStatus[$index]['tw2']['value']) ? renderStatusBadge($menuStatus[$index]['tw2']['value']) : '' !!}
+                                        </span></td>
+                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw3']['id'] ?? null}}">
+                                            {!! isset($menuStatus[$index]['tw3']['value']) ? renderStatusBadge($menuStatus[$index]['tw3']['value']) : '' !!}
+                                        </span></td>
+                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['prognosa']['id'] ?? null}}">
+                                            {!! isset($menuStatus[$index]['prognosa']['value']) ? renderStatusBadge($menuStatus[$index]['prognosa']['value']) : '' !!}
+                                        </span></td>
+                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw4']['id'] ?? null}}">
+                                            {!! isset($menuStatus[$index]['tw4']['value']) ? renderStatusBadge($menuStatus[$index]['tw4']['value']) : '' !!}
+                                        </span></td>
+                                        <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['audited']['id'] ?? null}}">
+                                            {!! isset($menuStatus[$index]['audited']['value']) ? renderStatusBadge($menuStatus[$index]['audited']['value']) : '' !!}
+                                        </span></td>
                                     </tr>
                                 @endfor
 

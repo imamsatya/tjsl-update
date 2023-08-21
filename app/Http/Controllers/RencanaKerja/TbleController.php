@@ -53,8 +53,8 @@ class TbleController extends Controller
         }
         $status = DB::table('statuses')->get();
         $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
-        $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaans.id as perusahaan_id, perusahaans.nama_lengkap as nama_lengkap')
-        ->leftJoin('perusahaans', 'perusahaans.id', '=', 'laporan_manajemens.perusahaan_id')->where('periode_laporan_id', $periode_rka_id);
+        $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaan_masters.id as perusahaan_id, perusahaan_masters.nama_lengkap as nama_lengkap')
+        ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'laporan_manajemens.perusahaan_id')->where('periode_laporan_id', $periode_rka_id);
         if ($request->perusahaan_id) {
 
             $laporan_manajemen = $laporan_manajemen->where('perusahaan_id', $request->perusahaan_id);
