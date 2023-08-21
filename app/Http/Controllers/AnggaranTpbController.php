@@ -171,7 +171,7 @@ class AnggaranTpbController extends Controller
             return $data->status_id == 1;
         })->count();
         
-        $list_perusahaan = Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get();
+        $list_perusahaan = Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get();
         $currentNamaPerusahaan = $list_perusahaan->where('id', $perusahaan_id)->pluck('nama_lengkap');
         $currentNamaPerusahaan = count($currentNamaPerusahaan) ? $currentNamaPerusahaan[0] : 'ALL';
 
@@ -1437,7 +1437,7 @@ class AnggaranTpbController extends Controller
             return $row->verified > 0;
         })->count();
                 
-        $list_perusahaan = Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get();
+        $list_perusahaan = Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get();
         $currentNamaPerusahaan = $list_perusahaan->where('id', $perusahaan_id)->pluck('nama_lengkap');
         $currentNamaPerusahaan = count($currentNamaPerusahaan) ? $currentNamaPerusahaan[0] : 'ALL';
 

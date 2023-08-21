@@ -80,7 +80,7 @@ class PumkController extends Controller
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
-            'perusahaan' => Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
             // 'anggaran' => $anggaran,
             // 'anggaran_pilar' => $anggaran_pilar,
             // 'anggaran_bumn' => $anggaran_bumn,

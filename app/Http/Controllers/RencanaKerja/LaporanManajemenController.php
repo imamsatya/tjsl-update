@@ -59,7 +59,7 @@ class LaporanManajemenController extends Controller
 
         //cek laporan setiap tahun dari 2021 sampai tahun saat ini
         
-        $all_perusahaan_id =Perusahaan::where('is_active', true)->where('induk', 0)->pluck('id');
+        $all_perusahaan_id =Perusahaan::where('is_active', true)->pluck('id');
         $currentYear = Carbon::now()->year;
         foreach ($all_perusahaan_id as $key => $cek_perusahaan_id) {
             for ($year = 2020; $year <= $currentYear; $year++) {
@@ -142,7 +142,7 @@ class LaporanManajemenController extends Controller
             'breadcrumb' => 'Rencana Kerja - Laporan Manajemen - RKA',
             // 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
             'tahun' => ($request->tahun ?? Carbon::now()->year),
-            'perusahaan' => Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'perusahaan_id' => $perusahaan_id,
             'status' => $status,

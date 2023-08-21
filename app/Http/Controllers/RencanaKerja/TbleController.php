@@ -157,7 +157,6 @@ class TbleController extends Controller
       
         $currentYear = date('Y');
         $perusahaan = Perusahaan::select('id', 'nama_lengkap')
-            ->where('induk', 0)
             ->get();
            $newarray = [];
            foreach ($perusahaan as $key => $perusahaan_row) {

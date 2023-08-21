@@ -190,7 +190,7 @@ class ProgramController extends Controller
         })->count();
 
                 // dd($jenis_anggaran);
-        $list_perusahaan = Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get();
+        $list_perusahaan = Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get();
         $currentNamaPerusahaan = $list_perusahaan->where('id', $perusahaan_id)->pluck('nama_lengkap');
         $currentNamaPerusahaan = count($currentNamaPerusahaan) ? $currentNamaPerusahaan[0] : 'ALL';
         return view($this->__route . '.index', [
@@ -950,7 +950,7 @@ class ProgramController extends Controller
             return $row->verified > 0;
         })->count();
 
-        $list_perusahaan = Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get();
+        $list_perusahaan = Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get();
         $currentNamaPerusahaan = $list_perusahaan->where('id', $perusahaan_id)->pluck('nama_lengkap');
         $currentNamaPerusahaan = count($currentNamaPerusahaan) ? $currentNamaPerusahaan[0] : 'ALL';
 
