@@ -308,7 +308,7 @@
 
                             @can('view-finalUnverify')
                                 @if($data->count())
-                                <button {{ $enable_input || $isSuperAdmin ? ($countVerified ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
+                                <button {{ $enable_input || $isSuperAdmin ? ($countVerified ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-warning btn-sm me-2" id="unverify-data" >Un-Verify
                                 </button>    
                                 @endif
                             @endcan
