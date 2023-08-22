@@ -715,7 +715,7 @@
                     {
                         data: 'tahun',
                         name: 'tahun',
-                        orderable: true,
+                        orderable: true
                     },
                    
 

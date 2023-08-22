@@ -72,6 +72,7 @@ class TbleController extends Controller
         }
 
         $laporan_manajemen = $laporan_manajemen->get();
+        // dd($laporan_manajemen);
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Rencana Kerja - Tanda Bukti Lapor Elektronik - RKA',
@@ -236,11 +237,22 @@ class TbleController extends Controller
     
         //cek angaran
         $anggaran = DB::table('anggaran_tpbs')->where('perusahaan_id', $id)->where('tahun', $tahun)->orderBy('updated_at', 'desc')->get();
+        
 
+        $totalAnggaran = count($anggaran);
+        $totalCompleteAnggaran = count($anggaran->where('status_id', 1));
+        $totalVerifiedAnggaran = count($anggaran->where('status_id', 4));
+    
+        // dd($totalAnggaran . ' ' . $totalCompleteAnggaran. ' '.$totalVerifiedAnggaran);
         //cek ada atau tidak
-        if($anggaran?->first()){
+        if($totalAnggaran == $totalCompleteAnggaran && $totalAnggaran != 0){
             $data[0]['tanggal_update'] = $anggaran->first()->updated_at;
-            $data[0]['status'] = "Finish";
+            $data[0]['status'] = "Completed";
+        }
+
+        if($totalAnggaran == $totalVerifiedAnggaran && $totalAnggaran != 0){
+            $data[0]['tanggal_update'] = $anggaran->first()->updated_at;
+            $data[0]['status'] = "Verified";
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress
         if ($anggaran?->where('status_id', 2)->first()) {
@@ -250,10 +262,19 @@ class TbleController extends Controller
       
         //cek program
         $anggaran = DB::table('anggaran_tpbs')->where('perusahaan_id', $id)->where('tahun', $tahun)->orderBy('target_tpbs.updated_at', 'desc')->join('target_tpbs', 'target_tpbs.anggaran_tpb_id', '=', 'anggaran_tpbs.id')->get();
-         //cek ada atau tidak
-         if($anggaran?->first()){
+        $totalAnggaranProgram = count($anggaran);
+        $totalCompleteAnggaranProgram = count($anggaran->where('status_id', 1));
+        $totalVerifiedAnggaranProgram = count($anggaran->where('status_id', 4));
+        
+         //cek ada atau tidak, completed
+         if($totalAnggaranProgram == $totalCompleteAnggaran && $totalAnggaranProgram != 0){
             $data[1]['tanggal_update'] = $anggaran->first()->updated_at;
-            $data[1]['status'] = "Finish";
+            $data[1]['status'] = "Completed";
+        }
+
+        if($totalAnggaranProgram == $totalVerifiedAnggaran && $totalAnggaranProgram != 0){
+            $data[1]['tanggal_update'] = $anggaran->first()->updated_at;
+            $data[1]['status'] = "Verified";
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress
         if ($anggaran?->where('status_id', 2)->first()) {
@@ -264,10 +285,19 @@ class TbleController extends Controller
         //cek spd pumk
         $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
         $spd_pumk = DB::table('pumk_anggarans')->where('bumn_id', $id)->where('tahun', $tahun)->where('periode_id', $periode_rka_id)->get();
-       
-        if($spd_pumk?->first()){
+        
+        $totalSPDPUMK = count($spd_pumk);
+        $totalCompleteSPDPUMK = count($spd_pumk->where('status_id', 1));
+        $totalVerifiedSPDPUMK = count($spd_pumk->where('status_id', 4));
+      
+        if($totalSPDPUMK == $totalCompleteSPDPUMK && $totalSPDPUMK!= 0){
             $data[2]['tanggal_update'] = $spd_pumk->first()->updated_at;
-            $data[2]['status'] = "Finish";
+            $data[2]['status'] = "Completed";
+        }
+
+        if($totalSPDPUMK == $totalVerifiedSPDPUMK && $totalSPDPUMK!= 0){
+            $data[2]['tanggal_update'] = $spd_pumk->first()->updated_at;
+            $data[2]['status'] = "Verified";
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress
         if ($spd_pumk?->where('status_id', 2)->first()) {
@@ -276,9 +306,17 @@ class TbleController extends Controller
         }
         //cek laporan manajemen rka
         $laporan_manajemen = DB::table('laporan_manajemens')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('periode_laporan_id', $periode_rka_id)->get();
-        if($laporan_manajemen?->first() ){
+
+        $totalLaporanManajemen = count($laporan_manajemen);
+        $totalCompleteLaporanManajemen = count($laporan_manajemen->where('status_id', 1));
+        $totalVerifiedLaporanManajemen = count($laporan_manajemen->where('status_id', 4));
+        if($totalLaporanManajemen == $totalCompleteLaporanManajemen && $totalLaporanManajemen != 0 ){
             $data[3]['tanggal_update'] = $laporan_manajemen->first()->updated_at;
-            $data[3]['status'] = "Finish";
+            $data[3]['status'] = "Completed";
+        }
+        if($totalLaporanManajemen == $totalVerifiedLaporanManajemen && $totalLaporanManajemen != 0 ){
+            $data[3]['tanggal_update'] = $laporan_manajemen->first()->updated_at;
+            $data[3]['status'] = "Verified";
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress/unfilled
         if ($laporan_manajemen?->whereIn('status_id', [2, 3])->first()) {

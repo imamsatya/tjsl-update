@@ -68,6 +68,7 @@ class LaporanManajemenController extends Controller
                 // dd($cek_laporan_rka);
 
                 $cek_laporan_rka = DB::table('laporan_manajemens')->where('tahun', $year)->where('perusahaan_id', $cek_perusahaan_id)->where('periode_laporan_id', $periode_rka_id)->first();
+                // dd($cek_laporan_rka);
                 if(!$cek_laporan_rka){
                     $latest_id = LaporanManajemen::max('id');
                     $laporan_manajemen_new = new LaporanManajemen();
@@ -290,9 +291,9 @@ class LaporanManajemenController extends Controller
         // dd($request);
         $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
         $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaan_masters.id as perusahaan_id, perusahaan_masters.nama_lengkap as nama_lengkap')
-        ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'laporan_manajemens.perusahaan_id')->where('periode_laporan_id', $periode_rka_id)->where('perusahaan_masters.induk', 0);
+        ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'laporan_manajemens.perusahaan_id')->where('periode_laporan_id', $periode_rka_id)->where('perusahaan_masters.is_active', true);
         if ($request->perusahaan_id) {
-
+         
             $laporan_manajemen = $laporan_manajemen->where('perusahaan_id', $request->perusahaan_id);
         }
 
@@ -308,6 +309,7 @@ class LaporanManajemenController extends Controller
         }
 
         $laporan_manajemen = $laporan_manajemen->orderBy('laporan_manajemens.tahun', 'desc')->get();
+        // dd($laporan_manajemen);
         // $all_perusahaan_id =$laporan_manajemen->pluck('perusahaan_id');
         // dd();
         try {

@@ -249,7 +249,7 @@ class LaporanManajemenTriwulanController extends Controller
             ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'laporan_manajemens.perusahaan_id')
             ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'laporan_manajemens.periode_laporan_id')
             ->whereIn('periode_laporan_id', $periode->pluck('id')->toArray())
-            ->where('perusahaan_masters.induk', 0);
+            ->where('perusahaan_masters.is_active', true);
         }
         else{
             $laporan_manajemen = DB::table('laporan_manajemens')
@@ -263,7 +263,7 @@ class LaporanManajemenTriwulanController extends Controller
             ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'laporan_manajemens.perusahaan_id')
             ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'laporan_manajemens.periode_laporan_id')
             ->whereIn('periode_laporan_id', $periode->pluck('id')->toArray())
-            ->where('perusahaan_masters.induk', 0);
+            ->where('perusahaan_masters.is_active', true);
         }
        
         $perusahaan_id = $request->perusahaan_id ?? 1; //default id 1

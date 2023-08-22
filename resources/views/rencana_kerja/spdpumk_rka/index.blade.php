@@ -693,7 +693,6 @@
                 ajax: {
                 url: urldatatable,
                 type: 'GET',
-                
                 data: function (d) {
                     d.perusahaan_id = $("select[name='perusahaan_id']").val(),
                     d.tahun = $("select[name='tahun']").val(),
