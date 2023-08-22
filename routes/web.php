@@ -466,6 +466,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
         Route::post('update_anggaran', 'App\Http\Controllers\AnggaranTpbController@updateAnggaran')->name('anggaran_tpb.update_anggaran');
         Route::post('delete_by_select2', 'App\Http\Controllers\AnggaranTpbController@deleteBySelect2')->name('anggaran_tpb.delete_by_select2');
         Route::post('verifikasi_data_final', 'App\Http\Controllers\AnggaranTpbController@verifikasiDataFinal')->name('anggaran_tpb.verifikasi_data_final');
+        Route::post('batal_verifikasi_data_final', 'App\Http\Controllers\AnggaranTpbController@batalVerifikasiDataFinal')->name('anggaran_tpb.batal_verifikasi_data_final');
     });
 
     Route::prefix('laporan_manajemen')->group(function () {
@@ -596,6 +597,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::get('input/{perusahaan_id}/{tahun}/{jenis_anggaran}', 'App\Http\Controllers\RencanaKerja\ProgramController@create2')->name('rencana_kerja.program.input');
             Route::post('enable_disable_input_data', 'App\Http\Controllers\RencanaKerja\ProgramController@enableDisableInputData')->name('rencana_kerja.program.enable_disable_input_data');
             Route::post('verifikasi_data_final', 'App\Http\Controllers\RencanaKerja\ProgramController@verifikasiDataFinal')->name('rencana_kerja.program.verifikasi_data_final');
+            Route::post('batalverifikasi_data_final', 'App\Http\Controllers\RencanaKerja\ProgramController@batalVerifikasiDataFinal')->name('rencana_kerja.program.batal_verifikasi_data_final');
         });
 
         Route::prefix('laporan_manajemen')->group(function () {

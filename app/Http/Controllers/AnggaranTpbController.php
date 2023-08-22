@@ -1370,7 +1370,7 @@ class AnggaranTpbController extends Controller
                     $isSuperAdmin = true;
                 }
             }
-        }   
+        }  
 
         $refEnable = $this->getReferensiEnable();
         
@@ -1952,7 +1952,7 @@ class AnggaranTpbController extends Controller
 
         // validasi availability untuk input data
         $isOkToInput = $this->checkRule();
-        $refEnable = $this->getReferensiEnable();
+        $refEnable = $this->getReferensiEnable(); // yovi
 
         // cek enable input by superadmin
         $list_enable = DB::table('enable_input_by_superadmin')
@@ -1971,7 +1971,7 @@ class AnggaranTpbController extends Controller
             return $data->count();
         });
 
-        $isFinish = isset($countStatus['1']) && !isset($countStatus['2']);
+        $isFinish = ( isset($countStatus['4']) || isset($countStatus['1']) ) && !isset($countStatus['2']);
         
 
         return view(
@@ -2061,5 +2061,44 @@ class AnggaranTpbController extends Controller
             ];
         }
         return response()->json($result);        
+    }
+
+    public function batalVerifikasiDataFinal(Request $request) {
+        DB::beginTransaction();
+        try {
+            $id_bumn = $request->input('bumn');
+            $tahun = $request->input('tahun');
+
+            $allDataUpdated = AnggaranTpb::where('status_id', '=', 4) // verified
+                            ->where('anggaran', '>=', 0)
+                            ->where('tahun', $tahun)
+                            ->when($id_bumn, function($query) use ($id_bumn) {
+                                return $query->where('perusahaan_id', $id_bumn);
+                            })
+                            ->get();
+
+            if($allDataUpdated->count()) {
+                foreach($allDataUpdated as $data) {  
+                    AnggaranTpb::where('id', $data->id)->update(['status_id' => 2]); // set to in progress
+                    AnggaranTpbController::store_log($data->id, 2, $data->anggaran, 'RKA Revisi - UnVerified');
+                }
+            }                                            
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses unverified data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);  
     }
 }
