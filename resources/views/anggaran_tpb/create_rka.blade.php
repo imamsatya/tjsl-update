@@ -92,7 +92,7 @@
                                 <!--end::Title-->
 
                                 <!--begin::Content-->
-                                <span>Data sudah diverifikasi!</span>
+                                <span>Data sudah diverifikasi / diset-completed!</span>
                                 <!--end::Content-->
                             </div>
                             <!--end::Wrapper-->

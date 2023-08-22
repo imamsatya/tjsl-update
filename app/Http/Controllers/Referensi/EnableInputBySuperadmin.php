@@ -42,7 +42,7 @@ class EnableInputBySuperadmin extends Controller
             ->select('ep.*', 'rp.route_name', 'rp.deskripsi', 'pp.nama_lengkap', 'menus.label')
             ->join('referensi_enable_input_by_superadmin as rp', 'ep.referensi_id', '=', 'rp.id')
             ->join('menus', 'menus.route_name', '=', 'rp.route_name')
-            ->join('perusahaans as pp', 'pp.id', '=', 'ep.perusahaan_id')
+            ->join('perusahaan_masters as pp', 'pp.id', '=', 'ep.perusahaan_id')
             ->when($tahun, function($query) use ($tahun) {
                 return $query->where('tahun', $tahun);
             })
@@ -60,7 +60,7 @@ class EnableInputBySuperadmin extends Controller
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => '',
             'isSuperAdmin' => $this->isSuperAdmin(),
-            'perusahaan' => Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
             'tahun' => $tahun,
             'perusahaan_id' => $perusahaan_id,
             'referensi_selected' => $referensi,
@@ -80,7 +80,7 @@ class EnableInputBySuperadmin extends Controller
                 'master_referensi' => DB::table('referensi_enable_input_by_superadmin as rep')->select('rep.*', 'menus.label')->join('menus', 'menus.route_name', '=', 'rep.route_name')->get(),
                 'pagetitle' => $this->pagetitle,
                 'actionform' => 'add',
-                'perusahaan' => Perusahaan::where('is_active', true)->where('induk', 0)->orderBy('id', 'asc')->get(),
+                'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
                 'isSuperAdmin' => $this->isSuperAdmin(),
                 'tahun' => $tahun,
                 'perusahaan_id' => $perusahaan_id,
@@ -102,6 +102,8 @@ class EnableInputBySuperadmin extends Controller
             $tahun = $data['tahun'];
             $referensi_id = $data['tipe'];
             $list_perusahaan = $data['bumn'];
+            $tanggal_awal = $data['tanggal_awal'] ? date_format(date_create($data['tanggal_awal']), "Y-m-d") : null;
+            $tanggal_akhir = $data['tanggal_akhir'] ? date_format(date_create($data['tanggal_akhir']), "Y-m-d") : null;
             $currentDate = new DateTime();
 
             $already_enable = DB::table('enable_input_by_superadmin')
@@ -111,7 +113,7 @@ class EnableInputBySuperadmin extends Controller
             $id_already_enable = $already_enable->pluck('perusahaan_id')->toArray();
             
             if($list_perusahaan[0] === 'all') {
-                $all_perusahaan = DB::table('perusahaans as pp')
+                $all_perusahaan = DB::table('perusahaan_masters as pp')
                     ->where('pp.is_active', true) // perusahaan aktif only
                     ->get();
                 $list_perusahaan = $all_perusahaan->pluck('id')->toArray();
@@ -130,7 +132,9 @@ class EnableInputBySuperadmin extends Controller
                     'created_at' => $currentDate,
                     'updated_at' => $currentDate,
                     'referensi_id' => $referensi_id,   
-                    'user_id' => $id_users
+                    'user_id' => $id_users,
+                    'tanggal_awal' => $tanggal_awal,
+                    'tanggal_akhir' => $tanggal_akhir
                 ];
 
                 $tempDataLog = [
@@ -139,7 +143,9 @@ class EnableInputBySuperadmin extends Controller
                     'status' => 'enable',
                     'created_at' => $currentDate,
                     'updated_at' => $currentDate,
-                    'tipe' => $referensi_id,                    
+                    'tipe' => $referensi_id,     
+                    'tanggal_awal' => $tanggal_awal,
+                    'tanggal_akhir' => $tanggal_akhir
                 ];
 
                 array_push($log, $tempDataLog);
@@ -193,7 +199,9 @@ class EnableInputBySuperadmin extends Controller
                     'status' => 'disable',
                     'created_at' => $currentDate,
                     'updated_at' => $currentDate,
-                    'referensi_id' => $temp->referensi_id,                    
+                    'referensi_id' => $temp->referensi_id,  
+                    'tanggal_awal' => $temp->tanggal_awal,
+                    'tanggal_akhir' => $temp->tanggal_akhir                  
                 ]);
             }
 

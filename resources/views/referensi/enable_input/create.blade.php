@@ -3,16 +3,19 @@
         <div class="col-md-6">
             <div class="row mb-6">
                 <!--begin::Label-->
-                <label class="col-lg-2 col-form-label fw-semibold fs-6">Tipe</label>
+                <label class="col-lg-3 col-form-label fw-semibold fs-6">BUMN</label>
                 <!--end::Label-->
                 <!--begin::Col-->
-                <div class="col-lg-10 fv-row">
-                    <select class="form-select form-select-solid form-select2" id="tipe_add" name="tipe_add"
-                        data-kt-select2="true" data-placeholder="Pilih Tipe" data-allow-clear="true" 
-                        data-dropdown-parent="#winform">
+                <div class="col-lg-9 fv-row">
+                    <select class="form-select form-select-solid form-select2" id="perusahaan_id_add" name="perusahaan_id_add"
+                        data-kt-select2="true" data-placeholder="Pilih BUMN" data-allow-clear="true" data-dropdown-parent="#winform" multiple="multiple">
                         <option></option>
-                        @foreach($master_referensi as $mp)
-                            <option value="{{ $mp->id }}" {{ $mp->id === $referensi_selected ? 'selected' : ''}}>{{$mp->label}}</option>
+                        <option value="all">SELECT ALL</option>
+                        @foreach($perusahaan as $p)
+                        @php
+                        $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
+                        @endphp
+                        <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -44,19 +47,16 @@
         <div class="col-md-12">
             <div class="row mb-6">
                 <!--begin::Label-->
-                <label class="col-lg-1 col-form-label fw-semibold fs-6">BUMN</label>
+                <label class="col-lg-1 col-form-label fw-semibold fs-6">Tipe</label>
                 <!--end::Label-->
                 <!--begin::Col-->
                 <div class="col-lg-11 fv-row">
-                    <select class="form-select form-select-solid form-select2" id="perusahaan_id_add" name="perusahaan_id_add"
-                        data-kt-select2="true" data-placeholder="Pilih BUMN" data-allow-clear="true" data-dropdown-parent="#winform" multiple="multiple">
+                    <select class="form-select form-select-solid form-select2" id="tipe_add" name="tipe_add"
+                        data-kt-select2="true" data-placeholder="Pilih Tipe" data-allow-clear="true" 
+                        data-dropdown-parent="#winform">
                         <option></option>
-                        <option value="all">SELECT ALL</option>
-                        @foreach($perusahaan as $p)
-                        @php
-                        $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
-                        @endphp
-                        <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
+                        @foreach($master_referensi as $mp)
+                            <option value="{{ $mp->id }}" {{ $mp->id === $referensi_selected ? 'selected' : ''}}>{{$mp->label}}</option>
                         @endforeach
                     </select>
                 </div>
@@ -85,6 +85,16 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <label class="col-form-label fw-semibold fs-6">Tanggal Awal</label>
+            <input required type="text" class="form-control input-tanggal" name="tanggal_awal" id="tanggal_awal" />
+        </div>
+        <div class="col-lg-6">
+            <label class="col-form-label fw-semibold fs-6">Tanggal Akhir</label>
+            <input required type="text" class="form-control input-tanggal" name="tanggal_akhir" id="tanggal_akhir" />
+        </div>
+    </div>
 </div>
 <div class="text-center pt-15">
     <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal"
@@ -100,6 +110,15 @@
     var urladddata = "{{route('referensi.enable_input.save')}}";
     $(document).ready(function () {
 
+        $('.input-tanggal').flatpickr({
+            enableTime: false,
+            // dateFormat: "d M Y",
+            dateFormat: "Y-m-d",
+            altFormat: "d M Y",
+            altInput: true
+
+        });
+
         $('.form-select').select2();
 
         $("#submit").on('click', async function () {
@@ -108,14 +127,16 @@
                  "tahun" : $("#tahun_add").val(),
                  "tipe" : $("#tipe_add").val(),
                  "bumn" : $("#perusahaan_id_add").val(),
-                 "periode_add" : $("#periode_add").val()
+                 "periode_add" : $("#periode_add").val(),
+                 "tanggal_awal": $("#tanggal_awal").val(),
+                 "tanggal_akhir": $("#tanggal_akhir").val()
             }
 
             if(data.tahun == '' || data.tipe == '' || !data.bumn.length  ) {
                 swal.fire({
                     icon: 'warning',
                     title: 'Warning',
-                    html: 'Isian harus terisi!'
+                    html: 'Isian BUMN, tahun, dan tipe harus terisi!'
                 })
                 return
             }

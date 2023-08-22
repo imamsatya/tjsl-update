@@ -1544,4 +1544,44 @@ class ProgramController extends Controller
         }
         return response()->json($result);        
     }
+
+    public function batalVerifikasiDataFinal(Request $request) {
+        DB::beginTransaction();
+        try {
+
+            $id_bumn = $request->input('bumn');
+            $tahun = $request->input('tahun');
+
+            $allDataUpdated = TargetTpb::select('target_tpbs.*')
+                            ->join('anggaran_tpbs', 'anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
+                            ->where('target_tpbs.status_id', '=', 4) // verified
+                            ->where('anggaran_tpbs.tahun', $tahun)
+                            ->when($id_bumn, function($query) use ($id_bumn) {
+                                return $query->where('anggaran_tpbs.perusahaan_id', $id_bumn);
+                            })
+                            ->get();
+            
+            if($allDataUpdated->count()) {
+                foreach($allDataUpdated as $data) {  
+                    TargetTpb::where('id', $data->id)->update(['status_id' => 2]); // in progress
+                    ProgramController::store_log($data->id,2);
+                }
+            } 
+
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal verifikasi data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);  
+    }
 }

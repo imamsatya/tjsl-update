@@ -265,41 +265,53 @@
                                 $enable_input = false;
                                 if($isOkToInput || $isEnableInputBySuperadmin) $enable_input = true;
                                 $isVerified = false;
-                                if($countInprogress > 0) $isVerified = false;
-                                else if($countVerified > 0) $isVerified = true;
+                                $isCompleted = false;
+                                if(!$countInprogress) {
+                                    if($countCompleted > 0) $isCompleted = true;
+                                    else if($countVerified > 0) $isVerified = true;
+                                }
                             @endphp
                             @can('view-kegiatan')
                             <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
                             @can('delete-kegiatan')
-                            <button {{ $isSuperAdmin ? '' : ($enable_input ? (!$isFinisih ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
+                            <button {{ $isSuperAdmin ? '' : ($enable_input ? (!($isVerified || $isCompleted) ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                             </button>
                             @endcan
                             @can('edit-kegiatan')
-                            <button {{ $isSuperAdmin ? '' : ($enable_input ? (!$isFinisih ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
+                            <button {{ $isSuperAdmin ? '' : ($enable_input ? (!($isVerified || $isCompleted) ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
                             </button>
                             @endcan
                             @endcan
                           
                             @can('view-verify')
-                                @if($countInprogress || !$data->count())
-                                    <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="completed-data" >Complete
-                                    </button>
-                                @endif 
-                           @endcan
-
-                           @can('view-unverify')
-                                @if(!$countInprogress && $data->count())
-                                    <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm me-2" id="uncompleted-data" >Un-Complete
-                                    </button>  
-                                @endif 
-                           @endcan
-
-                           @can('view-finalVerify')
-                                @if($countInprogress || !$data->count())
-                                    <button {{ $enable_input || $isSuperAdmin ? '' : 'disabled' }} type="button" class="btn btn-success btn-sm" id="verify-data" >Verify
-                                    </button>    
+                                @if($data->count())
+                                @if(!$isSuperAdmin)
+                                <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="completed-data" >Complete
+                                </button>
                                 @endif
-                           @endcan
+                                @endif
+                            @endcan
+
+                            @can('view-unverify')
+                                @if($data->count())
+                                <button {{ $enable_input || $isSuperAdmin ? ($countCompleted ? '' : ($countInprogress ? 'disabled' : '')) : 'disabled' }} type="button" class="btn btn-warning btn-sm me-2" id="uncompleted-data" >Un-Complete
+                                </button>   
+                                @endif
+                            @endcan
+
+                            @can('view-finalVerify')
+                                @if($data->count())
+                                <button {{ $enable_input || $isSuperAdmin ? ($countCompleted ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-success btn-sm me-2" id="verify-data" >Verify
+                                </button>    
+                                @endif
+                            @endcan
+
+                            @can('view-finalUnverify')
+                                @if($data->count())
+                                <button {{ $enable_input || $isSuperAdmin ? ($countVerified ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
+                                </button>    
+                                @endif
+                            @endcan
                         </div>
                         <!--end::Search-->
                         <!--end::Group actions-->
@@ -406,6 +418,8 @@
         var urlgetdataperusahaanpilartpb = "{{ route('rencana_kerja.program.get_data_perusahaan_pilar_tpb_tree') }}";
         var urlenableinputdata = "{{route('rencana_kerja.program.enable_disable_input_data')}}";
         var urlverifikasidataFinal = "{{route('rencana_kerja.program.verifikasi_data_final')}}";
+        var urlbatalverifikasidataFinal = "{{route('rencana_kerja.program.batal_verifikasi_data_final')}}";
+        
 
         $(document).ready(function() {
 
@@ -413,6 +427,7 @@
             const isOkToInput = "{{ $isOkToInput }}";  
             const countInprogress = parseInt("{{ $countInprogress }}")
             const countCompleted = parseInt("{{ $countCompleted }}")
+            const countVerified = parseInt("{{ $countVerified }}")
             const isSuperAdmin = "{{ $isSuperAdmin }}";
 
             $(".tree-new").treegrid({            
@@ -870,7 +885,7 @@
             })
 
             $("#uncompleted-data").on('click', function() {
-                if(countInprogress) {
+                if(!countCompleted) {
                     swal.fire({
                         title: "Pemberitahuan",
                         html: "Tidak ada data yang bisa di-set uncompleted!",
@@ -910,7 +925,7 @@
                             `,
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonText: "Ya, batalkan verifikasi data",
+                    confirmButtonText: "Ya, set data un-completed",
                     cancelButtonText: "Tidak"
                 }).then(function(result) {
                     if (result.value) {
@@ -1194,6 +1209,117 @@
                         });
                     }
                 });
+            })
+
+            $("#unverify-data").on('click', function() {  
+            
+                if(!countVerified) {
+                    swal.fire({
+                        title: "Pemberitahuan",
+                        html: "Tidak ada data yang bisa diun-verifikasi!",
+                        icon: "warning",
+                        showCancelButton: false,
+                        confirmButtonText: "Close",
+                    })
+
+                    return
+                }
+
+                const bumn = "{{ $perusahaan_id }}"
+                const tahun = "{{ $tahun }}"
+                const nama_bumn = "{{ $perusahaan_nama }}"
+
+
+                swal.fire({
+                    title: "Pemberitahuan",
+                    html: `<span style="color: red; font-weight: bold">Yakin batalkan verifikasi data ? </span><br/>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <tbody>
+                                    <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                        <td>Perusahaan</td>
+                                        <td>${nama_bumn}</td>
+                                    </tr>
+                                    <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                        <td>Tahun</td>
+                                        <td>${tahun}</td>
+                                    </tr>
+                                    <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
+                                        <td>Jumlah Batal Verifikasi</td>
+                                        <td>${countVerified} rows</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                            `,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Ya, batalkan verifikasi data",
+                    cancelButtonText: "Tidak"
+                }).then(function(result) {
+                    if (result.value) {
+                        $.ajax({
+                            url: urlbatalverifikasidataFinal,
+                            data:{
+                                "bumn": bumn,
+                                "tahun": tahun
+                            },
+                            type:'post',
+                            dataType:'json',
+                            beforeSend: function(){
+                                $.blockUI();
+                            },
+                            success: function(data){
+                                $.unblockUI();
+
+                                swal.fire({
+                                        title: data.title,
+                                        html: data.msg,
+                                        icon: data.flag,
+
+                                        buttonsStyling: true,
+
+                                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                                });
+
+                                if(data.flag == 'success') {
+                                    // datatable.ajax.reload( null, false );
+                                    location.reload(); 
+                                }
+                                
+                            },
+                            error: function(jqXHR, exception) {
+                                $.unblockUI();
+                                var msgerror = '';
+                                if (jqXHR.status === 0) {
+                                    msgerror = 'jaringan tidak terkoneksi.';
+                                } else if (jqXHR.status == 404) {
+                                    msgerror = 'Halaman tidak ditemukan. [404]';
+                                } else if (jqXHR.status == 500) {
+                                    msgerror = 'Internal Server Error [500].';
+                                } else if (exception === 'parsererror') {
+                                    msgerror = 'Requested JSON parse gagal.';
+                                } else if (exception === 'timeout') {
+                                    msgerror = 'RTO.';
+                                } else if (exception === 'abort') {
+                                    msgerror = 'Gagal request ajax.';
+                                } else {
+                                    msgerror = 'Error.\n' + jqXHR.responseText;
+                                }
+                                swal.fire({
+                                    title: "Error System",
+                                    html: msgerror+', coba ulangi kembali !!!',
+                                    icon: 'error',
+
+                                    buttonsStyling: true,
+
+                                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                                });  
+                            }
+                        });
+                    }
+                });
+
             })
 
         });  
