@@ -630,4 +630,44 @@ class SpdPumkRkaController extends Controller
         }
         return response()->json($result);
     }
+
+    public function batalFinalVerifikasiData(Request $request){
+        DB::beginTransaction();
+        try {
+            foreach ($request->selectedData as $selectedData) {
+                $current = PumkAnggaran::where('id', $selectedData)->first();
+                if ($current->status_id == 4) {
+                    $current->status_id = 2;
+                    $current->save();
+
+                    $log['pumk_anggaran_id'] = (int)$current->id;
+                    $log['status_id'] = (int)$current->status_id;
+                    $log['nilai_rka'] = (int)$current->saldo_awal;
+                    $log['created_by_id'] = (int)\Auth::user()->id;
+                    $log['created_at'] = now();
+
+                    SpdPumkRkaController::store_log($log);
+
+                }
+            }
+           
+                               
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses verifikasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
 }

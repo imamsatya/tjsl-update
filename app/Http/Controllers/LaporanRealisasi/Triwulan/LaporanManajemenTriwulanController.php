@@ -249,7 +249,7 @@ class LaporanManajemenTriwulanController extends Controller
             ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'laporan_manajemens.perusahaan_id')
             ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'laporan_manajemens.periode_laporan_id')
             ->whereIn('periode_laporan_id', $periode->pluck('id')->toArray())
-            ->where('perusahaan_masters.induk', 0);
+            ->where('perusahaan_masters.is_active', true);
         }
         else{
             $laporan_manajemen = DB::table('laporan_manajemens')
@@ -263,7 +263,7 @@ class LaporanManajemenTriwulanController extends Controller
             ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'laporan_manajemens.perusahaan_id')
             ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'laporan_manajemens.periode_laporan_id')
             ->whereIn('periode_laporan_id', $periode->pluck('id')->toArray())
-            ->where('perusahaan_masters.induk', 0);
+            ->where('perusahaan_masters.is_active', true);
         }
        
         $perusahaan_id = $request->perusahaan_id ?? 1; //default id 1
@@ -425,7 +425,7 @@ class LaporanManajemenTriwulanController extends Controller
 
                     $log = new LogLaporanManajemen();
                     $log->laporan_manajemen_id = $current->id;
-                    $log->status_id = 4;//verified
+                    $log->status_id =  $current->status_id;//verified
                     $log->user_id = \Auth::user()->id;
                     $log->save();    
 
@@ -438,7 +438,47 @@ class LaporanManajemenTriwulanController extends Controller
 
             $result = [
                 'flag' => 'success',
-                'msg' => 'Sukses membatalkan verifikasi data',
+                'msg' => 'Sukses memvalidasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag' => 'warning',
+                'msg' => $e->getMessage(),
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function batalFinalVerifikasiData(Request $request) {
+        // dd($request->selectedData);
+
+        DB::beginTransaction();
+        try {
+            foreach ($request->selectedData as $selectedData) {
+                $current = LaporanManajemen::where('id', $selectedData)->first();
+                if ($current->status_id == 4) {
+                    $current->status_id = 2;
+                    $current->save();
+
+                    $log = new LogLaporanManajemen();
+                    $log->laporan_manajemen_id = $current->id;
+                    $log->status_id =  $current->status_id;//verified
+                    $log->user_id = \Auth::user()->id;
+                    $log->save();    
+
+                }
+            }
+           
+                               
+            
+            DB::commit();
+
+            $result = [
+                'flag' => 'success',
+                'msg' => 'Sukses membatalkan validasi data',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {

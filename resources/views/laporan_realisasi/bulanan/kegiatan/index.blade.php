@@ -320,27 +320,33 @@
                                 data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
                         {{-- <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
-                                @can('view-finalVerify')
-                                <button type="button" class="btn btn-success btn-sm me-2" id="finalVerify-data">Verify Data
-                                </button>
-                                @endcan
+                        @can('view-kegiatan')
                         <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
-                            
-                        @can('delete-kegiatan')
-                        <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
-                        </button>
                         @endcan
                         @can('edit-kegiatan')
                         <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input
                             Data
                         </button>
                         @endcan
+                        @can('delete-kegiatan')
+                        <button type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
+                        </button>
+                        @endcan
+                        
                         @can('view-verify')
-                        <button type="button" class="btn btn-primary btn-sm me-2" id="verify-data">Complete
+                        <button type="button" class="btn btn-primary btn-sm me-2" id="verify-data">Verify
                         </button>
                         @endcan
                         @can('view-unverify')
-                        <button type="button" class="btn btn-warning btn-sm " id="unverify-data">Un-Complete
+                        <button type="button" class="btn btn-warning btn-sm me-2" id="unverify-data">Un-Verify
+                        </button>
+                        @endcan
+                        @can('view-finalVerify')
+                        <button type="button" class="btn btn-success btn-sm me-2" id="finalVerify-data">Validate
+                        </button>
+                        @endcan
+                        @can('view-finalUnverify')
+                        <button type="button" class="btn btn-warning btn-sm me-2" id="finalUnverify-data">Un-Validate
                         </button>
                         @endcan
                     </div>
@@ -411,6 +417,7 @@
     var urlverifikasidata = "{{route('laporan_realisasi.bulanan.kegiatan.verifikasi_data')}}";
     var urlbatalverifikasidata = "{{route('laporan_realisasi.bulanan.kegiatan.batal_verifikasi_data')}}";
     var urlfinalverifikasidata = "{{route('laporan_realisasi.bulanan.kegiatan.final_verifikasi_data')}}";
+    var urlbatalfinalverifikasidata = "{{route('laporan_realisasi.bulanan.kegiatan.batal_final_verifikasi_data')}}";
     var urldetail = "{{route('laporan_realisasi.bulanan.kegiatan.detail')}}";
     var urldownloadtemplate = "{{route('laporan_realisasi.bulanan.kegiatan.download_template')}}";
     var urlexport = "{{route('laporan_realisasi.bulanan.kegiatan.export')}}";
@@ -636,7 +643,25 @@
             }
             deleteSelectedProgram(selectedProgram)
         })
+        $("#finalUnverify-data").on('click', function () {
+            var selectedProgram = $('input[name="selected-data[]"]:checked').map(function () {
+                return $(this).val();
+            }).get();
 
+            if (!selectedProgram.length) {
+                swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    html: 'Tidak ada data terpilih untuk di unvalidate!',
+                    buttonsStyling: true,
+                    confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                })
+                return
+            }
+
+            finalUnverifySelectedData(selectedProgram)
+
+        })
         $("#finalVerify-data").on('click', function () {
             var selectedProgram = $('input[name="selected-data[]"]:checked').map(function () {
                 return $(this).val();
@@ -646,7 +671,7 @@
                 swal.fire({
                     icon: 'warning',
                     title: 'Warning',
-                    html: 'Tidak ada data terpilih untuk di complete!',
+                    html: 'Tidak ada data terpilih untuk di validate!',
                     buttonsStyling: true,
                     confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
                 })
@@ -879,7 +904,7 @@
                         let status = null
                         if (data === 1) {
                             status =
-                                `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Complete</span>`
+                                `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Verified</span>`
                         }
                         if (data === 2) {
                             status =
@@ -887,7 +912,7 @@
                         }
                         if (data === 4) {
                             status =
-                                `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Verified</span>`
+                                `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Validated</span>`
                         }
                         return status;
                     }
@@ -1141,15 +1166,89 @@
         });
     }
 
+    function finalUnverifySelectedData(selectedData) {
+        const jumlahSelected = selectedData.length
+        swal.fire({
+            title: "Pemberitahuan",
+            html: "Yakin membatalkan Validasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: " +
+                jumlahSelected + " rows]</span>",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya",
+            cancelButtonText: "Tidak"
+        }).then(function (result) {
+            if (result.value) {
+                $.ajax({
+                    url: urlbatalfinalverifikasidata,
+                    data: {
+                        "kegiatan_verifikasi": selectedData
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    beforeSend: function () {
+                        $.blockUI();
+                    },
+                    success: function (data) {
+                        $.unblockUI();
+
+                        swal.fire({
+                            title: data.title,
+                            html: data.msg,
+                            icon: data.flag,
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });
+
+                        if (data.flag == 'success') {
+                            // datatable.ajax.reload( null, false );
+                            location.reload();
+                        }
+
+                    },
+                    error: function (jqXHR, exception) {
+                        $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                        swal.fire({
+                            title: "Error System",
+                            html: msgerror + ', coba ulangi kembali !!!',
+                            icon: 'error',
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });
+                    }
+                });
+            }
+        });
+    }
+
     function finalVerifySelectedData(selectedData) {
         const jumlahSelected = selectedData.length
         swal.fire({
             title: "Pemberitahuan",
-            html: "Yakin Verifikasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: " +
+            html: "Yakin Validasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: " +
                 jumlahSelected + " rows]</span>",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonText: "Ya, verifikasi data",
+            confirmButtonText: "Ya",
             cancelButtonText: "Tidak"
         }).then(function (result) {
             if (result.value) {
@@ -1219,11 +1318,11 @@
         const jumlahSelected = selectedData.length
         swal.fire({
             title: "Pemberitahuan",
-            html: "Yakin Complete data ? <br/><span style='color: red; font-weight: bold'>[Data selected: " +
+            html: "Yakin Verifikasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: " +
                 jumlahSelected + " rows]</span>",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonText: "Ya, complete data",
+            confirmButtonText: "Ya",
             cancelButtonText: "Tidak"
         }).then(function (result) {
             if (result.value) {
@@ -1293,11 +1392,11 @@
         const jumlahSelected = selectedData.length
         swal.fire({
             title: "Pemberitahuan",
-            html: "Yakin Un-Complete data ? <br/><span style='color: red; font-weight: bold'>[Data selected: " +
+            html: "Yakin membatalkan Verifikasi data ? <br/><span style='color: red; font-weight: bold'>[Data selected: " +
                 jumlahSelected + " rows]</span>",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonText: "Ya, Un-Complete data",
+            confirmButtonText: "Ya",
             cancelButtonText: "Tidak"
         }).then(function (result) {
             if (result.value) {

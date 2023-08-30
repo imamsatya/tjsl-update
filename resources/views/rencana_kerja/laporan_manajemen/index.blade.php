@@ -228,18 +228,23 @@
                             </button>
                             <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
                             </button> --}}
-                            @can('view-finalVerify')
-                                <button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-success btn-sm finalVerify-selected-data me-2" id="finalVerify-data"> Verify
-                                </button>
-                             @endcan
+                            
                             @can('view-verify')
-                                <button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="verify-data" >Complete
+                                <button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="verify-data" >Verify
                                 </button>
                             @endcan
                             @can('view-unverify')
-                            <button {{ $isOkToInput  ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Complete
+                            <button {{ $isOkToInput  ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm me-2" id="unverify-data" >Un-Verify
                             </button> 
                             @endcan
+                            @can('view-finalVerify')
+                                <button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-success btn-sm finalVerify-selected-data me-2" id="finalVerify-data"> Validate
+                                </button>
+                             @endcan
+                             @can('view-finalUnverify')
+                             <button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm finalUnverify-selected-data me-2" id="finalUnverify-data"> Un-validate
+                             </button>
+                          @endcan
                         </div>
                         <!--end::Search-->
                         <!--end::Group actions-->
@@ -305,6 +310,7 @@
         var urlverifikasidata = "{{route('rencana_kerja.laporan_manajemen.verifikasi_data')}}";
         var urlbatalverifikasidata = "{{route('rencana_kerja.laporan_manajemen.batal_verifikasi_data')}}";
         var urlfinalverifikasidata = "{{route('rencana_kerja.laporan_manajemen.final_verifikasi_data')}}";
+        var urlbatalfinalverifikasidata = "{{route('rencana_kerja.laporan_manajemen.batal_final_verifikasi_data')}}";
         $(document).ready(function() {
             $('#page-title').html("{{ $pagetitle }}");
             $('#page-breadcrumb').html("{{ $breadcrumb }}");
@@ -356,72 +362,12 @@
             });
             $('body').on('click', '#finalVerify-data', function() {
             
-            var selectedData = $('input[name="selected-data[]"]:checked').map(function() {
-                return $(this).val();
-            }).get();
-            Swal.fire({
-                title: 'Apakah Anda Yakin?',
-                html: "Apakah anda yakin akan memverifikasi data yang sudah dipilih? <br/><span style='color: red; font-weight: bold'>[Data selected: "+selectedData.length+" rows]</span>" ,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // If the user confirmed the deletion, do something here
-                    console.log('User confirmed deletion');
-                    // Send an AJAX request to set the "selected" attribute in the database
-                    $.ajax({
-                        url: urlfinalverifikasidata,
-                        type: 'POST',
-                        data: {
-                            "_token": "{{ csrf_token() }}",
-                            selectedData: selectedData
-                        },
-                        beforeSend: function(){
-                        $.blockUI();
-                    },
-                    success: function(data){
-                        $.unblockUI();
-
-                        swal.fire({
-                                title: data.title,
-                                html: data.msg,
-                                icon: data.flag,
-
-                                buttonsStyling: true,
-
-                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
-                        });
-
-                        if(data.flag == 'success') {
-                            // datatable.ajax.reload( null, false );
-                            location.reload(); 
-                        }
-                        
-                    },
-                        error: function(jqXHR, textStatus, errorThrown) {
-                            console.log(errorThrown);
-                        }
-                    });
-                } else {
-                    // If the user cancelled the deletion, do something here
-                    console.log('User cancelled deletion');
-                }
-            })
-            console.log(selectedData)
-
-
-        });
-            $('body').on('click', '#verify-data', function() {
-            
                 var selectedData = $('input[name="selected-data[]"]:checked').map(function() {
                     return $(this).val();
                 }).get();
                 Swal.fire({
                     title: 'Apakah Anda Yakin?',
-                    html: "Apakah anda yakin akan memverifikasi data yang sudah dipilih? <br/><span style='color: red; font-weight: bold'>[Data selected: "+selectedData.length+" rows]</span>" ,
+                    html: "Apakah anda yakin akan memvalidasi data yang sudah dipilih? <br/><span style='color: red; font-weight: bold'>[Data selected: "+selectedData.length+" rows]</span>" ,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Ya',
@@ -433,7 +379,7 @@
                         console.log('User confirmed deletion');
                         // Send an AJAX request to set the "selected" attribute in the database
                         $.ajax({
-                            url: urlverifikasidata,
+                            url: urlfinalverifikasidata,
                             type: 'POST',
                             data: {
                                 "_token": "{{ csrf_token() }}",
@@ -474,6 +420,68 @@
 
 
             });
+
+            $('body').on('click', '#finalUnverify-data', function() {
+            
+                var selectedData = $('input[name="selected-data[]"]:checked').map(function() {
+                    return $(this).val();
+                }).get();
+                Swal.fire({
+                    title: 'Apakah Anda Yakin?',
+                    html: "Apakah anda yakin akan membatalkan validasi data yang sudah dipilih? <br/><span style='color: red; font-weight: bold'>[Data selected: "+selectedData.length+" rows]</span>" ,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // If the user confirmed the deletion, do something here
+                        console.log('User confirmed deletion');
+                        // Send an AJAX request to set the "selected" attribute in the database
+                        $.ajax({
+                            url: urlbatalfinalverifikasidata,
+                            type: 'POST',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                                selectedData: selectedData
+                            },
+                            beforeSend: function(){
+                            $.blockUI();
+                        },
+                        success: function(data){
+                            $.unblockUI();
+
+                            swal.fire({
+                                    title: data.title,
+                                    html: data.msg,
+                                    icon: data.flag,
+
+                                    buttonsStyling: true,
+
+                                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                            });
+
+                            if(data.flag == 'success') {
+                                // datatable.ajax.reload( null, false );
+                                location.reload(); 
+                            }
+                            
+                        },
+                            error: function(jqXHR, textStatus, errorThrown) {
+                                console.log(errorThrown);
+                            }
+                        });
+                    } else {
+                        // If the user cancelled the deletion, do something here
+                        console.log('User cancelled deletion');
+                    }
+                })
+                console.log(selectedData)
+
+
+            });
+           
 
             $('body').on('click', '#verify-data', function() {
             
@@ -715,7 +723,7 @@
                     {
                         data: 'tahun',
                         name: 'tahun',
-                        orderable: true,
+                        orderable: true
                     },
                    
 
@@ -729,7 +737,7 @@
                             
                             let status = null
                             if (data === 1) {
-                                 status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Complete</span>`
+                                 status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Verified</span>`
                             }
                             if (data === 2) {
                                  status = `<span class="btn cls-log badge badge-light-primary fw-bolder me-auto px-4 py-3" data-id="${row.id}">In Progress</span>`
@@ -738,7 +746,7 @@
                                  status = `<span class="btn cls-log badge badge-light-warning fw-bolder me-auto px-4 py-3" data-id="${row.id}">Unfilled</span>`
                             }
                             if (data === 4) {
-                                 status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Verified</span>`
+                                 status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Validated</span>`
                             }
                             return status;
                         }
