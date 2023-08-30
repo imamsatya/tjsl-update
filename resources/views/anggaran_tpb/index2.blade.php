@@ -275,10 +275,10 @@
                               
                                 @can('view-verify')
                                     @if($data->count())
-                                    @if(!$isSuperAdmin)
+                                    {{-- @if(!$isSuperAdmin) --}}
                                     <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="completed-data" >Verified
                                     </button>    
-                                    @endif
+                                    {{-- @endif --}}
                                     @endif
                                 @endcan
 
