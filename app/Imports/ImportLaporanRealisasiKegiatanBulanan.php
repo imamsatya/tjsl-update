@@ -124,6 +124,12 @@ class ImportLaporanRealisasiKegiatanBulanan implements ToCollection, WithHeading
                     $keterangan .= 'Baris '.$no.' Data Realisasi Anggaran harus angka<br>';
                 }
 
+                // cek realisasi anggaran tidak boleh kurang dari 0
+                if((int) $val_realisasi_anggaran < 0) {
+                    $is_gagal = true;
+                    $keterangan .= 'Baris '.$no.' Data Realisasi Anggaran tidak boleh negatif<br>';
+                }
+
                 // cek satuan ukur
                 $ukur = SatuanUkur::find($val_satuan_ukur);
                 if(!$ukur){

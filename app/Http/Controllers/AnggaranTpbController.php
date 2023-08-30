@@ -953,7 +953,7 @@ class AnggaranTpbController extends Controller
             if($allDataUpdated->count()) {
                 foreach($allDataUpdated as $data) {  
                     AnggaranTpb::where('id', $data->id)->update(['status_id' => 1]);
-                    AnggaranTpbController::store_log($data->id, 1, $data->anggaran, 'RKA Revisi - Completed');
+                    AnggaranTpbController::store_log($data->id, 1, $data->anggaran, 'RKA Revisi - Validated');
                 }
             }                                            
             
@@ -961,7 +961,7 @@ class AnggaranTpbController extends Controller
 
             $result = [
                 'flag' => 'success',
-                'msg' => 'Sukses set data completed',
+                'msg' => 'Sukses set data validated',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
@@ -1265,7 +1265,7 @@ class AnggaranTpbController extends Controller
             if($allDataUpdated->count()) {
                 foreach($allDataUpdated as $data) {  
                     AnggaranTpb::where('id', $data->id)->update(['status_id' => 2]);
-                    AnggaranTpbController::store_log($data->id, 2, $data->anggaran, 'RKA Revisi - Batal Set Completed');
+                    AnggaranTpbController::store_log($data->id, 2, $data->anggaran, 'RKA Revisi - Unverified');
                 }
             }                                            
             
@@ -1273,7 +1273,7 @@ class AnggaranTpbController extends Controller
 
             $result = [
                 'flag' => 'success',
-                'msg' => 'Sukses batalkan set completed data',
+                'msg' => 'Sukses unverified data',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
@@ -2041,7 +2041,7 @@ class AnggaranTpbController extends Controller
             if($allDataUpdated->count()) {
                 foreach($allDataUpdated as $data) {  
                     AnggaranTpb::where('id', $data->id)->update(['status_id' => 4]);
-                    AnggaranTpbController::store_log($data->id, 1, $data->anggaran, 'RKA Revisi - Verified');
+                    AnggaranTpbController::store_log($data->id, 1, $data->anggaran, 'RKA Revisi - Validated');
                 }
             }                                            
             
@@ -2049,7 +2049,7 @@ class AnggaranTpbController extends Controller
 
             $result = [
                 'flag' => 'success',
-                'msg' => 'Sukses set data verified',
+                'msg' => 'Sukses set data validated',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
@@ -2080,7 +2080,7 @@ class AnggaranTpbController extends Controller
             if($allDataUpdated->count()) {
                 foreach($allDataUpdated as $data) {  
                     AnggaranTpb::where('id', $data->id)->update(['status_id' => 2]); // set to in progress
-                    AnggaranTpbController::store_log($data->id, 2, $data->anggaran, 'RKA Revisi - UnVerified');
+                    AnggaranTpbController::store_log($data->id, 2, $data->anggaran, 'RKA Revisi - Unvalidated');
                 }
             }                                            
             
@@ -2088,7 +2088,7 @@ class AnggaranTpbController extends Controller
 
             $result = [
                 'flag' => 'success',
-                'msg' => 'Sukses unverified data',
+                'msg' => 'Sukses unvalidate data',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
