@@ -273,12 +273,12 @@
                             @endphp
                             @can('view-kegiatan')
                             <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
-                            @can('delete-kegiatan')
-                            <button {{ $isSuperAdmin ? '' : ($enable_input ? (!($isVerified || $isCompleted) ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
-                            </button>
-                            @endcan
                             @can('edit-kegiatan')
                             <button {{ $isSuperAdmin ? '' : ($enable_input ? (!($isVerified || $isCompleted) ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
+                            </button>
+                            @endcan
+                            @can('delete-kegiatan')
+                            <button {{ $isSuperAdmin ? '' : ($enable_input ? (!($isVerified || $isCompleted) ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
                             </button>
                             @endcan
                             @endcan
@@ -286,7 +286,7 @@
                             @can('view-verify')
                                 @if($data->count())
                                 @if(!$isSuperAdmin)
-                                <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="completed-data" >Complete
+                                <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="completed-data" >Verified
                                 </button>
                                 @endif
                                 @endif
@@ -294,21 +294,21 @@
 
                             @can('view-unverify')
                                 @if($data->count())
-                                <button {{ $enable_input || $isSuperAdmin ? ($countCompleted ? '' : ($countInprogress ? 'disabled' : '')) : 'disabled' }} type="button" class="btn btn-warning btn-sm me-2" id="uncompleted-data" >Un-Complete
+                                <button {{ $enable_input || $isSuperAdmin ? ($countCompleted ? '' : ($countInprogress ? 'disabled' : '')) : 'disabled' }} type="button" class="btn btn-warning btn-sm me-2" id="uncompleted-data" >Un-Verified
                                 </button>   
                                 @endif
                             @endcan
 
                             @can('view-finalVerify')
                                 @if($data->count())
-                                <button {{ $enable_input || $isSuperAdmin ? ($countCompleted ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-success btn-sm me-2" id="verify-data" >Verify
+                                <button {{ $enable_input || $isSuperAdmin ? ($countCompleted ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-success btn-sm me-2" id="verify-data" >Validate
                                 </button>    
                                 @endif
                             @endcan
 
                             @can('view-finalUnverify')
                                 @if($data->count())
-                                <button {{ $enable_input || $isSuperAdmin ? ($countVerified ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Verify
+                                <button {{ $enable_input || $isSuperAdmin ? ($countVerified ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Validate
                                 </button>    
                                 @endif
                             @endcan
@@ -329,7 +329,7 @@
                                     <tr>
                                         <th style="text-align:center;font-weight:bold;width:50px;border-bottom: 1px solid #c8c7c7;">No.</th>
                                         <th style="font-weight:bold;border-bottom: 1px solid #c8c7c7;">Pilar - TPB</th>
-                                        <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;"> Anggaran </th>
+                                        <th style="text-align:center;font-weight:bold;border-bottom: 1px solid #c8c7c7;"> Anggaran </th>
                                         <th style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">Kriteria</th>
                                         <th style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">Status</th>
                                         <th style="text-align:center;width:100px;font-weight:bold;border-bottom: 1px solid #c8c7c7;" >Aksi</th>
@@ -359,7 +359,7 @@
                                         <td style="text-align:center"></td>
                                         <td style="display: flex"><div style="flex:1">{{ $perusahaan[0]->nama_lengkap }}</div></td>
                                         <td style="text-align: right">
-                                            {{ number_format($perusahaan[0]->total, 0, ',', ',') }}                                                                                        
+                                            Rp. {{ number_format($perusahaan[0]->total, 0, ',', ',') }}                                                                                        
                                             <br/> 
                                             @php
                                                 $color_status = '';
@@ -371,7 +371,7 @@
                                         </td>
                                         <td></td>
                                         <td style="text-align: center">
-                                            <a class="badge badge-light-{{ $status_class }} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{ $perusahaan[0]->inprogress ? 'In Progress' : ($perusahaan[0]->completed ? 'Completed' : ($perusahaan[0]->verified ? 'Verified' : 'Unfilled') ) }}</a>
+                                            <a class="badge badge-light-{{ $status_class }} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{ $perusahaan[0]->inprogress ? 'In Progress' : ($perusahaan[0]->completed ? 'Verified' : ($perusahaan[0]->verified ? 'Validated' : 'Unfilled') ) }}</a>
                                         </td>
                                         <td></td>
                                     </tr>
@@ -389,7 +389,7 @@
                                         @if($total > 0)                                       
                                         <th style="text-align: right; font-weight: bold; border-top: 1px solid #c8c7c7;"></th>
                                         <th style="text-align: right; font-weight: bold; border-top: 1px solid #c8c7c7;">Total</th>
-                                        <th style="text-align: right; font-weight: bold; border-top: 1px solid #c8c7c7;">{{ number_format($total, 0, ',', ',') }}</th>
+                                        <th style="text-align: right; font-weight: bold; border-top: 1px solid #c8c7c7;">Rp {{ number_format($total, 0, ',', ',') }}</th>
                                         @endif
                                     </tr>
                                 </tfoot>
@@ -496,13 +496,13 @@
                                     <td style="text-align:center;">${i+1}</td>
                                     <td style="display: flex"><div style="flex: 1">${pilar[i][0].nama_pilar}</div></td>
                                     <td style="text-align:right;">
-                                        ${ pilar[i][0].total ? parseInt(pilar[i][0].total).toLocaleString() : 0}
+                                        Rp. ${ pilar[i][0].total ? parseInt(pilar[i][0].total).toLocaleString() : 0}
                                         <br/>   
                                         <span style="color: ${ color_status }; font-size: smaller">RKA: ${parseInt(pilar[i][1].total_rka).toLocaleString()}</span>
                                     </td>
                                     <td></td>
                                     <td style="text-align:center;">
-                                        <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${pilar[i][0].inprogress ? 'In Progress' : (pilar[i][0].completed ? 'Completed' : (pilar[i][0].verified ? 'Verified' : 'Unfilled'))}</a>
+                                        <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${pilar[i][0].inprogress ? 'In Progress' : (pilar[i][0].completed ? 'Verified' : (pilar[i][0].verified ? 'Validated' : 'Unfilled'))}</a>
                                     </td>
                                     <td style="text-align:center;">                                            
                                     </td>                                
@@ -571,13 +571,13 @@
                                     <td style="text-align:center;"></td>
                                     <td style="display: flex"><div style="flex: 1">${tpb[i][0].no_tpb} - ${tpb[i][0].nama_tpb}</div></td>
                                     <td style="text-align:right;">
-                                        ${tpb[i][0].total ? parseInt(tpb[i][0].total).toLocaleString() : 0}
+                                        Rp. ${tpb[i][0].total ? parseInt(tpb[i][0].total).toLocaleString() : 0}
                                         <br/>   
                                         <span style="color: ${ color_status }; font-size: smaller">RKA: ${parseInt(tpb[i][1].total_rka).toLocaleString()}</span>
                                     </td>
                                     <td></td>
                                     <td style="text-align:center;">
-                                        <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${tpb[i][0].inprogress ? 'In Progress' : (tpb[i][0].completed ? 'Completed' : (tpb[i][0].verified ? 'Verified': 'Unfilled'))}</a>
+                                        <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${tpb[i][0].inprogress ? 'In Progress' : (tpb[i][0].completed ? 'Verified' : (tpb[i][0].verified ? 'Validated': 'Unfilled'))}</a>
                                     </td>
                                     <td style="text-align:center;">                                   
                                     </td> 
@@ -653,7 +653,7 @@
                             <tr class="${parentClass}" data-type="target" data-value="${target[i].id_target}" data-perusahaan="${tempPerusahaan}" data-pilar="${tempPilar}" data-tpb="${value}">
                                 <td style="text-align:center;"></td>
                                 <td style="display: flex"><div style="flex: 1">${target[i].program}</div></td>
-                                <td style="text-align:right;">${target[i].total ? parseInt(target[i].total).toLocaleString() : '-'}</td>
+                                <td style="text-align:right;">Rp. ${target[i].total ? parseInt(target[i].total).toLocaleString() : '-'}</td>
                                 <td style="text-align: center;">
                                     ${target[i].kriteria_program_umum ? 'Umum; ' : ''}
                                     ${target[i].kriteria_program_prioritas ? 'Prioritas; ' : ''}
@@ -661,7 +661,7 @@
                                     ${!target[i].kriteria_program_csv && !target[i].kriteria_program_prioritas && !target[i].kriteria_program_umum ? '-' : ''}
                                 </td>
                                 <td style="text-align:center;">
-                                    <span class="btn cls-log badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-id="${target[i].id_target}">${target[i].inprogress ? 'In Progress' : (target[i].completed ? 'Completed' : (target[i].verified ? 'Verified' : '-'))}</span>
+                                    <span class="btn cls-log badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-id="${target[i].id_target}">${target[i].inprogress ? 'In Progress' : (target[i].completed ? 'Verified' : (target[i].verified ? 'Validated' : '-'))}</span>
                                 </td>
                                 <td style="text-align:center;">    
                                     ${!viewOnly && target[i].inprogress ? btnEdit : ''}
@@ -776,7 +776,7 @@
                 if(!countInprogress) {
                     swal.fire({
                         title: "Pemberitahuan",
-                        html: "Tidak ada data yang bisa di-set completed!",
+                        html: "Tidak ada data yang bisa di set verified!",
                         icon: "warning",
                         showCancelButton: false,
                         confirmButtonText: "Close",
@@ -791,7 +791,7 @@
 
                 swal.fire({
                     title: "Pemberitahuan",
-                    html: `<span style="color: red; font-weight: bold">Yakin set data completed ? </span><br/>
+                    html: `<span style="color: red; font-weight: bold">Yakin set data verified ? </span><br/>
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped">
                                 <tbody>
@@ -888,7 +888,7 @@
                 if(!countCompleted) {
                     swal.fire({
                         title: "Pemberitahuan",
-                        html: "Tidak ada data yang bisa di-set uncompleted!",
+                        html: "Tidak ada data yang bisa di-set unverified!",
                         icon: "warning",
                         showCancelButton: false,
                         confirmButtonText: "Close",
@@ -903,7 +903,7 @@
 
                 swal.fire({
                     title: "Pemberitahuan",
-                    html: `<span style="color: red; font-weight: bold">Yakin set data uncompleted ? </span><br/>
+                    html: `<span style="color: red; font-weight: bold">Yakin set data unverified ? </span><br/>
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped">
                                 <tbody>
@@ -925,7 +925,7 @@
                             `,
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonText: "Ya, set data un-completed",
+                    confirmButtonText: "Ya, set data unverified",
                     cancelButtonText: "Tidak"
                 }).then(function(result) {
                     if (result.value) {
@@ -1107,7 +1107,7 @@
                 if(!countInprogress) {
                     swal.fire({
                         title: "Pemberitahuan",
-                        html: "Tidak ada data yang bisa di-verified!",
+                        html: "Tidak ada data yang bisa di-validate!",
                         icon: "warning",
                         showCancelButton: false,
                         confirmButtonText: "Close",
@@ -1122,7 +1122,7 @@
 
                 swal.fire({
                     title: "Pemberitahuan",
-                    html: `<span style="color: red; font-weight: bold">Yakin verify data ? </span><br/>
+                    html: `<span style="color: red; font-weight: bold">Yakin validasi data ? </span><br/>
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped">
                                 <tbody>
@@ -1135,7 +1135,7 @@
                                         <td>${tahun}</td>
                                     </tr>
                                     <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
-                                        <td>Jumlah Verifikasi</td>
+                                        <td>Jumlah Validasi</td>
                                         <td>${countCompleted} rows</td>
                                     </tr>
                                 </tbody>
@@ -1144,7 +1144,7 @@
                             `,
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonText: "Ya, verifikasi data",
+                    confirmButtonText: "Ya, validasi data",
                     cancelButtonText: "Tidak"
                 }).then(function(result) {
                     if (result.value) {
@@ -1216,7 +1216,7 @@
                 if(!countVerified) {
                     swal.fire({
                         title: "Pemberitahuan",
-                        html: "Tidak ada data yang bisa diun-verifikasi!",
+                        html: "Tidak ada data yang bisa di unvalidate!",
                         icon: "warning",
                         showCancelButton: false,
                         confirmButtonText: "Close",
@@ -1232,7 +1232,7 @@
 
                 swal.fire({
                     title: "Pemberitahuan",
-                    html: `<span style="color: red; font-weight: bold">Yakin batalkan verifikasi data ? </span><br/>
+                    html: `<span style="color: red; font-weight: bold">Yakin batalkan validasi data ? </span><br/>
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped">
                                 <tbody>
@@ -1245,7 +1245,7 @@
                                         <td>${tahun}</td>
                                     </tr>
                                     <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
-                                        <td>Jumlah Batal Verifikasi</td>
+                                        <td>Jumlah Batal Validasi</td>
                                         <td>${countVerified} rows</td>
                                     </tr>
                                 </tbody>
@@ -1254,7 +1254,7 @@
                             `,
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonText: "Ya, batalkan verifikasi data",
+                    confirmButtonText: "Ya, batalkan validasi data",
                     cancelButtonText: "Tidak"
                 }).then(function(result) {
                     if (result.value) {

@@ -695,14 +695,14 @@ class ProgramController extends Controller
             DB::commit();
             $result = [
                 'flag'  => 'success',
-                'msg' => 'Sukses set data completed',
+                'msg' => 'Sukses set data verified',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
             DB::rollback();
             $result = [
                 'flag'  => 'warning',
-                'msg' => 'Gagal set data completed',
+                'msg' => 'Gagal set data verified',
                 'title' => 'Gagal'
             ];
         }
@@ -809,7 +809,7 @@ class ProgramController extends Controller
 
             $result = [
                 'flag' => 'success',
-                'msg' => 'Sukses set data uncompleted',
+                'msg' => 'Sukses set data unverified',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
@@ -1531,14 +1531,14 @@ class ProgramController extends Controller
             DB::commit();
             $result = [
                 'flag'  => 'success',
-                'msg' => 'Sukses verifikasi data',
+                'msg' => 'Sukses validasi data',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
             DB::rollback();
             $result = [
                 'flag'  => 'warning',
-                'msg' => 'Gagal verifikasi data',
+                'msg' => 'Gagal validasi data',
                 'title' => 'Gagal'
             ];
         }
@@ -1571,14 +1571,14 @@ class ProgramController extends Controller
             DB::commit();
             $result = [
                 'flag'  => 'success',
-                'msg' => 'Sukses verifikasi data',
+                'msg' => 'Sukses validasi data',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
             DB::rollback();
             $result = [
                 'flag'  => 'warning',
-                'msg' => 'Gagal verifikasi data',
+                'msg' => 'Gagal validasi data',
                 'title' => 'Gagal'
             ];
         }
