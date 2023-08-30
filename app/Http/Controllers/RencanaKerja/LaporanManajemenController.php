@@ -448,7 +448,47 @@ class LaporanManajemenController extends Controller
     
                         $log = new LogLaporanManajemen();
                         $log->laporan_manajemen_id = $current->id;
-                        $log->status_id = 2;//in progress
+                        $log->status_id = $current->status_id;//in progress
+                        $log->user_id = \Auth::user()->id;
+                        $log->save();    
+    
+                    }
+                }
+               
+                                   
+                
+                DB::commit();
+    
+                $result = [
+                    'flag' => 'success',
+                    'msg' => 'Sukses membatalkan verifikasi data',
+                    'title' => 'Sukses'
+                ];
+            } catch (\Exception $e) {
+                DB::rollback();
+                $result = [
+                    'flag' => 'warning',
+                    'msg' => $e->getMessage(),
+                    'title' => 'Gagal'
+                ];
+            }
+            return response()->json($result);
+        }
+
+        public function batalFinalVerifikasiData(Request $request) {
+            // dd($request->selectedData);
+    
+            DB::beginTransaction();
+            try {
+                foreach ($request->selectedData as $selectedData) {
+                    $current = LaporanManajemen::where('id', $selectedData)->first();
+                    if ($current->status_id == 4) {
+                        $current->status_id = 2;
+                        $current->save();
+    
+                        $log = new LogLaporanManajemen();
+                        $log->laporan_manajemen_id = $current->id;
+                        $log->status_id = $current->status_id;//in progress
                         $log->user_id = \Auth::user()->id;
                         $log->save();    
     

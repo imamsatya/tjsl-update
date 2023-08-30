@@ -2,8 +2,8 @@
 
 function renderStatusBadge($status) {
     $classMapping = [
+        'Validated' => 'badge-light-success',
         'Verified' => 'badge-light-success',
-        'Completed' => 'badge-light-success',
         'In Progress' => 'badge-light-primary',
         'Unfilled' => 'badge-light-warning',
     ];

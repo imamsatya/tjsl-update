@@ -908,7 +908,7 @@
             const key = event.keyCode || event.which;
 
             // Allow backspace, delete, arrow keys, and "-"
-            if (key == 8 || key == 46 || key == 37 || key == 39 || key == 45) {
+            if (key == 8 || key == 46 || key == 37 || key == 39 ) {
                 return true;
             }
 

@@ -244,20 +244,20 @@ class HomeController extends Controller
         
         //cek ada atau tidak
         $totalAnggaranCount = count($anggaran);
-        $statusAnggaranCompletedCount = count($anggaran->where('status_id', 1));
-        $statusAnggaranVerifiedCount = count($anggaran->where('status_id', 4));
-        //Completed
-        if($totalAnggaranCount == $statusAnggaranCompletedCount && $totalAnggaranCount != 0){
-            $data[0]['rka'] = "Completed";
+        $statusAnggaranVerifiedCount = count($anggaran->where('status_id', 1));
+        $statusAnggaranValidatedCount = count($anggaran->where('status_id', 4));
+        //Verified
+        if($totalAnggaranCount == $statusAnggaranVerifiedCount && $totalAnggaranCount != 0){
+            $data[0]['rka'] = "Verified";
 
             $pilar = DB::table('pilar_pembangunans')->where('id', $anggaran?->first()->pilar_pembangunan_id)->first();
             $data[0]['support_props']['no_tpb'] = $anggaran?->first()->no_tpb;
             $data[0]['support_props']['nama_pilar'] = $pilar->nama;
         }
-        //Verified
-        if($totalAnggaranCount == $statusAnggaranVerifiedCount && $totalAnggaranCount != 0){
+        //Validated
+        if($totalAnggaranCount == $statusAnggaranValidatedCount && $totalAnggaranCount != 0){
             // dd('halo');
-            $data[0]['rka'] = "Verified";
+            $data[0]['rka'] = "Validated";
             $pilar = DB::table('pilar_pembangunans')->where('id', $anggaran?->first()->pilar_pembangunan_id)->first();
             $data[0]['support_props']['no_tpb'] = $anggaran?->first()->no_tpb;
             $data[0]['support_props']['nama_pilar'] = $pilar->nama;
@@ -280,16 +280,16 @@ class HomeController extends Controller
         //program rka
         $program_rka = DB::table('anggaran_tpbs')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->orderBy('target_tpbs.updated_at', 'asc')->join('target_tpbs', 'target_tpbs.anggaran_tpb_id', '=', 'anggaran_tpbs.id')->get();
         $totalProgramRKACount = count($program_rka);
-        $statusProgramRKACompletedCount = count($program_rka->where('status_id', 1));
-        $statusProgramRKAVerifiedCount = count($program_rka->where('status_id', 4));
-        //Completed
-        if($totalProgramRKACount == $statusProgramRKACompletedCount && $totalProgramRKACount != 0){
-            $data[1]['rka'] = "Completed";
-            $data[1]['id'] = $program_rka->first()->id;
-        }
+        $statusProgramRKAVerifiedCount = count($program_rka->where('status_id', 1));
+        $statusProgramRKAValidatedCount = count($program_rka->where('status_id', 4));
         //Verified
         if($totalProgramRKACount == $statusProgramRKAVerifiedCount && $totalProgramRKACount != 0){
             $data[1]['rka'] = "Verified";
+            $data[1]['id'] = $program_rka->first()->id;
+        }
+        //Validated
+        if($totalProgramRKACount == $statusProgramRKAValidatedCount && $totalProgramRKACount != 0){
+            $data[1]['rka'] = "Validated";
             $data[1]['id'] = $program_rka->first()->id;
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress
@@ -308,16 +308,16 @@ class HomeController extends Controller
         $spd_pumk = DB::table('pumk_anggarans')->where('bumn_id', $perusahaan_id)->where('tahun', $tahun)->where('periode_id', $periode_rka_id)->get();
         
         $totalSpdpumkCount = count($spd_pumk);
-        $statusSpdpumkCompletedCount = count($spd_pumk->where('status_id', 1));
-        $statusSpdpumkVerifiedCount = count($spd_pumk->where('status_id', 4));
-        //Completed
-        if($totalSpdpumkCount == $statusProgramRKACompletedCount && $totalSpdpumkCount != 0){
-            $data[2]['rka'] = "Completed";
+        $statusSpdpumkVerifiedCount = count($spd_pumk->where('status_id', 1));
+        $statusSpdpumkValidatedCount = count($spd_pumk->where('status_id', 4));
+        //Verified
+        if($totalSpdpumkCount == $statusProgramRKAVerifiedCount && $totalSpdpumkCount != 0){
+            $data[2]['rka'] = "Verified";
             $data[2]['id'] = $spd_pumk->first()->id;
         }
-        //Verified
-        if ($totalSpdpumkCount == $statusSpdpumkVerifiedCount && $totalSpdpumkCount != 0) {
-            $data[2]['rka'] = "Verified";
+        //Validated
+        if ($totalSpdpumkCount == $statusSpdpumkValidatedCount && $totalSpdpumkCount != 0) {
+            $data[2]['rka'] = "Validated";
             $data[2]['id'] = $spd_pumk->first()->id;
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress
@@ -333,16 +333,16 @@ class HomeController extends Controller
         //laporan manajemen rka
         $laporan_manajemen = DB::table('laporan_manajemens')->where('perusahaan_id', $perusahaan_id)->where('tahun', $tahun)->where('periode_laporan_id', $periode_rka_id)->get();
         $totalLaporanManajemenCount = count($laporan_manajemen);
-        $statusLaporanManajemenCompletedCount = count($laporan_manajemen->where('status_id', 1));
-        $statusLaporanManajemenVerifiedCount = count($laporan_manajemen->where('status_id', 4));
-        //Completed
-        if($totalLaporanManajemenCount == $statusLaporanManajemenCompletedCount && $totalLaporanManajemenCount != 0){
-            $data[3]['rka'] = "Completed";
-            $data[3]['id'] = $laporan_manajemen->first()->id;
-        }
+        $statusLaporanManajemenVerifiedCount = count($laporan_manajemen->where('status_id', 1));
+        $statusLaporanManajemenValidatedCount = count($laporan_manajemen->where('status_id', 4));
         //Verified
         if($totalLaporanManajemenCount == $statusLaporanManajemenVerifiedCount && $totalLaporanManajemenCount != 0){
             $data[3]['rka'] = "Verified";
+            $data[3]['id'] = $laporan_manajemen->first()->id;
+        }
+        //Validated
+        if($totalLaporanManajemenCount == $statusLaporanManajemenValidatedCount && $totalLaporanManajemenCount != 0){
+            $data[3]['rka'] = "Validated";
             $data[3]['id'] = $laporan_manajemen->first()->id;
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress/unfilled
@@ -412,11 +412,11 @@ class HomeController extends Controller
                         $data[4]['tw1']['id'] = $kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)->first()->id;
                     } else {
                         if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 1)) == count($kegiatan_bulan)) {
-                            $data[4]['tw1']['value'] = "Completed";
+                            $data[4]['tw1']['value'] = "Verified";
                             $data[4]['tw1']['id'] = $kegiatan_bulan->first()->id;
                         }
                         if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 4)) == count($kegiatan_bulan)) {
-                            $data[4]['tw1']['value'] = "Verified";
+                            $data[4]['tw1']['value'] = "Validated";
                             $data[4]['tw1']['id'] = $kegiatan_bulan->first()->id;
                         }
                     }
@@ -435,12 +435,12 @@ class HomeController extends Controller
                         $data[4]['tw2']['id'] = $kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)->first()->id;
                     } else {
                         if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 1)) == count($kegiatan_bulan)) {
-                            $data[4]['tw2']['value'] = "Completed";
+                            $data[4]['tw2']['value'] = "Verified";
                             $data[4]['tw2']['id'] = $kegiatan_bulan->first()->id;
                         }
 
                         if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 4)) == count($kegiatan_bulan)) {
-                            $data[4]['tw2']['value'] = "Verified";
+                            $data[4]['tw2']['value'] = "Validated";
                             $data[4]['tw2']['id'] = $kegiatan_bulan->first()->id;
                         }
                     }
@@ -460,11 +460,11 @@ class HomeController extends Controller
                         $data[4]['tw3']['id'] = $kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)->first()->id;
                     } else {
                         if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 1)) == count($kegiatan_bulan)) {
-                            $data[4]['tw3']['value'] = "Completed";
+                            $data[4]['tw3']['value'] = "Verified";
                             $data[4]['tw3']['id'] = $kegiatan_bulan->first()->id;
                         }
                         if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 4)) == count($kegiatan_bulan)) {
-                            $data[4]['tw3']['value'] = "Verified";
+                            $data[4]['tw3']['value'] = "Validated";
                             $data[4]['tw3']['id'] = $kegiatan_bulan->first()->id;
                         }
                     }
@@ -484,12 +484,12 @@ class HomeController extends Controller
                         $data[4]['tw4']['id'] = $kegiatan_bulan->where('kegiatan_realisasi_status_id', 2)->first()->id;
                     } else {
                         if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 1)) == count($kegiatan_bulan)) {
-                            $data[4]['tw4']['value'] = "Completed";
+                            $data[4]['tw4']['value'] = "Verified";
                             $data[4]['tw4']['id'] = $kegiatan_bulan->first()->id;
                         }
 
                         if (count($kegiatan_bulan->where('kegiatan_realisasi_status_id', 4)) == count($kegiatan_bulan)) {
-                            $data[4]['tw4']['value'] = "Verified";
+                            $data[4]['tw4']['value'] = "Validated";
                             $data[4]['tw4']['id'] = $kegiatan_bulan->first()->id;
                         }
 
@@ -545,11 +545,11 @@ class HomeController extends Controller
                         $data[5]['tw1']['id'] = $pumk_bulan->where('status_id', 2)->first()->id;
                     } else {
                         if (count($pumk_bulan->where('status_id', 1)) == count($pumk_bulan)) {
-                            $data[5]['tw1']['value'] = "Completed";
+                            $data[5]['tw1']['value'] = "Verified";
                             $data[5]['tw1']['id'] = $pumk_bulan->first()->id;
                         }
                         if (count($pumk_bulan->where('status_id', 4)) == count($pumk_bulan)) {
-                            $data[5]['tw1']['value'] = "Verified";
+                            $data[5]['tw1']['value'] = "Validated";
                             $data[5]['tw1']['id'] = $pumk_bulan->first()->id;
                         }
                     }
@@ -568,11 +568,11 @@ class HomeController extends Controller
                         $data[5]['tw2']['id'] = $pumk_bulan->where('status_id', 2)->first()->id;
                     } else {
                         if (count($pumk_bulan->where('status_id', 1)) == count($pumk_bulan)) {
-                            $data[5]['tw2']['value'] = "Completed";
+                            $data[5]['tw2']['value'] = "Verified";
                             $data[5]['tw2']['id'] = $pumk_bulan->first()->id;
                         }
                         if (count($pumk_bulan->where('status_id', 4)) == count($pumk_bulan)) {
-                            $data[5]['tw2']['value'] = "Verified";
+                            $data[5]['tw2']['value'] = "Validated";
                             $data[5]['tw2']['id'] = $pumk_bulan->first()->id;
                         }
                     }
@@ -591,11 +591,11 @@ class HomeController extends Controller
                         $data[5]['tw3']['id'] = $pumk_bulan->where('status_id', 2)->first()->id;
                     } else {
                         if (count($pumk_bulan->where('status_id', 1)) == count($pumk_bulan)) {
-                            $data[5]['tw3']['value'] = "Completed";
+                            $data[5]['tw3']['value'] = "Verified";
                             $data[5]['tw3']['id'] = $pumk_bulan->first()->id;
                         }
                         if (count($pumk_bulan->where('status_id', 4)) == count($pumk_bulan)) {
-                            $data[5]['tw3']['value'] = "Verified";
+                            $data[5]['tw3']['value'] = "Validated";
                             $data[5]['tw3']['id'] = $pumk_bulan->first()->id;
                         }
                     }
@@ -615,11 +615,11 @@ class HomeController extends Controller
                         $data[5]['tw4']['id'] = $pumk_bulan->where('status_id', 2)->first()->id;
                     } else {
                         if (count($pumk_bulan->where('status_id', 1)) == count($pumk_bulan)) {
-                            $data[5]['tw4']['value'] = "Completed";
+                            $data[5]['tw4']['value'] = "Verified";
                             $data[5]['tw4']['id'] = $pumk_bulan->first()->id;
                         }
                         if (count($pumk_bulan->where('status_id', 4)) == count($pumk_bulan)) {
-                            $data[5]['tw4']['value'] = "Verified";
+                            $data[5]['tw4']['value'] = "Validated";
                             $data[5]['tw4']['id'] = $pumk_bulan->first()->id;
                         }
                     }
@@ -675,12 +675,12 @@ class HomeController extends Controller
 
                     } 
                     if ($spd_pumk_periode->status_id == 1) {
-                        $data[6]['tw1']['value'] = "Completed";
+                        $data[6]['tw1']['value'] = "Verified";
                         $data[6]['tw1']['id'] = $spd_pumk_periode->id;
                     } 
 
                     if ($spd_pumk_periode->status_id == 4) {
-                        $data[6]['tw1']['value'] = "Verified";
+                        $data[6]['tw1']['value'] = "Validated";
                         $data[6]['tw1']['id'] = $spd_pumk_periode->id;
                     } 
                 }else {
@@ -702,12 +702,12 @@ class HomeController extends Controller
                     } 
 
                     if ($spd_pumk_periode->status_id == 1) {
-                        $data[6]['tw2']['value'] = "Completed";
+                        $data[6]['tw2']['value'] = "Verified";
                         $data[6]['tw2']['id'] = $spd_pumk_periode->id;
                     } 
 
                     if ($spd_pumk_periode->status_id == 4) {
-                        $data[6]['tw2']['value'] = "Verified";
+                        $data[6]['tw2']['value'] = "Validated";
                         $data[6]['tw2']['id'] = $spd_pumk_periode->id;
                     } 
 
@@ -729,12 +729,12 @@ class HomeController extends Controller
 
                     } 
                     if ($spd_pumk_periode->status_id == 1) {
-                        $data[6]['tw3']['value'] = "Completed";
+                        $data[6]['tw3']['value'] = "Verified";
                         $data[6]['tw3']['id'] = $spd_pumk_periode->id;
 
                     } 
                     if ($spd_pumk_periode->status_id == 4) {
-                        $data[6]['tw3']['value'] = "Verified";
+                        $data[6]['tw3']['value'] = "Validated";
                         $data[6]['tw3']['id'] = $spd_pumk_periode->id;
 
                     } 
@@ -755,11 +755,11 @@ class HomeController extends Controller
 
                     } 
                     if ($spd_pumk_periode->status_id == 1) {
-                        $data[6]['tw4']['value'] = "Completed";
+                        $data[6]['tw4']['value'] = "Verified";
                         $data[6]['tw4']['id'] = $spd_pumk_periode->id;
                     }
                     if ($spd_pumk_periode->status_id == 4) {
-                        $data[6]['tw4']['value'] = "Verified";
+                        $data[6]['tw4']['value'] = "Validated";
                         $data[6]['tw4']['id'] = $spd_pumk_periode->id;
                     }
                 }else {
@@ -780,12 +780,12 @@ class HomeController extends Controller
                     } 
 
                     if ($spd_pumk_periode->status_id == 1) {
-                        $data[6]['prognosa']['value'] = "Completed";
+                        $data[6]['prognosa']['value'] = "Verified";
                         $data[6]['prognosa']['id'] = $spd_pumk_periode->id;
                     }
 
                     if ($spd_pumk_periode->status_id == 4) {
-                        $data[6]['prognosa']['value'] = "Verified";
+                        $data[6]['prognosa']['value'] = "Validated";
                         $data[6]['prognosa']['id'] = $spd_pumk_periode->id;
                     }
                 }else {
@@ -805,12 +805,12 @@ class HomeController extends Controller
 
                     } 
                     if ($spd_pumk_periode->status_id == 1) {
-                        $data[6]['audited']['value'] = "Completed";
+                        $data[6]['audited']['value'] = "Verified";
                         $data[6]['audited']['id'] = $spd_pumk_periode->id;
 
                     }
                     if ($spd_pumk_periode->status_id == 4) {
-                        $data[6]['audited']['value'] = "Verified";
+                        $data[6]['audited']['value'] = "Validated";
                         $data[6]['audited']['id'] = $spd_pumk_periode->id;
 
                     }
@@ -834,12 +834,12 @@ class HomeController extends Controller
                     } 
 
                     if ($laporan_manajemen_periode->status_id == 1) {
-                        $data[7]['tw1']['value'] = "Completed";
+                        $data[7]['tw1']['value'] = "Verified";
                         $data[7]['tw1']['id'] = $laporan_manajemen_periode->id;
                     } 
 
                     if ($laporan_manajemen_periode->status_id == 4) {
-                        $data[7]['tw1']['value'] = "Verified";
+                        $data[7]['tw1']['value'] = "Validated";
                         $data[7]['tw1']['id'] = $laporan_manajemen_periode->id;
                     } 
                 }else {
@@ -861,11 +861,11 @@ class HomeController extends Controller
                     } 
                     
                     if ($laporan_manajemen_periode->status_id == 1) {
-                        $data[7]['tw2']['value'] = "Completed";
+                        $data[7]['tw2']['value'] = "Verified";
                         $data[7]['tw2']['id'] = $laporan_manajemen_periode->id;
                     }
                     if ($laporan_manajemen_periode->status_id == 4) {
-                        $data[7]['tw2']['value'] = "Verified";
+                        $data[7]['tw2']['value'] = "Validated";
                         $data[7]['tw2']['id'] = $laporan_manajemen_periode->id;
                     }
                 }else {
@@ -886,12 +886,12 @@ class HomeController extends Controller
                     } 
 
                     if ($laporan_manajemen_periode->status_id == 1) {
-                        $data[7]['tw3']['value'] = "Completed";
+                        $data[7]['tw3']['value'] = "Verified";
                         $data[7]['tw3']['id'] = $laporan_manajemen_periode->id;
                     } 
 
                     if ($laporan_manajemen_periode->status_id == 4) {
-                        $data[7]['tw3']['value'] = "Verified";
+                        $data[7]['tw3']['value'] = "Validated";
                         $data[7]['tw3']['id'] = $laporan_manajemen_periode->id;
                     } 
                 }else {
@@ -912,13 +912,13 @@ class HomeController extends Controller
                     } 
 
                     if ($laporan_manajemen_periode->status_id == 1) {
-                        $data[7]['tw4']['value'] = "Completed";
+                        $data[7]['tw4']['value'] = "Verified";
                         $data[7]['tw4']['id'] = $laporan_manajemen_periode->id;
                     } 
 
                     
                     if ($laporan_manajemen_periode->status_id == 4) {
-                        $data[7]['tw4']['value'] = "Verified";
+                        $data[7]['tw4']['value'] = "Validated";
                         $data[7]['tw4']['id'] = $laporan_manajemen_periode->id;
                     } 
                 }else {
@@ -939,12 +939,12 @@ class HomeController extends Controller
                     } 
 
                     if ($laporan_manajemen_periode->status_id == 1) {
-                        $data[7]['prognosa']['value'] = "Completed";
+                        $data[7]['prognosa']['value'] = "Verified";
                         $data[7]['prognosa']['id'] = $laporan_manajemen_periode->id;
                     }
 
                     if ($laporan_manajemen_periode->status_id == 4) {
-                        $data[7]['prognosa']['value'] = "Verified";
+                        $data[7]['prognosa']['value'] = "Validated";
                         $data[7]['prognosa']['id'] = $laporan_manajemen_periode->id;
                     }
                 }else {
@@ -965,13 +965,13 @@ class HomeController extends Controller
                     } 
 
                     if ($laporan_manajemen_periode->status_id == 1) {
-                        $data[7]['audited']['value'] = "Completed";
+                        $data[7]['audited']['value'] = "Verified";
                         $data[7]['audited']['id'] = $laporan_manajemen_periode->id;
                     }
 
                     
                     if ($laporan_manajemen_periode->status_id == 4) {
-                        $data[7]['audited']['value'] = "Verified";
+                        $data[7]['audited']['value'] = "Validated";
                         $data[7]['audited']['id'] = $laporan_manajemen_periode->id;
                     }
                 }else {

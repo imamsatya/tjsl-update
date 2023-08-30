@@ -978,6 +978,46 @@ class KegiatanController extends Controller
         return response()->json($result);
     }
 
+    public function batalFinalVerifikasiData(Request $request) {
+
+      
+        DB::beginTransaction();
+        try {
+            foreach ($request->kegiatan_verifikasi as $key => $kegiatan_id) {
+                $kegiatan = Kegiatan::where('id', $kegiatan_id)->first();
+                
+                //save old kegiatan nama dan target_tpb_id
+                $kegiatan_nama = $kegiatan->kegiatan;
+                $target_tpb_id = $kegiatan->target_tpb_id;
+    
+                //delete kegiatan dan kegiatan realisasis
+                $kegiatan_realisasi = KegiatanRealisasi::where('kegiatan_id', $kegiatan_id)->first();
+                if($kegiatan_realisasi && $kegiatan_realisasi->status_id == 4) {
+                    $kegiatan_realisasi->status_id = 2;
+                    $kegiatan_realisasi->save();
+                    KegiatanController::store_log($kegiatan_realisasi->id, $kegiatan_realisasi->status_id);//In Progress
+
+
+                }
+                
+        }
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses Unverify data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal verifikasi data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
     public function detail(Request $request)
     {
         // dd($request);
