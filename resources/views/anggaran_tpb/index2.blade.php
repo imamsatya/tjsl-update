@@ -347,13 +347,13 @@
                                 <tr class="treegrid-perusahaan-{{ $perusahaan->perusahaan_id }}" id="perusahaan-{{ $perusahaan->perusahaan_id }}" data-type="perusahaan" data-value="{{ $perusahaan->perusahaan_id }}">
                                     <td style="text-align:center;"></td>
                                     <td style="display: flex"><div style="flex: 1">{{$perusahaan->nama_lengkap}}</div></td>
-                                    <td style="text-align:right;">
+                                    <td style="text-align:right; white-space: nowrap;">
                                         Rp. {{number_format($perusahaan->sum_cid,0,',',',')}}
                                     </td>
-                                    <td style="text-align:right;">
+                                    <td style="text-align:right; white-space: nowrap;">
                                         Rp. {{number_format($perusahaan->sum_noncid,0,',',',')}}
                                     </td>
-                                    <td style="text-align:right;">
+                                    <td style="text-align:right; white-space: nowrap;">
                                         Rp. {{number_format($perusahaan->sum_cid + $perusahaan->sum_noncid,0,',',',')}}
                                     </td>
                                     <td style="text-align:center;">
@@ -377,9 +377,9 @@
                                     @if($total_cid + $total_noncid > 0)
                                     <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;"></th>
                                     <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">Total</th>
-                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">Rp. {{number_format($total_cid,0,',',',')}}</th>
-                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">Rp. {{number_format($total_noncid,0,',',',')}}</th>
-                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7;">Rp. {{number_format($total_cid + $total_noncid,0,',',',')}}</th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7; white-space: nowrap;">Rp. {{number_format($total_cid,0,',',',')}}</th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7; white-space: nowrap;">Rp. {{number_format($total_noncid,0,',',',')}}</th>
+                                    <th style="text-align:right;font-weight:bold;border-top: 1px solid #c8c7c7; white-space: nowrap;">Rp. {{number_format($total_cid + $total_noncid,0,',',',')}}</th>
                                     @endif
                                 </tr>
                             </tfoot>
@@ -504,9 +504,9 @@
                         <tr class="treegrid-bumn-${value}-pilar-${pilar[i].nama_pilar.split(' ').join('-')} ${parentClass}" data-type="pilar" data-value="${pilar[i].nama_pilar.split(' ').join('-')}" data-perusahaan="${value}" id="perusahaan-${value}-pilar-${pilar[i].nama_pilar.split(' ').join('-')}">
                             <td style="text-align:center;">${i+1}</td>
                             <td style="display: flex"><div style="flex: 1">${pilar[i].nama_pilar}</div></td>
-                            <td style="text-align:right;">Rp. ${parseInt(pilar[i].sum_cid).toLocaleString()}</td>
-                            <td style="text-align:right;">Rp. ${parseInt(pilar[i].sum_noncid).toLocaleString()}</td>
-                            <td style="text-align:right;">Rp. ${(parseInt(pilar[i].sum_cid) + parseInt(pilar[i].sum_noncid)).toLocaleString()}</td>
+                            <td style="text-align:right; white-space: nowrap;">Rp. ${parseInt(pilar[i].sum_cid).toLocaleString()}</td>
+                            <td style="text-align:right; white-space: nowrap;">Rp. ${parseInt(pilar[i].sum_noncid).toLocaleString()}</td>
+                            <td style="text-align:right; white-space: nowrap;">Rp. ${(parseInt(pilar[i].sum_cid) + parseInt(pilar[i].sum_noncid)).toLocaleString()}</td>
                             <td style="text-align:center;">
                                 <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${pilar[i].inprogress ? 'In Progress' : (pilar[i].completed ? 'Verified' : (pilar[i].verified ? 'Validated' : '-') )}</a>
                             </td>
@@ -584,9 +584,9 @@
                         <tr class="treegrid-bumn-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i].no_tpb.split(' ').join('-')} ${parentClass}" data-type="tpb" data-value="${tpb[i].no_tpb.split(' ').join('-')}" data-perusahaan="${tempPerusahaan}" data-pilar="${value}">
                             <td style="text-align:center;"></td>
                             <td style="display: flex"><div style="flex: 1">${tpb[i].no_tpb} - ${tpb[i].nama_tpb}</div></td>
-                            <td style="text-align:right;">Rp. ${tpb[i].sum_cid ? parseInt(tpb[i].sum_cid).toLocaleString() : '-'}</td>
-                            <td style="text-align:right;">Rp. ${tpb[i].sum_noncid ? parseInt(tpb[i].sum_noncid).toLocaleString() : '-'}</td>
-                            <td style="text-align:right;">Rp. ${totalTpb.toLocaleString()}</td>
+                            <td style="text-align:right; white-space: nowrap;">Rp. ${tpb[i].sum_cid ? parseInt(tpb[i].sum_cid).toLocaleString() : '-'}</td>
+                            <td style="text-align:right; white-space: nowrap;">Rp. ${tpb[i].sum_noncid ? parseInt(tpb[i].sum_noncid).toLocaleString() : '-'}</td>
+                            <td style="text-align:right; white-space: nowrap;">Rp. ${totalTpb.toLocaleString()}</td>
                             <td style="text-align:center;">
                                 <span class="btn cls-log badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-tahun="${selectedYear}" data-notpb="${tpb[i].no_tpb}" data-namapilar="${value}" data-perusahaan="${tempPerusahaan}">${tpb[i].inprogress ? 'In Progress' : (tpb[i].completed ? 'Verified' : (tpb[i].verified ? 'Validated' : '-'))}</span>
                             </td>

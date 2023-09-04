@@ -360,7 +360,7 @@
                                     <tr class="treegrid-perusahaan-{{ $perusahaan[0]->perusahaan_id }}" id="perusahaan-{{ $perusahaan[0]->perusahaan_id }}" data-type="perusahaan" data-value="{{ $perusahaan[0]->perusahaan_id }}">
                                         <td style="text-align:center"></td>
                                         <td style="display: flex"><div style="flex:1">{{ $perusahaan[0]->nama_lengkap }}</div></td>
-                                        <td style="text-align: right">
+                                        <td style="text-align: right; white-space: nowrap;">
                                             Rp. {{ number_format($perusahaan[0]->total, 0, ',', ',') }}                                                                                        
                                             <br/> 
                                             @php
@@ -391,7 +391,7 @@
                                         @if($total > 0)                                       
                                         <th style="text-align: right; font-weight: bold; border-top: 1px solid #c8c7c7;"></th>
                                         <th style="text-align: right; font-weight: bold; border-top: 1px solid #c8c7c7;">Total</th>
-                                        <th style="text-align: right; font-weight: bold; border-top: 1px solid #c8c7c7;">Rp {{ number_format($total, 0, ',', ',') }}</th>
+                                        <th style="text-align: right; font-weight: bold; border-top: 1px solid #c8c7c7; white-space: nowrap;">Rp {{ number_format($total, 0, ',', ',') }}</th>
                                         @endif
                                     </tr>
                                 </tfoot>
@@ -497,7 +497,7 @@
                                 <tr class="treegrid-bumn-${value}-pilar-${pilar[i][0].id_pilar} ${parentClass}" data-type="pilar" data-value="${pilar[i][0].id_pilar}" data-perusahaan="${value}" id="perusahaan-${value}-pilar-${pilar[i][0].id_pilar}">
                                     <td style="text-align:center;">${i+1}</td>
                                     <td style="display: flex"><div style="flex: 1">${pilar[i][0].nama_pilar}</div></td>
-                                    <td style="text-align:right;">
+                                    <td style="text-align:right; white-space: nowrap;">
                                         Rp. ${ pilar[i][0].total ? parseInt(pilar[i][0].total).toLocaleString() : 0}
                                         <br/>   
                                         <span style="color: ${ color_status }; font-size: smaller">RKA: ${parseInt(pilar[i][1].total_rka).toLocaleString()}</span>
@@ -572,7 +572,7 @@
                                 <tr class="treegrid-bumn-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i][0].id_tpb} ${parentClass}" data-type="tpb" data-value="${tpb[i][0].id_tpb}" data-perusahaan="${tempPerusahaan}" data-pilar="${value}" id="perusahaan-${tempPerusahaan}-pilar-${value}-tpb-${tpb[i][0].id_tpb}">
                                     <td style="text-align:center;"></td>
                                     <td style="display: flex"><div style="flex: 1">${tpb[i][0].no_tpb} - ${tpb[i][0].nama_tpb}</div></td>
-                                    <td style="text-align:right;">
+                                    <td style="text-align:right; white-space: nowrap;">
                                         Rp. ${tpb[i][0].total ? parseInt(tpb[i][0].total).toLocaleString() : 0}
                                         <br/>   
                                         <span style="color: ${ color_status }; font-size: smaller">RKA: ${parseInt(tpb[i][1].total_rka).toLocaleString()}</span>
@@ -655,7 +655,7 @@
                             <tr class="${parentClass}" data-type="target" data-value="${target[i].id_target}" data-perusahaan="${tempPerusahaan}" data-pilar="${tempPilar}" data-tpb="${value}">
                                 <td style="text-align:center;"></td>
                                 <td style="display: flex"><div style="flex: 1">${target[i].program}</div></td>
-                                <td style="text-align:right;">Rp. ${target[i].total ? parseInt(target[i].total).toLocaleString() : '-'}</td>
+                                <td style="text-align:right; white-space: nowrap;">Rp. ${target[i].total ? parseInt(target[i].total).toLocaleString() : '-'}</td>
                                 <td style="text-align: center;">
                                     ${target[i].kriteria_program_umum ? 'Umum; ' : ''}
                                     ${target[i].kriteria_program_prioritas ? 'Prioritas; ' : ''}
