@@ -133,14 +133,16 @@
             @endforeach
         </table>
         <p>Tanggal cetak : {{ $tanggal_cetak }}</p>
-        <br><br><br><br><br>
-        <br><br><br><br><br>
-        <br><br><br><br><br>
+        {{-- <br><br><br><br><br> --}}
+        {{-- <br><br><br><br><br> --}}
+        {{-- <br><br><br><br><br> --}}
         {{-- align right --}}
         <div>
             <div style="text-align: center;margin-left:45%;">
-                <img src="qrcode.png" height="100">
-
+                {{-- <img src="qrcode.png" height="100"> --}}
+                @if (isset($qrCodeImage))
+                    <img src="{{ $qrCodeImage }}" alt="QR Code with Custom Image">
+                @endif
             </div>
         </div>
     </main>

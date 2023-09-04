@@ -176,7 +176,9 @@
         {{-- align right --}}
         <div>
             <div style="text-align: center;margin-left:45%;margin-top:50px;">
-                <img src="qrcode.png" height="100">
+                @if (isset($qrCodeImage))
+                    <img src="{{ $qrCodeImage }}" alt="QR Code with Custom Image">
+                @endif
 
             </div>
         </div>

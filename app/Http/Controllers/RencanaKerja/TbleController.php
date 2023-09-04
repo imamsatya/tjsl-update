@@ -16,6 +16,10 @@ use Illuminate\Support\Str;
 use PDF;
 use Carbon\Carbon;
 use Auth;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Crypt;
 
 class TbleController extends Controller
 {
@@ -320,19 +324,124 @@ class TbleController extends Controller
         }
         //kalau ada yg inprogress walaupun 1 sudah pasti in progress/unfilled
         if ($laporan_manajemen?->whereIn('status_id', [2, 3])->first()) {
-            $data[3]['tanggal_update'] =$laporan_manajemen->whereIn('status_id', [2, 3])->first()->status_id === 2 ? $laporan_manajemen->whereIn('status_id', [2, 3])->first()->updated_at : null;
-            $data[3]['status'] = $laporan_manajemen->whereIn('status_id', [2, 3])->first()->status_id === 2 ? 'In Progress' : null;
+            $data[3]['tanggal_update'] =$laporan_manajemen->whereIn('status_id', [2, 3])->first()->status_id === 2 ? $laporan_manajemen->whereIn('status_id', [2, 3])->first()->updated_at : 'Unfilled';
+            $data[3]['status'] = $laporan_manajemen->whereIn('status_id', [2, 3])->first()->status_id === 2 ? 'In Progress' : 'Unfilled';
         }
         $tanggal_cetak = Carbon::now()->locale('id_ID')->isoFormat('D MMMM YYYY');
         $user = Auth::user();
         
+       // Generate the QR code as an Intervention Image instance
+    //    $qrCode = QrCode::format('png')
+    //    ->size(400)
+    //    ->margin(20)
+    //    ->generate('www.google.com');
+
+        //    // Load the custom image as an Intervention Image instance
+        //    $customImage = Image::make(public_path('logo_only.png'));
+        //         // dd($customImage);
+        //    // Calculate the position to place the custom image in the middle of the QR code
+        //    $imageWidth = $qrCode->width();
+        //    $imageHeight = $qrCode->height();
+        //    $customImageWidth = 100;
+        //    $customImageHeight = 100;
+        //    $x = ($imageWidth - $customImageWidth) / 2;
+        //    $y = ($imageHeight - $customImageHeight) / 2;
+
+        //    // Insert the custom image into the QR code image
+        //    $qrCode->insert($customImage, 'center', $x, $y);
+
+        //    // Encode the combined image to base64
+        //    $base64Image = base64_encode($qrCode->encode('png')->encoded);
+
+        //V1
+        // Save the QR code to a file
+        // Storage::disk('local')->put('qr_code.png', $qrCode);
+
+        // // Load your custom image
+        // $customImage = Image::make('logo_only.png');
+
+        // // Open the QR code image
+        // $qrCodeImage = Image::make(Storage::disk('local')->path('qr_code.png'));
+
+        // // Overlay the custom image onto the QR code
+        // $qrCodeImage->insert($customImage, 'center');
+
+        // // Save or display the merged image
+        // $qrCodeImage->save('merged_qr_code.png');
+        // $qrCodeImagePath = asset('merged_qr_code.png');
+
+        // // Optionally, you can delete the temporary QR code image
+        // Storage::disk('local')->delete('qr_code.png');
+
+        //V2
+        $encryptedId = Crypt::encryptString($id);
+        $encryptedTanggalCetak = Crypt::encryptString($tanggal_cetak);
+        $redirectRoute = route('verifikasi.index', ['id' => $encryptedId, 'tahun' => $tahun, 'tanggal_cetak' => $encryptedTanggalCetak]);
+        $qrCode = QrCode::format('png')
+        ->size(300)
+        ->margin(20)
+        ->generate($redirectRoute);
+
+        Storage::disk('local')->put('qr_code.png', $qrCode);
+
+        // Load your custom image
+        $customImage = Image::make('logo_only.png');
+
+        // Calculate the new size for the custom image (e.g., 100x100 pixels)
+        $newCustomWidth = 50;
+        $newCustomHeight = 50;
+
+        // Resize the custom image
+        $customImage->resize($newCustomWidth, $newCustomHeight);
+
+        // Calculate the position to overlay the custom image in the center of the QR code
+        $qrCodeImage = Image::make(Storage::disk('local')->path('qr_code.png'));
+        $qrCodeWidth = $qrCodeImage->getWidth();
+        $qrCodeHeight = $qrCodeImage->getHeight();
+        $customWidth = $customImage->width();
+        $customHeight = $customImage->height();
+        $overlayX = ($qrCodeWidth - $customWidth) / 2;
+        $overlayY = ($qrCodeHeight - $customHeight) / 2;
+
+        // Overlay the custom image onto the QR code
+        $qrCodeImage->insert($customImage, 'top-left', $overlayX, $overlayY);
+
+        // Save or display the merged image
+        $qrCodeImage->save('merged_qr_code.png');
+        $qrCodeImagePath = asset('merged_qr_code.png');
+
+        // Optionally, you can delete the temporary QR code image
+        Storage::disk('local')->delete('qr_code.png');
+        //put the qrcode in rencana_kerja.tble.detailtemplate
 
         $pdf = PDF::loadView('rencana_kerja.tble.detailtemplate', 
         ['data' => $data,
          'perusahaan' => $perusahaan, 
          'tanggal_cetak' => $tanggal_cetak,
-         'user' => $user])->setPaper('a4', 'portrait');
+         'user' => $user,
+         'qrCodeImage' => $qrCodeImagePath])->setPaper('a4', 'portrait');
         return  $pdf->download($perusahaan->nama_lengkap.'-rka-'.$tahun.'.pdf');
+    }
+
+    public function verifikasiIndex($encryptedId, $tahun, Request $request){
+        $periode = $request->periode ?? 'RKA';
+        $tanggal_cetak= Crypt::decryptString($request->tanggal_cetak);
+        $id = Crypt::decryptString($encryptedId);
+        $perusahaan = Perusahaan::where('id', $id)->first();
+        return view($this->__route . '.scan', [
+            // 'pagetitle' => $this->pagetitle,
+            // 'breadcrumb' => 'Rencana Kerja - Tanda Bukti Lapor Elektronik - RKA',
+            // // 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
+            'periode' => $periode,
+            'perusahaan' => $perusahaan, 
+            'tahun' => $tahun,
+            'tanggal_cetak' => $tanggal_cetak
+            // 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
+            // 'admin_bumn' => $admin_bumn,
+            // 'perusahaan_id' => $perusahaan_id,
+            // 'status' => $status,
+            // 'status_id' => $request->status_laporan ?? ''
+        ]);
     }
 
 }

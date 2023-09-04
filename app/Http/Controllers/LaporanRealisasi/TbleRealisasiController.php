@@ -16,6 +16,10 @@ use Illuminate\Support\Str;
 use PDF;
 use Carbon\Carbon;
 use Auth;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Crypt;
 
 class TbleRealisasiController extends Controller
 {
@@ -276,7 +280,7 @@ class TbleRealisasiController extends Controller
                 $data_kegiatan_bulan['jenis_laporan'] =  $menu_kegiatan;
                 $data_kegiatan_bulan['periode'] = $periode_laporan->nama.'-'.$tahun;
                 $data_kegiatan_bulan['bulan'] = $bulan_nama ;
-                $data_kegiatan_bulan['tanggal_update'] = $kegiatan_bulan?->updated_at;
+                $data_kegiatan_bulan['tanggal_update'] = $kegiatan_bulan?->updated_at ?? 'Unfilled';
                 $data_kegiatan_bulan['status'] =  'Unfilled';
 
                 //kalau ada yg inprogress walaupun 1 sudah pasti in progress
@@ -315,7 +319,7 @@ class TbleRealisasiController extends Controller
                 $data_pumk_bulan['jenis_laporan'] =  $menu_pumk;
                 $data_pumk_bulan['periode'] = $periode_laporan->nama.'-'.$tahun;
                 $data_pumk_bulan['bulan'] = $bulan_nama ;
-                $data_pumk_bulan['tanggal_update'] = $pumk_bulan?->updated_at;
+                $data_pumk_bulan['tanggal_update'] = $pumk_bulan?->updated_at ?? 'Unfilled';
                 $data_pumk_bulan['status'] =  'Unfilled';
 
                 //kalau ada yg inprogress walaupun 1 sudah pasti in progress
@@ -370,15 +374,17 @@ class TbleRealisasiController extends Controller
 
             //cek laporan manajemen
             $laporan_manajemen = DB::table('laporan_manajemens')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('periode_laporan_id', $periode_id)->orderBy('updated_at', 'desc')->get();
-            $data_laporan_manajemen['jenis_laporan'] = 'Laporan Manajemen';
+            $data_laporan_manajemen['jenis_laporan'] = $menu_laporan_manajemen;
             $data_laporan_manajemen['periode'] = $periode_laporan->nama.'-'.$tahun;
             $data_laporan_manajemen['tanggal_update'] = 'Unfilled';
             $data_laporan_manajemen['status'] =   'Unfilled';
             if($laporan_manajemen?->first() ){
+             
                 $data_laporan_manajemen['jenis_laporan'] =  $menu_laporan_manajemen;
                 $data_laporan_manajemen['periode'] = $periode_laporan->nama.'-'.$tahun;
-                $data_laporan_manajemen['tanggal_update'] = $laporan_manajemen->first()->updated_at;
+                $data_laporan_manajemen['tanggal_update'] = $laporan_manajemen->first()->updated_at ?? 'Unfilled';
                 $data_laporan_manajemen['status'] =  $laporan_manajemen->first()->updated_at ? "Finish" : 'Unfilled';
+                
             }
 
             //Verified
@@ -394,7 +400,7 @@ class TbleRealisasiController extends Controller
             }
             //kalau ada yg inprogress walaupun 1 sudah pasti in progress
             if ($laporan_manajemen?->whereIn('status_id', [2, 3])->first()) {
-                $data_laporan_manajemen['tanggal_update'] = $laporan_manajemen?->whereIn('status_id', [2, 3])->first()->updated_at;
+                $data_laporan_manajemen['tanggal_update'] = $laporan_manajemen?->whereIn('status_id', [2, 3])->first()->updated_at ?? 'Unfilled';
                 
                 $data_laporan_manajemen['status'] = $laporan_manajemen?->whereIn('status_id', [2, 3])->first()->status_id === 2 ? "In Progress" : 'Unfilled';
             }
@@ -491,13 +497,54 @@ class TbleRealisasiController extends Controller
       
         $tanggal_cetak = Carbon::now()->locale('id_ID')->isoFormat('D MMMM YYYY');
         $user = Auth::user();
+
+        //V2
+        $encryptedId = Crypt::encryptString($id);
+        $encryptedTanggalCetak = Crypt::encryptString($tanggal_cetak);
+        $redirectRoute = route('verifikasi.index', ['id' => $encryptedId, 'tahun' => $tahun, 'tanggal_cetak' => $encryptedTanggalCetak, 'periode' => $periode_laporan->nama]);
+        $qrCode = QrCode::format('png')
+        ->size(300)
+        ->margin(20)
+        ->generate($redirectRoute);
+
+        Storage::disk('local')->put('qr_code.png', $qrCode);
+
+        // Load your custom image
+        $customImage = Image::make('logo_only.png');
+
+        // Calculate the new size for the custom image (e.g., 100x100 pixels)
+        $newCustomWidth = 50;
+        $newCustomHeight = 50;
+
+        // Resize the custom image
+        $customImage->resize($newCustomWidth, $newCustomHeight);
+
+        // Calculate the position to overlay the custom image in the center of the QR code
+        $qrCodeImage = Image::make(Storage::disk('local')->path('qr_code.png'));
+        $qrCodeWidth = $qrCodeImage->getWidth();
+        $qrCodeHeight = $qrCodeImage->getHeight();
+        $customWidth = $customImage->width();
+        $customHeight = $customImage->height();
+        $overlayX = ($qrCodeWidth - $customWidth) / 2;
+        $overlayY = ($qrCodeHeight - $customHeight) / 2;
+
+        // Overlay the custom image onto the QR code
+        $qrCodeImage->insert($customImage, 'top-left', $overlayX, $overlayY);
+
+        // Save or display the merged image
+        $qrCodeImage->save('merged_qr_code.png');
+        $qrCodeImagePath = asset('merged_qr_code.png');
+
+        // Optionally, you can delete the temporary QR code image
+        Storage::disk('local')->delete('qr_code.png');
         
 
         $pdf = PDF::loadView('laporan_realisasi.tble.detailtemplate', 
         ['data' => $data,
          'perusahaan' => $perusahaan, 
          'tanggal_cetak' => $tanggal_cetak,
-         'user' => $user])->setPaper('a4', 'portrait');
+         'user' => $user,
+         'qrCodeImage' => $qrCodeImagePath])->setPaper('a4', 'portrait');
         return  $pdf->download($perusahaan->nama_lengkap.'-'.$periode_laporan->nama.'-'.$tahun.'.pdf');
     }
 }
