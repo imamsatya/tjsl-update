@@ -383,6 +383,7 @@
            
 
                 var selectedTahun = $(this).data('tahun');
+                var selectedPeriodeId = $('#periode_laporan') .val()
            
 
                 // Do something with the selected value and text
@@ -393,8 +394,8 @@
            
 
                 // Use the Laravel's built-in route function to generate the new URL
-                var url = "{{ route('rencana_kerja.spdpumk_rka.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
-                url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun);
+                var url = "{{ route('laporan_realisasi.triwulan.spd_pumk.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'periode_id' => ':periode_id']) }}";
+                url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(':periode_id', selectedPeriodeId);
 
                 // Redirect the user to the new page
                 window.location.href = url;
