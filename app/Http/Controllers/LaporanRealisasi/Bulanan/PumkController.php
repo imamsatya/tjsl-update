@@ -473,14 +473,14 @@ class PumkController extends Controller
             DB::commit();
             $result = [
                 'flag'  => 'success',
-                'msg' => 'Sukses Complete data',
+                'msg' => 'Sukses Verifikasi data',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
             DB::rollback();
             $result = [
                 'flag'  => 'warning',
-                'msg' => 'Gagal Complete data',
+                'msg' => 'Gagal Verifikasi data',
                 'title' => 'Gagal'
             ];
         }
@@ -506,14 +506,14 @@ class PumkController extends Controller
             DB::commit();
             $result = [
                 'flag'  => 'success',
-                'msg' => 'Sukses Un-Complete data',
+                'msg' => 'Sukses membatalkan verifikasi data',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
             DB::rollback();
             $result = [
                 'flag'  => 'warning',
-                'msg' => 'Gagal Un-Complete data',
+                'msg' => 'Gagal membatalkan verifikasi data',
                 'title' => 'Gagal'
             ];
         }
@@ -539,14 +539,47 @@ class PumkController extends Controller
             DB::commit();
             $result = [
                 'flag'  => 'success',
-                'msg' => 'Sukses verifikasi data',
+                'msg' => 'Sukses validasi data',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
             DB::rollback();
             $result = [
                 'flag'  => 'warning',
-                'msg' => 'Gagal verifikasi data',
+                'msg' => 'Gagal validasi data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
+
+    public function batalFinalVerifikasiData(Request $request) {
+
+        
+        DB::beginTransaction();
+        try {
+            foreach ($request->pumk_verifikasi as $key => $pumk_id) {
+                $pumk = PumkBulan::where('id', $pumk_id)->first();
+                if ($pumk->status_id == 4) {
+                    $pumk->status_id = 2;
+                    $pumk->save();
+                    PumkController::store_log($pumk->id,$pumk->status_id);
+                }
+                
+               
+                
+        }
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses membatalkan validasi data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal membatalkan validasi data',
                 'title' => 'Gagal'
             ];
         }

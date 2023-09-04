@@ -848,7 +848,8 @@
 
     function renderStatusBadge(status) {
         const classMapping = {
-            'Finish': 'badge-light-success',
+            'Verified': 'badge-light-success',
+            'Completed': 'badge-light-success',
             'In Progress': 'badge-light-primary',
             'Unfilled': 'badge-light-warning',
         };
