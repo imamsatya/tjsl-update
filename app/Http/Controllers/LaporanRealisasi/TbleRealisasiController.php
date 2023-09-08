@@ -20,6 +20,8 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Crypt;
+use Milon\Barcode\DNS1D;
+use Milon\Barcode\DNS2D;
 
 class TbleRealisasiController extends Controller
 {
@@ -502,41 +504,60 @@ class TbleRealisasiController extends Controller
         $encryptedId = Crypt::encryptString($id);
         $encryptedTanggalCetak = Crypt::encryptString($tanggal_cetak);
         $redirectRoute = route('verifikasi.index', ['id' => $encryptedId, 'tahun' => $tahun, 'tanggal_cetak' => $encryptedTanggalCetak, 'periode' => $periode_laporan->nama]);
-        $qrCode = QrCode::format('png')
-        ->size(300)
-        ->margin(20)
-        ->generate($redirectRoute);
+        // $qrCode = QrCode::format('png')
+        // ->size(300)
+        // ->margin(20)
+        // ->generate($redirectRoute);
 
-        Storage::disk('local')->put('qr_code.png', $qrCode);
+        // Storage::disk('local')->put('qr_code.png', $qrCode);
 
-        // Load your custom image
-        $customImage = Image::make('logo_only.png');
+        // // Load your custom image
+        // $customImage = Image::make('logo_only.png');
 
-        // Calculate the new size for the custom image (e.g., 100x100 pixels)
-        $newCustomWidth = 50;
-        $newCustomHeight = 50;
+        // // Calculate the new size for the custom image (e.g., 100x100 pixels)
+        // $newCustomWidth = 50;
+        // $newCustomHeight = 50;
 
-        // Resize the custom image
-        $customImage->resize($newCustomWidth, $newCustomHeight);
+        // // Resize the custom image
+        // $customImage->resize($newCustomWidth, $newCustomHeight);
 
-        // Calculate the position to overlay the custom image in the center of the QR code
-        $qrCodeImage = Image::make(Storage::disk('local')->path('qr_code.png'));
-        $qrCodeWidth = $qrCodeImage->getWidth();
-        $qrCodeHeight = $qrCodeImage->getHeight();
-        $customWidth = $customImage->width();
-        $customHeight = $customImage->height();
-        $overlayX = ($qrCodeWidth - $customWidth) / 2;
-        $overlayY = ($qrCodeHeight - $customHeight) / 2;
+        // // Calculate the position to overlay the custom image in the center of the QR code
+        // $qrCodeImage = Image::make(Storage::disk('local')->path('qr_code.png'));
+        // $qrCodeWidth = $qrCodeImage->getWidth();
+        // $qrCodeHeight = $qrCodeImage->getHeight();
+        // $customWidth = $customImage->width();
+        // $customHeight = $customImage->height();
+        // $overlayX = ($qrCodeWidth - $customWidth) / 2;
+        // $overlayY = ($qrCodeHeight - $customHeight) / 2;
 
-        // Overlay the custom image onto the QR code
-        $qrCodeImage->insert($customImage, 'top-left', $overlayX, $overlayY);
+        // // Overlay the custom image onto the QR code
+        // $qrCodeImage->insert($customImage, 'top-left', $overlayX, $overlayY);
 
-        // Save or display the merged image
-        $qrCodeImage->save('merged_qr_code.png');
-        $qrCodeImagePath = asset('merged_qr_code.png');
+        // // Save or display the merged image
+        // $qrCodeImage->save('merged_qr_code.png');
+        // $qrCodeImagePath = asset('merged_qr_code.png');
 
-        // Optionally, you can delete the temporary QR code image
-        Storage::disk('local')->delete('qr_code.png');
+        // // Optionally, you can delete the temporary QR code image
+        // Storage::disk('local')->delete('qr_code.png');
+        $barcode = new DNS2D();
+        
+        // Generate the QR code
+        $qrCodeImage = $barcode->getBarcodePNG($redirectRoute, 'QRCODE,H', 1, 1);
+
+        // Create an image object from the QR code
+        $img = Image::make($qrCodeImage);
+
+        // Load the logo image
+        $logo = Image::make('logo_only.png');
+
+        // Resize the logo image to 30% of its original size
+        $logo->resize($logo->width() * 0.03, $logo->height() * 0.03);
+
+        // Insert the logo into the center of the QR code image
+        $img->insert($logo, 'center');
+
+        // Encode the image as a data URL
+        $dataUrl = $img->encode('data-url')->encoded;
         
 
         $pdf = PDF::loadView('laporan_realisasi.tble.detailtemplate', 
@@ -544,7 +565,7 @@ class TbleRealisasiController extends Controller
          'perusahaan' => $perusahaan, 
          'tanggal_cetak' => $tanggal_cetak,
          'user' => $user,
-         'qrCodeImage' => $qrCodeImagePath])->setPaper('a4', 'portrait');
+         'qrCodeImage' => $dataUrl])->setPaper('a4', 'portrait');
         return  $pdf->download($perusahaan->nama_lengkap.'-'.$periode_laporan->nama.'-'.$tahun.'.pdf');
     }
 }

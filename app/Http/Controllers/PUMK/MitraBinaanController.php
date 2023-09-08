@@ -97,6 +97,7 @@ class MitraBinaanController extends Controller
 
     public function datatable(Request $request)
     {
+        // dd($request);
         //fungsi handle limit memory
         if((int)preg_replace('/[^0-9]/','',ini_get('memory_limit')) < 512){
             ini_set('memory_limit','-1');
@@ -109,7 +110,7 @@ class MitraBinaanController extends Controller
                     ->leftjoin('sektor_usaha','sektor_usaha.id','=','pumk_mitra_binaans.sektor_usaha_id')
                     ->leftjoin('kolekbilitas_pendanaan','kolekbilitas_pendanaan.id','=','pumk_mitra_binaans.kolektibilitas_id')
                     ->where('pumk_mitra_binaans.is_arsip',false);
-
+            
             if($request->perusahaan_id){
                 $data = $data->where('pumk_mitra_binaans.perusahaan_id',$request->perusahaan_id);
             }
@@ -167,6 +168,8 @@ class MitraBinaanController extends Controller
 
             if($request->tahuns){
                 $data = $data->where('pumk_mitra_binaans.tahun',(int)$request->tahuns);
+                // dd('halo');
+                // dd($data->get()[0]);
             }else{
                 $static_tahun = (int)date('Y');
                 $data = $data->where('pumk_mitra_binaans.tahun',$static_tahun);
