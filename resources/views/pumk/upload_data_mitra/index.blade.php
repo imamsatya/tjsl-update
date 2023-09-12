@@ -359,11 +359,13 @@
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
                             });
 
-                            if (data.flag == 'success') {
-                                // $('#winform').modal('hide');
-                                // datatable.ajax.reload( null, false );
-                                location.reload();
-                            }
+                            location.reload();
+
+                            // if (data.flag == 'success') {
+                            //     // $('#winform').modal('hide');
+                            //     // datatable.ajax.reload( null, false );
+                            //     location.reload();
+                            // }
                         },
                         error: function(jqXHR, exception) {
                             $.unblockUI();
