@@ -249,6 +249,7 @@
         $('#datatable').DataTable({
             processing: true,
             serverSide: true,
+            pagination: true,
             "dom": 'lrtip',
             ajax: {
                     url: urldatatable,

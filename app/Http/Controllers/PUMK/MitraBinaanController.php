@@ -179,7 +179,8 @@ class MitraBinaanController extends Controller
                 $data = $data->where('pumk_mitra_binaans.id_tambahan_pendanaan',(int)$request->tambahan_pendanaan_id);
             }
 
-            return datatables()->of($data->get())
+            
+            return datatables()->eloquent($data)
             ->editColumn('nominal_pendanaan', function ($row){
                 $nominal = 0;
                 if($row->nominal_pendanaan){

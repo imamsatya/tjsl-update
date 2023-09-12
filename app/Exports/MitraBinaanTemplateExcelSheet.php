@@ -26,13 +26,13 @@ class MitraBinaanTemplateExcelSheet implements WithMultipleSheets
         $sheets[] = new ReferensiProvinsi();
         $sheets[] = new ReferensiKota();
         $sheets[] = new ReferensiSektorUsaha();
-        $sheets[] = new ReferensiSkalaUsaha();
-        $sheets[] = new ReferensiCaraPenyaluran();
+        // $sheets[] = new ReferensiSkalaUsaha();
+        // $sheets[] = new ReferensiCaraPenyaluran();
         $sheets[] = new ReferensiKolektibilitasPendanaan();
         $sheets[] = new ReferensiKondisiPinjaman();
-        $sheets[] = new ReferensiJenisPembayaran();
-        $sheets[] = new ReferensiBankAccount();
-        $sheets[] = new ReferensiTambahanPendanaan();
+        // $sheets[] = new ReferensiJenisPembayaran();
+        // $sheets[] = new ReferensiBankAccount();
+        // $sheets[] = new ReferensiTambahanPendanaan();
         return $sheets;
     }
 }

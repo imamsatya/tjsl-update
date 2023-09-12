@@ -223,10 +223,25 @@ class UploadMitraBinaanController extends Controller
             $param2['upload_by_id']  = \Auth::user()->id;
             $mb->update((array)$param2);
 
+            $gagal = $mb->gagal;
+            $sukses = $mb->berhasil;
+            $msg = '';
+            $flag = '';
+            if(!$sukses) {
+                $msg = 'Gagal upload file';
+                $flag = 'error';
+            } else if($gagal) {
+                $msg = 'Terdapat '.$sukses.' data berhasil upload dan '.$gagal.' data gagal upload!';
+                $flag = 'warning';
+            } else {
+                $msg = 'Berhasil upload file';
+                $flag = 'success';
+            }
+
             DB::commit();
             $result = [
-            'flag'  => 'success',
-            'msg' => 'File Terupload',
+            'flag'  => $flag,
+            'msg' => $msg,
             'title' => ''
             ];
         }catch(\Exception $e){
