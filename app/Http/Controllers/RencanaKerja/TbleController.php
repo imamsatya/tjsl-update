@@ -496,24 +496,28 @@ class TbleController extends Controller
     }
 
     public function verifikasiIndex($encryptedId, $tahun, Request $request){
-        $periode = $request->periode ?? 'RKA';
-        $tanggal_cetak= Crypt::decryptString($request->tanggal_cetak);
-        $id = Crypt::decryptString($encryptedId);
-        $perusahaan = Perusahaan::where('id', $id)->first();
-        return view($this->__route . '.scan', [
-            // 'pagetitle' => $this->pagetitle,
-            // 'breadcrumb' => 'Rencana Kerja - Tanda Bukti Lapor Elektronik - RKA',
-            // // 'tahun' => ($request->tahun ? $request->tahun : date('Y')),
-            'periode' => $periode,
-            'perusahaan' => $perusahaan, 
-            'tahun' => $tahun,
-            'tanggal_cetak' => $tanggal_cetak
-            // 'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
-            // 'admin_bumn' => $admin_bumn,
-            // 'perusahaan_id' => $perusahaan_id,
-            // 'status' => $status,
-            // 'status_id' => $request->status_laporan ?? ''
-        ]);
+        try {
+            $periode = $request->periode ?? 'RKA';
+            $tanggal_cetak = Crypt::decryptString($request->tanggal_cetak);
+            $id = Crypt::decryptString($encryptedId);
+            
+            // Check if decryption fails for $tanggal_cetak or $id
+            if (!$tanggal_cetak || !$id) {
+                return view('false.blade.php');
+            }
+    
+            $perusahaan = Perusahaan::where('id', $id)->first();
+            
+            return view($this->__route . '.scan', [
+                'periode' => $periode,
+                'perusahaan' => $perusahaan, 
+                'tahun' => $tahun,
+                'tanggal_cetak' => $tanggal_cetak
+            ]);
+        } catch (\Exception $e) {
+            // Handle any decryption errors or exceptions here
+            return view($this->__route . '.false');
+        }
     }
 
 }
