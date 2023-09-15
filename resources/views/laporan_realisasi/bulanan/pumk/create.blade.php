@@ -56,6 +56,17 @@
                     class="form-control form-control-lg form-control-solid" placeholder="Rp" />
             </div>
         </div>
+
+        <div class="row mb-6">
+            <div class="col-lg-3">
+                <div class="ms-2 bulan-label">Nilai Penyaluran melalui Pegadaian <span style="color: red">*</span></div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" name="nilai_penyaluran_melalui_pegadaian" oninput="formatCurrency(this)"
+                onkeypress="return onlyNumbers(event)"  style="text-align:right;" id="nilai_penyaluran_melalui_pegadaian" value="{{ $pumk_bulan?->nilai_penyaluran_melalui_pegadaian }}"
+                    class="form-control form-control-lg form-control-solid" placeholder="Rp" />
+            </div>
+        </div>
         @endif
         @if($perusahaan_id == 3)
         <div class="row mb-6">
@@ -302,6 +313,7 @@
                 const propertiesToUpdate = [
                     'nilai_penyaluran',
                     'nilai_penyaluran_melalui_bri',
+                    'nilai_penyaluran_melalui_pegadaian',
                     'jumlah_mb',
                     'jumlah_mb_naik_kelas',
                     // 'kolektabilitas_lancar',
@@ -370,6 +382,7 @@
                 tahun_create: 'required',
                 bulan_id_create: 'required',
                 nilai_penyaluran_melalui_bri: 'required', // Add this rule for perusahaan_id !== '3'
+                nilai_penyaluran_melalui_pegadaian: 'required', // Add this rule for perusahaan_id !== '3'
                 // jumlah_mb: 'required',
                 // jumlah_mb_naik_kelas: 'required',
             };
@@ -377,6 +390,7 @@
                         tahun_create: 'Tahun harus terisi!',
                         bulan_id_create: 'Bulan harus terisi!',
                         nilai_penyaluran_melalui_bri: 'Nilai Penyaluran Melalui BRI harus terisi!',
+                        nilai_penyaluran_melalui_pegadaian: 'Nilai Penyaluran Melalui Pegadaian harus terisi!',
                         // jumlah_mb: 'Jumlah MB baru harus terisi!',
                         // jumlah_mb_naik_kelas: 'Jumlah MB Naik Kelas harus terisi!',
             };
@@ -450,7 +464,7 @@
                         // let tempAnggaran = $('#alokasi_anggaran_edit').val()
                         // $('#alokasi_anggaran_edit').val(parseInt(tempAnggaran.replace(/[^0-9\-]/g, '')))
 
-                    
+                    let perusahaan_id = $('#perusahaan_id').val()
                     let tahun = $('#tahun_create').val()
                     let bulan_id_create = $('#bulan_id_create').val()
                     //
@@ -467,6 +481,8 @@
                     } else {
                         let nilai_penyaluran_melalui_bri = $('#nilai_penyaluran_melalui_bri').val()
                         $('#nilai_penyaluran_melalui_bri').val(parseInt(nilai_penyaluran_melalui_bri.replace(/[^0-9\-]/g, '')))
+                        let nilai_penyaluran_melalui_pegadaian = $('#nilai_penyaluran_melalui_pegadaian').val()
+                        $('#nilai_penyaluran_melalui_pegadaian').val(parseInt(nilai_penyaluran_melalui_pegadaian.replace(/[^0-9\-]/g, '')))
                     }
                     
                     //

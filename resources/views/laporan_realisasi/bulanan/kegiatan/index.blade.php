@@ -384,7 +384,11 @@
                             <tr>
                                 <th colspan="6">Total</th>
                                 
-                                <th class="text-end"></th>
+                                <th style="white-space: nowrap;" class="text-end">@if ($totalAnggaranAlokasi < 0)
+                                    Rp ( {{ number_format($totalAnggaranAlokasi, 0, ',', ',') }} )
+                                @else
+                                    Rp {{ number_format($totalAnggaranAlokasi, 0, ',', ',') }}
+                                @endif</th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
@@ -959,19 +963,19 @@
             lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
                 pageLength: 10,
                 footerCallback: function (tfoot, data, start, end, display) {
-            var api = this.api();
+            // var api = this.api();
 
-            var getColumnTotal = function (columnIndex) {
-                return api
-                    .column(columnIndex, { page: 'current' })
-                    .data()
-                    .reduce(function (acc, val) {
-                        return acc + parseFloat(val);
-                    }, 0);
-            };
+            // var getColumnTotal = function (columnIndex) {
+            //     return api
+            //         .column(columnIndex, { page: 'current' })
+            //         .data()
+            //         .reduce(function (acc, val) {
+            //             return acc + parseFloat(val);
+            //         }, 0);
+            // };
 
-            // Calculate and display the total in the footer
-            $(api.column(6).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(6).toFixed(0)) + '</div>');
+            // // Calculate and display the total in the footer
+            // $(api.column(6).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(6).toFixed(0)) + '</div>');
         },
             drawCallback: function (settings) {
                 var info = datatable.page.info();

@@ -78,6 +78,11 @@ class SpdPumkRkaController extends Controller
         }
         
         $pumk_anggaran = $anggaran->orderBy('tahun', 'desc')->get();
+        $totalIncome = $pumk_anggaran->sum('income_total');
+        $totalOutcome = $pumk_anggaran->sum('outcome_total');
+        $saldoAkhir = $pumk_anggaran->sum('saldo_akhir');
+        // dd($pumk_anggaran->where('income_total', '<', 0));
+        // dd($totalIncome."aaaa".$totalOutcome."aaaa".$saldoAkhir."aaaa");
         // dd($anggaran);
         // dd($anggaran[0]->nama_lengkap);
 
@@ -123,7 +128,10 @@ class SpdPumkRkaController extends Controller
             'anggaran' => $pumk_anggaran,
             'status' => $status,
             'status_id' => $request->status_spd ?? '',
-            'isOkToInput' => $isOkToInput
+            'isOkToInput' => $isOkToInput,
+            'totalIncome' => $totalIncome,
+            'totalOutcome' => $totalOutcome,
+            'saldoAkhir' => $saldoAkhir
         ]);
     }
 

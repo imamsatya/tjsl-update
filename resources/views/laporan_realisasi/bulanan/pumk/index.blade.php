@@ -326,6 +326,9 @@
                                     <th
                                         style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">
                                         Penyaluran Melalui BRI</th>
+                                        <th
+                                        style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">
+                                        Penyaluran Melalui Pegadaian</th>
                                         @endif
                                         @if($perusahaan_id == '3')
                                     <th
@@ -359,6 +362,7 @@
                                 <tr>
                                     <th></th>
                                     <th>Total</th>
+                                    <th class="text-end"></th>
                                     <th class="text-end"></th>
                                     <th class="text-end"></th>
                                     <th class="text-end"></th>
@@ -727,8 +731,22 @@
                     name: 'nilai_penyaluran_melalui_bri',
                     className: 'text-end',
                     render: function (data, type, row) {
-                        let formattedValue = formatCurrency2(data.toString());
-                        return `<div class="text-end">${formattedValue}</div>`;
+                        let formattedValue = formatCurrency2(data.toString())
+                        return `<div class="text-end">${formattedValue}</div>`
+                    }
+                },
+                {
+                    data: 'nilai_penyaluran_melalui_pegadaian',
+                    name: 'nilai_penyaluran_melalui_pegadaian',
+                    className: 'text-end',
+                    render: function (data, type, row) {
+                        if (data == null) {
+                            return null
+                        } else {
+                            let formattedValue = formatCurrency2(data.toString())
+                        return `<div class="text-end">${formattedValue}</div>`
+                        }
+                        
                     }
                 },
                
@@ -809,6 +827,10 @@
         {
             data: 'nilai_penyaluran_melalui_bri',
             visible: false
+        },
+        {
+            data: 'nilai_penyaluran_melalui_pegadaian',
+            visible: false
         }
     );
 
@@ -828,8 +850,8 @@
                 }
             },
             columns: columns,
-            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            pageLength: 10,
+            lengthMenu: [[12, 25, 50, -1], [12, 25, 50, "All"]],
+            pageLength: 12,
             footerCallback: function (tfoot, data, start, end, display) {
                 var api = this.api();
 
@@ -838,12 +860,19 @@
                         .column(columnIndex, { page: 'current' })
                         .data()
                         .reduce(function (acc, val) {
+                            if (acc == null) {
+                                acc = 0
+                            }
+                            if (val == null) {
+                                val = 0
+                            }
                             return acc + parseFloat(val);
                         }, 0);
                 };
 
                 $(api.column(1).footer()).html('Total');
                 $(api.column(2).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(2).toFixed(0)) + '</div>');
+                $(api.column(3).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(3).toFixed(0)) + '</div>');
 
                 if (perusahaan_id =='3') {
                     $(api.column(3).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(3).toFixed(0)) + '</div>');

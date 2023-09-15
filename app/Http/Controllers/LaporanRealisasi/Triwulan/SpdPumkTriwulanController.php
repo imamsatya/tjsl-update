@@ -82,6 +82,12 @@ class SpdPumkTriwulanController extends Controller
             $anggaran = $anggaran->where('periode_id', $request->periode_laporan);
         }
         $anggaran = $anggaran->orderBy('tahun', 'desc')->get();
+
+        
+        $totalIncome = $anggaran->sum('income_total');
+        $totalOutcome = $anggaran->sum('outcome_total');
+        $saldoAkhir = $anggaran->sum('saldo_akhir');
+        //  dd($totalIncome."aaaa".$totalOutcome."aaaa".$saldoAkhir."aaaa");
         // dd($anggaran);
         // dd($anggaran[0]->nama_lengkap);
 
@@ -108,7 +114,10 @@ class SpdPumkTriwulanController extends Controller
             'status_id' => $request->status_spd ?? '',
             'periode'=>$periode,
             'periode_id' => $request->periode_laporan ?? '',
-            'isOkToInput' => $isOkToInput
+            'isOkToInput' => $isOkToInput,
+            'totalIncome' => $totalIncome,
+            'totalOutcome' => $totalOutcome,
+            'saldoAkhir' => $saldoAkhir
         ]);
     }
 

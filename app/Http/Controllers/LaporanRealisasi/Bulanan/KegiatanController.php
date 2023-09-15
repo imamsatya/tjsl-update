@@ -120,6 +120,11 @@ class KegiatanController extends Controller
         // $bulan = $request->bulan_id ??  'all';
         $tahun = $request->tahun ?? date('Y');
         
+        $perusahaan_id = $request->perusahaan_id ?? 'all';
+        $bulan = $request->bulan;
+        $tahun = $request->tahun ?? date('Y');
+        $jenis_anggaran = $request->jenis_anggaran ?? 'CID';
+        // dd($perusahaan_id);
         $kegiatan = DB::table('kegiatans')
         ->join('kegiatan_realisasis', function($join) use ($bulan, $tahun) {
             $join->on('kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
@@ -130,6 +135,7 @@ class KegiatanController extends Controller
                 })
                 ->where('kegiatan_realisasis.tahun', $tahun);
         })
+        ->join('bulans', 'bulans.id', 'kegiatan_realisasis.bulan')
         ->join('target_tpbs', 'target_tpbs.id', 'kegiatans.target_tpb_id')
         ->join('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun) {
             if ($perusahaan_id != 'all') {
@@ -137,6 +143,7 @@ class KegiatanController extends Controller
                 ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
                 ->where('anggaran_tpbs.tahun', $tahun);
             }
+
             if ($perusahaan_id == 'all') {
                 $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
                 // ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
@@ -145,7 +152,11 @@ class KegiatanController extends Controller
             
         })
         ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
-        ->join('tpbs', 'tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
+    
+        ->join('tpbs', function($join) use ($jenis_anggaran) {
+            $join->on('tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
+                ->where('tpbs.jenis_anggaran', $jenis_anggaran);
+        })
         ->leftJoin('jenis_kegiatans', 'jenis_kegiatans.id', '=', 'kegiatans.jenis_kegiatan_id')
         ->join('provinsis', 'provinsis.id', '=', 'kegiatans.provinsi_id')
         ->join('kotas', 'kotas.id', '=', 'kegiatans.kota_id')
@@ -165,9 +176,33 @@ class KegiatanController extends Controller
             'relasi_pilar_tpbs.id as relasi_pilar_tpb_id',
             'tpbs.id as tpb_id',
             'tpbs.jenis_anggaran',
-            'satuan_ukur.nama as satuan_ukur_nama'
-        )
-        ->get();
+            'satuan_ukur.nama as satuan_ukur_nama',
+            'bulans.nama as bulan_nama'
+        );
+
+        if ($request->pilar_pembangunan_id) {
+
+            $kegiatan = $kegiatan->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
+        }
+
+        if ($request->tpb_id) {
+
+            $kegiatan = $kegiatan->where('tpbs.id', $request->tpb_id);
+        }
+
+        if ($request->program_id) {
+
+            $kegiatan = $kegiatan->where('target_tpbs.id', $request->program_id);
+        }
+
+        if ($request->jenis_kegiatan) {
+
+            $kegiatan = $kegiatan->where('jenis_kegiatans.id', $request->jenis_kegiatan);
+        }
+
+        $kegiatan = $kegiatan->get();
+        // dd($kegiatan);
+        $totalAnggaranAlokasi = $kegiatan->sum('anggaran_alokasi');
         // dd($request->perusahaan_id);
         // dd($kegiatan);
         // $pilar_pembangunan_id = $request->pilar_pembangunan ?? '';
@@ -198,7 +233,8 @@ class KegiatanController extends Controller
             'jenis_kegiatan_id' => $jenis_kegiatan_id,
             'bulan_id' =>  $bulan,
             'program_id' => $request->program_id ?? '',
-            'jenis_kegiatan_id' => $request->jenis_kegiatan ?? ''
+            'jenis_kegiatan_id' => $request->jenis_kegiatan ?? '',
+            'totalAnggaranAlokasi' => $totalAnggaranAlokasi
 
         ]);
     }

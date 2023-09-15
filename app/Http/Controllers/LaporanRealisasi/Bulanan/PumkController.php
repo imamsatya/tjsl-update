@@ -121,7 +121,7 @@ class PumkController extends Controller
             // $tahun = $anggaran_tpbs->tahun;
             // $tpbs_temp = Tpb::find($data->tpb_id);
             
-        
+            // dd($request);
             return view($this->__route . '.create', [
                 'pagetitle' => $this->pagetitle,
                 'actionform' => $request->actionform ?? 'insert',
@@ -180,6 +180,7 @@ class PumkController extends Controller
             $pumk_bulan->bulan_id = $request->bulan_id_create;
             $pumk_bulan->nilai_penyaluran = $request->nilai_penyaluran;
             $pumk_bulan->nilai_penyaluran_melalui_bri = $request->nilai_penyaluran_melalui_bri;
+            $pumk_bulan->nilai_penyaluran_melalui_pegadaian = $request->nilai_penyaluran_melalui_pegadaian;
             $pumk_bulan->jumlah_mb = $request->jumlah_mb;
             $pumk_bulan->jumlah_mb_naik_kelas = $request->jumlah_mb_naik_kelas;
 
@@ -216,12 +217,23 @@ class PumkController extends Controller
         DB::beginTransaction();
 
         try {
-            // $pumk_bulan = PumkBulan::where('id', $request->pumk_bulan_id)->first();
-            $pumk_bulan = $cekData;
+            if ($request->pumk_bulan_id == null) {
+                $pumk_bulan = $cekData;
+            }
+
+            if ($request->pumk_bulan_id != null) {
+                # code...
+                $pumk_bulan = PumkBulan::where('id', $request->pumk_bulan_id)->first();
+            }
+            
+            // dd($request->tahun_create);
+            
+            
             $pumk_bulan->tahun = $request->tahun_create;
             $pumk_bulan->bulan_id = $request->bulan_id_create;
             $pumk_bulan->nilai_penyaluran = $request->nilai_penyaluran;
             $pumk_bulan->nilai_penyaluran_melalui_bri = $request->nilai_penyaluran_melalui_bri;
+            $pumk_bulan->nilai_penyaluran_melalui_pegadaian = $request->nilai_penyaluran_melalui_pegadaian;
             $pumk_bulan->jumlah_mb = $request->jumlah_mb;
             $pumk_bulan->jumlah_mb_naik_kelas = $request->jumlah_mb_naik_kelas;
 
