@@ -1070,8 +1070,10 @@ class KegiatanController extends Controller
             ->join('provinsis', 'provinsis.id', 'kegiatans.provinsi_id')
             ->join('kotas', 'kotas.id', 'kegiatans.kota_id')
             ->join('satuan_ukur', 'satuan_ukur.id', 'kegiatans.satuan_ukur_id')
+            ->join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', 'kegiatans.id')
+            ->join('bulans', 'bulans.id', 'kegiatan_realisasis.bulan')
             ->select('kegiatans.*', 'perusahaan_masters.nama_lengkap as nama_perusahaan', 'pilar_pembangunans.nama as nama_pilar', 'provinsis.nama as provinsi', 'kotas.nama as kota'
-            ,'satuan_ukur.nama as satuan_ukur','target_tpbs.program as program', 'tpbs.jenis_anggaran as jenis_anggaran', 'tpbs.no_tpb as no_tpb', 'tpbs.nama as nama_tpb')->first();
+            ,'satuan_ukur.nama as satuan_ukur','target_tpbs.program as program', 'tpbs.jenis_anggaran as jenis_anggaran', 'tpbs.no_tpb as no_tpb', 'tpbs.nama as nama_tpb', 'bulans.nama as nama_bulan')->first();
             
             $kumpulanKegiatan = DB::table('kegiatans')->where('kegiatan', $kegiatan->kegiatan)->where('target_tpb_id', $kegiatan->target_tpb_id)->where('provinsi_id', $kegiatan->provinsi_id)->where('kota_id', $kegiatan->kota_id)->get();
             $kumpulanKegiatanId = $kumpulanKegiatan->pluck('id');
