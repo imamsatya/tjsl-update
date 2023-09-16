@@ -476,4 +476,30 @@ class MitraBinaanController extends Controller
         $namaFile = "Data Mitra Binaan ".date('dmY').".xlsx";
         return Excel::download(new MitraBinaanExport($mitra,$bank), $namaFile);
     }
+
+    public function deleteAll(Request $request)
+    {
+       DB::beginTransaction();
+       try{
+            $semester = $request->input('semester');
+            $tahun = $request->input('tahun');
+
+            $data = PumkMitraBinaan::where('tahun', $tahun)->where('bulan', $semester)->delete();
+
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses hapus data',
+                'title' => 'Sukses'
+            ];
+        }catch(\Exception $e){
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal hapus data',
+                'title' => 'Gagal'
+            ];
+        }
+        return response()->json($result);
+    }
 }
