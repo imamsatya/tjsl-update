@@ -202,7 +202,10 @@
                     <div class="separator border-gray-200 mb-10"></div>
                 </div>   
                     <!--begin: Datatable -->
-                    <div class="table-responsive"  >
+                    <div style="text-align: right">
+                        <button type="button" class="btn btn-danger btn-sm delete-all"><i class="fa fa-trash text-white"></i> DELETE ALL
+                    </div>
+                    <div class="table-responsive"  >                        
                         <table class="table table-striped table-bordered table-hover " id="datatable">
                             <thead>
                                 <tr style="border-top:ridge;">
@@ -238,6 +241,7 @@
     var urldelete = "{{route('pumk.data_mitra.delete')}}";
     var urlexportmitra = "{{route('pumk.data_mitra.export')}}";
     var urldatatable = "{{route('pumk.data_mitra.datatable')}}";
+    var urldeleteall = "{{route('pumk.data_mitra.delete_all')}}";
 
     $(document).ready(function(){
         $.ajaxSetup({
@@ -330,6 +334,92 @@
         //     $('.cls-add').hide();
         //     $('.cls-button-edit').hide();
         // }
+
+        $(".delete-all").click(function() {
+            let bulan = $("#bulan_id").val();
+            let tahun = $("#tahuns").val();
+
+            if(!(bulan && tahun)) {
+                swal.fire({
+                    title: "Error!",
+                    text: "Pilihan Semester dan Tahun harus terisi!",
+                    icon: "error",
+                })
+                return
+            }
+            
+            swal.fire({
+                title: "Pemberitahuan",
+                text: `Yakin hapus data Semester ${bulan} - Tahun ${tahun} ?`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Ya, hapus data",
+                cancelButtonText: "Tidak"
+            }).then(function(result) {
+                if (result.value) {
+                    $.ajax({
+                    url: urldeleteall,
+                    data:{
+                        "semester": bulan,
+                        "tahun": tahun
+                    },
+                    type:'post',
+                    dataType:'json',
+                    beforeSend: function(){
+                        $.blockUI();
+                    },
+                    success: function(data){
+                        $.unblockUI();
+
+                        swal.fire({
+                                title: data.title,
+                                html: data.msg,
+                                icon: data.flag,
+
+                                buttonsStyling: true,
+
+                                confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });
+
+                        if(data.flag == 'success') {
+                            // datatable.ajax.reload( null, false );
+                            $('#datatable').DataTable().draw(true);
+                            // location.reload(); 
+                        }
+                        
+                    },
+                    error: function(jqXHR, exception) {
+                        $.unblockUI();
+                        var msgerror = '';
+                        if (jqXHR.status === 0) {
+                            msgerror = 'jaringan tidak terkoneksi.';
+                        } else if (jqXHR.status == 404) {
+                            msgerror = 'Halaman tidak ditemukan. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msgerror = 'Internal Server Error [500].';
+                        } else if (exception === 'parsererror') {
+                            msgerror = 'Requested JSON parse gagal.';
+                        } else if (exception === 'timeout') {
+                            msgerror = 'RTO.';
+                        } else if (exception === 'abort') {
+                            msgerror = 'Gagal request ajax.';
+                        } else {
+                            msgerror = 'Error.\n' + jqXHR.responseText;
+                        }
+                        swal.fire({
+                            title: "Error System",
+                            html: msgerror+', coba ulangi kembali !!!',
+                            icon: 'error',
+
+                            buttonsStyling: true,
+
+                            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
+                        });  
+                        }
+                    });
+                }
+            });	
+        })
         
     });
 

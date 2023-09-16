@@ -152,7 +152,17 @@ class UploadMitraBinaanController extends Controller
     {
         $tahun = $request->tahun;
         $periode = $request->periode;
-     
+
+        try {
+            $cek_ketersediaan_data = PumkMitraBinaan::where('tahun', $tahun)->where('bulan', $periode)->first();
+            if($cek_ketersediaan_data) { // batalkan proses download template
+                throw new \Exception("Data sudah tersedia, tidak bisa download template");   
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 200)->header('Content-Type', 'text/plain');
+        }
+        
+
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
         $perusahaan_id = null;
@@ -223,8 +233,21 @@ class UploadMitraBinaanController extends Controller
             $param2['upload_by_id']  = \Auth::user()->id;
             $mb->update((array)$param2);
 
-            $gagal = $mb->gagal;
-            $sukses = $mb->berhasil;
+            
+            $cek_berhasil_upload = UploadPumkMitraBinaan::find($mb->id);
+            if(!$cek_berhasil_upload) {
+                DB::rollback();
+                $result = [
+                'flag'  => 'error',
+                'msg' => 'Data sudah tersedia, tidak bisa upload data!',
+                'title' => 'Gagal'
+                ];
+                return response()->json($result);
+            }
+
+
+            $gagal = $cek_berhasil_upload->gagal;
+            $sukses = $cek_berhasil_upload->berhasil;
             $msg = '';
             $flag = '';
             if(!$sukses) {

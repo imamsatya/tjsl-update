@@ -359,7 +359,9 @@
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
                             });
 
-                            location.reload();
+                            // location.reload();
+
+                            $('#datatable').DataTable().draw(true);
 
                             // if (data.flag == 'success') {
                             //     // $('#winform').modal('hide');
