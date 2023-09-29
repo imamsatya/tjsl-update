@@ -1241,9 +1241,11 @@ class KegiatanController extends Controller
                 return $formattedDate;
             })
             ->addColumn('keterangan_trim', function($row) {
-                $maxLength = 100;
-                $ellipsis = "...";
-                $truncatedText = mb_strimwidth($row->keterangan, 0, $maxLength, $ellipsis);
+                // $maxLength = 100;
+                // $ellipsis = "...";
+                // $truncatedText = mb_strimwidth($row->keterangan, 0, $maxLength, $ellipsis);
+
+                $truncatedText = $row->keterangan;
 
                 return $truncatedText;
             })

@@ -237,23 +237,10 @@
                 <div class="card-header pt-5">
                     <!--begin::Card title-->
                     <div class="card-title">
-                        <h2 class="d-flex align-items-center">{{ $pagetitle }}
+                        <div class="col">
+                        <h2 class="d-flex align-items-center mb-4">{{ $pagetitle }}
                             <span class="text-gray-600 fs-6 ms-1"></span>
                         </h2>
-                    </div>
-                    <!--end::Card title-->
-                    <!--begin::Card toolbar-->
-                    <div class="card-toolbar">
-                        <!--begin::Search-->
-                        {{-- <div class="d-flex align-items-center position-relative my-1"
-                            data-kt-view-roles-table-toolbar="base">
-                            <button type="button" class="btn btn-success me-2 btn-sm cls-add"
-                                data-kt-view-roles-table-select="delete_selected">Simpan Status</button>
-                            <button type="button" class="btn btn-success btn-sm cls-add"
-                                data-kt-view-roles-table-select="delete_selected">Tambah</button>
-                            <button type="button" class="btn btn-danger btn-sm delete-selected-data">Hapus Data
-                                x</button>
-                        </div> --}}
                         <div class="d-flex align-items-center position-relative my-1">
                             {{-- <button type="button" class="btn btn-success me-2 btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
@@ -286,6 +273,22 @@
                             </button>
                             @endcan
                         </div>
+                        </div>
+                    </div>
+                    <!--end::Card title-->
+                    <!--begin::Card toolbar-->
+                    <div class="card-toolbar">
+                        <!--begin::Search-->
+                        {{-- <div class="d-flex align-items-center position-relative my-1"
+                            data-kt-view-roles-table-toolbar="base">
+                            <button type="button" class="btn btn-success me-2 btn-sm cls-add"
+                                data-kt-view-roles-table-select="delete_selected">Simpan Status</button>
+                            <button type="button" class="btn btn-success btn-sm cls-add"
+                                data-kt-view-roles-table-select="delete_selected">Tambah</button>
+                            <button type="button" class="btn btn-danger btn-sm delete-selected-data">Hapus Data
+                                x</button>
+                        </div> --}}
+                       
                         <!--end::Search-->
                         <!--end::Group actions-->
                     </div>
@@ -955,26 +958,26 @@
                     });
                 },
                 footerCallback: function(row, data, start, end, display) {
-                    var api = this.api();
+                    // var api = this.api();
                     
-                    var getColumnTotal = function(columnIndex) {
-                        return api
-                            .column(columnIndex, { page: 'current' })
-                            .data()
-                            .reduce(function(acc, val) {
-                                return acc + parseFloat(val);
-                            }, 0);
-                    };
+                    // var getColumnTotal = function(columnIndex) {
+                    //     return api
+                    //         .column(columnIndex, { page: 'current' })
+                    //         .data()
+                    //         .reduce(function(acc, val) {
+                    //             return acc + parseFloat(val);
+                    //         }, 0);
+                    // };
                   
 
-                    var incomeTotal = getColumnTotal(3);
-                    var outcomeTotal = getColumnTotal(4);
-                    var saldoAkhirTotal = getColumnTotal(5);
+                    // var incomeTotal = getColumnTotal(3);
+                    // var outcomeTotal = getColumnTotal(4);
+                    // var saldoAkhirTotal = getColumnTotal(5);
 
-                    $(api.column(1).footer()).html('Total');
-                    $(api.column(3).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(3).toFixed(0)) + '</div>');
-                    $(api.column(4).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(4).toFixed(0)) + '</div>');
-                    $(api.column(5).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(5).toFixed(0)) + '</div>');
+                    // $(api.column(1).footer()).html('Total');
+                    // $(api.column(3).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(3).toFixed(0)) + '</div>');
+                    // $(api.column(4).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(4).toFixed(0)) + '</div>');
+                    // $(api.column(5).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(5).toFixed(0)) + '</div>');
                 }
             });
         }

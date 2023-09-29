@@ -240,71 +240,74 @@
                     <div class="card-header pt-5">
                         <!--begin::Card title-->
                         <div class="card-title">
-                            <h2 class="d-flex align-items-center">{{ $pagetitle }}
+                            <div class="col">
+                            <h2 class="d-flex align-items-center mb-4">{{ $pagetitle }}
                                 <span class="text-gray-600 fs-6 ms-1"></span>
                             </h2>
+                            <div class="d-flex align-items-center position-relative my-1"
+                            data-kt-view-roles-table-toolbar="base">
+                            @php
+                                $enable_input = false;
+                                if($isOkToInput || $isEnableInputBySuperadmin) $enable_input = true;
+                                $isVerified = false;
+                                $isCompleted = false;
+                                if(!$countInprogress) {
+                                    if($countCompleted > 0) $isCompleted = true;
+                                    else if($countVerified > 0) $isVerified = true;
+                                }                                    
+                            @endphp
+                            @can('view-kegiatan')
+                                <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data
+                                </button>
+                                @can('edit-kegiatan')
+                                <button {{ $isSuperAdmin ? '' : ($enable_input ? (!($isVerified || $isCompleted) ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
+                                </button>
+                                @endcan
+                                @can('delete-kegiatan')
+                                <button {{ $isSuperAdmin ? '' : ($enable_input ? (!($isVerified || $isCompleted) ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
+                                </button>
+                                @endcan
+                            @endcan
+                          
+                            @can('view-verify')
+                                @if($data->count())
+                                {{-- @if(!$isSuperAdmin) --}}
+                                <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="completed-data" >Verified
+                                </button>    
+                                {{-- @endif --}}
+                                @endif
+                            @endcan
+
+                            @can('view-unverify')
+                                @if($data->count())
+                                <button {{ $enable_input || $isSuperAdmin ? ($countCompleted ? '' : ($countInprogress ? 'disabled' : '')) : 'disabled' }} type="button" class="btn btn-warning btn-sm me-2" id="uncompleted-data" >Un-Verified
+                                </button>  
+                                @endif
+                            @endcan
+
+                            @can('view-finalVerify')
+                                @if($data->count())
+                                <button {{ $enable_input || $isSuperAdmin ? ($countCompleted ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-success btn-sm me-2" id="verify-data" >Validate
+                                </button>    
+                                @endif
+                            @endcan
+
+                            @can('view-finalUnverify')
+                                @if($data->count())
+
+                                <button {{ $enable_input || $isSuperAdmin ? ($countVerified ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Validate
+
+                                </button>    
+                                @endif
+                            @endcan
+                        </div>
+                            </div>
                         </div>
                         <!--end::Card title-->
                         <!--begin::Card toolbar-->
                         <div class="card-toolbar">
                             <!--begin::Search-->
-                            <div class="d-flex align-items-center position-relative my-1"
-                                data-kt-view-roles-table-toolbar="base">
-                                @php
-                                    $enable_input = false;
-                                    if($isOkToInput || $isEnableInputBySuperadmin) $enable_input = true;
-                                    $isVerified = false;
-                                    $isCompleted = false;
-                                    if(!$countInprogress) {
-                                        if($countCompleted > 0) $isCompleted = true;
-                                        else if($countVerified > 0) $isVerified = true;
-                                    }                                    
-                                @endphp
-                                @can('view-kegiatan')
-                                    <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data
-                                    </button>
-                                    @can('edit-kegiatan')
-                                    <button {{ $isSuperAdmin ? '' : ($enable_input ? (!($isVerified || $isCompleted) ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
-                                    </button>
-                                    @endcan
-                                    @can('delete-kegiatan')
-                                    <button {{ $isSuperAdmin ? '' : ($enable_input ? (!($isVerified || $isCompleted) ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
-                                    </button>
-                                    @endcan
-                                @endcan
-                              
-                                @can('view-verify')
-                                    @if($data->count())
-                                    {{-- @if(!$isSuperAdmin) --}}
-                                    <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="completed-data" >Verified
-                                    </button>    
-                                    {{-- @endif --}}
-                                    @endif
-                                @endcan
-
-                                @can('view-unverify')
-                                    @if($data->count())
-                                    <button {{ $enable_input || $isSuperAdmin ? ($countCompleted ? '' : ($countInprogress ? 'disabled' : '')) : 'disabled' }} type="button" class="btn btn-warning btn-sm me-2" id="uncompleted-data" >Un-Verified
-                                    </button>  
-                                    @endif
-                                @endcan
-
-                                @can('view-finalVerify')
-                                    @if($data->count())
-                                    <button {{ $enable_input || $isSuperAdmin ? ($countCompleted ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-success btn-sm me-2" id="verify-data" >Validate
-                                    </button>    
-                                    @endif
-                                @endcan
-
-                                @can('view-finalUnverify')
-                                    @if($data->count())
-
-                                    <button {{ $enable_input || $isSuperAdmin ? ($countVerified ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Validate
-
-                                    </button>    
-                                    @endif
-                                @endcan
-                            </div>
+                           
                             <!--end::Search-->
                             <!--end::Group actions-->
                         </div>

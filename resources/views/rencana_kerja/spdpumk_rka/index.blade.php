@@ -215,23 +215,11 @@
                 <div class="card-header pt-5">
                     <!--begin::Card title-->
                     <div class="card-title">
-                        <h2 class="d-flex align-items-center">{{ $pagetitle }}
+                        <div class="col">
+                        <h2 class="d-flex align-items-center mb-4">{{ $pagetitle }}
                             <span class="text-gray-600 fs-6 ms-1"></span>
                         </h2>
-                    </div>
-                    <!--end::Card title-->
-                    <!--begin::Card toolbar-->
-                    <div class="card-toolbar">
-                        <!--begin::Search-->
-                        {{-- <div class="d-flex align-items-center position-relative my-1"
-                            data-kt-view-roles-table-toolbar="base">
-                            <button type="button" class="btn btn-success me-2 btn-sm cls-add"
-                                data-kt-view-roles-table-select="delete_selected">Simpan Status</button>
-                            <button type="button" class="btn btn-success btn-sm cls-add"
-                                data-kt-view-roles-table-select="delete_selected">Tambah</button>
-                            <button type="button" class="btn btn-danger btn-sm delete-selected-data">Hapus Data
-                                x</button>
-                        </div> --}}
+
                         <div class="d-flex align-items-center position-relative my-1">
                             {{-- <button type="button" class="btn btn-success me-2 btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
@@ -270,6 +258,57 @@
                             
                           
                         </div>
+                    </div>
+                    </div>
+                    <!--end::Card title-->
+                    <!--begin::Card toolbar-->
+                    <div class="card-toolbar">
+                        <!--begin::Search-->
+                        {{-- <div class="d-flex align-items-center position-relative my-1"
+                            data-kt-view-roles-table-toolbar="base">
+                            <button type="button" class="btn btn-success me-2 btn-sm cls-add"
+                                data-kt-view-roles-table-select="delete_selected">Simpan Status</button>
+                            <button type="button" class="btn btn-success btn-sm cls-add"
+                                data-kt-view-roles-table-select="delete_selected">Tambah</button>
+                            <button type="button" class="btn btn-danger btn-sm delete-selected-data">Hapus Data
+                                x</button>
+                        </div> --}}
+                        
+                        {{-- <div class="d-flex align-items-center position-relative my-1">
+                          
+                                @can('edit-kegiatan')
+                                <button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input Data
+                                </button>
+                                @endcan
+                                @can('delete-kegiatan')
+                            <button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-danger btn-sm delete-selected-data me-2">Hapus Data
+                            </button>
+                            @endcan
+                            @can('view-verify')
+                         
+                            <button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="verify-data" >Verify
+                            </button>  
+                            @endcan
+                            
+                            @can('view-unverify')
+                            <button {{ $isOkToInput  ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm me-2" id="unverify-data" >Un-Verify
+                            </button> 
+                            @endcan
+                            @can('view-finalVerify')
+                                <button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-success btn-sm finalVerify-selected-data me-2" id="finalVerify-data"> Validate
+                                </button>
+                             @endcan
+                             @can('view-finalUnverify')
+                             <button {{ $isOkToInput ? '' : 'disabled' }} type="button" class="btn btn-warning btn-sm finalUnverify-selected-data me-2" id="finalUnverify-data"> Un-Validate
+                             </button>
+                          @endcan
+                            
+                            
+
+                            
+                            
+                          
+                        </div> --}}
                         <!--end::Search-->
                         <!--end::Group actions-->
                     </div>

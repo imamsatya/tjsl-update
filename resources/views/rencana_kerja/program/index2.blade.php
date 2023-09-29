@@ -251,15 +251,10 @@
                 <div class="card-header pt-5">
                     <!--begin::Card title-->
                     <div class="card-title">
-                        <h2 class="d-flex align-items-center">{{ $pagetitle }}
+                        <div class="col">
+                        <h2 class="d-flex align-items-center mb-4">{{ $pagetitle }}
                             <span class="text-gray-600 fs-6 ms-1"></span>
                         </h2>
-                    </div>
-                    <!--end::Card title-->
-                    <!--begin::Card toolbar-->
-                    <div class="card-toolbar">
-                        <!--begin::Search-->
-                       
                         <div class="d-flex align-items-center position-relative my-1">
                             @php
                                 $enable_input = false;
@@ -315,6 +310,14 @@
                                 @endif
                             @endcan
                         </div>
+                        </div>
+                    </div>
+                    <!--end::Card title-->
+                    <!--begin::Card toolbar-->
+                    <div class="card-toolbar">
+                        <!--begin::Search-->
+                       
+                       
                         <!--end::Search-->
                         <!--end::Group actions-->
                     </div>
