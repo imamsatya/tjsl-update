@@ -430,7 +430,7 @@
         if(tahun == ''){
             alert('tahun wajib diisi!');          
         }else if(bulan == ''){
-            alert('bulan wajib diisi!');          
+            alert('semester wajib diisi!');          
         }else{
             $('#datatable').DataTable().draw(true);
         }
