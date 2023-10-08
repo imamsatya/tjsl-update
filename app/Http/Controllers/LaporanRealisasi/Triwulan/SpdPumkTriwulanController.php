@@ -4,6 +4,10 @@ namespace App\Http\Controllers\LaporanRealisasi\Triwulan;
 
 use App\Models\User;
 use App\Models\Perusahaan;
+use App\Models\Kegiatan;
+use App\Models\KegiatanRealisasi;
+use App\Models\LogKegiatan;
+use App\Models\SubKegiatan;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -208,6 +212,11 @@ class SpdPumkTriwulanController extends Controller
         ];
         // $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
         // dd($periode_rka_id);
+        
+        
+
+        
+
         switch ($request->input('actionform')) {
             case 'insert':
 
@@ -247,6 +256,91 @@ class SpdPumkTriwulanController extends Controller
                     // } 
                     // dd($param);
                     $data = PumkAnggaran::create($param);
+
+                    //Insert to Kegiatan Realisasi
+                     
+                    //periode_id ganti ke bulan
+                    if ($request->periode_id == 1) {
+                        //Maret
+                        $bulan_id = 3; 
+                    }
+                    if ($request->periode_id == 2) {
+                        //Juni
+                        $bulan_id = 6;
+                    }
+                    if ($request->periode_id == 3) {
+                        //Sept
+                        $bulan_id = 9; 
+                    }
+                    if ($request->periode_id == 5) {
+                        //Des
+                        $bulan_id = 12;
+                    }
+                    //cari tpb 8 dulu
+                    $tpb8cid_id = DB::table('tpbs')->where('no_tpb', 'TPB 8')->where('jenis_anggaran', 'CID')->first()?->id;
+
+                    if ($tpb8cid_id) {
+                        $anggaran_tpb8 = DB::table('anggaran_tpbs')->select('anggaran_tpbs.*')        
+                        ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                        ->where('tahun', $request->tahun)
+                        ->where('perusahaan_id', $request->perusahaan_id)
+                        ->where('tpb_id', $tpb8cid_id)
+                        ->first();
+
+                        if ($anggaran_tpb8) {
+                            $target_tpb = DB::table('target_tpbs')->where('anggaran_tpb_id', $anggaran_tpb8->id)->where('program', 'Penyaluran PUMK')->first();
+                            
+                            if ($target_tpb) {
+                                $cek_kegiatan = Kegiatan::join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id');
+                
+                                $cek_kegiatan = $cek_kegiatan
+                                ->where('target_tpb_id',$target_tpb->id )
+                                // ->where('kota_id',  $request->data['kota_kabupaten'])
+                                ->where('kegiatan', 'Penyaluran PUMK')
+                                ->where('bulan', $bulan_id)
+                                ->where('tahun', $request->tahun)
+                                ->first();
+
+                                //kalau kegiatan ga ada (!= null) maka input kegiatan
+                                if (!$cek_kegiatan) {
+                                    $kegiatan = new Kegiatan();
+                                    $kegiatan->target_tpb_id = $target_tpb->id;
+                                    $kegiatan->kegiatan = 'Penyaluran PUMK';
+                                    $kegiatan->provinsi_id = null;
+                                    $kegiatan->kota_id = null;
+                                    $kegiatan->indikator = null;
+                                    $kegiatan->satuan_ukur_id = null;
+                                    $kegiatan->anggaran_alokasi = $param['outcome_total'];
+                                    $kegiatan->jenis_kegiatan_id = null;
+                                    $kegiatan->keterangan_kegiatan = null;
+                                    $kegiatan->save();
+                            
+                                    $kegiatanGroup = Kegiatan::where('kegiatan', $kegiatan->kegiatan)
+                                    ->where('target_tpb_id',  $kegiatan->target_tpb_id)
+                                    ->join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
+                                    ->orderBy('kegiatan_realisasis.bulan', 'desc')
+                                    ->first();
+                                    $kumulatif_anggaran =  $kegiatan->anggaran_alokasi;
+                                    if ($kegiatanGroup) {
+                                        $kumulatif_anggaran = $kumulatif_anggaran + $kegiatanGroup->anggaran_total;
+                                    }
+
+                                    $kegiatanRealisasi = new KegiatanRealisasi();
+                                    $kegiatanRealisasi->kegiatan_id = $kegiatan->id;
+                                    $kegiatanRealisasi->bulan = $bulan_id;
+                                    $kegiatanRealisasi->tahun = $request->tahun;
+                                    // target,realisasi -> null
+                                    $kegiatanRealisasi->anggaran = $kegiatan->anggaran_alokasi;
+                                    $kegiatanRealisasi->anggaran_total = $kumulatif_anggaran;
+                                    $kegiatanRealisasi->status_id = 2;//in progress
+                                    $kegiatanRealisasi->save();
+                        
+                                    SpdPumkTriwulanController::store_log_kegiatan($kegiatanRealisasi->id,$kegiatanRealisasi->status_id);
+                                }
+                            }
+                        }
+                        
+                    }
 
                     if ($validasi) {
                         DB::commit();
@@ -338,6 +432,14 @@ class SpdPumkTriwulanController extends Controller
     public static function store_log($log)
     {
         LogPumkAnggaran::insert($log);
+    }
+
+    public static function store_log_kegiatan($kegiatan_id, $status_id)
+    {  
+        $param['kegiatan_id'] = $kegiatan_id;
+        $param['status_id'] = $status_id;
+        $param['user_id'] = \Auth::user()->id;
+        LogKegiatan::create((array)$param);
     }
 
     /**

@@ -12,7 +12,8 @@
                 <div class="card-header pt-5">
                     <!--begin::Card title-->
                     <div class="card-title">
-                        <h2 class="d-flex align-items-center">{{ $pagetitle }} {{$isOkToInput}}
+                        <h2 class="d-flex align-items-center">{{ $pagetitle }} 
+                            {{-- {{$isOkToInput}} --}}
                             <span class="text-gray-600 fs-6 ms-1"></span>
                         </h2>
                     </div>

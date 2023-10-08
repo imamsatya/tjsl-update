@@ -4,6 +4,8 @@ namespace App\Http\Controllers\RencanaKerja;
 
 use App\Models\User;
 use App\Models\Perusahaan;
+use App\Models\LogTargetTpb;
+use App\Models\TargetTpb;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +19,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use DateTime;
 use Carbon\Carbon;
+
 class SpdPumkRkaController extends Controller
 {
 
@@ -221,9 +224,17 @@ class SpdPumkRkaController extends Controller
         $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
         // dd($periode_rka_id);
 
+        // $anggaran_tpb = DB::table('anggaran_tpbs')->select('anggaran_tpbs.*')        
+        // ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+        // ->where('tahun', $request->tahun)
+        // ->where('perusahaan_id', $request->perusahaan_id)
+        // ->where('tpb_id', $request->data['tpb_id'])
+        // ->first();
+
         switch ($request->input('actionform')) {
             case 'insert':
                 DB::beginTransaction();
+
                 try {
                     $validasi = true;
                     // $perusahaan_id = \Auth::user()->id_bumn;
@@ -267,6 +278,49 @@ class SpdPumkRkaController extends Controller
                     $log['created_at'] = now();
 
                     SpdPumkRkaController::store_log($log);
+
+                    //Insert Program TPB 8
+                    //cari tpb 8 dulu
+                    $tpb8cid_id = DB::table('tpbs')->where('no_tpb', 'TPB 8')->where('jenis_anggaran', 'CID')->first()?->id;
+                    
+                    //cek suatu perusahaan sudah ada program di tpb 8 dengan nama "Penyaluran PUMK" atau belum
+                    if ($tpb8cid_id) {
+                        $anggaran_tpb8 = DB::table('anggaran_tpbs')->select('anggaran_tpbs.*')        
+                        ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                        ->where('tahun', $request->tahun)
+                        ->where('perusahaan_id', $request->perusahaan_id)
+                        ->where('tpb_id', $tpb8cid_id)
+                        ->first();
+                        if ($anggaran_tpb8) {
+                            $target_tpb = DB::table('target_tpbs')->where('anggaran_tpb_id', $anggaran_tpb8->id)->where('program', 'Penyaluran PUMK')->first();
+
+                            //kalau $target_tpb null maka insert data baru
+                            if (!$target_tpb ) {
+
+                                $target_tpb = new TargetTpb();
+                                $target_tpb->anggaran_tpb_id =  $anggaran_tpb8->id;
+                                $target_tpb->program = 'Penyaluran PUMK';
+                                $target_tpb->unit_owner = null;
+                                $target_tpb->core_subject_id = null;
+                                $target_tpb->tpb_id = $tpb8cid_id;
+                                $target_tpb->anggaran_alokasi = $param['outcome_total'];
+                                $target_tpb->status_id = 2; // In Progress
+                        
+                                //kriteria
+                                $target_tpb->kriteria_program_prioritas = true;
+                                $target_tpb->kriteria_program_csv = true;
+                                $target_tpb->kriteria_program_umum = true;
+    
+                                $target_tpb->pelaksanaan_program = 'Mandiri';
+                                $target_tpb->mitra_bumn_id = null;    
+                                $target_tpb->save();
+                        
+                                SpdPumkRkaController::store_log_targetTPB8($target_tpb->id,$target_tpb->status_id);
+                            }
+                        }
+                        
+                       
+                    }
                     if ($validasi) {
                         DB::commit();
                         Session::flash('success', "Berhasil Menyimpan Sumber dan Penggunaan Dana PUMK - RKA");
@@ -353,6 +407,14 @@ class SpdPumkRkaController extends Controller
         }
 
         // return response()->json($result);
+    }
+
+    public static function store_log_targetTPB8($target_tpb_id, $status_id)
+    {  
+        $param['target_tpb_id'] = $target_tpb_id;
+        $param['status_id'] = $status_id;
+        $param['user_id'] = \Auth::user()->id;
+        LogTargetTpb::create((array)$param);
     }
 
     public static function store_log($log)

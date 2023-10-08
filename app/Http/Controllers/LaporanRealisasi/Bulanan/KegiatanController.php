@@ -125,6 +125,8 @@ class KegiatanController extends Controller
         $tahun = $request->tahun ?? date('Y');
         $jenis_anggaran = $request->jenis_anggaran ?? 'CID';
         // dd($perusahaan_id);
+
+        
         $kegiatan = DB::table('kegiatans')
         ->join('kegiatan_realisasis', function($join) use ($bulan, $tahun) {
             $join->on('kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
@@ -158,9 +160,9 @@ class KegiatanController extends Controller
                 ->where('tpbs.jenis_anggaran', $jenis_anggaran);
         })
         ->leftJoin('jenis_kegiatans', 'jenis_kegiatans.id', '=', 'kegiatans.jenis_kegiatan_id')
-        ->join('provinsis', 'provinsis.id', '=', 'kegiatans.provinsi_id')
-        ->join('kotas', 'kotas.id', '=', 'kegiatans.kota_id')
-        ->join('satuan_ukur', 'satuan_ukur.id', '=', 'kegiatans.satuan_ukur_id')
+        ->leftJoin('provinsis', 'provinsis.id', '=', 'kegiatans.provinsi_id')
+        ->leftJoin('kotas', 'kotas.id', '=', 'kegiatans.kota_id')
+        ->leftJoin('satuan_ukur', 'satuan_ukur.id', '=', 'kegiatans.satuan_ukur_id')
         ->select(
             'kegiatans.*',
             'kegiatan_realisasis.bulan as kegiatan_realisasi_bulan',
@@ -179,6 +181,8 @@ class KegiatanController extends Controller
             'satuan_ukur.nama as satuan_ukur_nama',
             'bulans.nama as bulan_nama'
         );
+
+        $kegiatanDefault = $kegiatan;
 
         if ($request->pilar_pembangunan_id) {
 
@@ -202,7 +206,7 @@ class KegiatanController extends Controller
 
         $kegiatan = $kegiatan->get();
         // dd($kegiatan);
-        $totalAnggaranAlokasi = $kegiatan->sum('anggaran_alokasi');
+        $totalAnggaranAlokasi = $kegiatanDefault->get()->sum('anggaran_alokasi');
         // dd($request->perusahaan_id);
         // dd($kegiatan);
         // $pilar_pembangunan_id = $request->pilar_pembangunan ?? '';
@@ -458,6 +462,8 @@ class KegiatanController extends Controller
             $kegiatanRealisasi->save();
 
             KegiatanController::store_log($kegiatanRealisasi->id,$kegiatanRealisasi->status_id);
+
+            
             DB::commit();
             Session::flash('success', "Berhasil Menyimpan Data Kegiatan");
             $result = [
@@ -743,9 +749,9 @@ class KegiatanController extends Controller
                 ->where('tpbs.jenis_anggaran', $jenis_anggaran);
         })
         ->leftJoin('jenis_kegiatans', 'jenis_kegiatans.id', '=', 'kegiatans.jenis_kegiatan_id')
-        ->join('provinsis', 'provinsis.id', '=', 'kegiatans.provinsi_id')
-        ->join('kotas', 'kotas.id', '=', 'kegiatans.kota_id')
-        ->join('satuan_ukur', 'satuan_ukur.id', '=', 'kegiatans.satuan_ukur_id')
+        ->leftJoin('provinsis', 'provinsis.id', '=', 'kegiatans.provinsi_id')
+        ->leftJoin('kotas', 'kotas.id', '=', 'kegiatans.kota_id')
+        ->leftJoin('satuan_ukur', 'satuan_ukur.id', '=', 'kegiatans.satuan_ukur_id')
         ->select(
             'kegiatans.*',
             'kegiatan_realisasis.bulan as kegiatan_realisasi_bulan',
@@ -1067,9 +1073,9 @@ class KegiatanController extends Controller
             ->join('perusahaan_masters', 'perusahaan_masters.id', 'anggaran_tpbs.perusahaan_id')
             ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
             ->join('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
-            ->join('provinsis', 'provinsis.id', 'kegiatans.provinsi_id')
-            ->join('kotas', 'kotas.id', 'kegiatans.kota_id')
-            ->join('satuan_ukur', 'satuan_ukur.id', 'kegiatans.satuan_ukur_id')
+            ->leftJoin('provinsis', 'provinsis.id', 'kegiatans.provinsi_id')
+            ->leftJoin('kotas', 'kotas.id', 'kegiatans.kota_id')
+            ->leftJoin('satuan_ukur', 'satuan_ukur.id', 'kegiatans.satuan_ukur_id')
             ->join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', 'kegiatans.id')
             ->join('bulans', 'bulans.id', 'kegiatan_realisasis.bulan')
             ->select('kegiatans.*', 'perusahaan_masters.nama_lengkap as nama_perusahaan', 'pilar_pembangunans.nama as nama_pilar', 'provinsis.nama as provinsi', 'kotas.nama as kota'

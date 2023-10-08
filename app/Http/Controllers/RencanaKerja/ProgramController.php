@@ -365,7 +365,7 @@ class ProgramController extends Controller
         try {           
             //code...
             $target_tpb = new TargetTpb();
-            $target_tpb->anggaran_tpb_id = $anggaran_tpb    ->id;
+            $target_tpb->anggaran_tpb_id = $anggaran_tpb->id;
             $target_tpb->program = $request->data['nama_program'];
             $target_tpb->unit_owner = $request->data['unit_owner'];
             $target_tpb->core_subject_id = $request->data['core_subject_id'];

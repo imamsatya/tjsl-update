@@ -1354,7 +1354,7 @@ class HomeController extends Controller
                 $pilar[1] = PilarPembangunan::where('nama', 'Pilar Pembangunan Ekonomi')->where('jenis_anggaran', $jenis_anggaran)->first();
                 $pilar[2] = PilarPembangunan::where('nama', 'Pilar Pembangunan Lingkungan')->where('jenis_anggaran', $jenis_anggaran)->first();
                 $pilar[3] = PilarPembangunan::where('nama', 'Pilar Pembangunan Hukum dan Tata Kelola')->where('jenis_anggaran', $jenis_anggaran)->first();
-
+                // dd($pilar);
                 for ($i = 0; $i < 4; $i++) {
                     $kegiatan[$i] = Kegiatan::Select(DB::Raw('sum(kegiatan_realisasis.anggaran) as realisasi'))
                         ->leftJoin('target_tpbs', 'target_tpbs.id', '=', 'kegiatans.target_tpb_id')
