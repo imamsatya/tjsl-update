@@ -498,6 +498,34 @@ class SpdPumkTriwulanController extends Controller
         //
     }
 
+    public function delete(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $requestIds = $request->selectedData;
+            PumkAnggaran::whereIn('id', $requestIds)->delete();
+
+            Session::flash('success', "Berhasil menghapus SPD PUMK yang dipilih");
+
+            DB::commit();
+            $result = [
+                'flag'  => 'success',
+                'msg' => 'Sukses hapus data',
+                'title' => 'Sukses'
+            ];
+        } catch (\Exception $e) {
+            DB::rollback();
+            $result = [
+                'flag'  => 'warning',
+                'msg' => 'Gagal hapus data',
+                'title' => 'Gagal'
+            ];
+        }
+
+        return response()->json($result);
+    }
+
+
     public function datatable(Request $request)
     {
         // dd($request);
