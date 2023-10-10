@@ -155,14 +155,14 @@ class UploadMitraBinaanController extends Controller
         $tahun = $request->tahun;
         $periode = $request->periode;
         // dd($perusahaan_id);
-        // try {
-        //     $cek_ketersediaan_data = PumkMitraBinaan::where('tahun', $tahun)->where('bulan', $periode)->where('perusahaan_id', $perusahaan_id)->first();
-        //     if($cek_ketersediaan_data) { // batalkan proses download template
-        //         throw new \Exception("Data sudah tersedia, tidak bisa download template");   
-        //     }
-        // } catch (\Exception $e) {
-        //     return response()->json(['error' => $e->getMessage()], 200)->header('Content-Type', 'text/plain');
-        // }
+        try {
+            $cek_ketersediaan_data = PumkMitraBinaan::where('tahun', $tahun)->where('bulan', $periode)->where('perusahaan_id', $perusahaan_id)->first();
+            if($cek_ketersediaan_data) { // batalkan proses download template
+                throw new \Exception("Data sudah tersedia, tidak bisa download template");   
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 200)->header('Content-Type', 'text/plain');
+        }
         
 
         $id_users = \Auth::user()->id;
