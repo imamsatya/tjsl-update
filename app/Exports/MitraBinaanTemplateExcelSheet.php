@@ -22,7 +22,7 @@ class MitraBinaanTemplateExcelSheet implements WithMultipleSheets
     {
         $sheets = [];
         $sheets[] = new MitraBinaanTemplateExport($this->perusahaan, $this->tahun, $this->periode);
-        $sheets[] = new ReferensiPerusahaan();
+        // $sheets[] = new ReferensiPerusahaan();
         $sheets[] = new ReferensiProvinsi();
         $sheets[] = new ReferensiKota();
         $sheets[] = new ReferensiSektorUsaha();

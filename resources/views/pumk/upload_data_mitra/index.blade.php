@@ -35,7 +35,22 @@
                                 @csrf
                                 <div class="form-group row  mb-5">
 
-                                    <div class="col-lg-2 offset-lg-8">
+                                    <div class="col-lg-6">
+                                        <label>BUMN</label>
+                                        @php
+                                            $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
+                                        @endphp
+                                        <select class="form-select form-select-solid form-select2" id="perusahaan_id" name="perusahaan_id" data-kt-select2="true" data-placeholder="Pilih BUMN" {{ $disabled }}>
+                                            <option></option>
+                                            @foreach($perusahaan as $p)  
+                                                @php
+                                                    $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
+                                                @endphp
+                                                <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-2 ">
                                         <label>Periode</label>
                                         <select id="periode" class="form-select form-select-solid form-select2"
                                             name="periode" data-kt-select2="true" data-placeholder="Pilih Periode"
@@ -60,7 +75,9 @@
                                         </select>
                                     </div>
                                 </div>
+                                
                                 <div class="form-group row  mb-5">
+                                    
                                     <div class="col-lg-6 ">
                                         <label>File (*.xlsx)</label>
                                         <input class="form-control" type="file" name="file_name"
@@ -116,11 +133,13 @@
             $('#page-title').html("{{ $pagetitle }}");
             $('#page-breadcrumb').html("{{ $breadcrumb }}");
 
+            const perusahaanSelect = document.getElementById("perusahaan_id")
             const periodeSelect = document.getElementById("periode");
             const tahunSelect = document.getElementById("tahun");
             const downloadButton = document.getElementById("download_template_mitra");
             $('body').on('click', '#download_template_mitra', function() {
                 // downloadTemplateMitra();
+                const perusahaanValue = perusahaanSelect.value
                 const periodeValue = periodeSelect.value;
                 const tahunValue = tahunSelect.value;
                 const currentMonth = new Date().getMonth() + 1;
@@ -128,10 +147,10 @@
                
                 console.log(currentYear)// Get the current month (1-12)
 
-                if (periodeValue == '') {
+                if (periodeValue == '' || perusahaanValue == '' ) {
                     swal.fire({                    
                         icon: 'warning',
-                        html: 'Periode dan Tahun harus terisi!',
+                        html: 'Perusahaan, Periode dan Tahun harus terisi!',
                         type: 'warning', 
                         confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
                     });
@@ -140,7 +159,7 @@
                 // Enable or disable the button based on the rules
                 if (currentMonth <= 6) { // Jan-Jun
                     if (tahunValue < currentYear) {
-                        downloadTemplateMitra(periodeValue, tahunValue);
+                        downloadTemplateMitra(perusahaanValue, periodeValue, tahunValue);
                     }
 
                     if (tahunValue == currentYear && periodeValue === '1') {
@@ -166,11 +185,11 @@
 
                 if (currentMonth >= 7 ) {
                     if (tahunValue < currentYear) {
-                        downloadTemplateMitra(periodeValue, tahunValue);
+                        downloadTemplateMitra(perusahaanValue, periodeValue, tahunValue);
                     }
 
                     if (tahunValue == currentYear && periodeValue === '1') {
-                        downloadTemplateMitra(periodeValue, tahunValue);
+                        downloadTemplateMitra(perusahaanValue, periodeValue, tahunValue);
                     }
 
                     if (tahunValue == currentYear && periodeValue === '2') {
@@ -252,13 +271,13 @@
         }
 
 
-        function downloadTemplateMitra(periodeValue, tahunValue) {
+        function downloadTemplateMitra(perusahaanValue, periodeValue, tahunValue) {
             $.ajax({
                 type: 'get',
                 beforeSend: function() {
                     $.blockUI();
                 },
-                url: urldownloadtemplatemb + '?periode=' + periodeValue + '&tahun=' + tahunValue,
+                url: urldownloadtemplatemb + '?perusahaan_id=' + perusahaanValue + '&periode=' + periodeValue + '&tahun=' + tahunValue,
                 xhrFields: {
                     responseType: 'blob',
                 },

@@ -40,7 +40,7 @@ class UploadMitraBinaanController extends Controller
     {
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
-        $perusahaan_id = $request->perusahaan_id;
+        $perusahaan_id = $request->perusahaan_id ?? 1;
         
         $admin_bumn = false;
         $super_admin = false;
@@ -66,7 +66,8 @@ class UploadMitraBinaanController extends Controller
         return view($this->__route.'.index',[
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Mitra Binaan - Upload',
-            'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            // 'perusahaan' => Perusahaan::where('induk', 0)->where('level', 0)->where('kepemilikan', 'BUMN')->orderBy('id', 'asc')->get(),
+            'perusahaan' => Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get(),
             'admin_bumn' => $admin_bumn,
             'admin_tjsl' => $admin_tjsl,
             'super_admin' => $super_admin,
@@ -150,22 +151,23 @@ class UploadMitraBinaanController extends Controller
 
     public function download_template(Request $request)
     {
+        $perusahaan_id = $request->perusahaan_id;
         $tahun = $request->tahun;
         $periode = $request->periode;
-
-        try {
-            $cek_ketersediaan_data = PumkMitraBinaan::where('tahun', $tahun)->where('bulan', $periode)->first();
-            if($cek_ketersediaan_data) { // batalkan proses download template
-                throw new \Exception("Data sudah tersedia, tidak bisa download template");   
-            }
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 200)->header('Content-Type', 'text/plain');
-        }
+        // dd($perusahaan_id);
+        // try {
+        //     $cek_ketersediaan_data = PumkMitraBinaan::where('tahun', $tahun)->where('bulan', $periode)->where('perusahaan_id', $perusahaan_id)->first();
+        //     if($cek_ketersediaan_data) { // batalkan proses download template
+        //         throw new \Exception("Data sudah tersedia, tidak bisa download template");   
+        //     }
+        // } catch (\Exception $e) {
+        //     return response()->json(['error' => $e->getMessage()], 200)->header('Content-Type', 'text/plain');
+        // }
         
 
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
-        $perusahaan_id = null;
+        // $perusahaan_id = null;
         $admin_bumn = false;
         if(!empty($users->getRoleNames())){
             foreach ($users->getRoleNames() as $v) {

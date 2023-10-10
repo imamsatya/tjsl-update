@@ -141,7 +141,7 @@
                     <div class="row" id="form-cari">
                         <div class="form-group row  mb-5">
                             <div class="col-lg-6">
-                                <label>BUMN</label>
+                                <label>BUMN {{$perusahaan_id}}</label>
                                 @php
                                 $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
                                 @endphp

@@ -63,15 +63,15 @@ class SpdPumkTriwulanController extends Controller
             ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'pumk_anggarans.bumn_id')
             ->leftJoin('periode_laporans', 'periode_laporans.id', '=', 'pumk_anggarans.periode_id')
             ->whereIn('periode_id', $periode->pluck('id')->toArray());
-        if ($request->perusahaan_id) {
+        if ($perusahaan_id) {
 
-            $anggaran = $anggaran->where('bumn_id', $request->perusahaan_id);
+            $anggaran = $anggaran->where('bumn_id', $perusahaan_id);
         }
 
+        $tahun = $request->tahun ?? date("Y");
+        if ($tahun) {
 
-        if ($request->tahun) {
-
-            $anggaran = $anggaran->where('tahun', $request->tahun);
+            $anggaran = $anggaran->where('tahun', $tahun);
         }
 
         if ($request->status_spd) {

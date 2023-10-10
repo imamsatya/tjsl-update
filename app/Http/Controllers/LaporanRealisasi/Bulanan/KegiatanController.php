@@ -120,7 +120,7 @@ class KegiatanController extends Controller
         // $bulan = $request->bulan_id ??  'all';
         $tahun = $request->tahun ?? date('Y');
         
-        $perusahaan_id = $request->perusahaan_id ?? 'all';
+        // $perusahaan_id = $request->perusahaan_id ?? 'all';
         $bulan = $request->bulan;
         $tahun = $request->tahun ?? date('Y');
         $jenis_anggaran = $request->jenis_anggaran ?? 'CID';

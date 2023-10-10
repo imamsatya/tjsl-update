@@ -63,15 +63,16 @@ class SpdPumkRkaController extends Controller
             ->selectRaw('pumk_anggarans.*, perusahaan_masters.id as perusahaan_id, perusahaan_masters.nama_lengkap as nama_lengkap')
             ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'pumk_anggarans.bumn_id')
             ->where('periode_id', $periode_rka_id);
-        if ($request->perusahaan_id) {
+        if ($perusahaan_id) {
 
-            $anggaran = $anggaran->where('bumn_id', $request->perusahaan_id);
+            $anggaran = $anggaran->where('bumn_id', $perusahaan_id);
+            // dd('halo');
         }
+        // dd($admin_bumn);
+        $tahun = $request->tahun ?? date("Y");
+        if ($tahun) {
 
-
-        if ($request->tahun) {
-
-            $anggaran = $anggaran->where('tahun', $request->tahun);
+            $anggaran = $anggaran->where('tahun', $tahun);
         }
 
         if ($request->status_spd) {
@@ -81,6 +82,7 @@ class SpdPumkRkaController extends Controller
         }
         
         $pumk_anggaran = $anggaran->orderBy('tahun', 'desc')->get();
+
         $totalIncome = $pumk_anggaran->sum('income_total');
         $totalOutcome = $pumk_anggaran->sum('outcome_total');
         $saldoAkhir = $pumk_anggaran->sum('saldo_akhir');

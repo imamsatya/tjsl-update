@@ -340,18 +340,18 @@
                                     <th></th>
                                     <th></th>
                                     <th></th>
-                                    <th style="white-space: nowrap;">@if ($totalIncome < 0)
+                                    <th class="text-end" style="white-space: nowrap;">@if ($totalIncome < 0)
                                         Rp ( {{ number_format($totalIncome, 0, ',', ',') }} )
                                     @else
                                         Rp {{ number_format($totalIncome, 0, ',', ',') }}
                                     @endif</th>
-                                    <th style="white-space: nowrap;">@if ($totalOutcome < 0)
+                                    <th class="text-end" style="white-space: nowrap;">@if ($totalOutcome < 0)
                                         Rp ( {{ number_format($totalOutcome, 0, ',', ',') }} )
                                     @else
                                         Rp {{ number_format($totalOutcome, 0, ',', ',') }}
                                     @endif
                                     </th>
-                                    <th style="white-space: nowrap;">@if ($saldoAkhir < 0)
+                                    <th class="text-end" style="white-space: nowrap;">@if ($saldoAkhir < 0)
                                         Rp ( {{ number_format($saldoAkhir, 0, ',', ',') }} )
                                     @else
                                         Rp {{ number_format($saldoAkhir, 0, ',', ',') }}
