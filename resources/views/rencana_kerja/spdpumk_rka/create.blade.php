@@ -688,13 +688,40 @@
             let pendapatan_jasa_admin_pumk =  parseInt(pendapatan_jasa_admin_pumk_input.value.replace(/[^0-9\-]/g, ''))
             let pendapatan_jasa_bank =  parseInt(pendapatan_jasa_bank_input.value.replace(/[^0-9\-]/g, ''))
             let pendapatan_biaya_lainnya =  parseInt(pendapatan_biaya_lainnya_input.value.replace(/[^0-9\-]/g, ''))
-            let total_dana_tersedia = saldo_awal + pengembalian_mitra_binaan + pengembalian_bumn_penyalur + pendapatan_jasa_admin_pumk + pendapatan_jasa_bank + pendapatan_biaya_lainnya
+            
+            //
+            // Define an array of variables you want to handle
+            let variablesToCheck = [saldo_awal, pengembalian_mitra_binaan, pengembalian_bumn_penyalur, pendapatan_jasa_admin_pumk, pendapatan_jasa_bank, pendapatan_biaya_lainnya];
+
+            // Loop through the variables and set them to 0 if they are NaN, '', or null
+            for (let i = 0; i < variablesToCheck.length; i++) {
+            if (isNaN(variablesToCheck[i]) || variablesToCheck[i] === '' || variablesToCheck[i] === null) {
+                console.log('variabel', variablesToCheck[i], 'index', i)
+                variablesToCheck[i] = 0;
+            }
+            }
+            console.log('varcheck', variablesToCheck);
+            // let total_dana_tersedia = saldo_awal + pengembalian_mitra_binaan + pengembalian_bumn_penyalur + pendapatan_jasa_admin_pumk + pendapatan_jasa_bank + pendapatan_biaya_lainnya
+            let total_dana_tersedia = variablesToCheck.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+
             //total dana disalurkan
             let penyaluran_pumk_mandiri =  parseInt(penyaluran_pumk_mandiri_input.value.replace(/[^0-9\-]/g, ''))  
             let penyaluran_pumk_kolaborasi =  parseInt(penyaluran_pumk_kolaborasi_input.value.replace(/[^0-9\-]/g, ''))  
             let penyaluran_pumk_khusus =  parseInt(penyaluran_pumk_khusus_input.value.replace(/[^0-9\-]/g, ''))  
             let penyaluran_pumk_bri =  parseInt(penyaluran_pumk_bri_input.value.replace(/[^0-9\-]/g, ''))  
-            let total_dana_disalurkan = penyaluran_pumk_mandiri + penyaluran_pumk_kolaborasi + penyaluran_pumk_khusus + penyaluran_pumk_bri 
+
+            // Define an array of variables you want to handle
+            let variablesToCheck2 = [penyaluran_pumk_mandiri, penyaluran_pumk_kolaborasi, penyaluran_pumk_khusus, penyaluran_pumk_bri];
+
+            // Loop through the variables and set them to 0 if they are NaN, '', or null
+            for (let i = 0; i < variablesToCheck2.length; i++) {
+            if (isNaN(variablesToCheck2[i]) || variablesToCheck2[i] === '' || variablesToCheck2[i] === null) {
+                console.log('variabel', variablesToCheck2[i], 'index', i)
+                variablesToCheck2[i] = 0;
+            }
+            }
+            // let total_dana_disalurkan = penyaluran_pumk_mandiri + penyaluran_pumk_kolaborasi + penyaluran_pumk_khusus + penyaluran_pumk_bri 
+            let total_dana_disalurkan = variablesToCheck2.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
             //saldo akhir
             let saldo_akhir = total_dana_tersedia - total_dana_disalurkan
 
@@ -717,6 +744,7 @@
                 saldo_akhir : saldo_akhir
                 
             }
+            console.log(`convertVakue : ${parseInt(pengembalian_bumn_penyalur_input.value.replace(/[^0-9\-]/g, ''))} | testValue : ${pengembalian_bumn_penyalur_input.value}`)
             console.log(spdpumk_rka)
            
             // console.log(actionform)

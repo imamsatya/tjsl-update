@@ -232,7 +232,7 @@ class SpdPumkRkaController extends Controller
         // ->where('perusahaan_id', $request->perusahaan_id)
         // ->where('tpb_id', $request->data['tpb_id'])
         // ->first();
-
+        // dd($request);
         switch ($request->input('actionform')) {
             case 'insert':
                 DB::beginTransaction();
@@ -272,6 +272,7 @@ class SpdPumkRkaController extends Controller
                     $param['status_id'] = DB::table('statuses')->where('nama', 'ilike', '%In Progress%')->pluck('id')->first();
                     // } 
                     
+                    // dd($param);
                     $data = PumkAnggaran::create($param);
                     $log['pumk_anggaran_id'] = (int)$data->id;
                     $log['status_id'] = (int)$data->status_id;

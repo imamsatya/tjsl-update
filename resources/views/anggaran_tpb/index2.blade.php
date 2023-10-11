@@ -721,7 +721,8 @@
                     title: 'Warning',
                     html: 'Tidak ada data terpilih untuk dihapus!',
                     buttonsStyling: true,
-                    confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
+                    confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close",
+                    reverseButtons: true
                 })
                 return
             }
@@ -765,6 +766,7 @@
                     html: "Tidak ada data yang bisa diverifikasi!",
                     icon: "warning",
                     showCancelButton: false,
+                    reverseButtons: true
                     confirmButtonText: "Close",
                 })
 
@@ -801,7 +803,8 @@
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Ya, set data verified",
-                cancelButtonText: "Tidak"
+                cancelButtonText: "Tidak",
+                reverseButtons: true
             }).then(function(result) {
                 if (result.value) {
                     $.ajax({
@@ -824,6 +827,7 @@
                                     icon: data.flag,
 
                                     buttonsStyling: true,
+                                    reverseButtons: true,
 
                                     confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                             });
@@ -858,7 +862,7 @@
                                 icon: 'error',
 
                                 buttonsStyling: true,
-
+                                reverseButtons: true,
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                             });  
                         }
@@ -879,6 +883,7 @@
                     html: "Tidak ada data yang bisa di-unverified!",
                     icon: "warning",
                     showCancelButton: false,
+                    reverseButtons: true,
                     confirmButtonText: "Close",
                 })
 
@@ -913,6 +918,7 @@
                         `,
                 icon: "warning",
                 showCancelButton: true,
+                reverseButtons: true,
                 confirmButtonText: "Ya, set data unverified",
                 cancelButtonText: "Tidak"
             }).then(function(result) {
@@ -937,7 +943,7 @@
                                     icon: data.flag,
 
                                     buttonsStyling: true,
-
+                                    reverseButtons: true,
                                     confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                             });
 
@@ -971,7 +977,7 @@
                                 icon: 'error',
 
                                 buttonsStyling: true,
-
+                                reverseButtons: true,
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                             });  
                         }
@@ -1008,6 +1014,7 @@
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: `Ya, ${status} input data`,
+                reverseButtons: true,
                 cancelButtonText: "Tidak"
             }).then(function(result) {
                 if (result.value) {
@@ -1032,7 +1039,7 @@
                                     icon: data.flag,
 
                                     buttonsStyling: true,
-
+                                    reverseButtons: true,
                                     confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                             });
 
@@ -1066,7 +1073,7 @@
                                 icon: 'error',
 
                                 buttonsStyling: true,
-
+                                reverseButtons: true,
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                             });  
                         }
@@ -1083,6 +1090,7 @@
                     html: "Tidak ada data yang bisa divalidasi!",
                     icon: "warning",
                     showCancelButton: false,
+                    reverseButtons: true,
                     confirmButtonText: "Close",
                 })
 
@@ -1118,6 +1126,7 @@
                         `,
                 icon: "warning",
                 showCancelButton: true,
+                reverseButtons: true,
                 confirmButtonText: "Ya, validasi data",
                 cancelButtonText: "Tidak"
             }).then(function(result) {
@@ -1142,7 +1151,7 @@
                                     icon: data.flag,
 
                                     buttonsStyling: true,
-
+                                    reverseButtons: true,
                                     confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                             });
 
@@ -1176,7 +1185,7 @@
                                 icon: 'error',
 
                                 buttonsStyling: true,
-
+                                reverseButtons: true,
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                             });  
                         }
@@ -1194,6 +1203,7 @@
                     html: "Tidak ada data yang bisa di un-validate!",
                     icon: "warning",
                     showCancelButton: false,
+                    reverseButtons: true,
                     confirmButtonText: "Close",
                 })
 
@@ -1229,6 +1239,7 @@
                         `,
                 icon: "warning",
                 showCancelButton: true,
+                reverseButtons: true,
                 confirmButtonText: "Ya, batalkan validasi data",
                 cancelButtonText: "Tidak"
             }).then(function(result) {
@@ -1253,6 +1264,7 @@
                                     icon: data.flag,
 
                                     buttonsStyling: true,
+                                    reverseButtons: true,
 
                                     confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                             });
@@ -1287,6 +1299,7 @@
                                 icon: 'error',
 
                                 buttonsStyling: true,
+                                reverseButtons: true,
 
                                 confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                             });  
@@ -1324,6 +1337,7 @@
             html: pesanHapus,
             icon: "warning",
             showCancelButton: true,
+            reverseButtons: true,
             confirmButtonText: "Ya, hapus data",
             cancelButtonText: "Tidak"
         }).then(function(result) {
@@ -1349,7 +1363,7 @@
                             icon: data.flag,
 
                             buttonsStyling: true,
-
+                            reverseButtons: true,
                             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                     });
 
@@ -1381,7 +1395,7 @@
                         title: "Error System",
                         html: msgerror+', coba ulangi kembali !!!',
                         icon: 'error',
-
+                        reverseButtons: true,
                         buttonsStyling: true,
 
                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
@@ -1411,6 +1425,7 @@
             text: "Yakin hapus data "+$(element).data('nama')+" ?",
             icon: "warning",
             showCancelButton: true,
+            reverseButtons: true,
             confirmButtonText: "Ya, hapus data",
             cancelButtonText: "Tidak"
         }).then(function(result) {
@@ -1436,7 +1451,7 @@
                             icon: data.flag,
 
                             buttonsStyling: true,
-
+                            reverseButtons: true,
                             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                     });
 
@@ -1470,7 +1485,7 @@
                         icon: 'error',
 
                         buttonsStyling: true,
-
+                        reverseButtons: true,
                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                     });  
                     }
@@ -1485,6 +1500,7 @@
             text: "Yakin hapus data "+$(element).data('nama')+" tahun "+$(element).data('tahun')+" ?",
             icon: "warning",
             showCancelButton: true,
+            reverseButtons: true,
             confirmButtonText: "Ya, hapus data",
             cancelButtonText: "Tidak"
         }).then(function(result) {
@@ -1511,7 +1527,7 @@
                             icon: data.flag,
 
                             buttonsStyling: true,
-
+                            reverseButtons: true,
                             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                     });
 
@@ -1545,7 +1561,7 @@
                         icon: 'error',
 
                         buttonsStyling: true,
-
+                        reverseButtons: true,
                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
                     });  
                     }
@@ -1618,7 +1634,7 @@
                     icon: 'error',
 
                     buttonsStyling: true,
-
+                    reverseButtons: true,
                     confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
             });      
                 
@@ -1634,7 +1650,7 @@
             icon: 'error',
 
             buttonsStyling: true,
-
+            reverseButtons: true,
             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
         }); 
     }
@@ -1645,6 +1661,7 @@
             text: "Validasi Data Aggaran TPB "+$("#perusahaan_id option:selected").text() +" tahun "+$("#tahun").val()+" ?",
             icon: "warning",
             showCancelButton: true,
+            reverseButtons: true,
             confirmButtonText: "Ya, Validasi",
             cancelButtonText: "Tidak"
         }).then(function(result) {
@@ -1670,7 +1687,7 @@
                             icon: data.flag,
 
                             buttonsStyling: true,
-
+                            reverseButtons: true,
                             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                     });
 
@@ -1704,7 +1721,7 @@
                         icon: 'error',
 
                         buttonsStyling: true,
-
+                        reverseButtons: true,
                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                     });  
                     }
@@ -1719,6 +1736,7 @@
             text: "Batalkan Validasi Data Aggaran TPB "+$("#perusahaan_id option:selected").text() +" tahun "+$("#tahun").val()+" ?",
             icon: "warning",
             showCancelButton: true,
+            reverseButtons: true,
             confirmButtonText: "Ya, Batalkan Validasi",
             cancelButtonText: "Tidak"
         }).then(function(result) {
@@ -1744,7 +1762,7 @@
                             icon: data.flag,
 
                             buttonsStyling: true,
-
+                            reverseButtons: true,
                             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
                     });
 
@@ -1778,7 +1796,7 @@
                         icon: 'error',
 
                         buttonsStyling: true,
-
+                        reverseButtons: true,
                         confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
                     });  
                     }
@@ -1837,6 +1855,7 @@
                 icon: 'warning',
                 html: 'Perusahaan (BUMN) dan Tahun harus terisi!',
                 type: 'warning', 
+                reverseButtons: true,
                 confirmButtonText: "<i class='bi bi-x-circle-fill' style='color: white'></i> Close"
             });
             return
@@ -1892,7 +1911,7 @@
                     icon: 'error',
 
                     buttonsStyling: true,
-
+                    reverseButtons: true,
                     confirmButtonText: "<i class='flaticon2-checkmark'></i> OK"
                 });  
             }

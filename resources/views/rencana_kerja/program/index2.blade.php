@@ -818,6 +818,7 @@
                             `,
                     icon: "warning",
                     showCancelButton: true,
+                    reverseButtons: true,
                     confirmButtonText: "Ya, verifikasi data",
                     cancelButtonText: "Tidak"
                 }).then(function(result) {
@@ -930,6 +931,7 @@
                             `,
                     icon: "warning",
                     showCancelButton: true,
+                    reverseButtons: true,
                     confirmButtonText: "Ya, set data unverified",
                     cancelButtonText: "Tidak"
                 }).then(function(result) {
@@ -1025,6 +1027,7 @@
                             `,
                     icon: "warning",
                     showCancelButton: true,
+                    reverseButtons: true,
                     confirmButtonText: `Ya, ${status} input data`,
                     cancelButtonText: "Tidak"
                 }).then(function(result) {
@@ -1149,6 +1152,7 @@
                             `,
                     icon: "warning",
                     showCancelButton: true,
+                    reverseButtons: true,
                     confirmButtonText: "Ya, validasi data",
                     cancelButtonText: "Tidak"
                 }).then(function(result) {
@@ -1259,6 +1263,7 @@
                             `,
                     icon: "warning",
                     showCancelButton: true,
+                    reverseButtons: true,
                     confirmButtonText: "Ya, batalkan validasi data",
                     cancelButtonText: "Tidak"
                 }).then(function(result) {
@@ -1388,6 +1393,7 @@
                 html: "Yakin hapus data ? (Data terkait akan ikut terhapus juga: <strong>kegiatan</strong> dan <strong>kegiatan realisasi</strong>)<br/><span style='color: red; font-weight: bold'>[Data selected: "+jumlahDataDeleted+" rows]</span>",
                 icon: "warning",
                 showCancelButton: true,
+                reverseButtons: true,
                 confirmButtonText: "Ya, hapus data",
                 cancelButtonText: "Tidak"
             }).then(function(result) {
