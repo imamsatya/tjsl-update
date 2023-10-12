@@ -390,6 +390,34 @@ class SpdPumkRkaController extends Controller
 
                     SpdPumkRkaController::store_log($log);
 
+                    //Update Program TPB 8
+                    //cari tpb 8 dulu
+                    $tpb8cid_id = DB::table('tpbs')->where('no_tpb', 'TPB 8')->where('jenis_anggaran', 'CID')->first()?->id;
+                    
+                    //cek suatu perusahaan sudah ada program di tpb 8 dengan nama "Penyaluran PUMK" atau belum
+                    if ($tpb8cid_id) {
+                        $anggaran_tpb8 = DB::table('anggaran_tpbs')->select('anggaran_tpbs.*')        
+                        ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                        ->where('tahun', $request->tahun)
+                        ->where('perusahaan_id', $request->perusahaan_id)
+                        ->where('tpb_id', $tpb8cid_id)
+                        ->first();
+                        if ($anggaran_tpb8) {
+                            $target_tpb = TargetTpb::where('anggaran_tpb_id', $anggaran_tpb8->id)->where('program', 'Penyaluran PUMK')->first();
+
+                            //kalau $target_tpb null maka insert data baru
+                            if ($target_tpb ) {
+                                // dd($current->outcome_total);
+                                $target_tpb->anggaran_alokasi = $current->outcome_total;
+                                $target_tpb->save();
+                        
+                                SpdPumkRkaController::store_log_targetTPB8($target_tpb->id,$target_tpb->status_id);
+                            }
+                        }
+                        
+                       
+                    }
+
                     DB::commit();
                     $result = [
                         'flag'  => 'success',
@@ -484,9 +512,47 @@ class SpdPumkRkaController extends Controller
     {
         DB::beginTransaction();
         try {
+            // dd($request);
             $requestIds = $request->selectedData;
+
+            foreach ($requestIds as $key => $value) {
+                // dd($value);
+                $pumk_rka =  PumkAnggaran::where('id', $value)->first();
+                // dd($pumk_rka);
+                //Delete Program TPB 8
+                    //cari tpb 8 dulu
+                    $tpb8cid_id = DB::table('tpbs')->where('no_tpb', 'TPB 8')->where('jenis_anggaran', 'CID')->first()?->id;
+                    
+                    //cek suatu perusahaan sudah ada program di tpb 8 dengan nama "Penyaluran PUMK" atau belum
+                    if ($tpb8cid_id) {
+                        $anggaran_tpb8 = DB::table('anggaran_tpbs')->select('anggaran_tpbs.*')        
+                        ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                        ->where('tahun', $pumk_rka->tahun)
+                        ->where('perusahaan_id', $pumk_rka->bumn_id)
+                        ->where('tpb_id', $tpb8cid_id)
+                        ->first();
+                        if ($anggaran_tpb8) {
+                            $target_tpb = TargetTpb::where('anggaran_tpb_id', $anggaran_tpb8->id)->where('program', 'Penyaluran PUMK')->delete();
+
+                            // //kalau $target_tpb null maka insert data baru
+                            // if ($target_tpb ) {
+                            //     // dd($current->outcome_total);
+                            //     $target_tpb->anggaran_alokasi = $current->outcome_total;
+                            //     $target_tpb->save();
+                        
+                            //     SpdPumkRkaController::store_log_targetTPB8($target_tpb->id,$target_tpb->status_id);
+                            // }
+                        }
+                        
+                       
+                    }
+            }
+              
+
+            // dd($requestIds);
             PumkAnggaran::whereIn('id', $requestIds)->delete();
 
+          
             Session::flash('success', "Berhasil menghapus SPD PUMK yang dipilih");
 
             DB::commit();

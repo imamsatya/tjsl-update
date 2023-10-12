@@ -504,6 +504,8 @@
             var checkboxes = $('.row-check');
             // Set the "checked" property of all checkboxes to the same as the "checked" property of the "select all" checkbox
             checkboxes.prop('checked', $(this).prop('checked'));
+            var checkboxtpb8 = $('.tpb8pumk')
+            checkboxtpb8.prop('checked', false);
         });
 
         // Add event listener for individual checkboxes in the table body
@@ -880,8 +882,11 @@
                     name: 'provinsi_nama',
                     className: 'text-center',
                     render: function (data, type, row) {
-
-                        return data + ' - ' + row.kota_nama;
+                        let provinsiDisplay = data + ' - ' + row.kota_nama;
+                        if (data == null) {
+                            provinsiDisplay = "--"
+                        }
+                        return provinsiDisplay;
                     }
                 },
                 {
@@ -897,8 +902,11 @@
                     data: 'indikator',
                     name: 'indikator',
                     render: function (data, type, row) {
-
-                        return data + ' ' + row.satuan_ukur_nama;
+                        let indikatorDisplay = data + ' ' + row.satuan_ukur_nama
+                        if (data == null) {
+                            indikatorDisplay = "--"
+                        }
+                        return indikatorDisplay
                     }
                 },
                 {
@@ -928,16 +936,16 @@
                     data: 'action',
                     name: 'action',
                     render: function (data, type, row) {
-                        // console.log(row)
+                        console.log(row.kegiatan, 'kegiatanrow', row.kegiatan == "Penyaluran PUMK")
                         let button = null;
                         if (row.kegiatan_realisasi_status_id === 2) {
                             button =
-                                `@can('edit-kegiatan')<button type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>@endcan`
+                                `@can('edit-kegiatan')<button ${row.kegiatan == "Penyaluran PUMK" ? 'disabled' : ''} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${row.id}"  data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>@endcan`
                         }
 
                         if (row.kegiatan_realisasi_status_id === 1 || row.kegiatan_realisasi_status_id === 4) {
                             button =
-                                `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info cls-button-detail" data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                                `<button ${row.kegiatan == "Penyaluran PUMK" ? 'disabled' : '' } type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-info cls-button-detail" data-id="${row.id}"  data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                         }
                         return button
                     }
@@ -947,7 +955,8 @@
                     orderable: false,
                     searchable: false,
                     render: function (data, type, row) {
-                        return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input class="form-check-input row-check" type="checkbox" name="selected-data[]" value="${row.id}"></label>`;
+                        
+                        return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input ${row.kegiatan == "Penyaluran PUMK" ? 'disabled' : '' } class="form-check-input row-check" type="checkbox" name="selected-data[]" value="${row.id}"></label>`;
                     }
                 }
             ],

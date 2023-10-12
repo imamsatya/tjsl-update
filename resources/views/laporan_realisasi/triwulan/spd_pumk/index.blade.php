@@ -401,7 +401,9 @@
            
 
                 var selectedTahun = $(this).data('tahun');
-                var selectedPeriodeId = $('#periode_laporan') .val()
+
+                console.log($(this))
+                var selectedPeriodeId = $(this).data('periode_id')
            
 
                 // Do something with the selected value and text
@@ -920,12 +922,12 @@
                             let button = null;
                             if (row.status_id === 2) {
                                 
-                                button = `@can('edit-kegiatan')<button style="margin-right: 8px;" type="button" ${row.isoktoinput ? '' : 'disabled'} class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>@endcan`
-                                button = button + `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-show" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                                button = `@can('edit-kegiatan')<button style="margin-right: 8px;" type="button" ${row.isoktoinput ? '' : 'disabled'} class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-periode_id="${row.periode_laporans_id}" data-toggle="tooltip" title="Ubah data "><i class="bi bi-pencil fs-3"></i></button>@endcan`
+                                button = button + `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-show" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-periode_id="${row.periode_laporans_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                             }
 
                             if (row.status_id === 1) {
-                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-show" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
+                                button = `<button type="button" class="btn btn-sm btn-light btn-icon btn-success cls-button-show" data-id="${row.id}" data-tahun="${row.tahun}" data-perusahaan_id="${row.perusahaan_id}" data-periode_id="${row.periode_laporans_id}" data-toggle="tooltip" title="Detail data "><i class="bi bi-info fs-3"></i></button>`
                             }
                             return button
                         }

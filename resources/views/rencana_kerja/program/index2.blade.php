@@ -641,8 +641,11 @@
                             else status_class = 'danger'
 
                             let isCheckAll = $("#select-all").prop('checked');
-
+                            
                             let btnEdit = `<button ${isOkToInput || target[i].enable_by_admin > 0 || isSuperAdmin ? '' : 'disabled'} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${target[i].id_target}" data-toggle="tooltip" title="Ubah data ${target[i].program}"><i class="bi bi-pencil fs-3"></i></button>`;
+                            if (target[i].program == 'Penyaluran PUMK') {
+                                btnEdit = `<button disabled type="button" class="btn  btn-sm btn-light btn-icon btn-primary cls-button-edit" data-id="${target[i].id_target}" data-toggle="tooltip" title="Ubah data ${target[i].program}"><i class="bi bi-pencil fs-3"></i></button>`;
+                            }
 
                             let checkboxData = '';                            
 
@@ -650,6 +653,13 @@
                                 checkboxData = `
                                     <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
                                         <input class="form-check-input is_active-check target-check perusahaan-${tempPerusahaan} pilar-${tempPerusahaan}-${tempPilar}" data-anggaran="${target[i].id_target}" type="checkbox" ${isCheckAll ? 'checked' : ''}>
+                                    </label>
+                                `;
+                            }
+                            if (target[i].program == 'Penyaluran PUMK') {
+                                checkboxData = `
+                                    <label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                        <input disabled class="tpb8pumk form-check-input is_active-check target-check perusahaan-${tempPerusahaan} pilar-${tempPerusahaan}-${tempPilar}" data-anggaran="${target[i].id_target}" type="checkbox" ${isCheckAll ? 'checked' : ''}>
                                     </label>
                                 `;
                             }
@@ -1099,6 +1109,8 @@
             $("#select-all").on('click', function(){
                 var checkboxes = $('.is_active-check');         
                 checkboxes.prop('checked', $(this).prop('checked'));
+                // var checkboxtpb8 = $('.tpb8pumk');
+                // checkboxtpb8.prop('checked', false);
             }) 
 
             $("body").on('click', '.is_active-check', function() {

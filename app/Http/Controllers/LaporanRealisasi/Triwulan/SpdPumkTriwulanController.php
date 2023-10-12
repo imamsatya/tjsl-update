@@ -256,7 +256,15 @@ class SpdPumkTriwulanController extends Controller
                     // } 
                     // dd($param);
                     $data = PumkAnggaran::create($param);
+                    
+                    $log['pumk_anggaran_id'] = (int)$data->id;
+                    $log['status_id'] = (int)$data->status_id;
+                    $log['nilai_rka'] = (int)$data->saldo_awal;
+                    $log['created_by_id'] = (int)$data->created_by;
+                    $log['created_at'] = now();
 
+                    SpdPumkTriwulanController::store_log($log);
+                    
                     //Insert to Kegiatan Realisasi
                      
                     //periode_id ganti ke bulan
@@ -380,7 +388,7 @@ class SpdPumkTriwulanController extends Controller
                         ->where('tahun', $request->tahun)
                         ->where('periode_id', $request->periode_id )
                         ->first();
-
+                    // dd($current);
                     //dana tersedia
                     $current->saldo_awal = $request->spdpumk_rka['saldo_awal'] == null || $request->spdpumk_rka['saldo_awal'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['saldo_awal']);
                     $current->income_mitra_binaan = $request->spdpumk_rka['pengembalian_mitra_binaan'] == null || $request->spdpumk_rka['pengembalian_mitra_binaan'] == 'NaN' ? 0 : preg_replace('/[^-0-9]/', '', $request->spdpumk_rka['pengembalian_mitra_binaan']);
@@ -399,7 +407,9 @@ class SpdPumkTriwulanController extends Controller
                     $current->updated_at = now();
                     $current->updated_by = \Auth::user()->id;
                     $current->save();
+                  
 
+                    //sampai sini
                     $log['pumk_anggaran_id'] = (int)$current->id;
                     $log['status_id'] = (int)$current->status_id;
                     $log['nilai_rka'] = (int)$current->saldo_awal;
@@ -407,6 +417,107 @@ class SpdPumkTriwulanController extends Controller
                     $log['created_at'] = now();
 
                     SpdPumkTriwulanController::store_log($log);
+
+
+                    // dd('halo');
+                     //Update to Kegiatan Realisasi
+                     
+                    //periode_id ganti ke bulan
+                    if ($request->periode_id == 1) {
+                        //Maret
+                        $bulan_id = 3; 
+                    }
+                    if ($request->periode_id == 2) {
+                        //Juni
+                        $bulan_id = 6;
+                       
+                    }
+                    if ($request->periode_id == 3) {
+                        //Sept
+                        $bulan_id = 9; 
+                    }
+                    if ($request->periode_id == 5) {
+                        //Des
+                        $bulan_id = 12;
+                    }
+                    
+                    //cari tpb 8 dulu
+                    $tpb8cid_id = DB::table('tpbs')->where('no_tpb', 'TPB 8')->where('jenis_anggaran', 'CID')->first()?->id;
+                   
+                    if ($tpb8cid_id) {
+                        $anggaran_tpb8 = DB::table('anggaran_tpbs')->select('anggaran_tpbs.*')        
+                        ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                        ->where('tahun', $request->tahun)
+                        ->where('perusahaan_id', $request->perusahaan_id)
+                        ->where('tpb_id', $tpb8cid_id)
+                        ->first();
+                        
+                        if ($anggaran_tpb8) {
+                            $target_tpb = DB::table('target_tpbs')->where('anggaran_tpb_id', $anggaran_tpb8->id)->where('program', 'Penyaluran PUMK')->first();
+                            
+                            if ($target_tpb) {
+                                $cek_kegiatan = Kegiatan::join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id');
+                
+                                $cek_kegiatan = $cek_kegiatan
+                                ->where('target_tpb_id',$target_tpb->id )
+                                // ->where('kota_id',  $request->data['kota_kabupaten'])
+                                ->where('kegiatan', 'Penyaluran PUMK')
+                                ->where('bulan', $bulan_id)
+                                ->where('tahun', $request->tahun)
+                                ->first();
+                                // dd($cek_kegiatan);
+                                //kalau kegiatan ga ada (!= null) maka input kegiatan
+                                if ($cek_kegiatan) {
+                                   $kegiatan = Kegiatan::where('id', $cek_kegiatan->kegiatan_id)->first();
+                                   $kegiatan->anggaran_alokasi = $current->outcome_total ;
+                                   $kegiatan->save();
+                                    
+                                    $kegiatanRealisasi = KegiatanRealisasi::where('kegiatan_id',$kegiatan->id )->first();
+                                    $kegiatanRealisasi->anggaran = $kegiatan->anggaran_alokasi;
+                                    $kegiatanRealisasi->save();
+                                   
+                                                            
+                        
+                                    SpdPumkTriwulanController::store_log_kegiatan($kegiatanRealisasi->id,$kegiatanRealisasi->status_id);
+
+                                    //cek ulang kumulatif anggaran versi sebelumnya
+                                    $kegiatanGroupOld = Kegiatan::where('kegiatan', $request->data['kegiatan_data']['kegiatan'])
+                                    ->where('target_tpb_id', $request->data['kegiatan_data']['target_tpb_id'])
+                                    ->join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
+                                    ->orderBy('kegiatan_realisasis.bulan')
+                                    ->get();
+                                    
+                                    $kumulatif_anggaran_old = 0;
+                                    foreach ($kegiatanGroupOld as $key => $kegiatan) {
+                                
+                                        $kumulatif_anggaran_old = $kumulatif_anggaran_old + $kegiatan->anggaran;
+                                        $kegiatanRealisasi = KegiatanRealisasi::where('id', $kegiatan->id )->first();
+                                        $kegiatanRealisasi->anggaran = $kegiatan->anggaran_alokasi;
+                                        $kegiatanRealisasi->anggaran_total = $kumulatif_anggaran_old;
+                                        $kegiatanRealisasi->save();
+                                    }
+
+                                    //cek ulang kumulatif anggaran versi baru
+                                    $kegiatanGroupNew = Kegiatan::where('kegiatan',  $kegiatan->kegiatan)
+                                    ->where('target_tpb_id', $kegiatan->target_tpb_id)
+                                    ->join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
+                                    ->orderBy('kegiatan_realisasis.bulan')
+                                    ->get();
+
+                                    $kumulatif_anggaran_new = 0;
+                                    foreach ($kegiatanGroupNew as $key => $kegiatan) {
+                                
+                                        $kumulatif_anggaran_new = $kumulatif_anggaran_new + $kegiatan->anggaran;
+                                        $kegiatanRealisasi = KegiatanRealisasi::where('id', $kegiatan->id )->first();
+                                        $kegiatanRealisasi->anggaran = $kegiatan->anggaran_alokasi;
+                                        $kegiatanRealisasi->anggaran_total = $kumulatif_anggaran_new;
+                                        $kegiatanRealisasi->save();
+                                    }
+                                }
+                            }
+                        }
+                        
+                    }
 
                     DB::commit();
                     $result = [
