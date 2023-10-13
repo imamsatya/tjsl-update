@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\Perusahaan;
 use App\Models\LogTargetTpb;
 use App\Models\TargetTpb;
+use App\Models\Kegiatan;
+use App\Models\KegiatanRealisasi;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -514,7 +516,7 @@ class SpdPumkRkaController extends Controller
         try {
             // dd($request);
             $requestIds = $request->selectedData;
-
+            $tahunDeleted = [];
             foreach ($requestIds as $key => $value) {
                 // dd($value);
                 $pumk_rka =  PumkAnggaran::where('id', $value)->first();
@@ -531,29 +533,63 @@ class SpdPumkRkaController extends Controller
                         ->where('perusahaan_id', $pumk_rka->bumn_id)
                         ->where('tpb_id', $tpb8cid_id)
                         ->first();
-                        if ($anggaran_tpb8) {
-                            $target_tpb = TargetTpb::where('anggaran_tpb_id', $anggaran_tpb8->id)->where('program', 'Penyaluran PUMK')->delete();
-
-                            // //kalau $target_tpb null maka insert data baru
-                            // if ($target_tpb ) {
-                            //     // dd($current->outcome_total);
-                            //     $target_tpb->anggaran_alokasi = $current->outcome_total;
-                            //     $target_tpb->save();
                         
-                            //     SpdPumkRkaController::store_log_targetTPB8($target_tpb->id,$target_tpb->status_id);
-                            // }
+                        $target_tpb = TargetTpb::where('anggaran_tpb_id', $anggaran_tpb8->id)->where('program', 'Penyaluran PUMK')->first();
+                        //cek apakah ada kegiatan
+                        $cek_kegiatan = Kegiatan::join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id');
+                
+                        $cek_kegiatan = $cek_kegiatan
+                            ->where('target_tpb_id',$target_tpb->id )
+                            ->where('kegiatan', 'Penyaluran PUMK')
+                            ->where('tahun', $pumk_rka->tahun)
+                            ->first();
+
+
+                        //ketika tidak ada isinya maka hapus
+                        if (  !$cek_kegiatan) {
+                            
+                            if ($anggaran_tpb8) {
+                                $target_tpb = TargetTpb::where('anggaran_tpb_id', $anggaran_tpb8->id)->where('program', 'Penyaluran PUMK')->delete();
+                                 // dd($requestIds);
+                                 array_push($tahunDeleted, $pumk_rka->tahun);
+                                PumkAnggaran::where('id', $value)->delete();
+                                // //kalau $target_tpb null maka insert data baru
+                                // if ($target_tpb ) {
+                                //     // dd($current->outcome_total);
+                                //     $target_tpb->anggaran_alokasi = $current->outcome_total;
+                                //     $target_tpb->save();
+                            
+                                //     SpdPumkRkaController::store_log_targetTPB8($target_tpb->id,$target_tpb->status_id);
+                                // }
+                            }
                         }
+
+                        if ($cek_kegiatan) {
+                            
+                            DB::rollback();
+                            $result = [
+                                'flag'  => 'warning',
+                                'msg' => 'Gagal hapus data',
+                                'title' => 'Gagal'
+                            ];
+                            Session::flash('error', "Gagal menghapus SPD PUMK RKA karena terdapat SPD PUMK RKA yang memiliki kegiatan realisasi");
+                            return response()->json($result);
+                        }
+
+                        
+
+                       
                         
                        
                     }
             }
               
 
-            // dd($requestIds);
-            PumkAnggaran::whereIn('id', $requestIds)->delete();
+           
 
           
-            Session::flash('success', "Berhasil menghapus SPD PUMK yang dipilih");
+            Session::flash('success', "Berhasil menghapus SPD PUMK RKA tahun ");
+            // Session::flash('success', "Berhasil menghapus SPD PUMK RKA tahun " . implode(', ', $tahunDeleted) . ".");
 
             DB::commit();
             $result = [
