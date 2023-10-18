@@ -766,7 +766,7 @@
                     html: "Tidak ada data yang bisa diverifikasi!",
                     icon: "warning",
                     showCancelButton: false,
-                    reverseButtons: true
+                    reverseButtons: true,
                     confirmButtonText: "Close",
                 })
 
@@ -1844,6 +1844,7 @@
 
     //Imam
     function redirectToNewPage() {
+        console.log('halo')
         var selectedPerusahaanId = $('#perusahaan_id').val();
         var selectedPerusahaanText = $('#perusahaan_id option:selected').text();
 

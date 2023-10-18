@@ -157,6 +157,26 @@
                     <!--end::Alert-->
                 @endif
                 <div class="row">
+                    @if($data->status_id == 1 || $data->status_id == 4)                       
+                        <!--begin::Alert-->
+                        <div class="alert alert-success d-flex align-items-center p-5" style="border-radius: 0.5em;background-color: #e8fff3;color: #50cd89;border-color: #50cd89">
+                            <!--begin::Icon-->
+                            <i class=" bi-shield-fill-check fs-2hx text-success me-4"><span class="path1"></span><span class="path2"></span></i>
+                            <!--end::Icon-->
+
+                            <!--begin::Wrapper-->
+                            <div class="d-flex flex-column">
+                                <!--begin::Title-->
+                                <h4 class="mb-1 text-success">PENGUMUMAN</h4>
+                                <!--end::Title-->
+
+                                <!--begin::Content-->
+                                <span>Data sudah berstatus verified/validated!</span>
+                                <!--end::Content-->
+                            </div>
+                            <!--end::Wrapper-->
+                        </div>
+                    @endif
                     <div class="col-lg-6 mb-20">
                         <label>BUMN</label>
                         @php
@@ -441,7 +461,9 @@
                             <div class="col-lg-12">
                                 <button id="close-btn" class="btn btn-danger me-3">Close</button>
                                 <button id="clear-btn" class="btn btn-info me-3">Clear</button>
-                                <button id="{{$periode->isoktoinput || $isOkToInput ? 'simpan-btn' : ''}}" {{$periode->isoktoinput || $isOkToInput ? '' : 'disabled'}} class="btn btn-success me-3">Simpan</button>
+                                @if($data->status_id != 1 && $data->status_id != 4)
+                                <button id="{{$periode->isoktoinput || $isOkToInput ? 'simpan-btn' : ''}}" {{$periode->isoktoinput || $isOkToInput ? '' : 'disabled'}} {{$data->status_id == 1 || $data->status_id == 4 ? 'disabled' : ''}} class="btn btn-success me-3">Simpan</button>
+                                @endif
                             </div>
                         </div>
 
