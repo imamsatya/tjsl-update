@@ -559,17 +559,20 @@
                                 </select>
                             </div>
                             <div class="col-lg-4">
-                                <label>Bulan</label>
+                                <label>Semester</label>
                                 <select id="bulan_id_pumk" class="form-select form-select-solid form-select2"
                                     name="bulan_id_pumk" data-kt-select2="true" data-placeholder="Pilih Bulan"
                                     data-allow-clear="true">
-                                    <option></option>
+                                    {{-- <option></option>
                                     @foreach($bulan as $p)
                                     @php
                                     $select = (($p->id == $filter_status_id) ? 'selected="selected"' : '');
                                     @endphp
                                     <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama }}</option>
-                                    @endforeach
+                                    @endforeach --}}
+                                    <option></option>
+                                    <option value="1">Semester 1</option>
+                                    <option value="2">Semester 2</option>
                                 </select>
                             </div>
                             <div class="col-lg-2">
@@ -865,6 +868,7 @@
    
 
     function updatechartmb() {
+       //bulan_id_pumk = semester
         $.ajax({
             url: urlchartmb,
             data: {

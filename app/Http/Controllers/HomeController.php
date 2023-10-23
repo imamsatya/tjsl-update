@@ -1061,11 +1061,15 @@ class HomeController extends Controller
 
     public function chartmb(Request $request)
     {
+        //$bulan = semester
         try {
+            $bulan_current = (date('m') );
+            $semesterCurrent = $bulan_current > 6 ? 2 : 1;
             $json = [];
             $kolek = KolekbilitasPendanaan::select('nama')->pluck('nama');
             $perusahaan = $request->perusahaan_id_pumk;
-            $bulan = $request->bulan_pumk ? (int)$request->bulan_pumk : ((int)date('m') - 1);
+            // $bulan = $request->bulan_pumk ? (int)$request->bulan_pumk : ((int)date('m') - 1);
+            $bulan = $request->bulan_pumk ? (int)$request->bulan_pumk : $semesterCurrent;
             $tahun = $request->tahun_pumk;
 
             $id_lancar = KolekbilitasPendanaan::where('nama', 'ilike', '%lancar%')->pluck('id')->first();
@@ -1256,9 +1260,15 @@ class HomeController extends Controller
                 $json['bumn'] = ' ' . $bumn->nama_lengkap;
             }
 
-            if ($bulan) {
-                $bulan = Bulan::find($bulan);
-                $json['bulan'] = 'Bulan ' . $bulan->nama;
+            // if ($bulan) {
+            //     $bulan = Bulan::find($bulan);
+            //     $json['bulan'] = 'Bulan ' . $bulan->nama;
+            // }
+            if ($bulan == 1) {
+                $json['bulan'] = 'Semester 1';
+            }
+            if ($bulan == 2) {
+                $json['bulan'] = 'Semester 2';
             }
 
             if ($tahun) {

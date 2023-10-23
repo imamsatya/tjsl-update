@@ -188,7 +188,7 @@ class LaporanManajemenController extends Controller
             $perusahaan = Perusahaan::findOrFail($request->perusahaan_id);
             $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
             $validated = $request->validate([
-                'file' => 'required|mimes:pdf|max:15360',
+                'file' => 'required|mimes:pdf|max:20480',
             ]);
             if (!$validated) {
                 return redirect()->back()->withErrors($validated)->withInput();
