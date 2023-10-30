@@ -33,6 +33,8 @@ use App\Models\PumkAnggaran;
 use App\Models\LogPumkAnggaran;
 use App\Exports\MitraBinaanExport;
 
+use App\Models\DownloadExport;
+use App\Jobs\DownloadMitraBinaan;
 class MitraBinaanController extends Controller
 {
     public function __construct()
@@ -504,5 +506,117 @@ class MitraBinaanController extends Controller
             ];
         }
         return response()->json($result);
+    }
+
+    public function export_queue(Request $request) {
+            $data = $request->all();
+            $filter = '';
+            if($data['perusahaan_id']){
+              $filter .= 'Perusahaan='.Perusahaan::where('id',(int)$data['perusahaan_id'])->pluck('nama_lengkap')->first().' & ';
+            }
+        
+            if($data['provinsi_id']){
+              $filter .= 'Provinsi='.$data['provinsi_id'].' & ';
+            }
+        
+            if($data['kota_id']){
+              $filter .= 'Kabupaten/Kota='.$data['kota_id'].' & ';
+            }
+        
+            if($data['sektor_usaha_id']){
+              $filter .= 'Sektor Usaha='.$data['sektor_usaha_id'].' & ';
+            }
+        
+            if($data['cara_penyaluran_id']){
+              $filter .= 'Cara Penyaluran='.$data['cara_penyaluran_id'].' & ';
+            }
+        
+            if($data['skala_usaha_id']){
+              $filter .= 'Skala Usaha='.$data['skala_usaha_id'].' & ';
+            }
+        
+            if($data['kolektibilitas_id']){
+              $filter .= 'Kolektibilitas='.$data['kolektibilitas_id'].' & ';
+            }
+        
+            if($data['kondisi_pinjaman_id']){
+              $filter .= 'Kondisi Pinjaman='.$data['kondisi_pinjaman_id'].' & ';
+            }
+        
+            if($data['bank_account_id']){
+              $filter .= 'Bank Account='.$data['bank_account_id'].' & ';
+            }
+        
+            if($data['jenis_pembayaran_id']){
+              $filter .= 'Jenis Pembayaran='.$data['jenis_pembayaran_id'].' & ';
+            }
+        
+            if($data['identitas']){
+              $filter .= 'Identitas='.$data['identitas'].' & ';
+            }
+        
+            if($data['bulan_export']){
+              $filter .= 'Semester='.$data['bulan_export'].' & ';
+            }
+        
+            if($data['tahun_export']){
+              $filter .= 'Tahun='.$data['tahun_export'];
+            }
+        
+            $download = DownloadExport::create([
+              'description' => 'Mitra Binaan PUMK',
+              'status' => 'on queue',
+              'filter' => $filter,
+              'created_at' => date('Y-m-d H:i:s')
+            ]);    
+            $data['downloadId'] = $download->id;    
+            DownloadMitraBinaan::dispatch($data);
+            echo json_encode(array('result' => 'success', 'message' => 'Data sedang didownload...'));
+    }
+
+    public function datatable_download(Request $request)
+    {
+        
+        try{
+        $data = DownloadExport::orderBy('id', 'desc');
+        return datatables()->eloquent($data)      
+        ->editColumn('created_at', function ($row){
+            $value = $row->created_at;        
+            return $value;
+        })
+        ->editColumn('updated_at', function ($row){
+            $value = $row->updated_at;
+            if($row->status != 'done'){
+            $value = '-';
+            }
+            return $value;
+        })
+        ->addColumn('action', function ($row){
+            $button = '-';
+            if($row->status == 'done') {          
+            $button = '<button data-filename="'.$row->file_path.'" type="button" class="btn btn-sm btn-success btn-icon cls-button-download-finish" data-toggle="tooltip" title="Download Excel"><i class="bi bi-download fs-3"></i></button>';
+            }        
+            return $button; 
+        })
+        ->rawColumns(['action'])
+        ->toJson();
+        }catch(Exception $e){
+        return response([
+            'draw'      => 0,
+            'recordsTotal'  => 0,
+            'recordsFiltered' => 0,
+            'data'      => []
+        ]);
+        }
+    }
+
+    public function downloadExport(Request $request) 
+    {
+            $filename = $request->get('filename');
+            if($filename) {
+              $path = storage_path('app/public/download/'.$filename);
+              return response()->download($path);
+            } 
+            return;    
     }
 }

@@ -38,6 +38,7 @@
                         @if(!$view_only)
                         <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-excel fs-3"></i></button>
                         @endif
+                        <button type="button" class="btn btn-success btn-sm btn-icon cls-export-queue" style="margin-left: 3px"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-earmark-excel-fill fs-3"></i></button>
                     </div>
                     <!--end::Search-->
                     <!--end::Group actions-->
@@ -205,6 +206,7 @@
                     <div style="text-align: right">
                         <button type="button" class="btn btn-danger btn-sm delete-all"><i class="fa fa-trash text-white"></i> DELETE ALL
                     </div>
+                    
                     <div class="table-responsive"  >                        
                         <table class="table table-striped table-bordered table-hover " id="datatable">
                             <thead>
@@ -223,6 +225,26 @@
                             <tbody></tbody>
                         </table>
                     </div>
+
+                    <div style="margin-top: 10px">
+                        <h1>Tabel Download</h1>
+                                    <div class="table-responsive" >            
+                                      <table class="table table-striped table-bordered table-hover " id="datatable-download">
+                                        <thead>
+                                          <tr style="border-top:ridge;">
+                                            <th style="text-align:center;">No</th>
+                                            <th >Description</th>
+                                            <th >Filter</th>                    
+                                            <th >Status Export</th>                    
+                                            <th >Created At</th>
+                                            <th >Updated At</th>                    
+                                            <th style="width: 50px;">Aksi</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                      </table>
+                                    </div>
+                                  </div>
                 </div>
             </div>
             <!--end::Card body-->
@@ -243,6 +265,9 @@
     var urldatatable = "{{route('pumk.data_mitra.datatable')}}";
     var urldeleteall = "{{route('pumk.data_mitra.delete_all')}}";
 
+
+    var urlexportmitra_queue = "{{route('pumk.data_mitra.export_queue')}}";
+    var urldatatable_download = "{{route('pumk.data_mitra.datatable_download')}}";
     $(document).ready(function(){
         $.ajaxSetup({
               headers: {
@@ -324,7 +349,42 @@
             $('.btn-search-active').show();
             $('.btn-search-unactive').hide();
             $('#form-cari').toggle(600);
-        });        
+        });     
+        
+        //export
+        $("body").on('click', '.cls-export-queue', function() {
+            exportExcelQueue();
+        })
+
+        $('#datatable-download').DataTable({
+            processing: true,
+            serverSide: true,
+            pagination: true,
+            "dom": 'lrtip',
+            ajax: {
+                url: urldatatable_download,
+                type: 'GET'          
+            },
+            columns: [
+                {data: "id",
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                    ,sClass:'text-center'
+                    },
+                    { data: 'description', name: 'description' },
+                    { data: 'filter', name: 'filter' },
+                    { data: 'status', name: 'status' },
+                    { data: 'created_at', name: 'created_at' },
+                    { data: 'updated_at', name: 'updated_at' },            
+                    { data: 'action', name:'action' ,sClass:'text-center'},
+                ],      
+        });
+
+        $("body").on('click', '.cls-button-download-finish', function(){
+            let filename = $(this).data('filename');
+            window.location.href = `{{ route('pumk.data_mitra.download_export') }}?filename=${filename}`
+        })
         
         // if("{{ $admin_bumn }}"){
         //     $('.cls-export').hide();
@@ -683,7 +743,7 @@
 
         if(bulan_export == ''){
             swal.fire({
-                 title: "Bulan belum dipilih !",
+                 title: "Semester belum dipilih !",
                  html: '',
                  icon: 'error',
                  buttonsStyling: true,
@@ -786,6 +846,101 @@
             return false;
         }
     }
+
+    //exportExcelQueue
+    function exportExcelQueue() {
+    bulan_export = $("#bulan_id").val();
+    tahun_export = $("#tahuns").val();
+    bumn = $("#perusahaan_id").val();
+
+    if(bulan_export == ''){
+      swal.fire({
+        title: "Semester belum dipilih !",
+        html: '',
+        icon: 'error',
+        buttonsStyling: true,
+        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+      });   
+      return;
+    }
+
+    if(tahun_export == ''){
+      swal.fire({
+        title: "Tahun belum dipilih !",
+        html: '',
+        icon: 'error',
+        buttonsStyling: true,
+        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+      }); 
+      return;  
+    }
+
+    $.ajax({
+      type: 'POST',
+      data: {
+        perusahaan_id : $("#perusahaan_id").val(),
+        provinsi_id : $("#provinsi_id").val(),
+        kota_id : $("#kota_id").val(),
+        sektor_usaha_id : $("#sektor_usaha_id").val(),
+        cara_penyaluran_id : $("#cp_id").val(),
+        skala_usaha_id : $("#skala_usaha_id").val(),
+        kolektibilitas_id : $("#kolekbilitas_id").val(),
+        kondisi_pinjaman_id : $("#kondisi_id").val(),
+        jenis_pembayaran_id : $("#jp_id").val(),
+        bank_account_id : $("#bank_account_id").val(),
+        identitas : $('#identitas').val(),
+        bulan_export : bulan_export,
+        tahun_export : tahun_export
+      },
+      dataType: 'json',
+      beforeSend: function () {
+        $.blockUI();        
+        $('#datatable-download').DataTable().draw(true);
+      },
+      url: urlexportmitra_queue,
+      success: function(res) {
+        $.unblockUI();
+        swal.fire({
+          title: "Sukses!",
+          html: res.message,
+          icon: 'success',
+
+          buttonsStyling: true,
+
+          confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+        });
+        console.log(res)
+      },
+      error: function(jqXHR, exception) {
+        $.unblockUI();
+        var msgerror = '';
+        if (jqXHR.status === 0) {
+          msgerror = 'jaringan tidak terkoneksi.';
+        } else if (jqXHR.status == 404) {
+          msgerror = 'Halaman tidak ditemukan. [404]';
+        } else if (jqXHR.status == 500) {
+          msgerror = 'Internal Server Error [500].';
+        } else if (exception === 'parsererror') {
+          msgerror = 'Requested JSON parse gagal.';
+        } else if (exception === 'timeout') {
+          msgerror = 'RTO.';
+        } else if (exception === 'abort') {
+          msgerror = 'Gagal request ajax.';
+        } else {
+          msgerror = 'Error.\n' + jqXHR.responseText;
+        }
+        swal.fire({
+            title: "Error System",
+            html: msgerror+', coba ulangi kembali !!!',
+            icon: 'error',
+
+            buttonsStyling: true,
+
+            confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+        });
+      }
+    })
+  }
     
 </script>
 @endsection

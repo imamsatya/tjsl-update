@@ -23,6 +23,7 @@ use App\Models\Bulan;
 use App\Models\PilarPembangunan;
 use App\Models\OwnerProgram;
 use App\Models\Menu;
+use App\Models\JenisKegiatan;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -105,9 +106,11 @@ class HomeController extends Controller
             'filter_status_id' => $request->status_id,
             'filter_tahun' => $request->tahun,
             'filter_owner_id' => $request->owner_id,
+            'filter_jenisKegiatan_id' => $request->jenisKegiatan_id,
             'bulan' => Bulan::get(),
             'owner' => OwnerProgram::get(),
-            'menuStatus' => $this->getMenuStatus($currentYear, $perusahaan_id)
+            'menuStatus' => $this->getMenuStatus($currentYear, $perusahaan_id),
+            'jenisKegiatan' => JenisKegiatan::where('is_active', true)->orderBy('id', 'asc')->get()
         ]);
     }
 
@@ -1509,5 +1512,67 @@ class HomeController extends Controller
             $json = [];
             return response()->json($json);
         }
+    }
+
+    public function chartdataKegiatan(Request $request)
+    {
+        
+       //bulan = semester
+        $jenis_kegiatan_id = $request->jenis_kegiatan_id;
+        
+        // jika filter tahun kosong maka default tahun berjalan saat ini
+        $tahun = $request->tahun_dataKegiatan ? $request->tahun_dataKegiatan : (int)date('Y');
+        
+
+        $kegiatan_bulan = DB::table('bulans')
+        ->selectRaw('bulans.nama as bulan_text')
+        ->selectRaw('bulans.id as bulan_angka')
+        ->selectRaw("sum(kegiatans.anggaran_alokasi) as sum_anggaran_alokasi")
+        ->selectRaw("sum(CAST(kegiatans.indikator AS INTEGER)) as sum_indikator")
+        ->selectRaw("satuan_ukur.nama as satuan_ukur")
+        ->leftJoin('kegiatan_realisasis', 'bulans.id', '=', 'kegiatan_realisasis.bulan')
+        ->leftjoin('kegiatans','kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id', )
+        ->leftjoin('satuan_ukur', 'kegiatans.satuan_ukur_id', '=', 'satuan_ukur.id')
+        ->where(function ($query) use ($jenis_kegiatan_id, $tahun) {
+            if ($jenis_kegiatan_id) {
+                $query->where('kegiatans.jenis_kegiatan_id', '=', $jenis_kegiatan_id);
+            }
+            if ($tahun) {
+                // $query->whereRaw("EXTRACT(YEAR from to_date(pumk_mitra_binaans.tgl_awal, 'DD/MM/YYYY'))  = " . $tahun . "");
+                $query->where('kegiatan_realisasis.tahun', $tahun);
+            }
+        })
+        ->groupby('bulans.nama', 'bulan_angka'
+         ,'satuan_ukur'
+         )
+            ->orderby('bulans.id', 'ASC')
+            ->get();
+       
+        
+        $result_bln = [];
+        foreach ($kegiatan_bulan as $bln) {
+            $result_bln[] = $bln->bulan_text;
+        }
+      
+        $result_anggaran = [];
+        foreach ($kegiatan_bulan as $v) {
+            $result_anggaran[] = $v->sum_anggaran_alokasi;
+        }
+
+        // dd($mitra);
+        // dd($result_mitra);
+        $result_anggaran = [];
+        $result_indikator = [];
+        foreach ($kegiatan_bulan as $v) {
+            $result_anggaran[] = (float)number_format(($v->sum_anggaran_alokasi / 1000000000), 3, '.', '');
+            $result_indikator[] = $v->sum_indikator;
+        }
+        $json['bulan'] = $result_bln;
+        $json['indikator'] = $result_indikator;
+        $json['anggaran'] = $result_anggaran;
+        $json['tahun'] = $tahun ? 'Tahun ' . $tahun : '';
+
+    //    dd($kegiatan_bulan);
+        return response()->json($json);
     }
 }

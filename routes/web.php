@@ -30,6 +30,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
     Route::post('/charttpb', 'App\Http\Controllers\HomeController@charttpb')->name('home.charttpb');
     Route::post('/chartmb', 'App\Http\Controllers\HomeController@chartmb')->name('home.chartmb');
     Route::post('/chartpumk', 'App\Http\Controllers\HomeController@chartpumk')->name('home.chartpumk');
+    Route::post('/chartdataKegiatan', 'App\Http\Controllers\HomeController@chartdataKegiatan')->name('home.chartdataKegiatan');
     Route::post('/allstatus', 'App\Http\Controllers\HomeController@allstatus')->name('home.allstatus');
 
     Route::prefix('role')->group(function () {
@@ -545,6 +546,10 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
             Route::post('store', 'App\Http\Controllers\PUMK\MitraBinaanController@store')->name('pumk.data_mitra.store');
             Route::post('export', 'App\Http\Controllers\PUMK\MitraBinaanController@export')->name('pumk.data_mitra.export');
             Route::post('delete_all', 'App\Http\Controllers\PUMK\MitraBinaanController@deleteAll')->name('pumk.data_mitra.delete_all');
+
+            Route::post('export_queue', 'App\Http\Controllers\PUMK\MitraBinaanController@export_queue')->name('pumk.data_mitra.export_queue');
+            Route::get('datatable_download', 'App\Http\Controllers\PUMK\MitraBinaanController@datatable_download')->name('pumk.data_mitra.datatable_download');
+            Route::get('download_export', 'App\Http\Controllers\PUMK\MitraBinaanController@downloadExport')->name('pumk.data_mitra.download_export');
         });
 
         Route::prefix('upload_data_mitra')->group(function () {

@@ -404,6 +404,114 @@
     </div>
 </div>
 
+
+<div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
+    <!--begin::Container-->
+    <div id="kt_content_container" class="container">
+        <!--begin::Card-->
+        <div class="card">
+
+            <!--begin::Card header-->
+            <div class="card-header pt-5">
+                <!--begin::Card title-->
+                <div class="card-title">
+                    <h2 class="d-flex align-items-center">Data Kegiatan
+                        <span class="text-gray-600 fs-6 ms-1"></span></h2>
+                </div>
+                <!--end::Card title-->
+                <!--begin::Card toolbar-->
+                <div class="card-toolbar">
+                    <!--begin::Search-->
+                    <div class="d-flex align-items-center position-relative my-1"
+                        data-kt-view-roles-table-toolbar="base">
+
+                        <button type="button"
+                            class="btn btn-active btn-info btn-sm btn-icon btn-search-dataKegiatan cls-search-dataKegiatan btn-search-dataKegiatan-active"
+                            style="margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i
+                                class="bi bi-search fs-3"></i></button>
+                        <button type="button"
+                            class="btn btn-active btn-light btn-sm btn-icon btn-search-dataKegiatan cls-search-dataKegiatan btn-search-dataKegiatan-unactive"
+                            style="display:none;margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i
+                                class="bi bi-search fs-3"></i></button>
+
+                    </div>
+                    <!--end::Search-->
+                    <!--end::Group actions-->
+                </div>
+                <!--end::Card toolbar-->
+            </div>
+            <!--begin::Card body-->
+            <div class="card-body p-0">
+                <!--begin::Heading-->
+                <div class="card-px py-10">
+                    <div class="row" id="form-cari-dataKegiatan">
+                        <div class="form-group row  mb-5">
+                            <div class="col-lg-6">
+                                <label>Jenis Kegiatan</label>
+                                {{-- @php
+                                $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
+                                @endphp
+                                <select class="form-select form-select-solid form-select2" id="perusahaan_id_dataKegiatan"
+                                    name="perusahaan_id_dataKegiatan" data-kt-select2="true" data-placeholder="Pilih BUMN"
+                                    {{ $disabled }}>
+                                    <option></option>
+                                    @foreach($perusahaan as $bumn)
+                                    @php
+                                    $select = (($bumn->id == $filter_bumn_id) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{ $bumn->id }}" {!! $select !!}>{{ $bumn->nama_lengkap }}</option>
+                                    @endforeach
+                                </select> --}}
+                                <select class="form-select form-select-solid form-select2" id="jenisKegiatan_id"
+                                    name="jenisKegiatan_id" data-kt-select2="true" data-placeholder="Pilih Jenis Kegiatan"
+                                    {{ $disabled }}>
+                                    <option></option>
+                                    @foreach($jenisKegiatan as $jenisKegiatanRow)
+                                    @php
+                                    $select = (($jenisKegiatanRow->id == $filter_jenisKegiatan_id) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{ $jenisKegiatanRow->id }}" {!! $select !!}>{{ $jenisKegiatanRow->nama }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-lg-2">
+                                <label>Tahun</label>
+                                <select class="form-select form-select-solid form-select2" id="tahun_dataKegiatan"
+                                    name="tahun_dataKegiatan" data-kt-select2="true" data-placeholder="Pilih Tahun"
+                                    data-allow-clear="true">
+                                    @php
+                                    for($i = date("Y"); $i>=2020; $i--){ @endphp
+                                    <option value="{{$i}}">{{$i}}</option>
+                                    @php }
+                                    $select = (($i == date("Y")) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- <div class="form-group row  mb-5">
+                        <div class="col-lg-6">
+                            <button id="proses" class="btn-small btn-success me-3 text-white"><i class="fa fa-search text-white"></i> Filter</button>
+                            <button  onclick="window.location.href='{{route('dashboard.index')}}'" class="btn-small
+                        btn-danger me-3 text-white"><i class="fa fa-times text-white"></i> Batal</button>
+                    </div>
+                </div> --}}
+                <div class="separator border-gray-200 mb-10"></div>
+            </div>
+            <!--begin: Datatable -->
+            <div>
+                <div class="portlet-body" id="dataKegiatan_chart">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--end::Card body-->
+</div>
+</div>
+</div>
+
 <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
     <!--begin::Container-->
     <div id="kt_content_container" class="container">
@@ -499,6 +607,7 @@
 </div>
 </div>
 </div>
+
 
 <div class="post d-flex flex-column-fluid cls-content-data" id="kt_content">
     <!--begin::Container-->
@@ -627,6 +736,7 @@
     var urlchartmb = "{{route('home.chartmb')}}";
     var urlchartpumk = "{{route('home.chartpumk')}}";
     var urlallstatus = "{{route('home.allstatus')}}";
+    var urlchartdatakegiatan = "{{route('home.chartdataKegiatan')}}"
 
     var urllog_rka = "{{route('anggaran_tpb.log_status2')}}";
     var urllog_program = "{{ route('rencana_kerja.program.log') }}";
@@ -733,6 +843,29 @@
             $('.btn-search-active').show();
             $('.btn-search-unactive').hide();
             $('#form-cari').toggle(600);
+        });
+
+        //data kegiatan
+        $('#jenisKegiatan_id').on('change', function (event) {
+            updatechartdataKegiatan();
+        });
+        $('#tahun_dataKegiatan').on('change', function (event) {
+            updatechartdataKegiatan();
+        });
+
+        updatechartdataKegiatan();
+
+        $('#form-cari-dataKegiatan').hide();
+        $('body').on('click', '.btn-search-dataKegiatan-active', function () {
+            $('.btn-search-dataKegiatan-active').hide();
+            $('.btn-search-dataKegiatan-unactive').show();
+            $('#form-cari-dataKegiatan').toggle(600);
+        });
+
+        $('body').on('click', '.btn-search-dataKegiatan-unactive', function () {
+            $('.btn-search-dataKegiatan-active').show();
+            $('.btn-search-dataKegiatan-unactive').hide();
+            $('#form-cari-dataKegiatan').toggle(600);
         });
 
 
@@ -1295,6 +1428,116 @@
                 var tpb = $("#tpb_id option:selected").text();
                 $('#chart_title').html(tpb);
             }
+        });
+    }
+
+    //data Kegiatan
+    function updatechartdataKegiatan() {
+        $.ajax({
+            url: urlchartdatakegiatan,
+            data: {
+                'jenis_kegiatan_id': $("#jenisKegiatan_id").val(),
+                'tahun_dataKegiatan': $("#tahun_dataKegiatan").val()
+            },
+            type: "POST",
+            dataType: "json",
+            success: function (data) {
+                initDataKegiatan(data);
+            }
+        });
+    }
+
+    function initDataKegiatan(data) {
+        let bln = data.bulan;
+        let mitra = data.indikator;
+        let nominal = data.anggaran;
+        let tahun = data.tahun;
+
+        Highcharts.setOptions({
+            colors: ['#24E500', '#0093AD']
+        });
+        Highcharts.chart('dataKegiatan_chart', {
+            chart: {
+                zoomType: 'xy'
+            },
+            title: {
+                text: 'Statistik Data Kegiatan ' + tahun
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: [{
+                categories: bln,
+                crosshair: true
+            }],
+            yAxis: [{
+                labels: {
+                    format: '{value}',
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                },
+                title: {
+                    text: 'Capaian',
+                    style: {
+                        color: Highcharts.getOptions().colors[2]
+                    }
+                }
+            }, {
+                title: {
+                    text: 'Anggaran',
+                    style: {
+                        color: Highcharts.getOptions().colors[2]
+                    }
+                },
+                labels: {
+                    formatter: function () {
+                        return this.value.toLocaleString("fi-FI");
+                    },
+                    style: {
+                        color: Highcharts.getOptions().colors[0]
+                    }
+                },
+                opposite: true
+            }],
+            tooltip: {
+                shared: true
+            },
+            legend: {
+                layout: 'horizontal',
+                align: 'center',
+                x: 0,
+                verticalAlign: 'top',
+                y: 15,
+                floating: true,
+                backgroundColor: Highcharts.defaultOptions.legend.backgroundColor ||
+                    'rgba(255,255,255,0.25)'
+            },
+            series: [{
+                name: 'Anggaran',
+                type: 'spline',
+                yAxis: 1,
+                zIndex: 1,
+                data: nominal,
+                tooltip: {
+                    valueSuffix: '{value} Miliar'
+                },
+                style: {
+                    color: Highcharts.getOptions().colors[0]
+                },
+
+            }, {
+                name: 'Capaian',
+                type: 'column',
+                zIndex: 0,
+                data: mitra,
+                tooltip: {
+                    valueSuffix: '{value} Capaian'
+                },
+                style: {
+                    color: Highcharts.getOptions().colors[1]
+                }
+            }]
         });
     }
 
