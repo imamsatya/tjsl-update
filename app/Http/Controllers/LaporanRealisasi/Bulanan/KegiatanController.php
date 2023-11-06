@@ -710,7 +710,10 @@ class KegiatanController extends Controller
         // $periode_rka_id = DB::table('periode_laporans')->where('nama', 'RKA')->first()->id;
         // $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaan_masters.id as perusahaan_id, perusahaan_masters.nama_lengkap as nama_lengkap')
         // ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'laporan_manajemens.perusahaan_id')->where('periode_laporan_id', $periode_rka_id)->where('perusahaan_masters.induk', 0);
-        
+        if((int)preg_replace('/[^0-9]/','',ini_get('memory_limit')) < 512){
+            ini_set('memory_limit','-1');
+            ini_set('max_execution_limit','0');
+        }
         $perusahaan_id = $request->perusahaan_id ?? 'all';
         $bulan = $request->bulan;
         $tahun = $request->tahun ?? date('Y');
