@@ -794,7 +794,7 @@ class KegiatanController extends Controller
             $kegiatan = $kegiatan->where('jenis_kegiatans.id', $request->jenis_kegiatan);
         }
 
-        $kegiatan = $kegiatan->get();
+        // $kegiatan = $kegiatan->get();
         // dd($kegiatan);
        
         try {
