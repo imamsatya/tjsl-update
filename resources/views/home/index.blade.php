@@ -447,6 +447,23 @@
                     <div class="row" id="form-cari-dataKegiatan">
                         <div class="form-group row  mb-5">
                             <div class="col-lg-6">
+                                <label>BUMN</label>
+                                @php
+                                $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
+                                @endphp
+                                <select class="form-select form-select-solid form-select2" id="perusahaan_id_datakegiatan"
+                                    name="perusahaan_id_datakegiatan" data-kt-select2="true" data-placeholder="Pilih BUMN"
+                                    {{ $disabled }}>
+                                    <option></option>
+                                    @foreach($perusahaan as $bumn)
+                                    @php
+                                    $select = (($bumn->id == $filter_bumn_id) ? 'selected="selected"' : '');
+                                    @endphp
+                                    <option value="{{ $bumn->id }}" {!! $select !!}>{{ $bumn->nama_lengkap }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-lg-3">
                                 <label>Jenis Kegiatan</label>
                                 {{-- @php
                                 $disabled = (($admin_bumn) ? 'disabled="true"' : 'data-allow-clear="true"');
@@ -464,7 +481,8 @@
                                 </select> --}}
                                 <select class="form-select form-select-solid form-select2" id="jenisKegiatan_id"
                                     name="jenisKegiatan_id" data-kt-select2="true" data-placeholder="Pilih Jenis Kegiatan"
-                                    {{ $disabled }}>
+                                    {{-- {{ $disabled }} --}}
+                                    >
                                     <option></option>
                                     @foreach($jenisKegiatan as $jenisKegiatanRow)
                                     @php
@@ -475,7 +493,7 @@
                                 </select>
                             </div>
 
-                            <div class="col-lg-2">
+                            <div class="col-lg-3">
                                 <label>Tahun</label>
                                 <select class="form-select form-select-solid form-select2" id="tahun_dataKegiatan"
                                     name="tahun_dataKegiatan" data-kt-select2="true" data-placeholder="Pilih Tahun"
@@ -846,6 +864,10 @@
         });
 
         //data kegiatan
+        
+        $('#perusahaan_id_datakegiatan').on('change', function (event) {
+            updatechartdataKegiatan();
+        });
         $('#jenisKegiatan_id').on('change', function (event) {
             updatechartdataKegiatan();
         });
@@ -1436,6 +1458,7 @@
         $.ajax({
             url: urlchartdatakegiatan,
             data: {
+                'perusahaan_id' : $('#perusahaan_id_datakegiatan').val(),
                 'jenis_kegiatan_id': $("#jenisKegiatan_id").val(),
                 'tahun_dataKegiatan': $("#tahun_dataKegiatan").val()
             },
@@ -1452,6 +1475,8 @@
         let mitra = data.indikator;
         let nominal = data.anggaran;
         let tahun = data.tahun;
+        let satuan_ukur = data.satuan_ukur
+        console.log(data)
 
         Highcharts.setOptions({
             colors: ['#24E500', '#0093AD']
@@ -1461,7 +1486,7 @@
                 zoomType: 'xy'
             },
             title: {
-                text: 'Statistik Data Kegiatan ' + tahun
+                text: 'Statistik Data Kegiatan '+ $("#jenisKegiatan_id option:selected").text()+' '  + tahun
             },
             subtitle: {
                 text: ''
@@ -1478,7 +1503,7 @@
                     }
                 },
                 title: {
-                    text: 'Capaian',
+                    text: satuan_ukur,
                     style: {
                         color: Highcharts.getOptions().colors[2]
                     }
@@ -1527,12 +1552,12 @@
                 },
 
             }, {
-                name: 'Capaian',
+                name: satuan_ukur,
                 type: 'column',
                 zIndex: 0,
                 data: mitra,
                 tooltip: {
-                    valueSuffix: '{value} Capaian'
+                    valueSuffix: '{value} '+ satuan_ukur
                 },
                 style: {
                     color: Highcharts.getOptions().colors[1]

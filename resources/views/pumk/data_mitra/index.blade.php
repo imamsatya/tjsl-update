@@ -35,10 +35,10 @@
                     <div class="d-flex align-items-center position-relative my-1" data-kt-view-roles-table-toolbar="base">
                         <button type="button" class="btn btn-active btn-info btn-sm btn-icon btn-search cls-search btn-search-active" style="margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
                         <button type="button" class="btn btn-active btn-light btn-sm btn-icon btn-search cls-search btn-search-unactive" style="display:none;margin-right:3px;" data-toggle="tooltip" title="Cari Data"><i class="bi bi-search fs-3"></i></button>
-                        @if(!$view_only)
+                        {{-- @if(!$view_only)
                         <button type="button" class="btn btn-warning btn-sm btn-icon cls-export"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-excel fs-3"></i></button>
-                        @endif
-                        <button type="button" class="btn btn-success btn-sm btn-icon cls-export-queue" style="margin-left: 3px"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-earmark-excel-fill fs-3"></i></button>
+                        @endif --}}
+                        {{-- <button type="button" class="btn btn-success btn-sm btn-icon cls-export-queue" style="margin-left: 3px"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-earmark-excel-fill fs-3"></i></button> --}}
                     </div>
                     <!--end::Search-->
                     <!--end::Group actions-->
@@ -204,7 +204,13 @@
                 </div>   
                     <!--begin: Datatable -->
                     <div style="text-align: right">
-                        <button type="button" class="btn btn-danger btn-sm delete-all"><i class="fa fa-trash text-white"></i> DELETE ALL
+                        {{-- <button type="button" class="btn btn-success btn-sm btn-icon " style="margin-left: 3px"  data-toggle="tooltip" title="Download Excel"><i class="bi bi-file-earmark-excel-fill fs-3"></i></button> --}}
+                        <button type="button" class="btn btn-success btn-sm cls-export-queue me-2">
+                            {{-- <i class="fa fa-trash text-white"></i>  --}}
+                            Rekap Data
+                        <button type="button" class="btn btn-danger btn-sm delete-all">
+                            {{-- <i class="fa fa-trash text-white"></i> --}}
+                             DELETE ALL
                     </div>
                     
                     <div class="table-responsive"  >                        

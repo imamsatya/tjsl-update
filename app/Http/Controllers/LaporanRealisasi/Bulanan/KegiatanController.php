@@ -1400,4 +1400,21 @@ class KegiatanController extends Controller
         $namaFile = "Kegiatan ".date('dmY').".xlsx";
         return Excel::download(new KegiatanBulanExport($kegiatan, $request->tahun), $namaFile);   
     }
+
+    public function export_queue(Request $request) {
+        $data = $request->all();
+        $filter = '';
+        //isi
+
+
+        $download = DownloadKegiatanExport::create([
+            'description' => 'Kegiatan Bulanan',
+            'status' => 'on queue',
+            'filter' => $filter,
+            'created_at' => date('Y-m-d H:i:s')
+          ]);    
+          $data['downloadId'] = $download->id;    
+          DownloadKegiatan::dispatch($data);
+          echo json_encode(array('result' => 'success', 'message' => 'Data sedang didownload...'));
+    }
 }

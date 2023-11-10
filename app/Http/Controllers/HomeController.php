@@ -106,7 +106,7 @@ class HomeController extends Controller
             'filter_status_id' => $request->status_id,
             'filter_tahun' => $request->tahun,
             'filter_owner_id' => $request->owner_id,
-            'filter_jenisKegiatan_id' => $request->jenisKegiatan_id,
+            'filter_jenisKegiatan_id' => $request->jenisKegiatan_id ?? DB::table('jenis_kegiatans')->orderBy('id')->first()->id,
             'bulan' => Bulan::get(),
             'owner' => OwnerProgram::get(),
             'menuStatus' => $this->getMenuStatus($currentYear, $perusahaan_id),
@@ -1516,14 +1516,14 @@ class HomeController extends Controller
 
     public function chartdataKegiatan(Request $request)
     {
-        
+       
        //bulan = semester
-        $jenis_kegiatan_id = $request->jenis_kegiatan_id;
+        $jenis_kegiatan_id = $request->jenis_kegiatan_id ?? DB::table('jenis_kegiatans')->orderBy('id')->first()->id ;
         
         // jika filter tahun kosong maka default tahun berjalan saat ini
         $tahun = $request->tahun_dataKegiatan ? $request->tahun_dataKegiatan : (int)date('Y');
-        
-
+        $perusahaan_id = $request->perusahaan_id ?? 'all';
+       
         $kegiatan_bulan = DB::table('bulans')
         ->selectRaw('bulans.nama as bulan_text')
         ->selectRaw('bulans.id as bulan_angka')
@@ -1533,7 +1533,9 @@ class HomeController extends Controller
         ->leftJoin('kegiatan_realisasis', 'bulans.id', '=', 'kegiatan_realisasis.bulan')
         ->leftjoin('kegiatans','kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id', )
         ->leftjoin('satuan_ukur', 'kegiatans.satuan_ukur_id', '=', 'satuan_ukur.id')
-        ->where(function ($query) use ($jenis_kegiatan_id, $tahun) {
+        ->leftjoin('target_tpbs', 'kegiatans.target_tpb_id', '=', 'target_tpbs.id')
+        ->leftjoin('anggaran_tpbs', 'target_tpbs.anggaran_tpb_id', '=', 'anggaran_tpbs.id')
+        ->where(function ($query) use ($jenis_kegiatan_id, $tahun, $perusahaan_id) {
             if ($jenis_kegiatan_id) {
                 $query->where('kegiatans.jenis_kegiatan_id', '=', $jenis_kegiatan_id);
             }
@@ -1541,6 +1543,10 @@ class HomeController extends Controller
                 // $query->whereRaw("EXTRACT(YEAR from to_date(pumk_mitra_binaans.tgl_awal, 'DD/MM/YYYY'))  = " . $tahun . "");
                 $query->where('kegiatan_realisasis.tahun', $tahun);
             }
+            if($perusahaan_id != 'all'){
+                $query->where('anggaran_tpbs.perusahaan_id', $perusahaan_id);
+            }
+
         })
         ->groupby('bulans.nama', 'bulan_angka'
          ,'satuan_ukur'
@@ -1548,7 +1554,7 @@ class HomeController extends Controller
             ->orderby('bulans.id', 'ASC')
             ->get();
        
-        
+        // dd($kegiatan_bulan[0]->satuan_ukur);
         $result_bln = [];
         foreach ($kegiatan_bulan as $bln) {
             $result_bln[] = $bln->bulan_text;
@@ -1567,10 +1573,13 @@ class HomeController extends Controller
             $result_anggaran[] = (float)number_format(($v->sum_anggaran_alokasi / 1000000000), 3, '.', '');
             $result_indikator[] = $v->sum_indikator;
         }
+
+        // dd($kegiatan_bulan);
         $json['bulan'] = $result_bln;
         $json['indikator'] = $result_indikator;
         $json['anggaran'] = $result_anggaran;
         $json['tahun'] = $tahun ? 'Tahun ' . $tahun : '';
+        $json['satuan_ukur'] = $kegiatan_bulan[0]?->satuan_ukur ?? null;
 
     //    dd($kegiatan_bulan);
         return response()->json($json);
