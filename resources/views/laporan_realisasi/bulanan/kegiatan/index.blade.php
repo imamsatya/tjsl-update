@@ -308,6 +308,7 @@
                         {{-- <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
                         @can('view-kegiatan')
+                        <button type="button" class="btn btn-success me-2 btn-sm  cls-export-queue">Rekap Data Q</button>
                         <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
                         @endcan
                         @can('edit-kegiatan')
@@ -399,6 +400,26 @@
                             </tr>
                         </tfoot>
                     </table>
+
+                    <div style="margin-top: 10px">
+                        <h1>Tabel Download</h1>
+                                    <div class="table-responsive" >            
+                                      <table class="table table-striped table-bordered table-hover " id="datatable-download">
+                                        <thead>
+                                          <tr style="border-top:ridge;">
+                                            <th style="text-align:center;">No</th>
+                                            <th >Description</th>
+                                            <th >Filter</th>                    
+                                            <th >Status Export</th>                    
+                                            <th >Created At</th>
+                                            <th >Updated At</th>                    
+                                            <th style="width: 50px;">Aksi</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                      </table>
+                                    </div>
+                                  </div>
                 </div>
             </div>
             <!--end::Card body-->
@@ -428,6 +449,9 @@
     var urldetail = "{{route('laporan_realisasi.bulanan.kegiatan.detail')}}";
     var urldownloadtemplate = "{{route('laporan_realisasi.bulanan.kegiatan.download_template')}}";
     var urlexport = "{{route('laporan_realisasi.bulanan.kegiatan.export')}}";
+
+    var urlexportkegiatan_queue = "{{route('laporan_realisasi.bulanan.kegiatan.export_queue')}}";
+    var urldatatable_download = "{{route('laporan_realisasi.bulanan.kegiatan.datatable_download')}}";
 
     $(document).ready(function () {
         $('.tree').treegrid({
@@ -469,6 +493,40 @@
         $('body').on('click', '#download', function () {
             downloadTemplate();
         });
+
+        $("body").on('click', '.cls-export-queue', function() {
+            exportExcelQueue();
+        })
+
+        $('#datatable-download').DataTable({
+            processing: true,
+            serverSide: true,
+            pagination: true,
+            "dom": 'lrtip',
+            ajax: {
+                url: urldatatable_download,
+                type: 'GET'          
+            },
+            columns: [
+                {data: "id",
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                    ,sClass:'text-center'
+                    },
+                    { data: 'description', name: 'description' },
+                    { data: 'filter', name: 'filter' },
+                    { data: 'status', name: 'status' },
+                    { data: 'created_at', name: 'created_at' },
+                    { data: 'updated_at', name: 'updated_at' },            
+                    { data: 'action', name:'action' ,sClass:'text-center'},
+                ],      
+        });
+
+        $("body").on('click', '.cls-button-download-finish', function(){
+            let filename = $(this).data('filename');
+            window.location.href = `{{ route('laporan_realisasi.bulanan.kegiatan.download_export') }}?filename=${filename}`
+        })
 
 
         setDatatable();
@@ -735,7 +793,7 @@
                 exportExcel();
             })
 
-            function exportExcel()
+        function exportExcel()
         {
             $.ajax({
                 type: 'post',
@@ -813,6 +871,73 @@
             return false;
         }
 
+        function exportExcelQueue()
+        {
+            $.ajax({
+                type: 'post',
+                data: {
+                        'perusahaan_id' : $("select[name='perusahaan_id']").val(),
+                        'tahun' : $("select[name='tahun']").val(),
+
+                        'jenis_anggaran' : $('#jenis-anggaran').val(),
+                        'program_id' : $('#program_id').val(),
+                        'pilar_pembangunan_id' : $('#pilar_pembangunan_id').val(),
+                        'bulan' : $('#bulan_id').val(),
+                        'tpb_id' : $('#tpb_id').val(),
+                        'jenis_kegiatan' : $('#jenis_kegiatan').val()
+                },
+                beforeSend: function () {
+                    $.blockUI();        
+                    $('#datatable-download').DataTable().draw(true);
+                },
+                url: urlexportkegiatan_queue,
+                xhrFields: {
+                    responseType: 'blob',
+                },
+                success: function(res) {
+                    $.unblockUI();
+                    swal.fire({
+                    title: "Sukses!",
+                    html: res.message,
+                    icon: 'success',
+
+                    buttonsStyling: true,
+
+                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                    });
+                    console.log(res)
+                },
+                error: function(jqXHR, exception) {
+                    $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                    msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                    msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                    msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                    msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                    msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                    msgerror = 'Gagal request ajax.';
+                    } else {
+                    msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+                    swal.fire({
+                        title: "Error System",
+                        html: msgerror+', coba ulangi kembali !!!',
+                        icon: 'error',
+
+                        buttonsStyling: true,
+
+                        confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+                    });
+                }
+                        });
+                        return false;
+        }
 
     });
 
