@@ -638,6 +638,7 @@ class MitraBinaanController extends Controller
         $chunkSize = 50000;
         // dd(count($mitra));
        
+        // dd($mitra[0]);
 
         if (count($mitra) > $chunkSize) {
             $mitraChunks = $mitra->chunk($chunkSize);
@@ -660,6 +661,7 @@ class MitraBinaanController extends Controller
         }else {
             $data = $mitra;
             $part= '';
+            
             $download = DownloadExport::create([
                 'description' => 'Mitra Binaan PUMK',
                 'status' => 'on queue',

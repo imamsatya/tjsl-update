@@ -308,8 +308,8 @@
                         {{-- <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
                         @can('view-kegiatan')
-                        <button type="button" class="btn btn-success me-2 btn-sm  cls-export-queue">Rekap Data Q</button>
-                        <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button>
+                        <button type="button" class="btn btn-success me-2 btn-sm  cls-export-queue">Rekap Excel</button>
+                        {{-- <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button> --}}
                         @endcan
                         @can('edit-kegiatan')
                         <button type="button" class="btn btn-primary btn-sm me-2" onclick="redirectToNewPage()">Input
