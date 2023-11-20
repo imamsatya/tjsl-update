@@ -499,29 +499,91 @@
         })
 
         $('#datatable-download').DataTable({
-            processing: true,
-            serverSide: true,
-            pagination: true,
-            "dom": 'lrtip',
-            ajax: {
-                url: urldatatable_download,
-                type: 'GET'          
-            },
-            columns: [
-                {data: "id",
-                    render: function (data, type, row, meta) {
-                        return meta.row + meta.settings._iDisplayStart + 1;
-                    }
-                    ,sClass:'text-center'
-                    },
-                    { data: 'description', name: 'description' },
-                    { data: 'filter', name: 'filter' },
-                    { data: 'status', name: 'status' },
-                    { data: 'created_at', name: 'created_at' },
-                    { data: 'updated_at', name: 'updated_at' },            
-                    { data: 'action', name:'action' ,sClass:'text-center'},
-                ],      
+                processing: true,
+                serverSide: true,
+                pagination: true,
+                "dom": 'lrtip',
+                ajax: {
+                    url: urldatatable_download,
+                    type: 'GET'          
+                },
+                columns: [
+                    {data: "id",
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                        ,sClass:'text-center'
+                        },
+                        { data: 'description', name: 'description' },
+                        { data: 'filter', name: 'filter' },
+                        { data: 'status', name: 'status' },
+                        { data: 'created_at', name: 'created_at' },
+                        { data: 'updated_at', name: 'updated_at' },            
+                        { data: 'action', name:'action' ,sClass:'text-center'},
+                    ],      
         });
+        function setDatatableDownload() {
+            $('#datatable-download').DataTable({
+                processing: true,
+                serverSide: true,
+                pagination: true,
+                "dom": 'lrtip',
+                ajax: {
+                    url: urldatatable_download,
+                    type: 'GET'          
+                },
+                columns: [
+                    {data: "id",
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                        ,sClass:'text-center'
+                        },
+                        { data: 'description', name: 'description' },
+                        { data: 'filter', name: 'filter' },
+                        { data: 'status', name: 'status' },
+                        { data: 'created_at', name: 'created_at' },
+                        { data: 'updated_at', name: 'updated_at' },            
+                        { data: 'action', name:'action' ,sClass:'text-center'},
+                    ],      
+            });
+        }
+        // setDatatableDownload(){
+        //         $('#datatable-download').DataTable({
+        //             processing: true,
+        //             serverSide: true,
+        //             pagination: true,
+        //             "dom": 'lrtip',
+        //             ajax: {
+        //                 url: urldatatable_download,
+        //                 type: 'GET'          
+        //             },
+        //             columns: [
+        //                 {data: "id",
+        //                     render: function (data, type, row, meta) {
+        //                         return meta.row + meta.settings._iDisplayStart + 1;
+        //                     }
+        //                     ,sClass:'text-center'
+        //                     },
+        //                     { data: 'description', name: 'description' },
+        //                     { data: 'filter', name: 'filter' },
+        //                     { data: 'status', name: 'status' },
+        //                     { data: 'created_at', name: 'created_at' },
+        //                     { data: 'updated_at', name: 'updated_at' },            
+        //                     { data: 'action', name:'action' ,sClass:'text-center'},
+        //                 ],      
+        //         });
+        // }
+
+         // Set up interval to update DataTable every 1 minute
+         setInterval(function () {
+            // Clear and destroy the DataTable instance
+            $('#datatable-download').DataTable().clear().destroy();
+            
+            // Reinitialize DataTable with updated data
+            setDatatableDownload();
+        }, 60000); // 60000 milliseconds = 1 minute
+        
 
         $("body").on('click', '.cls-button-download-finish', function(){
             let filename = $(this).data('filename');
@@ -886,16 +948,18 @@
                         'tpb_id' : $('#tpb_id').val(),
                         'jenis_kegiatan' : $('#jenis_kegiatan').val()
                 },
+                dataType: 'json',
                 beforeSend: function () {
                     $.blockUI();        
                     $('#datatable-download').DataTable().draw(true);
                 },
                 url: urlexportkegiatan_queue,
-                xhrFields: {
-                    responseType: 'blob',
-                },
+                // xhrFields: {
+                //     responseType: 'blob',
+                // },
                 success: function(res) {
                     $.unblockUI();
+                    console.log(res)
                     swal.fire({
                     title: "Sukses!",
                     html: res.message,
@@ -905,7 +969,7 @@
 
                     confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
                     });
-                    console.log(res)
+                    // console.log(res)
                 },
                 error: function(jqXHR, exception) {
                     $.unblockUI();
@@ -1042,7 +1106,7 @@
                     orderable: false,
                     searchable: false,
                     render: function (data, type, row) {
-                        console.log(row)
+                        // console.log(row)
                         let status = null
                         if (data === 1) {
                             status =
@@ -1063,7 +1127,7 @@
                     data: 'action',
                     name: 'action',
                     render: function (data, type, row) {
-                        console.log(row.kegiatan, 'kegiatanrow', row.kegiatan == "Penyaluran PUMK")
+                        // console.log(row.kegiatan, 'kegiatanrow', row.kegiatan == "Penyaluran PUMK")
                         let button = null;
                         if (row.kegiatan_realisasi_status_id === 2) {
                             button =
@@ -1214,11 +1278,11 @@
         var selectedJenisAnggaran = $('#jenis-anggaran').val();
 
         // Do something with the selected value and text
-        console.log("selectedPerusahaanId: " + selectedPerusahaanId);
-        console.log("selectedPerusahaanText: " + selectedPerusahaanText);
+        // console.log("selectedPerusahaanId: " + selectedPerusahaanId);
+        // console.log("selectedPerusahaanText: " + selectedPerusahaanText);
 
-        console.log("selectedTahun: " + selectedTahun);
-        console.log("selectedTahunText: " + selectedTahunText);
+        // console.log("selectedTahun: " + selectedTahun);
+        // console.log("selectedTahunText: " + selectedTahunText);
         if (selectedPerusahaanId === '' || selectedTahun === '' || selectedBulan === '') {
             swal.fire({
                 icon: 'warning',

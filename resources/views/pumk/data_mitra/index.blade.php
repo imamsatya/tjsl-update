@@ -387,6 +387,44 @@
                 ],      
         });
 
+        function setDatatableDownload() {
+            $('#datatable-download').DataTable({
+                processing: true,
+                serverSide: true,
+                pagination: true,
+                "dom": 'lrtip',
+                ajax: {
+                    url: urldatatable_download,
+                    type: 'GET'          
+                },
+                columns: [
+                    {data: "id",
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                        ,sClass:'text-center'
+                        },
+                        { data: 'description', name: 'description' },
+                        { data: 'filter', name: 'filter' },
+                        { data: 'status', name: 'status' },
+                        { data: 'created_at', name: 'created_at' },
+                        { data: 'updated_at', name: 'updated_at' },            
+                        { data: 'action', name:'action' ,sClass:'text-center'},
+                    ],      
+            });
+        }
+        // setDatatableDownload();
+
+        // Set up interval to update DataTable every 1 minute
+        setInterval(function () {
+            // Clear and destroy the DataTable instance
+            $('#datatable-download').DataTable().clear().destroy();
+            
+            // Reinitialize DataTable with updated data
+            setDatatableDownload();
+        }, 60000); // 60000 milliseconds = 1 minute
+
+
         $("body").on('click', '.cls-button-download-finish', function(){
             let filename = $(this).data('filename');
             window.location.href = `{{ route('pumk.data_mitra.download_export') }}?filename=${filename}`
