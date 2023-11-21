@@ -776,7 +776,8 @@ class ProgramController extends Controller
         ->orderBy('tpbs.id')
         ->orderBy('target_tpbs.id')
         ->get();  
-
+        
+        // dd($anggaran_program[0]);
 
         $namaFile = "Data Program TPB ".date('dmY').".xlsx";
         return Excel::download(new ProgramTpbExport($anggaran_program, $request->tahun), $namaFile);        
