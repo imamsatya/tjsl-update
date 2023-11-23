@@ -42,6 +42,7 @@ class DownloadKegiatan implements ShouldQueue
      *
      * @return void
      */
+    public $failOnTimeout = false;
     public function handle()
     {
 

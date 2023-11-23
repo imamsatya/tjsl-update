@@ -30,6 +30,7 @@ class DownloadMitraBinaan implements ShouldQueue
      *
      * @return void
      */
+    public $failOnTimeout = false;
     public function __construct($data, $part, $downloadId)
     {
     $this->data = $data;
