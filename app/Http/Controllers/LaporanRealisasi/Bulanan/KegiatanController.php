@@ -41,9 +41,12 @@ use DateTime;
 // use Illuminate\Support\Facades\Storage;
 // use Illuminate\Http\UploadedFile;
 use App\Models\DownloadKegiatanExport;
+use App\Models\DownloadKegiatanZip;
 use App\Jobs\DownloadKegiatan;
 use App\Exports\KegiatanBulanExport;
-
+use App\Jobs\ZipKegiatanFiles;
+use ZipArchive;
+use Auth;
 class KegiatanController extends Controller
 {
 
@@ -1403,6 +1406,7 @@ class KegiatanController extends Controller
     }
 
     public function export_queue(Request $request) {
+        $user = Auth::user();  
         $data = $request->all();
         $filter = '';
 
@@ -1439,7 +1443,7 @@ class KegiatanController extends Controller
 
         //V2
         if($request['perusahaan_id']){
-            $filter .= 'Perusahaan='.$request['perusahaan_id'].' & ';
+            $filter .= 'Perusahaan='.Perusahaan::where('id',(int)$data['perusahaan_id'])->pluck('nama_lengkap')->first().' & ';
         }
         if ($request['bulan']) {
             $filter .= 'Bulan='.$request['bulan'].' & ';
@@ -1448,7 +1452,7 @@ class KegiatanController extends Controller
             $filter .= 'Tahun='.$request['tahun'].' & ';
         }
         if ($request['jenis_anggaran']) {
-            $filter .= 'Jenis Anggaran='.$request['tahun'].' & ';
+            $filter .= 'Jenis Anggaran='.$jenis_anggaran.' & ';
         }
         if($request['pilar_pembangunan_id']){
             $filter .= 'Pilar Pembangunan='.$request['pilar_pembangunan_id'].' & ';
@@ -1553,12 +1557,21 @@ class KegiatanController extends Controller
 
         $kegiatan = $kegiatan->get();
 
-        $chunkSize = 50000;
-
+        $chunkSize = 2000;
+        $downloadKegiatanZip = DownloadKegiatanZip::create([
+            'description' => 'Kegiatan Bulanan',
+            'status' => 'on queue',
+            'filter' => $filter,
+            'created_at' => date('Y-m-d H:i:s'),
+            'user_id' => $user->id,
+        ]);    
+        $downloadKegiatanZipId = $downloadKegiatanZip->id;
+     
+        $filesToZip = [];
         if (count($kegiatan) > $chunkSize) {
             $kegiatanChunks = $kegiatan->chunk($chunkSize);
              // Iterate over each chunk and dispatch a job
-            $kegiatanChunks->each(function ($chunk, $index) use ($filter, $tahun)  {
+            $kegiatanChunks->each(function ($chunk, $index) use ($filter, $tahun, &$filesToZip)  {
                 $data = $chunk;
                 $part= 'Part '.($index+1);
                 $download = DownloadKegiatanExport::create([
@@ -1567,11 +1580,13 @@ class KegiatanController extends Controller
                     'filter' => $filter,
                     'created_at' => date('Y-m-d H:i:s')
                 ]);    
-                $downloadId = $download->id;   
+                $downloadId = $download->id;
+                //push
+                array_push($filesToZip, $downloadId);   
                 // Dispatch a job for the current chunk
-                DownloadKegiatan::dispatch($data, $part, $downloadId, $tahun);
+                DownloadKegiatan::dispatch($data, $part, $downloadId, $tahun)->onQueue('kegiatan_queue');
             });
-
+            ZipKegiatanFiles::dispatch($filesToZip, $downloadKegiatanZipId)->onQueue('kegiatan_queue');
             echo json_encode(array('result' => 'success', 'message' => 'Data sedang didownload...'));
         }else {
             $data = $kegiatan;
@@ -1583,8 +1598,12 @@ class KegiatanController extends Controller
                 'created_at' => date('Y-m-d H:i:s')
             ]);    
             $downloadId = $download->id;   
+
+            array_push($filesToZip, $downloadId);
             // Dispatch a job for the current chunk
-            DownloadKegiatan::dispatch($data, $part, $downloadId, $tahun);
+            DownloadKegiatan::dispatch($data, $part, $downloadId, $tahun)->onQueue('kegiatan_queue');
+            
+            ZipKegiatanFiles::dispatch($filesToZip, $downloadKegiatanZipId)->onQueue('kegiatan_queue');
             echo json_encode(array('result' => 'success', 'message' => 'Data sedang didownload...'));
         }
 
@@ -1603,7 +1622,7 @@ class KegiatanController extends Controller
     {
         
         try{
-        $data = DownloadKegiatanExport::orderBy('id', 'desc');
+        $data = DownloadKegiatanZip::orderBy('id', 'desc');
         return datatables()->eloquent($data)      
         ->editColumn('created_at', function ($row){
             $value = $row->created_at;        
@@ -1639,7 +1658,7 @@ class KegiatanController extends Controller
     {
             $filename = $request->get('filename');
             if($filename) {
-              $path = storage_path('app/public/download_kegiatan/'.$filename);
+              $path = storage_path('app/public/zip_kegiatan/'.$filename);
               return response()->download($path);
             } 
             return;    

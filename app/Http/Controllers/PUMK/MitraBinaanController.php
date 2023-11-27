@@ -34,7 +34,12 @@ use App\Models\LogPumkAnggaran;
 use App\Exports\MitraBinaanExport;
 
 use App\Models\DownloadExport;
+use App\Models\DownloadMitraZip;
 use App\Jobs\DownloadMitraBinaan;
+use App\Jobs\ZipMitraFiles;
+use ZipArchive;
+use App\Http\Middleware\EnsureFulfilledMitraMiddleware;
+use Auth;
 class MitraBinaanController extends Controller
 {
     public function __construct()
@@ -387,6 +392,7 @@ class MitraBinaanController extends Controller
 
     public function export(Request $request)
     {
+     
         //fungsi handle limit memory
         if((int)preg_replace('/[^0-9]/','',ini_get('memory_limit')) < 512){
             ini_set('memory_limit','-1');
@@ -508,6 +514,9 @@ class MitraBinaanController extends Controller
     }
 
     public function export_queue(Request $request) {
+            // dd(Storage::disk('public'));
+            $user = Auth::user();  
+            
             $data = $request->all();
             $filter = '';
             if($data['perusahaan_id']){
@@ -635,27 +644,44 @@ class MitraBinaanController extends Controller
        
         $mitra = $data_pumk->where('is_arsip',false)->get();
         
-        $chunkSize = 50000;
+        $chunkSize = 2000;
         // dd(count($mitra));
        
         // dd($mitra[0]);
-
+        $downloadMitraZip = DownloadMitraZip::create([
+            'description' => 'Mitra Binaan PUMK',
+            'status' => 'on queue',
+            'filter' => $filter,
+            'created_at' => date('Y-m-d H:i:s'),
+            'user_id' => $user->id,
+        ]);    
+        $downloadMitraZipId = $downloadMitraZip->id;
+     
+        $filesToZip = [];
         if (count($mitra) > $chunkSize) {
             $mitraChunks = $mitra->chunk($chunkSize);
              // Iterate over each chunk and dispatch a job
-            $mitraChunks->each(function ($chunk, $index) use ($filter)  {
+            $mitraChunks->each(function ($chunk, $index) use ($filter, $downloadMitraZipId, &$filesToZip)  {
                 $data = $chunk;
                 $part= 'Part '.($index+1);
                 $download = DownloadExport::create([
                     'description' => 'Mitra Binaan PUMK',
                     'status' => 'on queue',
                     'filter' => $filter,
-                    'created_at' => date('Y-m-d H:i:s')
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'zip_id' => $downloadMitraZipId
                 ]);    
                 $downloadId = $download->id;   
+                //push
+                array_push($filesToZip, $downloadId);
+            
                 // Dispatch a job for the current chunk
-                DownloadMitraBinaan::dispatch($data, $part, $downloadId);
+                DownloadMitraBinaan::dispatch($data, $part, $downloadId)->onQueue('mitra_binaan_queue');
             });
+            // dd($filesToZip);
+            //Zip file after all DownloadMitraBinaan dispatched succeccfully
+            // dispatchAfterResponse(new ZipMitraFiles($filesToZip, $downloadMitraZip->id));
+            ZipMitraFiles::dispatch($filesToZip, $downloadMitraZipId)->onQueue('mitra_binaan_queue');
 
             echo json_encode(array('result' => 'success', 'message' => 'Data sedang didownload...'));
         }else {
@@ -666,11 +692,21 @@ class MitraBinaanController extends Controller
                 'description' => 'Mitra Binaan PUMK',
                 'status' => 'on queue',
                 'filter' => $filter,
-                'created_at' => date('Y-m-d H:i:s')
+                'created_at' => date('Y-m-d H:i:s'),
+                'zip_id' => $downloadMitraZip->id
             ]);    
             $downloadId = $download->id;   
+
+            array_push($filesToZip, $downloadId);
+            
             // Dispatch a job for the current chunk
-            DownloadMitraBinaan::dispatch($data, $part, $downloadId);
+            DownloadMitraBinaan::dispatch($data, $part, $downloadId)->onQueue('mitra_binaan_queue');
+
+            
+            // dispatch(new ZipMitraFiles($filesToZip, $downloadMitraZipId))->withMiddleware([new EnsureFulfilledMitraMiddleware]);
+            // dispatchAfterResponse(new ZipMitraFiles($filesToZip, $downloadMitraZip->id));
+            
+            ZipMitraFiles::dispatch($filesToZip, $downloadMitraZipId)->onQueue('mitra_binaan_queue');
             echo json_encode(array('result' => 'success', 'message' => 'Data sedang didownload...'));
         }
         
@@ -722,11 +758,13 @@ class MitraBinaanController extends Controller
         //     echo json_encode(array('result' => 'success', 'message' => 'Data sedang didownload...'));
     }
 
+    
+
     public function datatable_download(Request $request)
     {
         
         try{
-        $data = DownloadExport::orderBy('id', 'desc');
+        $data = DownloadMitraZip::orderBy('id', 'desc');
         return datatables()->eloquent($data)      
         ->editColumn('created_at', function ($row){
             $value = $row->created_at;        
@@ -762,7 +800,7 @@ class MitraBinaanController extends Controller
     {
             $filename = $request->get('filename');
             if($filename) {
-              $path = storage_path('app/public/download/'.$filename);
+              $path = storage_path('app/public/zip_mitra/'.$filename);
               return response()->download($path);
             } 
             return;    
