@@ -161,7 +161,7 @@
                                         <tr id="row_{{$index}}">
                                             @if ($index == 0)
                                             <td >{{$menuStatus[$index]['menu']}}</td>
-                                            <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-no_tpb="{{$menuStatus[$index]['support_props']['no_tpb']}}" data-nama_pilar="{{$menuStatus[$index]['support_props']['nama_pilar']}}"  data-id="{{$menuStatus[$index]['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['rka']) !!}</span></td>
+                                            <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-no_tpb="{{$menuStatus[$index]['support_props']['no_tpb']}}" data-nama_pilar="{{$menuStatus[$index]['support_props']['nama_pilar']}}"  data-id="{{$menuStatus[$index]['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['rka']) !!} </span></td>
                                             <td >{!! renderStatusBadge($menuStatus[$index]['tw1']) !!}</td>
                                             <td >{!! renderStatusBadge($menuStatus[$index]['tw2']) !!}</td>
                                             <td >{!! renderStatusBadge($menuStatus[$index]['tw3']) !!}</td>
@@ -948,7 +948,7 @@
             },
             success: function (data) {
                 // initmitra(data);
-                          
+                console.log('halo')
                  // Loop for index 0 to 3
                 for (let index = 0; index < 4; index++) {
                     console.log(data[index])
@@ -1007,9 +1007,11 @@
     function renderStatusBadge(status) {
         const classMapping = {
             'Verified': 'badge-light-success',
-            'Completed': 'badge-light-success',
+            // 'Completed': 'badge-light-success',
+            'Validated': 'badge-light-success',
             'In Progress': 'badge-light-primary',
             'Unfilled': 'badge-light-warning',
+            
         };
 
         if (status in classMapping) {
