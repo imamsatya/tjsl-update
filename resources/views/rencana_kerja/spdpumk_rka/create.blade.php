@@ -157,7 +157,7 @@
                     <!--end::Alert-->
                 @endif
                 <div class="row">
-                    @if($data->status_id == 1 || $data->status_id == 4)                       
+                    @if($data?->status_id == 1 || $data?->status_id == 4)                       
                         <!--begin::Alert-->
                         <div class="alert alert-success d-flex align-items-center p-5" style="border-radius: 0.5em;background-color: #e8fff3;color: #50cd89;border-color: #50cd89">
                             <!--begin::Icon-->
@@ -230,7 +230,7 @@
                                 </div>
                                 {{-- <input type="text"name="tes" id="tes"
                                         class="form-control form-control-lg form-control-solid"
-                                        placeholder="Rp ... "  value="{{$data->income_mitra_binaan ?? ''}}"
+                                        placeholder="Rp ... "  value="{{$data?->income_mitra_binaan ?? ''}}"
                                         style="text-align:right;" pattern="[0-9\-]*" /> --}}
                              
                             </div>
@@ -243,7 +243,7 @@
                                 <div class="col-lg-6">
                                     <input type="text"name="saldo_awal"
                                         class="form-control form-control-lg form-control-solid"
-                                        placeholder="Rp ... "  value="{{$data->saldo_awal ?? ''}}"
+                                        placeholder="Rp ... "  value="{{$data?->saldo_awal ?? ''}}"
                                        oninput="formatCurrency(this)"
                                                         onkeypress="return onlyNumbers(event)" style="text-align:right;" />
 
@@ -259,7 +259,7 @@
                                 <div class="col-lg-6">
                                     <input type="text"name="pengembalian_dana_mitra_binaan"
                                         class="form-control form-control-lg form-control-solid"
-                                        placeholder="Rp ... "  value="{{$data->income_mitra_binaan ?? ''}}"
+                                        placeholder="Rp ... "  value="{{$data?->income_mitra_binaan ?? ''}}"
                                        oninput="formatCurrency(this)" 
                                                         onkeypress="return onlyNumbers(event)" style="text-align:right;" />
 
@@ -275,7 +275,7 @@
                                 <div class="col-lg-6">
                                     <input type="text"name="pengembalian_dana_bumn_penyalur"
                                         class="form-control form-control-lg form-control-solid"
-                                        placeholder="Rp ... "  value="{{$data->income_bumn_pembina_lain ?? ''}}"
+                                        placeholder="Rp ... "  value="{{$data?->income_bumn_pembina_lain ?? ''}}"
                                        oninput="formatCurrency(this)" 
                                                         onkeypress="return onlyNumbers(event)" style="text-align:right;" />
 
@@ -291,7 +291,7 @@
                                 <div class="col-lg-6">
                                     <input type="text"name="pendapatan_jasa_admin_pumk"
                                         class="form-control form-control-lg form-control-solid"
-                                        placeholder="Rp ... "  value="{{$data->income_jasa_adm_pumk ?? ''}}"
+                                        placeholder="Rp ... "  value="{{$data?->income_jasa_adm_pumk ?? ''}}"
                                        oninput="formatCurrency(this)" 
                                                         onkeypress="return onlyNumbers(event)" style="text-align:right;" />
 
@@ -307,7 +307,7 @@
                                 <div class="col-lg-6">
                                     <input type="text"name="pendapatan_jasa_bank"
                                         class="form-control form-control-lg form-control-solid"
-                                        placeholder="Rp ... "  value="{{$data->income_adm_bank ?? ''}}"
+                                        placeholder="Rp ... "  value="{{$data?->income_adm_bank ?? ''}}"
                                        oninput="formatCurrency(this)" 
                                                         onkeypress="return onlyNumbers(event)" style="text-align:right;" />
 
@@ -323,7 +323,7 @@
                                 <div class="col-lg-6">
                                     <input type="text"name="pendapatan_biaya_lainnya"
                                         class="form-control form-control-lg form-control-solid"
-                                        placeholder="Rp ... "  value="{{$data->income_biaya_lainnya ?? ''}}"
+                                        placeholder="Rp ... "  value="{{$data?->income_biaya_lainnya ?? ''}}"
                                        oninput="formatCurrency(this)" 
                                                         onkeypress="return onlyNumbers(event)" style="text-align:right;" />
 
@@ -365,7 +365,7 @@
                                 <div class="col-lg-6">
                                     <input type="text"name="penyaluran_pumk_mandiri"
                                         class="form-control form-control-lg form-control-solid"
-                                        placeholder="Rp ... "  value="{{$data->outcome_mandiri ?? ''}}"
+                                        placeholder="Rp ... "  value="{{$data?->outcome_mandiri ?? ''}}"
                                        oninput="formatCurrency(this)" 
                                                         onkeypress="return onlyNumbers(event)" style="text-align:right;" />
 
@@ -381,7 +381,7 @@
                                 <div class="col-lg-6">
                                     <input type="text"name="penyaluran_pumk_kolaborasi"
                                         class="form-control form-control-lg form-control-solid"
-                                        placeholder="Rp ... "  value="{{$data->outcome_kolaborasi_bumn ?? ''}}"
+                                        placeholder="Rp ... "  value="{{$data?->outcome_kolaborasi_bumn ?? ''}}"
                                        oninput="formatCurrency(this)" 
                                                         onkeypress="return onlyNumbers(event)" style="text-align:right;" />
 
@@ -397,7 +397,7 @@
                                 <div class="col-lg-6">
                                     <input type="text"name="penyaluran_pumk_khusus"
                                         class="form-control form-control-lg form-control-solid"
-                                        placeholder="Rp ... "  value="{{$data->outcome_bumn_khusus ?? ''}}"
+                                        placeholder="Rp ... "  value="{{$data?->outcome_bumn_khusus ?? ''}}"
                                        oninput="formatCurrency(this)" 
                                                         onkeypress="return onlyNumbers(event)" style="text-align:right;" />
 
@@ -413,7 +413,7 @@
                                 <div class="col-lg-6">
                                     <input type="text"name="penyaluran_pumk_bri"
                                         class="form-control form-control-lg form-control-solid"
-                                        placeholder="Rp ... "  value="{{$data->outcome_bri   ?? ''}}"
+                                        placeholder="Rp ... "  value="{{$data?->outcome_bri   ?? ''}}"
                                        oninput="formatCurrency(this)" 
                                                         onkeypress="return onlyNumbers(event)" style="text-align:right;" />
 
@@ -461,8 +461,8 @@
                             <div class="col-lg-12">
                                 <button id="close-btn" class="btn btn-danger me-3">Close</button>
                                 <button id="clear-btn" class="btn btn-info me-3">Clear</button>
-                                @if($data->status_id != 1 && $data->status_id != 4)
-                                <button id="{{$periode->isoktoinput || $isOkToInput ? 'simpan-btn' : ''}}" {{$periode->isoktoinput || $isOkToInput ? '' : 'disabled'}} {{$data->status_id == 1 || $data->status_id == 4 ? 'disabled' : ''}} class="btn btn-success me-3">Simpan</button>
+                                @if($data?->status_id != 1 && $data?->status_id != 4)
+                                <button id="{{$periode->isoktoinput || $isOkToInput ? 'simpan-btn' : ''}}" {{$periode->isoktoinput || $isOkToInput ? '' : 'disabled'}} {{$data?->status_id == 1 || $data?->status_id == 4 ? 'disabled' : ''}} class="btn btn-success me-3">Simpan</button>
                                 @endif
                             </div>
                         </div>

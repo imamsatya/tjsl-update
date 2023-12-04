@@ -221,10 +221,10 @@
                                     <option></option>
                                     <option value="In Progress" {{ request('status') === 'In Progress' ? 'selected="selected"' : '' }} >
                                         In Progress</option>
-                                    <option value="Completed" {{ request('status') === 'Completed' ? 'selected="selected"' : '' }}  >
-                                            Completed</option>
                                     <option value="Verified" {{ request('status') === 'Verified' ? 'selected="selected"' : '' }}  >
                                             Verified</option>
+                                    <option value="Validated" {{ request('status') === 'Validated' ? 'selected="selected"' : '' }}  >
+                                            Validated</option>
                                 </select>                                
                             </div>
                         </div>
@@ -249,22 +249,22 @@
                             @php
                                 $enable_input = false;
                                 if($isOkToInput || $isEnableInputBySuperadmin) $enable_input = true;
+                                $isValidated = false;
                                 $isVerified = false;
-                                $isCompleted = false;
                                 if(!$countInprogress) {
-                                    if($countCompleted > 0) $isCompleted = true;
-                                    else if($countVerified > 0) $isVerified = true;
+                                    if($countVerified > 0) $isVerified = true;
+                                    else if($countValidated > 0) $isValidated = true;
                                 }                                    
                             @endphp
                             @can('view-kegiatan')
                                 <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data
                                 </button>
                                 @can('edit-kegiatan')
-                                <button {{ $isSuperAdmin ? '' : ($enable_input ? (!($isVerified || $isCompleted) ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
+                                <button {{ $isSuperAdmin ? '' : ($enable_input ? (!($isValidated || $isVerified) ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
                                 </button>
                                 @endcan
                                 @can('delete-kegiatan')
-                                <button {{ $isSuperAdmin ? '' : ($enable_input ? (!($isVerified || $isCompleted) ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
+                                <button {{ $isSuperAdmin ? '' : ($enable_input ? (!($isValidated || $isVerified) ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-danger me-2 btn-sm delete-selected-data">Hapus Data
                                 </button>
                                 @endcan
                             @endcan
@@ -272,7 +272,7 @@
                             @can('view-verify')
                                 @if($data->count())
                                 {{-- @if(!$isSuperAdmin) --}}
-                                <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="completed-data" >Verified
+                                <button {{ $enable_input ? ($countInprogress ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-primary btn-sm me-2" id="verified-data" >Verified
                                 </button>    
                                 {{-- @endif --}}
                                 @endif
@@ -280,14 +280,14 @@
 
                             @can('view-unverify')
                                 @if($data->count())
-                                <button {{ $enable_input || $isSuperAdmin ? ($countCompleted ? '' : ($countInprogress ? 'disabled' : '')) : 'disabled' }} type="button" class="btn btn-warning btn-sm me-2" id="uncompleted-data" >Un-Verified
+                                <button {{ $enable_input || $isSuperAdmin ? ($countVerified ? '' : ($countInprogress ? 'disabled' : '')) : 'disabled' }} type="button" class="btn btn-warning btn-sm me-2" id="unverified-data" >Un-Verified
                                 </button>  
                                 @endif
                             @endcan
 
                             @can('view-finalVerify')
                                 @if($data->count())
-                                <button {{ $enable_input || $isSuperAdmin ? ($countCompleted ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-success btn-sm me-2" id="verify-data" >Validate
+                                <button {{ $enable_input || $isSuperAdmin ? ($countVerified ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-success btn-sm me-2" id="verify-data" >Validate
                                 </button>    
                                 @endif
                             @endcan
@@ -295,7 +295,7 @@
                             @can('view-finalUnverify')
                                 @if($data->count())
 
-                                <button {{ $enable_input || $isSuperAdmin ? ($countVerified ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Validate
+                                <button {{ $enable_input || $isSuperAdmin ? ($countValidated ? '' : 'disabled') : 'disabled' }} type="button" class="btn btn-warning btn-sm" id="unverify-data" >Un-Validate
 
                                 </button>    
                                 @endif
@@ -343,8 +343,8 @@
                                         $total_noncid += $perusahaan->sum_noncid;
                                         
                                         if($perusahaan->inprogress) $status_class = 'primary';
-                                        else if($perusahaan->completed) $status_class = 'success';
                                         else if($perusahaan->verified) $status_class = 'success';
+                                        else if($perusahaan->validated) $status_class = 'success';
                                         else $status_class = 'danger';
                                     @endphp
                                 <tr class="treegrid-perusahaan-{{ $perusahaan->perusahaan_id }}" id="perusahaan-{{ $perusahaan->perusahaan_id }}" data-type="perusahaan" data-value="{{ $perusahaan->perusahaan_id }}">
@@ -360,7 +360,7 @@
                                         Rp. {{number_format($perusahaan->sum_cid + $perusahaan->sum_noncid,0,',',',')}}
                                     </td>
                                     <td style="text-align:center;">
-                                        <a class="badge badge-light-{{ $status_class }} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{ $perusahaan->inprogress ? 'In Progress' : ($perusahaan->completed ? 'Verified' : ($perusahaan->verified ? 'Validated' : '-') ) }}</a>
+                                        <a class="badge badge-light-{{ $status_class }} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">{{ $perusahaan->inprogress ? 'In Progress' : ($perusahaan->verified ? 'Verified' : ($perusahaan->validated ? 'Validated' : '-') ) }}</a>
                                     </td>
                                     <td></td>
                                     <td><label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
@@ -425,8 +425,8 @@
         const viewOnly = "{{ $view_only }}";
         const isOkToInput = "{{ $isOkToInput }}";  
         const countInprogress = parseInt("{{ $countInprogress }}")
-        const countCompleted = parseInt("{{ $countCompleted }}")
         const countVerified = parseInt("{{ $countVerified }}")
+        const countValidated = parseInt("{{ $countValidated }}")
         const isSuperAdmin = "{{ $isSuperAdmin }}";
 
         $(".tree-new").treegrid({            
@@ -499,8 +499,8 @@
                         // defining progress status
                         let status_class = ''
                         if(pilar[i].inprogress) status_class = 'primary'
-                        else if(pilar[i].completed) status_class = 'success'
                         else if(pilar[i].verified) status_class = 'success'
+                        else if(pilar[i].validated) status_class = 'success'
                         else status_class = 'danger'
 
                         let tempPilarRow = `
@@ -511,7 +511,7 @@
                             <td style="text-align:right; white-space: nowrap;">Rp. ${parseInt(pilar[i].sum_noncid).toLocaleString()}</td>
                             <td style="text-align:right; white-space: nowrap;">Rp. ${(parseInt(pilar[i].sum_cid) + parseInt(pilar[i].sum_noncid)).toLocaleString()}</td>
                             <td style="text-align:center;">
-                                <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${pilar[i].inprogress ? 'In Progress' : (pilar[i].completed ? 'Verified' : (pilar[i].verified ? 'Validated' : '-') )}</a>
+                                <a class="badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-toggle="tooltip" title="Lihat Log">${pilar[i].inprogress ? 'In Progress' : (pilar[i].verified ? 'Verified' : (pilar[i].validated ? 'Validated' : '-') )}</a>
                             </td>
                             <td style="text-align:center;">                                            
                             </td>
@@ -564,8 +564,8 @@
                         // defining progress status
                         let status_class = ''
                         if(tpb[i].inprogress) status_class = 'primary'
-                        else if(tpb[i].completed) status_class = 'success'
                         else if(tpb[i].verified) status_class = 'success'
+                        else if(tpb[i].validated) status_class = 'success'
                         else status_class = 'danger'
 
                         let btnEdit = `<button ${isOkToInput || tpb[i].enable_by_admin > 0 || isSuperAdmin ? '' : 'disabled'} type="button" class="btn btn-sm btn-light btn-icon btn-primary cls-button-edit" data-tahun="${selectedYear}" data-notpb="${tpb[i].no_tpb}" data-namapilar="${value}" data-perusahaan="${tempPerusahaan}" data-toggle="tooltip" title="Ubah data ${tpb[i].no_tpb}"><i class="bi bi-pencil fs-3"></i></button>`;
@@ -591,7 +591,7 @@
                             <td style="text-align:right; white-space: nowrap;">Rp. ${tpb[i].sum_noncid ? parseInt(tpb[i].sum_noncid).toLocaleString() : '-'}</td>
                             <td style="text-align:right; white-space: nowrap;">Rp. ${totalTpb.toLocaleString()}</td>
                             <td style="text-align:center;">
-                                <span class="btn cls-log badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-tahun="${selectedYear}" data-notpb="${tpb[i].no_tpb}" data-namapilar="${value}" data-perusahaan="${tempPerusahaan}">${tpb[i].inprogress ? 'In Progress' : (tpb[i].completed ? 'Verified' : (tpb[i].verified ? 'Validated' : '-'))}</span>
+                                <span class="btn cls-log badge badge-light-${status_class} fw-bolder me-auto px-4 py-3" data-tahun="${selectedYear}" data-notpb="${tpb[i].no_tpb}" data-namapilar="${value}" data-perusahaan="${tempPerusahaan}">${tpb[i].inprogress ? 'In Progress' : (tpb[i].verified ? 'Verified' : (tpb[i].validated ? 'Validated' : '-'))}</span>
                             </td>
                             <td style="text-align:center;">    
                                 ${!viewOnly && tpb[i].inprogress ? btnEdit : ''}
@@ -757,7 +757,7 @@
         })
     
 
-        $("#completed-data").on('click', function() {  
+        $("#verified-data").on('click', function() {  
 
             
             if(!countInprogress) {
@@ -780,7 +780,7 @@
 
             swal.fire({
                 title: "Pemberitahuan",
-                html: `<span style="color: red; font-weight: bold">Yakin set status data menjadi verified ? </span><br/>
+                html: `<span style="color: red; font-weight: bold">Yakin set status data menjadi validated ? </span><br/>
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <tbody>
@@ -802,7 +802,7 @@
                         `,
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonText: "Ya, set data verified",
+                confirmButtonText: "Ya, set data validated",
                 cancelButtonText: "Tidak",
                 reverseButtons: true
             }).then(function(result) {
@@ -876,11 +876,11 @@
             exportExcel();
         })
 
-        $("#uncompleted-data").on('click', function() {
-            if(!countCompleted) {
+        $("#unverified-data").on('click', function() {
+            if(!countVerified) {
                 swal.fire({
                     title: "Pemberitahuan",
-                    html: "Tidak ada data yang bisa di-unverified!",
+                    html: "Tidak ada data yang bisa di-unvalidated!",
                     icon: "warning",
                     showCancelButton: false,
                     reverseButtons: true,
@@ -896,7 +896,7 @@
 
             swal.fire({
                 title: "Pemberitahuan",
-                html: `<span style="color: red; font-weight: bold">Yakin batalkan status verified data ? </span><br/>
+                html: `<span style="color: red; font-weight: bold">Yakin batalkan status validated data ? </span><br/>
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <tbody>
@@ -909,8 +909,8 @@
                                     <td>${tahun}</td>
                                 </tr>
                                 <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
-                                    <td>Jumlah Un-Verified</td>
-                                    <td>${countCompleted} rows</td>
+                                    <td>Jumlah Un-Validated</td>
+                                    <td>${countVerified} rows</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -919,7 +919,7 @@
                 icon: "warning",
                 showCancelButton: true,
                 reverseButtons: true,
-                confirmButtonText: "Ya, set data unverified",
+                confirmButtonText: "Ya, set data unvalidated",
                 cancelButtonText: "Tidak"
             }).then(function(result) {
                 if (result.value) {
@@ -1084,7 +1084,7 @@
         
         $("#verify-data").on('click', function() {  
             
-            if(!countCompleted) {
+            if(!countVerified) {
                 swal.fire({
                     title: "Pemberitahuan",
                     html: "Tidak ada data yang bisa divalidasi!",
@@ -1118,7 +1118,7 @@
                                 </tr>
                                 <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
                                     <td>Jumlah Validasi</td>
-                                    <td>${countCompleted} rows</td>
+                                    <td>${countVerified} rows</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1197,7 +1197,7 @@
 
         $("#unverify-data").on('click', function() {  
             
-            if(!countVerified) {
+            if(!countValidated) {
                 swal.fire({
                     title: "Pemberitahuan",
                     html: "Tidak ada data yang bisa di un-validate!",
@@ -1231,7 +1231,7 @@
                                 </tr>
                                 <tr class="fw-bold fs-6 text-gray-800" style="text-align: left">
                                     <td>Jumlah Batal Validasi</td>
-                                    <td>${countVerified} rows</td>
+                                    <td>${countValidated} rows</td>
                                 </tr>
                             </tbody>
                         </table>

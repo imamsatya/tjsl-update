@@ -1215,9 +1215,9 @@ class AnggaranTpbController extends Controller
             ->select('pp.order_pilar', 'pp.nama as nama_pilar', 
                 DB::raw("sum(case when pp.jenis_anggaran = 'CID' then atpb.anggaran else 0 end) sum_cid"),
                 DB::raw("sum(case when pp.jenis_anggaran = 'non CID' then atpb.anggaran else 0 end) sum_noncid"),
-                DB::raw("count(case when status_id = 1 then 1 end) completed"),
+                DB::raw("count(case when status_id = 1 then 1 end) verified"),
                 DB::raw("count(case when status_id = 2 then 1 end) inprogress"),
-                DB::raw("count(case when status_id = 4 then 1 end) verified"),
+                DB::raw("count(case when status_id = 4 then 1 end) validated"),
             )
             ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
             ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
@@ -1265,7 +1265,7 @@ class AnggaranTpbController extends Controller
             if($allDataUpdated->count()) {
                 foreach($allDataUpdated as $data) {  
                     AnggaranTpb::where('id', $data->id)->update(['status_id' => 2]);
-                    AnggaranTpbController::store_log($data->id, 2, $data->anggaran, 'RKA Revisi - Unverified');
+                    AnggaranTpbController::store_log($data->id, 2, $data->anggaran, 'RKA Revisi - Unvalidated');
                 }
             }                                            
             
@@ -1273,7 +1273,7 @@ class AnggaranTpbController extends Controller
 
             $result = [
                 'flag' => 'success',
-                'msg' => 'Sukses unverified data',
+                'msg' => 'Sukses unvalidated data',
                 'title' => 'Sukses'
             ];
         } catch (\Exception $e) {
@@ -1379,9 +1379,9 @@ class AnggaranTpbController extends Controller
         $data = DB::table('anggaran_tpbs as atpb')
             ->select('atpb.perusahaan_id', 'perusahaan_masters.nama_lengkap', DB::raw("sum(case when pp.jenis_anggaran = 'CID' then atpb.anggaran end) as sum_cid"),
             DB::raw("sum(case when pp.jenis_anggaran = 'non CID' then atpb.anggaran end) as sum_noncid"),
-            DB::raw("count(case when status_id = 1 then 1 end) completed"),
+            DB::raw("count(case when status_id = 1 then 1 end) verified"),
             DB::raw("count(case when status_id = 2 then 1 end) inprogress"),
-            DB::raw("count(case when status_id = 4 then 1 end) verified"),
+            DB::raw("count(case when status_id = 4 then 1 end) validated"),
             DB::raw("(case when epp.id is not null then 1 else 0 end) enable_by_admin")
             // DB::raw("count(case when atpb.is_enable_input_by_superadmin = true then 1 end) enable_by_admin"),
             // DB::raw("count(case when atpb.is_enable_input_by_superadmin = false then 1 end) disable_by_admin")
@@ -1429,12 +1429,12 @@ class AnggaranTpbController extends Controller
             return $row->inprogress > 0;
         })->count();
         
-        $countCompleted = $data->filter(function($row) {
-            return $row->completed > 0;
-        })->count();
-
         $countVerified = $data->filter(function($row) {
             return $row->verified > 0;
+        })->count();
+
+        $countValidated = $data->filter(function($row) {
+            return $row->validated > 0;
         })->count();
                 
         $list_perusahaan = Perusahaan::where('is_active', true)->orderBy('id', 'asc')->get();
@@ -1489,13 +1489,13 @@ class AnggaranTpbController extends Controller
             'view_only' => $view_only,
             'countInprogress' => $countInprogress,
             'perusahaan_nama' => $currentNamaPerusahaan,
-            'countCompleted' => $countCompleted,
+            'countVerified' => $countVerified,
             'isOkToInput' => $isOkToInput,
             'isEnableInputBySuperadmin' => $isEnableInputBySuperadmin,
             'isSuperAdmin' => $isSuperAdmin,
             'data' => $data,
             'list_enable' => $list_enable,
-            'countVerified' => $countVerified
+            'countValidated' => $countValidated
         ]);
     }
 
@@ -1510,9 +1510,9 @@ class AnggaranTpbController extends Controller
             ->select('tpbs.no_tpb', 'tpbs.nama as nama_tpb',
                 DB::raw("sum(case when tpbs.jenis_anggaran = 'CID' then anggaran end) sum_cid"),
                 DB::raw("sum(case when tpbs.jenis_anggaran = 'non CID' then anggaran end) sum_noncid"),
-                DB::raw("count(case when status_id = 1 then 1 end) completed"),
+                DB::raw("count(case when status_id = 1 then 1 end) verified"),
                 DB::raw("count(case when status_id = 2 then 1 end) inprogress"),
-                DB::raw("count(case when status_id = 4 then 1 end) verified"),
+                DB::raw("count(case when status_id = 4 then 1 end) validated"),
                 DB::raw("(case when epp.id is not null then 1 else 0 end) enable_by_admin")
                 // DB::raw("count(case when atpb.is_enable_input_by_superadmin = true then 1 end) enable_by_admin"),
                 // DB::raw("count(case when atpb.is_enable_input_by_superadmin = false then 1 end) disable_by_admin")
@@ -2030,7 +2030,7 @@ class AnggaranTpbController extends Controller
             $id_bumn = $request->input('bumn');
             $tahun = $request->input('tahun');
 
-            $allDataUpdated = AnggaranTpb::where('status_id', '=', 1) // completed
+            $allDataUpdated = AnggaranTpb::where('status_id', '=', 1) // verified
                             ->where('anggaran', '>=', 0)
                             ->where('tahun', $tahun)
                             ->when($id_bumn, function($query) use ($id_bumn) {
@@ -2069,7 +2069,7 @@ class AnggaranTpbController extends Controller
             $id_bumn = $request->input('bumn');
             $tahun = $request->input('tahun');
 
-            $allDataUpdated = AnggaranTpb::where('status_id', '=', 4) // verified
+            $allDataUpdated = AnggaranTpb::where('status_id', '=', 4) // validated
                             ->where('anggaran', '>=', 0)
                             ->where('tahun', $tahun)
                             ->when($id_bumn, function($query) use ($id_bumn) {
