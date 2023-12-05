@@ -221,6 +221,8 @@
                                     <option></option>
                                     <option value="In Progress" {{ request('status') === 'In Progress' ? 'selected="selected"' : '' }} >
                                         In Progress</option>
+                                        <option value="Unfilled" {{ request('status') === 'Unfilled' ? 'selected="selected"' : '' }} >
+                                            Unfilled</option>
                                     <option value="Verified" {{ request('status') === 'Verified' ? 'selected="selected"' : '' }}  >
                                             Verified</option>
                                     <option value="Validated" {{ request('status') === 'Validated' ? 'selected="selected"' : '' }}  >

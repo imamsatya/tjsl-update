@@ -138,6 +138,8 @@
                         </div>
                         
                         <div class="table-responsive">
+                            <button type="button" class="btn btn-success me-2 btn-sm rekap-data-unfilled" id="rekapUnfilled">Rekap Data Unfilled
+                            </button>
                             <table class="table  table-bordered table-hover">
                                 <thead>
                                     <tr>
@@ -766,6 +768,9 @@
     var urllog_pumk = "{{ route('laporan_realisasi.bulanan.pumk.log') }}";
     var urllog_spdpumk_bulan = "{{route('laporan_realisasi.triwulan.spd_pumk.log')}}";
     var urllog_laporan_bulan = "{{route('laporan_realisasi.triwulan.laporan_manajemen.log')}}";
+
+    //Export Unfilled
+    var urlexportunfilled = "{{route('home.export_unfilled')}}"
     $(document).ready(function () {
         $('#page-title').html("{{ $pagetitle }}");
         $('#page-breadcrumb').html("{{ $breadcrumb }}");
@@ -921,6 +926,83 @@
         $('#perusahaan_id_status').on('change', function (event) {
             updateTableStatus();
         });
+
+        //Rekap Unfilled
+        $(".rekap-data-unfilled").on('click', function(){
+            exportExcelUnfilled();
+        })
+
+        function exportExcelUnfilled()
+    {
+        $.ajax({
+            type: 'post',
+            data: {
+                // 'perusahaan_id' : $("select[name='perusahaan_id']").val(),
+                'tahun' : $("select[name='tahunStatus']").val(),
+            },
+            beforeSend: function () {
+                $.blockUI();
+            },
+            url: urlexportunfilled,
+            xhrFields: {
+                responseType: 'blob',
+            },
+            success: function(data){
+                $.unblockUI();
+
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+                
+                today = dd + '-' + mm + '-' + yyyy;
+                var filename = 'Data Rekap Unfilled '+today+'.xlsx';
+
+                var blob = new Blob([data], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
+
+                document.body.appendChild(link);
+
+                link.click();
+                document.body.removeChild(link);
+            },
+            error: function(jqXHR, exception){
+                $.unblockUI();
+                    var msgerror = '';
+                    if (jqXHR.status === 0) {
+                        msgerror = 'jaringan tidak terkoneksi.';
+                    } else if (jqXHR.status == 404) {
+                        msgerror = 'Halaman tidak ditemukan. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msgerror = 'Internal Server Error [500].';
+                    } else if (exception === 'parsererror') {
+                        msgerror = 'Requested JSON parse gagal.';
+                    } else if (exception === 'timeout') {
+                        msgerror = 'RTO.';
+                    } else if (exception === 'abort') {
+                        msgerror = 'Gagal request ajax.';
+                    } else {
+                        msgerror = 'Error.\n' + jqXHR.responseText;
+                    }
+            swal.fire({
+                    title: "Error System",
+                    html: msgerror+', coba ulangi kembali !!!',
+                    icon: 'error',
+
+                    buttonsStyling: true,
+                    reverseButtons: true,
+                    confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+            });      
+                
+            }
+        });
+        return false;
+    }
+
 
         function updateTableStatus() {
         $.ajax({

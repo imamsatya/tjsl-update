@@ -32,6 +32,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
     Route::post('/chartpumk', 'App\Http\Controllers\HomeController@chartpumk')->name('home.chartpumk');
     Route::post('/chartdataKegiatan', 'App\Http\Controllers\HomeController@chartdataKegiatan')->name('home.chartdataKegiatan');
     Route::post('/allstatus', 'App\Http\Controllers\HomeController@allstatus')->name('home.allstatus');
+    Route::post('/export_unfilled', 'App\Http\Controllers\HomeController@exportUnfilled')->name('home.export_unfilled');
 
     Route::prefix('role')->group(function () {
         Route::get('index', 'App\Http\Controllers\RoleController@index')->name('role.index');

@@ -25,6 +25,8 @@ use App\Models\OwnerProgram;
 use App\Models\Menu;
 use App\Models\JenisKegiatan;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PerusahaanUnfilledExport;
 
 class HomeController extends Controller
 {
@@ -1584,4 +1586,17 @@ class HomeController extends Controller
     //    dd($kegiatan_bulan);
         return response()->json($json);
     }
+
+    public function exportUnfilled(Request $request)
+    {
+        
+        $idPerusahaanFilled = DB::table('anggaran_tpbs')->where('tahun', $request->tahun)->pluck('perusahaan_id')->unique()->values()->toArray();            
+        $perusahaanUnfilled = DB::table('perusahaans')->whereNotIn('id', $idPerusahaanFilled)->get();
+
+        // dd($perusahaanUnfilled);
+
+        $namaFile = "Rekap Perusahaan Unfilled " . date('dmY') . ".xlsx";
+        return Excel::download(new PerusahaanUnfilledExport($perusahaanUnfilled, $request->tahun), $namaFile);
+    }
+
 }

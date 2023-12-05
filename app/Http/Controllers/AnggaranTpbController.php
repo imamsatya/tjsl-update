@@ -1474,6 +1474,14 @@ class AnggaranTpbController extends Controller
         //     if($countEnable == 0) $isEnableInputBySuperadmin = false;
         //     if($countDisable == 0) $isEnableInputBySuperadmin = true;
         // }
+
+        //Kalau Unfilled
+        // if ($request->status == 'Unfilled') {
+        //     $idPerusahaanFilled = DB::table('anggaran_tpbs')->where('tahun', $request->tahun)->pluck('perusahaan_id')->unique()->values()->toArray();
+            
+        //     $perusahaanUnfilled = DB::table('perusahaans')->whereNotIn('id', $idPerusahaanFilled)->get();
+        //     dd($perusahaanUnfilled);
+        // }
         
         return view($this->__route . '.index2', [
             'pagetitle' => $this->pagetitle,
