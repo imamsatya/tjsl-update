@@ -1591,9 +1591,11 @@ class HomeController extends Controller
     {
         
         $idPerusahaanFilled = DB::table('anggaran_tpbs')->where('tahun', $request->tahun)->pluck('perusahaan_id')->unique()->values()->toArray();            
-        $perusahaanUnfilled = DB::table('perusahaans')->whereNotIn('id', $idPerusahaanFilled)->get();
+        $perusahaanUnfilled = DB::table('perusahaans')->whereNotIn('id', $idPerusahaanFilled)
+        ->where('is_active', true)
+        ->get();
 
-        // dd($perusahaanUnfilled);
+        
 
         $namaFile = "Rekap Perusahaan Unfilled " . date('dmY') . ".xlsx";
         return Excel::download(new PerusahaanUnfilledExport($perusahaanUnfilled, $request->tahun), $namaFile);
