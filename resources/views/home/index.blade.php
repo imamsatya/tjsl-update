@@ -135,11 +135,14 @@
                                     @php } @endphp
                                 </select>
                             </div>
+                            <div class="col-lg-12">
+                                <button type="button" class="btn btn-success mt-4 me-2 btn-sm rekap-data-unfilled" id="rekapUnfilled">Rekap Data Unfilled
+                                </button>
+                            </div>
                         </div>
                         
                         <div class="table-responsive">
-                            <button type="button" class="btn btn-success me-2 btn-sm rekap-data-unfilled" id="rekapUnfilled">Rekap Data Unfilled
-                            </button>
+                            
                             <table class="table  table-bordered table-hover">
                                 <thead>
                                     <tr>
