@@ -135,10 +135,13 @@
                                     @php } @endphp
                                 </select>
                             </div>
+                            @hasanyrole(['Super Admin', 'Admin TJSL'])
+
                             <div class="col-lg-12">
                                 <button type="button" class="btn btn-success mt-4 me-2 btn-sm rekap-data-unfilled" id="rekapUnfilled">Rekap Data Unfilled
                                 </button>
                             </div>
+                            @endhasanyrole
                         </div>
                         
                         <div class="table-responsive">
