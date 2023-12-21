@@ -492,22 +492,44 @@
 
             $("#select-perusahaan").on('change', function() {
                 const perusahaanSelected = $(this).val()
-                let currentUrl = window.location.href
+                const yearSelected = $('#select-tahun').val()
+                $.ajax({
+                url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                type: 'POST',
+                data: {
+                    data: perusahaanSelected,
+                    _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                },
+                success: function (encryptedValue) {
+                    
+
+                    // Use the Laravel's built-in route function to generate the new URL
+                    var url = "{{ route('rencana_kerja.spdpumk_rka.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
+                    url = url.replace(':perusahaan_id', encryptedValue.encryptedValue).replace(':tahun', yearSelected);
+
+                    // Redirect the user to the new page
+                    window.location.href = url;
+                },
+                error: function (error) {
+                        console.error('Error in encrypting data:', error);
+                }
+            });
+                // let currentUrl = window.location.href
 
                 
-                // Escape any special characters in perusahaanSelected to avoid issues with regex
-                const escapedPerusahaanSelected = perusahaanSelected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                // // Escape any special characters in perusahaanSelected to avoid issues with regex
+                // const escapedPerusahaanSelected = perusahaanSelected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-                // Create a regular expression to match the "/1/" part in the URL
-                const regex = new RegExp(/\/\d+\//);
+                // // Create a regular expression to match the "/1/" part in the URL
+                // const regex = new RegExp(/\/\d+\//);
 
-                // Replace the matched part with the value of perusahaanSelected
-                let updatedUrl = currentUrl.replace(regex, `/${escapedPerusahaanSelected}/`);
-                // console.log(perusahaanSelected)
-                // console.log(currentUrl)
-                // console.log(updatedUrl)
-                // currentUrl = currentUrl.substr(0, currentUrl.length - 4) + yearSelected;
-                window.location.href = updatedUrl
+                // // Replace the matched part with the value of perusahaanSelected
+                // let updatedUrl = currentUrl.replace(regex, `/${escapedPerusahaanSelected}/`);
+                // // console.log(perusahaanSelected)
+                // // console.log(currentUrl)
+                // // console.log(updatedUrl)
+                // // currentUrl = currentUrl.substr(0, currentUrl.length - 4) + yearSelected;
+                // window.location.href = updatedUrl
             })
 
             $("#select-tahun").on('change', function() {

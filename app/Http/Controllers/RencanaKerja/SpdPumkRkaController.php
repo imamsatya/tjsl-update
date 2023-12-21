@@ -11,6 +11,7 @@ use App\Models\KegiatanRealisasi;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use DB;
 use App\Models\PumkAnggaran;
 use App\Models\LogPumkAnggaran;
@@ -45,7 +46,8 @@ class SpdPumkRkaController extends Controller
 
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
-        $perusahaan_id = $request->perusahaan_id;
+        // $perusahaan_id = $request->perusahaan_id;
+        $perusahaan_id = $request->perusahaan_id ? (Crypt::decryptString($request->perusahaan_id)) : null ;
 
         $admin_bumn = false;
         $view_only = false;
@@ -155,6 +157,8 @@ class SpdPumkRkaController extends Controller
         // } else {
         //     $actionform = 'insert';
         // }
+
+        $perusahaan_id = $perusahaan_id ? (Crypt::decryptString($perusahaan_id)) : null ;
         $admin_bumn = false;
         // if (!empty($users->getRoleNames())) {
         //     foreach ($users->getRoleNames() as $v) {

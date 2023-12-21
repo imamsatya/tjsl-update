@@ -737,9 +737,26 @@
                     if (kriteria_program_checkboxes[i].checked) { // jika checkbox terpilih
                         selectedKriteriaProgram.push(kriteria_program_checkboxes[i].value); // tambahkan nilai checkbox ke dalam array
                     }
-                }         
+                }
+                
+                $.ajax({
+                url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                type: 'POST',
+                data: {
+                    data: perusahaan_id,
+                    _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                },
+                success: function (encryptedValue) {
+                
+                // window.location.href = url + '?perusahaan_id=' + encryptedValue.encryptedValue + '&tahun=' + tahun + '&pilar_pembangunan=' + pilar_pembangunan_id + '&tpb=' + tpb_id + '&jenis_anggaran=' +jenisAnggaran+ '&status=' +statusAnggaran;
+                window.location.href = url + '?perusahaan_id=' + encryptedValue.encryptedValue + '&tahun=' + tahun + '&pilar_pembangunan=' + pilar_pembangunan_id + '&tpb=' + tpb_id + '&jenis_anggaran=' +jenisAnggaran + '&kriteria_program=' +selectedKriteriaProgram;
+                },
+                error: function (error) {
+                    console.error('Error in encrypting data:', error);
+                }
+            });
 
-                window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&pilar_pembangunan=' + pilar_pembangunan_id + '&tpb=' + tpb_id + '&jenis_anggaran=' +jenisAnggaran + '&kriteria_program=' +selectedKriteriaProgram;
+                // window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&pilar_pembangunan=' + pilar_pembangunan_id + '&tpb=' + tpb_id + '&jenis_anggaran=' +jenisAnggaran + '&kriteria_program=' +selectedKriteriaProgram;
             });
                                        
 
@@ -1377,12 +1394,29 @@
 
             selectedJenisAnggaran = selectedJenisAnggaran.split(' ').join('-')
 
-            // Use the Laravel's built-in route function to generate the new URL
-            var url = "{{ route('rencana_kerja.program.input', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'jenis_anggaran' => ':jenis_anggaran']) }}";
-            url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(':jenis_anggaran', selectedJenisAnggaran);
+            $.ajax({
+                url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                type: 'POST',
+                data: {
+                    data: selectedPerusahaanId,
+                    _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                },
+                success: function (encryptedValue) {
+                
+                
 
-            // Redirect the user to the new page
-            window.location.href = url;
+                var url = "{{ route('rencana_kerja.program.input', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'jenis_anggaran' => ':jenis_anggaran']) }}";
+                url = url.replace(':perusahaan_id', encryptedValue.encryptedValue).replace(':tahun', selectedTahun).replace(':jenis_anggaran', selectedJenisAnggaran);
+
+                // Redirect the user to the new page
+                window.location.href = url;
+                    },
+                    error: function (error) {
+                        console.error('Error in encrypting data:', error);
+                    }
+            });
+            // Use the Laravel's built-in route function to generate the new URL
+            
         }
 
         function deleteSelectedProgram(selectedProgram) {

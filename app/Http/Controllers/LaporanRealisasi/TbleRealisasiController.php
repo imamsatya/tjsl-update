@@ -42,7 +42,8 @@ class TbleRealisasiController extends Controller
         //
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
-        $perusahaan_id = $request->perusahaan_id;
+        // $perusahaan_id = $request->perusahaan_id;
+        $perusahaan_id = $request->perusahaan_id ? (Crypt::decryptString($request->perusahaan_id)) : null ;
 
         $admin_bumn = false;
         $view_only = false;
@@ -61,9 +62,9 @@ class TbleRealisasiController extends Controller
         $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->where('jenis_periode', 'standar')->orderBy('urutan')->get();
         $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaan_masters.id as perusahaan_id, perusahaan_masters.nama_lengkap as nama_lengkap')
         ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'laporan_manajemens.perusahaan_id')->whereIn('periode_laporan_id', $periode->pluck('id')->toArray());
-        if ($request->perusahaan_id) {
+        if ($perusahaan_id) {
 
-            $laporan_manajemen = $laporan_manajemen->where('perusahaan_id', $request->perusahaan_id);
+            $laporan_manajemen = $laporan_manajemen->where('perusahaan_id', $perusahaan_id);
         }
 
 

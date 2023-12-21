@@ -461,8 +461,32 @@
             //     }
             // }
 
-            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun +
-                '&bulan=' + bulan 
+            $.ajax({
+                url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                type: 'POST',
+                data: {
+                    data: perusahaan_id,
+                    _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                },
+                success: function (encryptedValue) {
+                
+                        //         var url =
+                        //     "{{ route('laporan_realisasi.bulanan.kegiatan.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'bulan' => ':bulan_id']) }}";
+                        // url = url.replace(':perusahaan_id', encryptedValue.encryptedValue).replace(':tahun', selectedTahun).replace(':bulan_id',
+                        //     selectedBulan)
+                        // // Redirect the user to the new page
+                        // window.location.href = url;
+
+                        window.location.href = url + '?perusahaan_id=' + encryptedValue.encryptedValue + '&tahun=' + tahun +
+                        '&bulan=' + bulan 
+                },
+                error: function (error) {
+                        console.error('Error in encrypting data:', error);
+                }
+            });
+
+            // window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun +
+            //     '&bulan=' + bulan 
                 // + '&tpb=' + tpb_id + '&jenis_anggaran=' +
                 // jenisAnggaran + '&kriteria_program=' + selectedKriteriaProgram;
         });
@@ -920,14 +944,36 @@
 
         selectedJenisAnggaran = selectedJenisAnggaran.split(' ').join('-')
 
-        // Use the Laravel's built-in route function to generate the new URL
-        var url =
-            "{{ route('rencana_kerja.program.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'jenis_anggaran' => ':jenis_anggaran']) }}";
-        url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(
-            ':jenis_anggaran', selectedJenisAnggaran);
+        $.ajax({
+                url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                type: 'POST',
+                data: {
+                    data: selectedPerusahaanId,
+                    _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                },
+                success: function (encryptedValue) {
 
-        // Redirect the user to the new page
-        window.location.href = url;
+                    // Use the Laravel's built-in route function to generate the new URL
+                    var url =
+                        "{{ route('rencana_kerja.program.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'jenis_anggaran' => ':jenis_anggaran']) }}";
+                    url = url.replace(':perusahaan_id', encryptedValue.encryptedValue).replace(':tahun', selectedTahun).replace(
+                        ':jenis_anggaran', selectedJenisAnggaran);
+
+                    // Redirect the user to the new page
+                    window.location.href = url;
+                },
+                error: function (error) {
+                        console.error('Error in encrypting data:', error);
+                }
+        });
+        // // Use the Laravel's built-in route function to generate the new URL
+        // var url =
+        //     "{{ route('rencana_kerja.program.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'jenis_anggaran' => ':jenis_anggaran']) }}";
+        // url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(
+        //     ':jenis_anggaran', selectedJenisAnggaran);
+
+        // // Redirect the user to the new page
+        // window.location.href = url;
     }
 
     function deleteSelectedProgram(selectedProgram) {

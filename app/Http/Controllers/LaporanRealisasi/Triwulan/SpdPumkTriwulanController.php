@@ -19,6 +19,7 @@ use Datatables;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Crypt;
 use DateTime;
 use Carbon\Carbon;
 class SpdPumkTriwulanController extends Controller
@@ -40,7 +41,8 @@ class SpdPumkTriwulanController extends Controller
         //
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
-        $perusahaan_id = $request->perusahaan_id;
+        // $perusahaan_id = $request->perusahaan_id;
+        $perusahaan_id = $request->perusahaan_id ? (Crypt::decryptString($request->perusahaan_id)) : null ;
 
         $admin_bumn = false;
         $view_only = false;
@@ -146,6 +148,9 @@ class SpdPumkTriwulanController extends Controller
         //         }
         //     }
         // }
+        
+        $perusahaan_id = $perusahaan_id ? (Crypt::decryptString($perusahaan_id)) : null ;
+
         $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->get();
         $selectedPeriode = DB::table('periode_laporans')->where('id', $periode_id)
         ->selectRaw("*, ((DATE(NOW()) BETWEEN tanggal_awal AND tanggal_akhir) OR periode_laporans.is_active = false) AS isOkToInput")

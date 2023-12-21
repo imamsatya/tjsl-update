@@ -13,6 +13,7 @@ use Session;
 use Datatables;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -38,7 +39,8 @@ class LaporanManajemenTriwulanController extends Controller
         //   dd($request->perusahaan_id);
           $id_users = \Auth::user()->id;
           $users = User::where('id', $id_users)->first();
-          $perusahaan_id = (int)$request->perusahaan_id;
+        //   $perusahaan_id = (int)$request->perusahaan_id;
+          $perusahaan_id = $request->perusahaan_id ? (int)(Crypt::decryptString($request->perusahaan_id)) : null ;
   
           $admin_bumn = false;
           $view_only = false;

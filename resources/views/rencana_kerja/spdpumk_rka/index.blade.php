@@ -853,8 +853,23 @@
             var tahun = $('#tahun').val();
             var status_spd = $('#status_spd').val()
            
+            $.ajax({
+                url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                type: 'POST',
+                data: {
+                    data: perusahaan_id,
+                    _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                },
+                success: function (encryptedValue) {
+                    // Redirect the user to the new page
+                    window.location.href = url + '?perusahaan_id=' + encryptedValue.encryptedValue + '&tahun=' + tahun + '&status_spd=' + status_spd;
+                },
+                error: function (error) {
+                        console.error('Error in encrypting data:', error);
+                }
+            });
 
-            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&status_spd=' + status_spd;
+            // window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&status_spd=' + status_spd;
         });
 
 
@@ -1146,12 +1161,34 @@
             });
             return
          }
-        // Use the Laravel's built-in route function to generate the new URL
-        var url = "{{ route('rencana_kerja.spdpumk_rka.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
-        url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun);
 
-        // Redirect the user to the new page
-        window.location.href = url;
+         $.ajax({
+                url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                type: 'POST',
+                data: {
+                    data: selectedPerusahaanId,
+                    _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                },
+                success: function (encryptedValue) {
+                    
+
+                    // Use the Laravel's built-in route function to generate the new URL
+                    var url = "{{ route('rencana_kerja.spdpumk_rka.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
+                    url = url.replace(':perusahaan_id', encryptedValue.encryptedValue).replace(':tahun', selectedTahun);
+
+                    // Redirect the user to the new page
+                    window.location.href = url;
+                },
+                error: function (error) {
+                        console.error('Error in encrypting data:', error);
+                }
+            });
+        // // Use the Laravel's built-in route function to generate the new URL
+        // var url = "{{ route('rencana_kerja.spdpumk_rka.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
+        // url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun);
+
+        // // Redirect the user to the new page
+        // window.location.href = url;
     }
     </script>
 @endsection

@@ -690,8 +690,23 @@
             var tahun = $('#tahun').val();
             var status_laporan = $('#status_laporan').val()
            
+            $.ajax({
+                url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                type: 'POST',
+                data: {
+                    data: perusahaan_id,
+                    _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                },
+                success: function (encryptedValue) {
+                    
+                    window.location.href = url + '?perusahaan_id=' + encryptedValue.encryptedValue + '&tahun=' + tahun + '&status_laporan=' + status_laporan;
+                },
+                error: function (error) {
+                        console.error('Error in encrypting data:', error);
+                }
+            });
 
-            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&status_laporan=' + status_laporan;
+            // window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&status_laporan=' + status_laporan;
         });
 
 

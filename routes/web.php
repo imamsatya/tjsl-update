@@ -34,324 +34,352 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
     Route::post('/allstatus', 'App\Http\Controllers\HomeController@allstatus')->name('home.allstatus');
     Route::post('/export_unfilled', 'App\Http\Controllers\HomeController@exportUnfilled')->name('home.export_unfilled');
 
-    Route::prefix('role')->group(function () {
-        Route::get('index', 'App\Http\Controllers\RoleController@index')->name('role.index');
-        Route::post('create', 'App\Http\Controllers\RoleController@create')->name('role.create');
-        Route::post('edit', 'App\Http\Controllers\RoleController@edit')->name('role.edit');
-        Route::post('store', 'App\Http\Controllers\RoleController@store')->name('role.store');
-        Route::post('delete', 'App\Http\Controllers\RoleController@delete')->name('role.delete');
-        Route::get('datatable', 'App\Http\Controllers\RoleController@datatable')->name('role.datatable');
-        Route::get('gettreemenubyrole/{id?}', 'App\Http\Controllers\RoleController@gettreemenubyrole')->name('role.gettreemenubyrole');
+    
+
+    Route::group(['middleware' => ['role:Super Admin']], function () {
+        //
+        Route::prefix('user')->group(function () {
+            Route::get('index', 'App\Http\Controllers\UserController@index')->name('user.index');
+            Route::post('create', 'App\Http\Controllers\UserController@create')->name('user.create');
+            Route::post('edit', 'App\Http\Controllers\UserController@edit')->name('user.edit');
+            Route::post('store', 'App\Http\Controllers\UserController@store')->name('user.store');
+            Route::post('delete', 'App\Http\Controllers\UserController@delete')->name('user.delete');
+            Route::post('checkuser', 'App\Http\Controllers\UserController@checkuser')->name('user.checkuser');
+            Route::get('datatable', 'App\Http\Controllers\UserController@datatable')->name('user.datatable');
+        });
+
+        Route::prefix('referensi')->group(function () {
+
+            Route::prefix('versi_pilar')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\VersiPilarController@index')->name('referensi.versi_pilar.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\VersiPilarController@create')->name('referensi.versi_pilar.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\VersiPilarController@edit')->name('referensi.versi_pilar.edit');
+                Route::post('edit_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@edit_pilar')->name('referensi.versi_pilar.edit_pilar');
+                Route::post('edit_tpb', 'App\Http\Controllers\Referensi\VersiPilarController@edit_tpb')->name('referensi.versi_pilar.edit_tpb');
+                Route::post('add_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@add_pilar')->name('referensi.versi_pilar.add_pilar');
+                Route::post('store', 'App\Http\Controllers\Referensi\VersiPilarController@store')->name('referensi.versi_pilar.store');
+                Route::post('store_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@store_pilar')->name('referensi.versi_pilar.store_pilar');
+                Route::post('store_tpb', 'App\Http\Controllers\Referensi\VersiPilarController@store_tpb')->name('referensi.versi_pilar.store_tpb');
+                Route::post('delete', 'App\Http\Controllers\Referensi\VersiPilarController@delete')->name('referensi.versi_pilar.delete');
+                Route::post('delete_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@delete_pilar')->name('referensi.versi_pilar.delete_pilar');
+                Route::post('update_status', 'App\Http\Controllers\Referensi\VersiPilarController@update_status')->name('referensi.versi_pilar.update_status');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\VersiPilarController@datatable')->name('referensi.versi_pilar.datatable');
+            });
+    
+            Route::prefix('pilar_pembangunan')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\PilarPembangunanController@index')->name('referensi.pilar_pembangunan.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\PilarPembangunanController@create')->name('referensi.pilar_pembangunan.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\PilarPembangunanController@edit')->name('referensi.pilar_pembangunan.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\PilarPembangunanController@store')->name('referensi.pilar_pembangunan.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\PilarPembangunanController@delete')->name('referensi.pilar_pembangunan.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\PilarPembangunanController@datatable')->name('referensi.pilar_pembangunan.datatable');
+                //Imam
+                Route::post('update', 'App\Http\Controllers\Referensi\PilarPembangunanController@update')->name('referensi.pilar_pembangunan.update');
+                Route::post('update_status', 'App\Http\Controllers\Referensi\PilarPembangunanController@update_status')->name('referensi.pilar_pembangunan.update_status');
+                Route::post('order', 'App\Http\Controllers\Referensi\PilarPembangunanController@order')->name('referensi.pilar_pembangunan.order');
+                Route::post('ordersubmit', 'App\Http\Controllers\Referensi\PilarPembangunanController@orderSubmit')->name('referensi.pilar_pembangunan.ordersubmit');
+            });
+    
+            Route::prefix('tpb')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\TpbController@index')->name('referensi.tpb.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\TpbController@create')->name('referensi.tpb.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\TpbController@edit')->name('referensi.tpb.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\TpbController@store')->name('referensi.tpb.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\TpbController@delete')->name('referensi.tpb.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\TpbController@datatable')->name('referensi.tpb.datatable');
+                //Imam
+                Route::post('update', 'App\Http\Controllers\Referensi\TpbController@update')->name('referensi.tpb.update');
+                Route::post('update_status', 'App\Http\Controllers\Referensi\TpbController@update_status')->name('referensi.tpb.update_status');
+            });
+    
+            Route::prefix('status')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\StatusController@index')->name('referensi.status.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\StatusController@create')->name('referensi.status.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\StatusController@edit')->name('referensi.status.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\StatusController@store')->name('referensi.status.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\StatusController@delete')->name('referensi.status.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\StatusController@datatable')->name('referensi.status.datatable');
+            });
+    
+            Route::prefix('cara_penyaluran')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\CaraPenyaluranController@index')->name('referensi.cara_penyaluran.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\CaraPenyaluranController@create')->name('referensi.cara_penyaluran.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\CaraPenyaluranController@edit')->name('referensi.cara_penyaluran.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\CaraPenyaluranController@store')->name('referensi.cara_penyaluran.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\CaraPenyaluranController@delete')->name('referensi.cara_penyaluran.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\CaraPenyaluranController@datatable')->name('referensi.cara_penyaluran.datatable');
+            });
+    
+            Route::prefix('kode_indikator')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\KodeIndikatorController@index')->name('referensi.kode_indikator.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\KodeIndikatorController@create')->name('referensi.kode_indikator.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\KodeIndikatorController@edit')->name('referensi.kode_indikator.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\KodeIndikatorController@store')->name('referensi.kode_indikator.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\KodeIndikatorController@delete')->name('referensi.kode_indikator.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\KodeIndikatorController@datatable')->name('referensi.kode_indikator.datatable');
+            });
+    
+            Route::prefix('kode_tujuan_tpb')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@index')->name('referensi.kode_tujuan_tpb.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@create')->name('referensi.kode_tujuan_tpb.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@edit')->name('referensi.kode_tujuan_tpb.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@store')->name('referensi.kode_tujuan_tpb.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@delete')->name('referensi.kode_tujuan_tpb.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@datatable')->name('referensi.kode_tujuan_tpb.datatable');
+            });
+    
+            Route::prefix('perusahaan')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\PerusahaanController@index')->name('referensi.perusahaan.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\PerusahaanController@create')->name('referensi.perusahaan.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\PerusahaanController@edit')->name('referensi.perusahaan.edit');
+                Route::post('update_active', 'App\Http\Controllers\Referensi\PerusahaanController@update_active')->name('referensi.perusahaan.update_active');
+                Route::post('store', 'App\Http\Controllers\Referensi\PerusahaanController@store')->name('referensi.perusahaan.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\PerusahaanController@delete')->name('referensi.perusahaan.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\PerusahaanController@datatable')->name('referensi.perusahaan.datatable');
+                Route::get('inactive-all', 'App\Http\Controllers\Referensi\PerusahaanController@inactiveAll')->name('referensi.perusahaan.inactiveall');
+                Route::get('silababumnsync', function () {
+                    $exitCode = Artisan::call('silaba:bumnsync');
+                    return redirect('referensi/perusahaan/index');
+                })->name('referensi.perusahaan.silababumnsync');
+            });
+    
+            Route::prefix('periode_laporan')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\PeriodeLaporanController@index')->name('referensi.periode_laporan.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\PeriodeLaporanController@create')->name('referensi.periode_laporan.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\PeriodeLaporanController@edit')->name('referensi.periode_laporan.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\PeriodeLaporanController@store')->name('referensi.periode_laporan.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\PeriodeLaporanController@delete')->name('referensi.periode_laporan.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\PeriodeLaporanController@datatable')->name('referensi.periode_laporan.datatable');
+                //Imam
+                Route::get('datatable_tentatif', 'App\Http\Controllers\Referensi\PeriodeLaporanController@datatable_tentatif')->name('referensi.periode_laporan.datatable_tentatif');
+                Route::post('update_status', 'App\Http\Controllers\Referensi\PeriodeLaporanController@updateStatus')->name('referensi.periode_laporan.update_status');
+            });
+    
+            Route::prefix('api_whitelist')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\ApiWhitelistController@index')->name('referensi.api_whitelist.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\ApiWhitelistController@create')->name('referensi.api_whitelist.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\ApiWhitelistController@edit')->name('referensi.api_whitelist.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\ApiWhitelistController@store')->name('referensi.api_whitelist.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\ApiWhitelistController@delete')->name('referensi.api_whitelist.delete');
+                Route::post('status', 'App\Http\Controllers\Referensi\ApiWhitelistController@status')->name('referensi.api_whitelist.status');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\ApiWhitelistController@datatable')->name('referensi.api_whitelist.datatable');
+            });
+    
+            Route::prefix('owner_program')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\OwnerController@index')->name('referensi.owner_program.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\OwnerController@create')->name('referensi.owner_program.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\OwnerController@edit')->name('referensi.owner_program.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\OwnerController@store')->name('referensi.owner_program.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\OwnerController@delete')->name('referensi.owner_program.delete');
+                Route::post('status', 'App\Http\Controllers\Referensi\OwnerController@status')->name('referensi.owner_program.status');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\OwnerController@datatable')->name('referensi.owner_program.datatable');
+            });
+    
+            Route::prefix('provinsi')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\ProvinsiController@index')->name('referensi.provinsi.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\ProvinsiController@create')->name('referensi.provinsi.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\ProvinsiController@edit')->name('referensi.provinsi.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\ProvinsiController@store')->name('referensi.provinsi.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\ProvinsiController@delete')->name('referensi.provinsi.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\ProvinsiController@datatable')->name('referensi.provinsi.datatable');
+                Route::get('apisyncprovinsikota', function () {
+                    $exitCode = Artisan::call('apisync:provinsikota');
+                    return redirect('referensi/provinsi/index');
+                })->name('referensi.provinsi.apisyncprovinsikota');
+            });
+    
+            Route::prefix('kota')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\KotaController@index')->name('referensi.kota.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\KotaController@create')->name('referensi.kota.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\KotaController@edit')->name('referensi.kota.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\KotaController@store')->name('referensi.kota.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\KotaController@delete')->name('referensi.kota.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\KotaController@datatable')->name('referensi.kota.datatable');
+                Route::get('apisyncprovinsikota', function () {
+                    $exitCode = Artisan::call('apisync:provinsikota');
+                    return redirect('referensi/kota/index');
+                })->name('referensi.kota.apisyncprovinsikota');
+            });
+    
+            Route::prefix('skala_usaha')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\SkalaUsahaController@index')->name('referensi.skala_usaha.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\SkalaUsahaController@create')->name('referensi.skala_usaha.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\SkalaUsahaController@edit')->name('referensi.skala_usaha.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\SkalaUsahaController@store')->name('referensi.skala_usaha.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\SkalaUsahaController@delete')->name('referensi.skala_usaha.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\SkalaUsahaController@datatable')->name('referensi.skala_usaha.datatable');
+            });
+    
+            Route::prefix('core_subject')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\CoreSubjectController@index')->name('referensi.core_subject.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\CoreSubjectController@create')->name('referensi.core_subject.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\CoreSubjectController@edit')->name('referensi.core_subject.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\CoreSubjectController@store')->name('referensi.core_subject.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\CoreSubjectController@delete')->name('referensi.core_subject.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\CoreSubjectController@datatable')->name('referensi.core_subject.datatable');
+            });
+    
+            Route::prefix('satuan_ukur')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\SatuanUkurController@index')->name('referensi.satuan_ukur.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\SatuanUkurController@create')->name('referensi.satuan_ukur.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\SatuanUkurController@edit')->name('referensi.satuan_ukur.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\SatuanUkurController@store')->name('referensi.satuan_ukur.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\SatuanUkurController@delete')->name('referensi.satuan_ukur.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\SatuanUkurController@datatable')->name('referensi.satuan_ukur.datatable');
+            });
+    
+            Route::prefix('jenis_program')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\JenisProgramController@index')->name('referensi.jenis_program.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\JenisProgramController@create')->name('referensi.jenis_program.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\JenisProgramController@edit')->name('referensi.jenis_program.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\JenisProgramController@store')->name('referensi.jenis_program.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\JenisProgramController@delete')->name('referensi.jenis_program.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\JenisProgramController@datatable')->name('referensi.jenis_program.datatable');
+            });
+    
+            Route::prefix('sektor_usaha')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\SektorUsahaController@index')->name('referensi.sektor_usaha.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\SektorUsahaController@create')->name('referensi.sektor_usaha.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\SektorUsahaController@edit')->name('referensi.sektor_usaha.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\SektorUsahaController@store')->name('referensi.sektor_usaha.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\SektorUsahaController@delete')->name('referensi.sektor_usaha.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\SektorUsahaController@datatable')->name('referensi.sektor_usaha.datatable');
+            });
+    
+            Route::prefix('kolekbilitas_pendanaan')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@index')->name('referensi.kolekbilitas_pendanaan.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@create')->name('referensi.kolekbilitas_pendanaan.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@edit')->name('referensi.kolekbilitas_pendanaan.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@store')->name('referensi.kolekbilitas_pendanaan.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@delete')->name('referensi.kolekbilitas_pendanaan.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@datatable')->name('referensi.kolekbilitas_pendanaan.datatable');
+            });
+    
+            Route::prefix('kondisi_pinjaman')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\KondisiPinjamanController@index')->name('referensi.kondisi_pinjaman.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\KondisiPinjamanController@create')->name('referensi.kondisi_pinjaman.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\KondisiPinjamanController@edit')->name('referensi.kondisi_pinjaman.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\KondisiPinjamanController@store')->name('referensi.kondisi_pinjaman.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\KondisiPinjamanController@delete')->name('referensi.kondisi_pinjaman.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\KondisiPinjamanController@datatable')->name('referensi.kondisi_pinjaman.datatable');
+            });
+    
+            Route::prefix('jenis_pembayaran')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\JenisPembayaranController@index')->name('referensi.jenis_pembayaran.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\JenisPembayaranController@create')->name('referensi.jenis_pembayaran.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\JenisPembayaranController@edit')->name('referensi.jenis_pembayaran.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\JenisPembayaranController@store')->name('referensi.jenis_pembayaran.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\JenisPembayaranController@delete')->name('referensi.jenis_pembayaran.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\JenisPembayaranController@datatable')->name('referensi.jenis_pembayaran.datatable');
+            });
+    
+            Route::prefix('bank_account')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\BankAccountController@index')->name('referensi.bank_account.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\BankAccountController@create')->name('referensi.bank_account.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\BankAccountController@edit')->name('referensi.bank_account.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\BankAccountController@store')->name('referensi.bank_account.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\BankAccountController@delete')->name('referensi.bank_account.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\BankAccountController@datatable')->name('referensi.bank_account.datatable');
+                Route::get('apisyncbankaccount', function () {
+                    $exitCode = Artisan::call('apisync:bankaccount');
+                    return redirect('referensi/bank_account/index');
+                })->name('referensi.bank_account.apisyncbankaccount');
+            });
+    
+            Route::prefix('versi_laporan_keuangan')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@index')->name('referensi.versi_laporan_keuangan.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@create')->name('referensi.versi_laporan_keuangan.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@edit')->name('referensi.versi_laporan_keuangan.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store')->name('referensi.versi_laporan_keuangan.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@delete')->name('referensi.versi_laporan_keuangan.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@datatable')->name('referensi.versi_laporan_keuangan.datatable');
+                Route::post('update_status', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@update_status')->name('referensi.versi_laporan_keuangan.update_status');
+                Route::post('add_laporan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@add_laporan')->name('referensi.versi_laporan_keuangan.add_laporan');
+                Route::post('edit_laporan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@edit_laporan')->name('referensi.versi_laporan_keuangan.edit_laporan');
+                Route::post('store_laporan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store_laporan')->name('referensi.versi_laporan_keuangan.store_laporan');
+                Route::post('add_parent', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@add_parent')->name('referensi.versi_laporan_keuangan.add_parent');
+                Route::post('store_parent', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store_parent')->name('referensi.versi_laporan_keuangan.store_parent');
+                Route::post('delete_parent', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@delete_parent')->name('referensi.versi_laporan_keuangan.delete_parent');
+                Route::post('add_child', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@add_child')->name('referensi.versi_laporan_keuangan.add_child');
+                Route::post('store_child', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store_child')->name('referensi.versi_laporan_keuangan.store_child');
+                Route::post('delete_child', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@delete_child')->name('referensi.versi_laporan_keuangan.delete_child');
+                Route::post('delete_versi_laporan_keuangan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@delete_versi_laporan_keuangan')->name('referensi.versi_laporan_keuangan.delete_versi_laporan_keuangan');
+                Route::post('edit_parent', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@edit_parent')->name('referensi.versi_laporan_keuangan.edit_parent');
+                Route::post('edit_child', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@edit_child')->name('referensi.versi_laporan_keuangan.edit_child');
+            });
+    
+            Route::prefix('laporan_keuangan')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\LaporanKeuanganController@index')->name('referensi.laporan_keuangan.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\LaporanKeuanganController@create')->name('referensi.laporan_keuangan.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\LaporanKeuanganController@edit')->name('referensi.laporan_keuangan.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\LaporanKeuanganController@store')->name('referensi.laporan_keuangan.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\LaporanKeuanganController@delete')->name('referensi.laporan_keuangan.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\LaporanKeuanganController@datatable')->name('referensi.laporan_keuangan.datatable');
+            });
+    
+            Route::prefix('jenis_kegiatan')->group(function () {
+                Route::get('index', 'App\Http\Controllers\Referensi\JenisKegiatanController@index')->name('referensi.jenis_kegiatan.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\JenisKegiatanController@create')->name('referensi.jenis_kegiatan.create');
+                Route::post('edit', 'App\Http\Controllers\Referensi\JenisKegiatanController@edit')->name('referensi.jenis_kegiatan.edit');
+                Route::post('store', 'App\Http\Controllers\Referensi\JenisKegiatanController@store')->name('referensi.jenis_kegiatan.store');
+                Route::post('delete', 'App\Http\Controllers\Referensi\JenisKegiatanController@delete')->name('referensi.jenis_kegiatan.delete');
+                Route::get('datatable', 'App\Http\Controllers\Referensi\JenisKegiatanController@datatable')->name('referensi.jenis_kegiatan.datatable');
+    
+                //Imam
+                Route::post('update', 'App\Http\Controllers\Referensi\JenisKegiatanController@update')->name('referensi.jenis_kegiatan.update');
+                Route::post('update_status', 'App\Http\Controllers\Referensi\JenisKegiatanController@update_status')->name('referensi.jenis_kegiatan.update_status');
+    
+                //Sub Kegiatan
+                Route::post('create_subkegiatan', 'App\Http\Controllers\Referensi\JenisKegiatanController@create_subkegiatan')->name('referensi.jenis_kegiatan.create_subkegiatan');
+                Route::post('store_subkegiatan', 'App\Http\Controllers\Referensi\JenisKegiatanController@store_subkegiatan')->name('referensi.jenis_kegiatan.store_subkegiatan');
+                Route::get('datatable_subkegiatan', 'App\Http\Controllers\Referensi\JenisKegiatanController@datatable_subkegiatan')->name('referensi.jenis_kegiatan.datatable_subkegiatan');
+                Route::post('delete_subkegiatan', 'App\Http\Controllers\Referensi\JenisKegiatanController@delete_subkegiatan')->name('referensi.jenis_kegiatan.delete_subkegiatan');
+            });
+    
+            Route::prefix('enable_input')->group(function() {
+                Route::get('index', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@index')->name('referensi.enable_input.index');
+                Route::post('create', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@create')->name('referensi.enable_input.create');
+                Route::post('save', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@save')->name('referensi.enable_input.save');
+                Route::post('delete', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@delete')->name('referensi.enable_input.delete');
+                Route::post('create_master', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@createMaster')->name('referensi.enable_input.create_master');
+                Route::post('save_master', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@saveMaster')->name('referensi.enable_input.save_master');
+                Route::post('delete_master', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@deleteMaster')->name('referensi.enable_input.delete_master');
+            });
+        });
+
+        Route::prefix('menu')->group(function () {
+            Route::get('index', 'App\Http\Controllers\MenuController@index')->name('menu.index');
+            Route::post('create', 'App\Http\Controllers\MenuController@create')->name('menu.create');
+            Route::post('edit', 'App\Http\Controllers\MenuController@edit')->name('menu.edit');
+            Route::post('store', 'App\Http\Controllers\MenuController@store')->name('menu.store');
+            Route::post('delete', 'App\Http\Controllers\MenuController@delete')->name('menu.delete');
+            Route::post('gettreemenu', 'App\Http\Controllers\MenuController@gettreemenu')->name('menu.gettreemenu');
+            Route::post('submitchangestructure', 'App\Http\Controllers\MenuController@submitchangestructure')->name('menu.submitchangestructure');
+            Route::get('datatable', 'App\Http\Controllers\MenuController@datatable')->name('menu.datatable');
+        });
+        
+        Route::prefix('role')->group(function () {
+            Route::get('index', 'App\Http\Controllers\RoleController@index')->name('role.index');
+            Route::post('create', 'App\Http\Controllers\RoleController@create')->name('role.create');
+            Route::post('edit', 'App\Http\Controllers\RoleController@edit')->name('role.edit');
+            Route::post('store', 'App\Http\Controllers\RoleController@store')->name('role.store');
+            Route::post('delete', 'App\Http\Controllers\RoleController@delete')->name('role.delete');
+            Route::get('datatable', 'App\Http\Controllers\RoleController@datatable')->name('role.datatable');
+            Route::get('gettreemenubyrole/{id?}', 'App\Http\Controllers\RoleController@gettreemenubyrole')->name('role.gettreemenubyrole');
+        });
+
+        Route::prefix('permission')->group(function () {
+            Route::get('index', 'App\Http\Controllers\PermissionController@index')->name('permission.index');
+            Route::post('create', 'App\Http\Controllers\PermissionController@create')->name('permission.create');
+            Route::post('edit', 'App\Http\Controllers\PermissionController@edit')->name('permission.edit');
+            Route::post('store', 'App\Http\Controllers\PermissionController@store')->name('permission.store');
+            Route::post('delete', 'App\Http\Controllers\PermissionController@delete')->name('permission.delete');
+            Route::get('datatable', 'App\Http\Controllers\PermissionController@datatable')->name('permission.datatable');
+        });
     });
+    
 
-    Route::prefix('user')->group(function () {
-        Route::get('index', 'App\Http\Controllers\UserController@index')->name('user.index');
-        Route::post('create', 'App\Http\Controllers\UserController@create')->name('user.create');
-        Route::post('edit', 'App\Http\Controllers\UserController@edit')->name('user.edit');
-        Route::post('store', 'App\Http\Controllers\UserController@store')->name('user.store');
-        Route::post('delete', 'App\Http\Controllers\UserController@delete')->name('user.delete');
-        Route::post('checkuser', 'App\Http\Controllers\UserController@checkuser')->name('user.checkuser');
-        Route::get('datatable', 'App\Http\Controllers\UserController@datatable')->name('user.datatable');
-    });
-
-    Route::prefix('referensi')->group(function () {
-
-        Route::prefix('versi_pilar')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\VersiPilarController@index')->name('referensi.versi_pilar.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\VersiPilarController@create')->name('referensi.versi_pilar.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\VersiPilarController@edit')->name('referensi.versi_pilar.edit');
-            Route::post('edit_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@edit_pilar')->name('referensi.versi_pilar.edit_pilar');
-            Route::post('edit_tpb', 'App\Http\Controllers\Referensi\VersiPilarController@edit_tpb')->name('referensi.versi_pilar.edit_tpb');
-            Route::post('add_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@add_pilar')->name('referensi.versi_pilar.add_pilar');
-            Route::post('store', 'App\Http\Controllers\Referensi\VersiPilarController@store')->name('referensi.versi_pilar.store');
-            Route::post('store_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@store_pilar')->name('referensi.versi_pilar.store_pilar');
-            Route::post('store_tpb', 'App\Http\Controllers\Referensi\VersiPilarController@store_tpb')->name('referensi.versi_pilar.store_tpb');
-            Route::post('delete', 'App\Http\Controllers\Referensi\VersiPilarController@delete')->name('referensi.versi_pilar.delete');
-            Route::post('delete_pilar', 'App\Http\Controllers\Referensi\VersiPilarController@delete_pilar')->name('referensi.versi_pilar.delete_pilar');
-            Route::post('update_status', 'App\Http\Controllers\Referensi\VersiPilarController@update_status')->name('referensi.versi_pilar.update_status');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\VersiPilarController@datatable')->name('referensi.versi_pilar.datatable');
-        });
-
-        Route::prefix('pilar_pembangunan')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\PilarPembangunanController@index')->name('referensi.pilar_pembangunan.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\PilarPembangunanController@create')->name('referensi.pilar_pembangunan.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\PilarPembangunanController@edit')->name('referensi.pilar_pembangunan.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\PilarPembangunanController@store')->name('referensi.pilar_pembangunan.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\PilarPembangunanController@delete')->name('referensi.pilar_pembangunan.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\PilarPembangunanController@datatable')->name('referensi.pilar_pembangunan.datatable');
-            //Imam
-            Route::post('update', 'App\Http\Controllers\Referensi\PilarPembangunanController@update')->name('referensi.pilar_pembangunan.update');
-            Route::post('update_status', 'App\Http\Controllers\Referensi\PilarPembangunanController@update_status')->name('referensi.pilar_pembangunan.update_status');
-            Route::post('order', 'App\Http\Controllers\Referensi\PilarPembangunanController@order')->name('referensi.pilar_pembangunan.order');
-            Route::post('ordersubmit', 'App\Http\Controllers\Referensi\PilarPembangunanController@orderSubmit')->name('referensi.pilar_pembangunan.ordersubmit');
-        });
-
-        Route::prefix('tpb')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\TpbController@index')->name('referensi.tpb.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\TpbController@create')->name('referensi.tpb.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\TpbController@edit')->name('referensi.tpb.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\TpbController@store')->name('referensi.tpb.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\TpbController@delete')->name('referensi.tpb.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\TpbController@datatable')->name('referensi.tpb.datatable');
-            //Imam
-            Route::post('update', 'App\Http\Controllers\Referensi\TpbController@update')->name('referensi.tpb.update');
-            Route::post('update_status', 'App\Http\Controllers\Referensi\TpbController@update_status')->name('referensi.tpb.update_status');
-        });
-
-        Route::prefix('status')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\StatusController@index')->name('referensi.status.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\StatusController@create')->name('referensi.status.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\StatusController@edit')->name('referensi.status.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\StatusController@store')->name('referensi.status.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\StatusController@delete')->name('referensi.status.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\StatusController@datatable')->name('referensi.status.datatable');
-        });
-
-        Route::prefix('cara_penyaluran')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\CaraPenyaluranController@index')->name('referensi.cara_penyaluran.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\CaraPenyaluranController@create')->name('referensi.cara_penyaluran.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\CaraPenyaluranController@edit')->name('referensi.cara_penyaluran.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\CaraPenyaluranController@store')->name('referensi.cara_penyaluran.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\CaraPenyaluranController@delete')->name('referensi.cara_penyaluran.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\CaraPenyaluranController@datatable')->name('referensi.cara_penyaluran.datatable');
-        });
-
-        Route::prefix('kode_indikator')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\KodeIndikatorController@index')->name('referensi.kode_indikator.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\KodeIndikatorController@create')->name('referensi.kode_indikator.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\KodeIndikatorController@edit')->name('referensi.kode_indikator.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\KodeIndikatorController@store')->name('referensi.kode_indikator.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\KodeIndikatorController@delete')->name('referensi.kode_indikator.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\KodeIndikatorController@datatable')->name('referensi.kode_indikator.datatable');
-        });
-
-        Route::prefix('kode_tujuan_tpb')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@index')->name('referensi.kode_tujuan_tpb.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@create')->name('referensi.kode_tujuan_tpb.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@edit')->name('referensi.kode_tujuan_tpb.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@store')->name('referensi.kode_tujuan_tpb.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@delete')->name('referensi.kode_tujuan_tpb.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\KodeTujuanTpbController@datatable')->name('referensi.kode_tujuan_tpb.datatable');
-        });
-
-        Route::prefix('perusahaan')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\PerusahaanController@index')->name('referensi.perusahaan.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\PerusahaanController@create')->name('referensi.perusahaan.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\PerusahaanController@edit')->name('referensi.perusahaan.edit');
-            Route::post('update_active', 'App\Http\Controllers\Referensi\PerusahaanController@update_active')->name('referensi.perusahaan.update_active');
-            Route::post('store', 'App\Http\Controllers\Referensi\PerusahaanController@store')->name('referensi.perusahaan.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\PerusahaanController@delete')->name('referensi.perusahaan.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\PerusahaanController@datatable')->name('referensi.perusahaan.datatable');
-            Route::get('inactive-all', 'App\Http\Controllers\Referensi\PerusahaanController@inactiveAll')->name('referensi.perusahaan.inactiveall');
-            Route::get('silababumnsync', function () {
-                $exitCode = Artisan::call('silaba:bumnsync');
-                return redirect('referensi/perusahaan/index');
-            })->name('referensi.perusahaan.silababumnsync');
-        });
-
-        Route::prefix('periode_laporan')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\PeriodeLaporanController@index')->name('referensi.periode_laporan.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\PeriodeLaporanController@create')->name('referensi.periode_laporan.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\PeriodeLaporanController@edit')->name('referensi.periode_laporan.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\PeriodeLaporanController@store')->name('referensi.periode_laporan.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\PeriodeLaporanController@delete')->name('referensi.periode_laporan.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\PeriodeLaporanController@datatable')->name('referensi.periode_laporan.datatable');
-            //Imam
-            Route::get('datatable_tentatif', 'App\Http\Controllers\Referensi\PeriodeLaporanController@datatable_tentatif')->name('referensi.periode_laporan.datatable_tentatif');
-            Route::post('update_status', 'App\Http\Controllers\Referensi\PeriodeLaporanController@updateStatus')->name('referensi.periode_laporan.update_status');
-        });
-
-        Route::prefix('api_whitelist')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\ApiWhitelistController@index')->name('referensi.api_whitelist.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\ApiWhitelistController@create')->name('referensi.api_whitelist.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\ApiWhitelistController@edit')->name('referensi.api_whitelist.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\ApiWhitelistController@store')->name('referensi.api_whitelist.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\ApiWhitelistController@delete')->name('referensi.api_whitelist.delete');
-            Route::post('status', 'App\Http\Controllers\Referensi\ApiWhitelistController@status')->name('referensi.api_whitelist.status');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\ApiWhitelistController@datatable')->name('referensi.api_whitelist.datatable');
-        });
-
-        Route::prefix('owner_program')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\OwnerController@index')->name('referensi.owner_program.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\OwnerController@create')->name('referensi.owner_program.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\OwnerController@edit')->name('referensi.owner_program.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\OwnerController@store')->name('referensi.owner_program.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\OwnerController@delete')->name('referensi.owner_program.delete');
-            Route::post('status', 'App\Http\Controllers\Referensi\OwnerController@status')->name('referensi.owner_program.status');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\OwnerController@datatable')->name('referensi.owner_program.datatable');
-        });
-
-        Route::prefix('provinsi')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\ProvinsiController@index')->name('referensi.provinsi.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\ProvinsiController@create')->name('referensi.provinsi.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\ProvinsiController@edit')->name('referensi.provinsi.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\ProvinsiController@store')->name('referensi.provinsi.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\ProvinsiController@delete')->name('referensi.provinsi.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\ProvinsiController@datatable')->name('referensi.provinsi.datatable');
-            Route::get('apisyncprovinsikota', function () {
-                $exitCode = Artisan::call('apisync:provinsikota');
-                return redirect('referensi/provinsi/index');
-            })->name('referensi.provinsi.apisyncprovinsikota');
-        });
-
-        Route::prefix('kota')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\KotaController@index')->name('referensi.kota.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\KotaController@create')->name('referensi.kota.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\KotaController@edit')->name('referensi.kota.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\KotaController@store')->name('referensi.kota.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\KotaController@delete')->name('referensi.kota.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\KotaController@datatable')->name('referensi.kota.datatable');
-            Route::get('apisyncprovinsikota', function () {
-                $exitCode = Artisan::call('apisync:provinsikota');
-                return redirect('referensi/kota/index');
-            })->name('referensi.kota.apisyncprovinsikota');
-        });
-
-        Route::prefix('skala_usaha')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\SkalaUsahaController@index')->name('referensi.skala_usaha.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\SkalaUsahaController@create')->name('referensi.skala_usaha.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\SkalaUsahaController@edit')->name('referensi.skala_usaha.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\SkalaUsahaController@store')->name('referensi.skala_usaha.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\SkalaUsahaController@delete')->name('referensi.skala_usaha.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\SkalaUsahaController@datatable')->name('referensi.skala_usaha.datatable');
-        });
-
-        Route::prefix('core_subject')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\CoreSubjectController@index')->name('referensi.core_subject.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\CoreSubjectController@create')->name('referensi.core_subject.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\CoreSubjectController@edit')->name('referensi.core_subject.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\CoreSubjectController@store')->name('referensi.core_subject.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\CoreSubjectController@delete')->name('referensi.core_subject.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\CoreSubjectController@datatable')->name('referensi.core_subject.datatable');
-        });
-
-        Route::prefix('satuan_ukur')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\SatuanUkurController@index')->name('referensi.satuan_ukur.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\SatuanUkurController@create')->name('referensi.satuan_ukur.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\SatuanUkurController@edit')->name('referensi.satuan_ukur.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\SatuanUkurController@store')->name('referensi.satuan_ukur.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\SatuanUkurController@delete')->name('referensi.satuan_ukur.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\SatuanUkurController@datatable')->name('referensi.satuan_ukur.datatable');
-        });
-
-        Route::prefix('jenis_program')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\JenisProgramController@index')->name('referensi.jenis_program.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\JenisProgramController@create')->name('referensi.jenis_program.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\JenisProgramController@edit')->name('referensi.jenis_program.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\JenisProgramController@store')->name('referensi.jenis_program.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\JenisProgramController@delete')->name('referensi.jenis_program.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\JenisProgramController@datatable')->name('referensi.jenis_program.datatable');
-        });
-
-        Route::prefix('sektor_usaha')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\SektorUsahaController@index')->name('referensi.sektor_usaha.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\SektorUsahaController@create')->name('referensi.sektor_usaha.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\SektorUsahaController@edit')->name('referensi.sektor_usaha.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\SektorUsahaController@store')->name('referensi.sektor_usaha.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\SektorUsahaController@delete')->name('referensi.sektor_usaha.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\SektorUsahaController@datatable')->name('referensi.sektor_usaha.datatable');
-        });
-
-        Route::prefix('kolekbilitas_pendanaan')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@index')->name('referensi.kolekbilitas_pendanaan.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@create')->name('referensi.kolekbilitas_pendanaan.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@edit')->name('referensi.kolekbilitas_pendanaan.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@store')->name('referensi.kolekbilitas_pendanaan.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@delete')->name('referensi.kolekbilitas_pendanaan.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\KolekbilitasPendanaanController@datatable')->name('referensi.kolekbilitas_pendanaan.datatable');
-        });
-
-        Route::prefix('kondisi_pinjaman')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\KondisiPinjamanController@index')->name('referensi.kondisi_pinjaman.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\KondisiPinjamanController@create')->name('referensi.kondisi_pinjaman.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\KondisiPinjamanController@edit')->name('referensi.kondisi_pinjaman.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\KondisiPinjamanController@store')->name('referensi.kondisi_pinjaman.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\KondisiPinjamanController@delete')->name('referensi.kondisi_pinjaman.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\KondisiPinjamanController@datatable')->name('referensi.kondisi_pinjaman.datatable');
-        });
-
-        Route::prefix('jenis_pembayaran')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\JenisPembayaranController@index')->name('referensi.jenis_pembayaran.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\JenisPembayaranController@create')->name('referensi.jenis_pembayaran.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\JenisPembayaranController@edit')->name('referensi.jenis_pembayaran.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\JenisPembayaranController@store')->name('referensi.jenis_pembayaran.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\JenisPembayaranController@delete')->name('referensi.jenis_pembayaran.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\JenisPembayaranController@datatable')->name('referensi.jenis_pembayaran.datatable');
-        });
-
-        Route::prefix('bank_account')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\BankAccountController@index')->name('referensi.bank_account.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\BankAccountController@create')->name('referensi.bank_account.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\BankAccountController@edit')->name('referensi.bank_account.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\BankAccountController@store')->name('referensi.bank_account.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\BankAccountController@delete')->name('referensi.bank_account.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\BankAccountController@datatable')->name('referensi.bank_account.datatable');
-            Route::get('apisyncbankaccount', function () {
-                $exitCode = Artisan::call('apisync:bankaccount');
-                return redirect('referensi/bank_account/index');
-            })->name('referensi.bank_account.apisyncbankaccount');
-        });
-
-        Route::prefix('versi_laporan_keuangan')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@index')->name('referensi.versi_laporan_keuangan.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@create')->name('referensi.versi_laporan_keuangan.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@edit')->name('referensi.versi_laporan_keuangan.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store')->name('referensi.versi_laporan_keuangan.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@delete')->name('referensi.versi_laporan_keuangan.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@datatable')->name('referensi.versi_laporan_keuangan.datatable');
-            Route::post('update_status', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@update_status')->name('referensi.versi_laporan_keuangan.update_status');
-            Route::post('add_laporan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@add_laporan')->name('referensi.versi_laporan_keuangan.add_laporan');
-            Route::post('edit_laporan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@edit_laporan')->name('referensi.versi_laporan_keuangan.edit_laporan');
-            Route::post('store_laporan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store_laporan')->name('referensi.versi_laporan_keuangan.store_laporan');
-            Route::post('add_parent', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@add_parent')->name('referensi.versi_laporan_keuangan.add_parent');
-            Route::post('store_parent', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store_parent')->name('referensi.versi_laporan_keuangan.store_parent');
-            Route::post('delete_parent', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@delete_parent')->name('referensi.versi_laporan_keuangan.delete_parent');
-            Route::post('add_child', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@add_child')->name('referensi.versi_laporan_keuangan.add_child');
-            Route::post('store_child', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@store_child')->name('referensi.versi_laporan_keuangan.store_child');
-            Route::post('delete_child', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@delete_child')->name('referensi.versi_laporan_keuangan.delete_child');
-            Route::post('delete_versi_laporan_keuangan', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@delete_versi_laporan_keuangan')->name('referensi.versi_laporan_keuangan.delete_versi_laporan_keuangan');
-            Route::post('edit_parent', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@edit_parent')->name('referensi.versi_laporan_keuangan.edit_parent');
-            Route::post('edit_child', 'App\Http\Controllers\Referensi\VersiLaporanKeuanganController@edit_child')->name('referensi.versi_laporan_keuangan.edit_child');
-        });
-
-        Route::prefix('laporan_keuangan')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\LaporanKeuanganController@index')->name('referensi.laporan_keuangan.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\LaporanKeuanganController@create')->name('referensi.laporan_keuangan.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\LaporanKeuanganController@edit')->name('referensi.laporan_keuangan.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\LaporanKeuanganController@store')->name('referensi.laporan_keuangan.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\LaporanKeuanganController@delete')->name('referensi.laporan_keuangan.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\LaporanKeuanganController@datatable')->name('referensi.laporan_keuangan.datatable');
-        });
-
-        Route::prefix('jenis_kegiatan')->group(function () {
-            Route::get('index', 'App\Http\Controllers\Referensi\JenisKegiatanController@index')->name('referensi.jenis_kegiatan.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\JenisKegiatanController@create')->name('referensi.jenis_kegiatan.create');
-            Route::post('edit', 'App\Http\Controllers\Referensi\JenisKegiatanController@edit')->name('referensi.jenis_kegiatan.edit');
-            Route::post('store', 'App\Http\Controllers\Referensi\JenisKegiatanController@store')->name('referensi.jenis_kegiatan.store');
-            Route::post('delete', 'App\Http\Controllers\Referensi\JenisKegiatanController@delete')->name('referensi.jenis_kegiatan.delete');
-            Route::get('datatable', 'App\Http\Controllers\Referensi\JenisKegiatanController@datatable')->name('referensi.jenis_kegiatan.datatable');
-
-            //Imam
-            Route::post('update', 'App\Http\Controllers\Referensi\JenisKegiatanController@update')->name('referensi.jenis_kegiatan.update');
-            Route::post('update_status', 'App\Http\Controllers\Referensi\JenisKegiatanController@update_status')->name('referensi.jenis_kegiatan.update_status');
-
-            //Sub Kegiatan
-            Route::post('create_subkegiatan', 'App\Http\Controllers\Referensi\JenisKegiatanController@create_subkegiatan')->name('referensi.jenis_kegiatan.create_subkegiatan');
-            Route::post('store_subkegiatan', 'App\Http\Controllers\Referensi\JenisKegiatanController@store_subkegiatan')->name('referensi.jenis_kegiatan.store_subkegiatan');
-            Route::get('datatable_subkegiatan', 'App\Http\Controllers\Referensi\JenisKegiatanController@datatable_subkegiatan')->name('referensi.jenis_kegiatan.datatable_subkegiatan');
-            Route::post('delete_subkegiatan', 'App\Http\Controllers\Referensi\JenisKegiatanController@delete_subkegiatan')->name('referensi.jenis_kegiatan.delete_subkegiatan');
-        });
-
-        Route::prefix('enable_input')->group(function() {
-            Route::get('index', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@index')->name('referensi.enable_input.index');
-            Route::post('create', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@create')->name('referensi.enable_input.create');
-            Route::post('save', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@save')->name('referensi.enable_input.save');
-            Route::post('delete', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@delete')->name('referensi.enable_input.delete');
-            Route::post('create_master', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@createMaster')->name('referensi.enable_input.create_master');
-            Route::post('save_master', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@saveMaster')->name('referensi.enable_input.save_master');
-            Route::post('delete_master', 'App\Http\Controllers\Referensi\EnableInputBySuperadmin@deleteMaster')->name('referensi.enable_input.delete_master');
-        });
-    });
+   
 
     Route::prefix('target')->group(function () {
         Route::prefix('administrasi')->group(function () {
@@ -422,25 +450,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
         });
     });
 
-    Route::prefix('menu')->group(function () {
-        Route::get('index', 'App\Http\Controllers\MenuController@index')->name('menu.index');
-        Route::post('create', 'App\Http\Controllers\MenuController@create')->name('menu.create');
-        Route::post('edit', 'App\Http\Controllers\MenuController@edit')->name('menu.edit');
-        Route::post('store', 'App\Http\Controllers\MenuController@store')->name('menu.store');
-        Route::post('delete', 'App\Http\Controllers\MenuController@delete')->name('menu.delete');
-        Route::post('gettreemenu', 'App\Http\Controllers\MenuController@gettreemenu')->name('menu.gettreemenu');
-        Route::post('submitchangestructure', 'App\Http\Controllers\MenuController@submitchangestructure')->name('menu.submitchangestructure');
-        Route::get('datatable', 'App\Http\Controllers\MenuController@datatable')->name('menu.datatable');
-    });
-
-    Route::prefix('permission')->group(function () {
-        Route::get('index', 'App\Http\Controllers\PermissionController@index')->name('permission.index');
-        Route::post('create', 'App\Http\Controllers\PermissionController@create')->name('permission.create');
-        Route::post('edit', 'App\Http\Controllers\PermissionController@edit')->name('permission.edit');
-        Route::post('store', 'App\Http\Controllers\PermissionController@store')->name('permission.store');
-        Route::post('delete', 'App\Http\Controllers\PermissionController@delete')->name('permission.delete');
-        Route::get('datatable', 'App\Http\Controllers\PermissionController@datatable')->name('permission.datatable');
-    });
+   
 
     Route::prefix('anggaran_tpb')->group(function () {
         Route::get('index', 'App\Http\Controllers\AnggaranTpbController@index')->name('anggaran_tpb.index');
@@ -736,6 +746,9 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
         \Artisan::call('syncglobal:activity');
         dd('successfully');
     });
+
+    Route::post('/encrypt_data', 'App\Http\Controllers\EncryptionController@encryptData')->name('encrypt_data');
+    Route::post('/decrypt_data', 'App\Http\Controllers\EncryptionController@decryptData')->name('decrypt_data');
 }); // end login dengan cas
 
 Route::get('cc', function () {

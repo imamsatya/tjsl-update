@@ -541,9 +541,24 @@
                 var tahun = $('#tahun').val();
                 var status_spd = $('#status_spd').val()
                 var periode_laporan = $('#periode_laporan') .val()
-            
+                
+                $.ajax({
+                    url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                    type: 'POST',
+                    data: {
+                        data: perusahaan_id,
+                        _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                    },
+                    success: function (encryptedValue) {
 
-                window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&status_spd=' + status_spd + '&periode_laporan=' + periode_laporan ;
+                        window.location.href = url + '?perusahaan_id=' + encryptedValue.encryptedValue + '&tahun=' + tahun + '&status_spd=' + status_spd + '&periode_laporan=' + periode_laporan ;
+                    },
+                    error: function (error) {
+                            console.error('Error in encrypting data:', error);
+                    }
+                });
+
+                // window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&status_spd=' + status_spd + '&periode_laporan=' + periode_laporan ;
             });
 
             $('#periode_laporan').change(function() {
@@ -1103,13 +1118,32 @@
 
         console.log("selectedTahun: " + selectedTahun);
         console.log("selectedTahunText: " + selectedTahunText);
+        
+        $.ajax({
+                    url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                    type: 'POST',
+                    data: {
+                        data: selectedPerusahaanId,
+                        _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                    },
+                    success: function (encryptedValue) {
+                        
+                        var url = "{{ route('laporan_realisasi.triwulan.spd_pumk.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'periode_id' => ':periode_id']) }}";
+                        url = url.replace(':perusahaan_id', encryptedValue.encryptedValue).replace(':tahun', selectedTahun).replace(':periode_id', selectedPeriode);
 
-        // Use the Laravel's built-in route function to generate the new URL
-        var url = "{{ route('laporan_realisasi.triwulan.spd_pumk.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'periode_id' => ':periode_id']) }}";
-        url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(':periode_id', selectedPeriode);
+                        // Redirect the user to the new page
+                        window.location.href = url;
+                    },
+                    error: function (error) {
+                            console.error('Error in encrypting data:', error);
+                    }
+                });
+        // // Use the Laravel's built-in route function to generate the new URL
+        // var url = "{{ route('laporan_realisasi.triwulan.spd_pumk.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'periode_id' => ':periode_id']) }}";
+        // url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(':periode_id', selectedPeriode);
 
-        // Redirect the user to the new page
-        window.location.href = url;
+        // // Redirect the user to the new page
+        // window.location.href = url;
     }
     </script>
 @endsection

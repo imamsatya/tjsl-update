@@ -4,6 +4,7 @@ namespace App\Http\Controllers\RencanaKerja;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use App\Models\User;
 use App\Models\Perusahaan;
 use App\Models\PilarPembangunan;
@@ -834,7 +835,8 @@ class ProgramController extends Controller
         $admin_bumn = false;
         $view_only = false;
         $isSuperAdmin = false;
-        $perusahaan_id = $request->perusahaan_id;
+        // $perusahaan_id = $request->perusahaan_id;
+        $perusahaan_id = $request->perusahaan_id ? (Crypt::decryptString($request->perusahaan_id)) : null ;
         if (!empty($users->getRoleNames())) {
             foreach ($users->getRoleNames() as $v) {
                 if ($v == 'Admin BUMN' || $v == 'Verifikator BUMN') {
@@ -1268,6 +1270,8 @@ class ProgramController extends Controller
         $isSuperAdmin = false;
         $admin_bumn = false;
         $view_only = false;
+        
+        $perusahaan_id = $perusahaan_id ? (Crypt::decryptString($perusahaan_id)) : null ;
         if (!empty($users->getRoleNames())) {
             foreach ($users->getRoleNames() as $v) {
                 if ($v == 'Admin BUMN') {

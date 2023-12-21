@@ -4,6 +4,7 @@ namespace App\Http\Controllers\LaporanRealisasi\Bulanan;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use App\Models\User;
 use App\Models\Perusahaan;
 use App\Models\PilarPembangunan;
@@ -44,7 +45,8 @@ class PumkController extends Controller
 
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
-        $perusahaan_id = $request->perusahaan_id ?? 1;
+        // $perusahaan_id = $request->perusahaan_id ?? 1;
+        $perusahaan_id = $request->perusahaan_id ? (Crypt::decryptString($request->perusahaan_id)) : 1 ;
 
         $admin_bumn = false;
         $view_only = false;

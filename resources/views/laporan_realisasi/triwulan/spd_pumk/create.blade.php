@@ -158,7 +158,7 @@
                     <!--end::Alert-->
                 @endif
                 <div class="row">
-                    @if($data->status_id == 1 || $data->status_id == 4)                       
+                    @if($data?->status_id == 1 || $data?->status_id == 4)                       
                     <!--begin::Alert-->
                     <div class="alert alert-success d-flex align-items-center p-5" style="border-radius: 0.5em;background-color: #e8fff3;color: #50cd89;border-color: #50cd89">
                         <!--begin::Icon-->
@@ -473,8 +473,8 @@
                             <div class="col-lg-12">
                                 <button id="close-btn" class="btn btn-danger me-3">Close</button>
                                 <button id="clear-btn" class="btn btn-info me-3">Clear</button>
-                                @if($data->status_id != 1 && $data->status_id != 4 )
-                                <button id="{{$selectedPeriode->isoktoinput || $isOkToInput ? 'simpan-btn' : ''}} "  {{$selectedPeriode->isoktoinput || $isOkToInput ? '' : 'disabled'}} {{$data->status_id == 1 || $data->status_id == 4 ? 'disabled' : ''}} class="btn btn-success me-3">Simpan</button>
+                                @if($data?->status_id != 1 && $data?->status_id != 4 )
+                                <button id="{{$selectedPeriode->isoktoinput || $isOkToInput ? 'simpan-btn' : ''}} "  {{$selectedPeriode->isoktoinput || $isOkToInput ? '' : 'disabled'}} {{$data?->status_id == 1 || $data?->status_id == 4 ? 'disabled' : ''}} class="btn btn-success me-3">Simpan</button>
                                 @endif
                             </div>
                         </div>
@@ -503,19 +503,40 @@
             })
             $("#select-perusahaan").on('change', function() {
                 const perusahaanSelected = $(this).val()
-                let currentUrl = window.location.href
-                console.log(perusahaanSelected)
-                console.log(currentUrl)
+                const tahunSelected = $('#select-tahun').val();
+                const periodeSelected = $('#select-periode').val()
+                $.ajax({
+                    url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                    type: 'POST',
+                    data: {
+                        data: perusahaanSelected,
+                        _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                    },
+                    success: function (encryptedValue) {
+
+                        var url = "{{ route('laporan_realisasi.triwulan.spd_pumk.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'periode_id' => ':periode_id']) }}";
+                        url = url.replace(':perusahaan_id', encryptedValue.encryptedValue).replace(':tahun', tahunSelected).replace(':periode_id', periodeSelected);
+
+                        // Redirect the user to the new page
+                        window.location.href = url;
+                    },
+                    error: function (error) {
+                            console.error('Error in encrypting data:', error);
+                    }
+                });
+                // let currentUrl = window.location.href
+                // console.log(perusahaanSelected)
+                // console.log(currentUrl)
                 
-                // Escape any special characters in perusahaanSelected to avoid issues with regex
-                const escapedPerusahaanSelected = perusahaanSelected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                // // Escape any special characters in perusahaanSelected to avoid issues with regex
+                // const escapedPerusahaanSelected = perusahaanSelected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-                // Create a regular expression to match the "/1/" part in the URL
-                const regex = new RegExp(/\/\d+\//);
+                // // Create a regular expression to match the "/1/" part in the URL
+                // const regex = new RegExp(/\/\d+\//);
 
-                // Replace the matched part with the value of perusahaanSelected
-                let updatedUrl = currentUrl.replace(regex, `/${escapedPerusahaanSelected}/`);
-                window.location.href = updatedUrl
+                // // Replace the matched part with the value of perusahaanSelected
+                // let updatedUrl = currentUrl.replace(regex, `/${escapedPerusahaanSelected}/`);
+                // window.location.href = updatedUrl
             })
 
             $("#select-tahun").on('change', function(){

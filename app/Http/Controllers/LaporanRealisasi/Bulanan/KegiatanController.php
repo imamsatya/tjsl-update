@@ -4,6 +4,7 @@ namespace App\Http\Controllers\LaporanRealisasi\Bulanan;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use App\Models\User;
 use App\Models\Perusahaan;
 use App\Models\PilarPembangunan;
@@ -63,14 +64,15 @@ class KegiatanController extends Controller
      */
     public function index(Request $request)
     {
-        
+        // dd('halo');
         // dd($request->kriteria_program);
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
 
         $admin_bumn = false;
         $view_only = false;
-        $perusahaan_id = $request->perusahaan_id ?? 'all';
+        // $perusahaan_id = $request->perusahaan_id ?? 'all';
+        $perusahaan_id = $request->perusahaan_id ? (Crypt::decryptString($request->perusahaan_id)) : 'all' ;
         if (!empty($users->getRoleNames())) {
             foreach ($users->getRoleNames() as $v) {
                 if ($v == 'Admin BUMN' || $v == 'Verifikator BUMN') {
@@ -258,6 +260,7 @@ class KegiatanController extends Controller
         $view_only = false;
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
+        $perusahaan_id = $perusahaan_id ? (Crypt::decryptString($perusahaan_id)) : null ;
         if (!empty($users->getRoleNames())) {
             foreach ($users->getRoleNames() as $v) {
                 if ($v == 'Admin BUMN') {
@@ -718,7 +721,10 @@ class KegiatanController extends Controller
             ini_set('memory_limit','-1');
             ini_set('max_execution_limit','0');
         }
+
+        
         $perusahaan_id = $request->perusahaan_id ?? 'all';
+        // $perusahaan_id = $request->perusahaan_id ? (Crypt::decryptString($request->perusahaan_id)) : 'all' ;
         $bulan = $request->bulan;
         $tahun = $request->tahun ?? date('Y');
         $jenis_anggaran = $request->jenis_anggaran ?? 'CID';
@@ -1242,7 +1248,8 @@ class KegiatanController extends Controller
 
     public function historyUpload(Request $request) {
         $id_users = \Auth::user()->id;
-        $data = LaporanRealisasiBulananUpload::where('perusahaan_id', $request->perusahaan_id)
+        $perusahaan_id = $request->perusahaan_id ? (Crypt::decryptString($request->perusahaan_id)) : 'all' ;
+        $data = LaporanRealisasiBulananUpload::where('perusahaan_id', $perusahaan_id)
                 ->where('bulan', $request->bulan)
                 ->where('tahun', $request->tahun)
                 ->orderBy('created_at','desc')->get();

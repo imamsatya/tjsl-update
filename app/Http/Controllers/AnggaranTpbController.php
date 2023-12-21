@@ -8,9 +8,12 @@ use DB;
 use Config;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
 use Datatables;
 use App\Http\Controllers\Controller;
+
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Models\AnggaranTpb;
@@ -1352,7 +1355,8 @@ class AnggaranTpbController extends Controller
     public function index2(Request $request) {
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
-        $perusahaan_id = $request->perusahaan_id;
+        
+        $perusahaan_id = $request->perusahaan_id ? (Crypt::decryptString($request->perusahaan_id)) : null ;
 
         $admin_bumn = false;
         $view_only = false;
@@ -1902,6 +1906,9 @@ class AnggaranTpbController extends Controller
 
     public function createRKA($perusahaan_id, $tahun)
     {
+        $perusahaan_id = (Crypt::decryptString($perusahaan_id));
+        
+        
         $id_users = \Auth::user()->id;
         $users = User::where('id', $id_users)->first();
         $isSuperAdmin = false;

@@ -686,6 +686,8 @@
             $('#form-cari').toggle(600);
         });
 
+
+
         $('#proses').on('click', function(event){
             // datatable.ajax.reload()
             var url = window.location.origin + '/anggaran_tpb/rka';
@@ -696,7 +698,24 @@
             const jenisAnggaran = $("#jenis-anggaran").val()
             const statusAnggaran = $("#status-anggaran").val()            
 
-            window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&pilar_pembangunan=' + pilar_pembangunan_id + '&tpb=' + tpb_id + '&jenis_anggaran=' +jenisAnggaran+ '&status=' +statusAnggaran;
+              // Ajax call to Laravel controller for encryption
+            $.ajax({
+                url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                type: 'POST',
+                data: {
+                    data: perusahaan_id,
+                    _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                },
+                success: function (encryptedValue) {
+                
+                window.location.href = url + '?perusahaan_id=' + encryptedValue.encryptedValue + '&tahun=' + tahun + '&pilar_pembangunan=' + pilar_pembangunan_id + '&tpb=' + tpb_id + '&jenis_anggaran=' +jenisAnggaran+ '&status=' +statusAnggaran;
+                
+                },
+                error: function (error) {
+                    console.error('Error in encrypting data:', error);
+                }
+            });
+            // window.location.href = url + '?perusahaan_id=' + perusahaan_id + '&tahun=' + tahun + '&pilar_pembangunan=' + pilar_pembangunan_id + '&tpb=' + tpb_id + '&jenis_anggaran=' +jenisAnggaran+ '&status=' +statusAnggaran;
         });
        
         if(!"{{ $admin_bumn }}"){
@@ -1844,10 +1863,16 @@
         }
     }
 
+  
     //Imam
     function redirectToNewPage() {
-        console.log('halo')
+
+
+        var secretKey = "bumn-tjsl";
+
         var selectedPerusahaanId = $('#perusahaan_id').val();
+        //post selectedPerusahaanId to laravel controller that provide encryption
+        //get the encryptedvalue and do the code below
         var selectedPerusahaanText = $('#perusahaan_id option:selected').text();
 
         var selectedTahun = $('#tahun').val();
@@ -1864,12 +1889,34 @@
             return
         }
 
-        // Use the Laravel's built-in route function to generate the new URL
-        var url = "{{ route('anggaran_tpb.rka.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
-        url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun);
+         // Ajax call to Laravel controller for encryption
+        $.ajax({
+            url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+            type: 'POST',
+            data: {
+                data: selectedPerusahaanId,
+                _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+            },
+            success: function (encryptedValue) {
+                // Once you get the encrypted value, use it in your URL construction
+                var url = "{{ route('anggaran_tpb.rka.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
+                url = url.replace(':perusahaan_id', encryptedValue.encryptedValue).replace(':tahun', selectedTahun);
+                
+                
+                // Redirect the user to the new page
+                window.location.href = url;
+            },
+            error: function (error) {
+                console.error('Error in encrypting data:', error);
+            }
+        });
 
-        // Redirect the user to the new page
-        window.location.href = url;
+        // // Use the Laravel's built-in route function to generate the new URL
+        // var url = "{{ route('anggaran_tpb.rka.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun']) }}";
+        // url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun);
+
+        // // Redirect the user to the new page
+        // window.location.href = url;
     }
 
     function loadDataPerusahaan(perusahaanId, tahun, pilar_pembangunan, tpb, status) {

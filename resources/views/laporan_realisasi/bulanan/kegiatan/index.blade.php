@@ -605,8 +605,21 @@
             var jenis_kegiatan = $('#jenis_kegiatan').val()
             const jenisAnggaran = $("#jenis-anggaran").val()
             // const statusAnggaran = $("#status-anggaran").val()   
+            $.ajax({
+                url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                type: 'POST',
+                data: {
+                    data: perusahaan_id,
+                    _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                },
+                success: function (encryptedValue) {
+                
+                
 
-            window.location.href = url + '?perusahaan_id=' + perusahaan_id +
+                // var url = "{{ route('rencana_kerja.program.input', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'jenis_anggaran' => ':jenis_anggaran']) }}";
+                // url = url.replace(':perusahaan_id', encryptedValue.encryptedValue).replace(':tahun', selectedTahun).replace(':jenis_anggaran', selectedJenisAnggaran);
+
+                window.location.href = url + '?perusahaan_id=' + encryptedValue.encryptedValue +
                 '&tahun=' + tahun +
                 '&pilar_pembangunan=' + pilar_pembangunan_id +
                 '&tpb=' + tpb_id +
@@ -614,6 +627,19 @@
                 '&program_id=' + program_id +
                 '&bulan_id=' + bulan_id +
                 '&jenis_kegiatan=' + jenis_kegiatan;
+                    },
+                    error: function (error) {
+                        console.error('Error in encrypting data:', error);
+                    }
+            });
+            // window.location.href = url + '?perusahaan_id=' + perusahaan_id +
+            //     '&tahun=' + tahun +
+            //     '&pilar_pembangunan=' + pilar_pembangunan_id +
+            //     '&tpb=' + tpb_id +
+            //     '&jenis_anggaran=' + jenisAnggaran +
+            //     '&program_id=' + program_id +
+            //     '&bulan_id=' + bulan_id +
+            //     '&jenis_kegiatan=' + jenis_kegiatan;
         });
 
 
@@ -1293,13 +1319,33 @@
             return
         }
 
+        $.ajax({
+                url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                type: 'POST',
+                data: {
+                    data: selectedPerusahaanId,
+                    _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                },
+                success: function (encryptedValue) {
+                
+                                var url =
+                            "{{ route('laporan_realisasi.bulanan.kegiatan.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'bulan' => ':bulan_id']) }}";
+                        url = url.replace(':perusahaan_id', encryptedValue.encryptedValue).replace(':tahun', selectedTahun).replace(':bulan_id',
+                            selectedBulan)
+                        // Redirect the user to the new page
+                        window.location.href = url;
+                },
+                error: function (error) {
+                        console.error('Error in encrypting data:', error);
+                }
+            });
         // Use the Laravel's built-in route function to generate the new URL
-        var url =
-            "{{ route('laporan_realisasi.bulanan.kegiatan.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'bulan' => ':bulan_id']) }}";
-        url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(':bulan_id',
-            selectedBulan)
-        // Redirect the user to the new page
-        window.location.href = url;
+        // var url =
+        //     "{{ route('laporan_realisasi.bulanan.kegiatan.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'bulan' => ':bulan_id']) }}";
+        // url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(':bulan_id',
+        //     selectedBulan)
+        // // Redirect the user to the new page
+        // window.location.href = url;
     }
 
     function deleteSelectedProgram(selectedProgram) {
