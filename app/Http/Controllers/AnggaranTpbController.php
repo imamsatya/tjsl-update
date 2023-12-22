@@ -1108,13 +1108,19 @@ class AnggaranTpbController extends Controller
 
     public function export(Request $request)
     {
+        // dd($request);
+        // $request->perusahaan_id = $request->perusahaan_id ? (Crypt::decryptString($request->perusahaan_id)) : null ;
+        // dd($request);
+        // dd(Crypt::decryptString($request->perusahaan_id));
+     
         $anggaran = AnggaranTpb::Select('anggaran_tpbs.*')
             ->leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
             ->leftJoin('tpbs', 'tpbs.id', 'relasi_pilar_tpbs.tpb_id')
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id');
 
-        if ($request->perusahaan_id) {
-            $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
+        if (Crypt::decryptString($request->perusahaan_id)) {
+     
+            $anggaran = $anggaran->where('anggaran_tpbs.perusahaan_id', Crypt::decryptString($request->perusahaan_id));
         }
 
         if ($request->tahun) {

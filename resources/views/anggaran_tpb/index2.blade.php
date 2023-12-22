@@ -1594,9 +1594,19 @@
     function exportExcel()
     {
         $.ajax({
+                url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                type: 'POST',
+                data: {
+                    data: $("select[name='perusahaan_id']").val(),
+                    _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                },
+                success: function (encryptedValue) {
+                
+                // window.location.href = url + '?perusahaan_id=' + encryptedValue.encryptedValue + '&tahun=' + tahun + '&pilar_pembangunan=' + pilar_pembangunan_id + '&tpb=' + tpb_id + '&jenis_anggaran=' +jenisAnggaran+ '&status=' +statusAnggaran;
+                $.ajax({
             type: 'post',
             data: {
-                'perusahaan_id' : $("select[name='perusahaan_id']").val(),
+                'perusahaan_id' : encryptedValue.encryptedValue,
                 'tahun' : $("select[name='tahun']").val(),
                 'pilar_pembangunan_id' : $("select[name='pilar_pembangunan_id']").val(),
                 'tpb_id' : $("select[name='tpb_id']").val()
@@ -1661,6 +1671,80 @@
                 
             }
         });
+                },
+                error: function (error) {
+                    console.error('Error in encrypting data:', error);
+                }
+            });
+
+        // $.ajax({
+        //     type: 'post',
+        //     data: {
+        //         'perusahaan_id' : $("select[name='perusahaan_id']").val(),
+        //         'tahun' : $("select[name='tahun']").val(),
+        //         'pilar_pembangunan_id' : $("select[name='pilar_pembangunan_id']").val(),
+        //         'tpb_id' : $("select[name='tpb_id']").val()
+        //     },
+        //     beforeSend: function () {
+        //         $.blockUI();
+        //     },
+        //     url: urlexport,
+        //     xhrFields: {
+        //         responseType: 'blob',
+        //     },
+        //     success: function(data){
+        //         $.unblockUI();
+
+        //         var today = new Date();
+        //         var dd = String(today.getDate()).padStart(2, '0');
+        //         var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        //         var yyyy = today.getFullYear();
+                
+        //         today = dd + '-' + mm + '-' + yyyy;
+        //         var filename = 'Data Anggaran TPB '+today+'.xlsx';
+
+        //         var blob = new Blob([data], {
+        //             type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        //         });
+        //         var link = document.createElement('a');
+        //         link.href = window.URL.createObjectURL(blob);
+        //         link.download = filename;
+
+        //         document.body.appendChild(link);
+
+        //         link.click();
+        //         document.body.removeChild(link);
+        //     },
+        //     error: function(jqXHR, exception){
+        //         $.unblockUI();
+        //             var msgerror = '';
+        //             if (jqXHR.status === 0) {
+        //                 msgerror = 'jaringan tidak terkoneksi.';
+        //             } else if (jqXHR.status == 404) {
+        //                 msgerror = 'Halaman tidak ditemukan. [404]';
+        //             } else if (jqXHR.status == 500) {
+        //                 msgerror = 'Internal Server Error [500].';
+        //             } else if (exception === 'parsererror') {
+        //                 msgerror = 'Requested JSON parse gagal.';
+        //             } else if (exception === 'timeout') {
+        //                 msgerror = 'RTO.';
+        //             } else if (exception === 'abort') {
+        //                 msgerror = 'Gagal request ajax.';
+        //             } else {
+        //                 msgerror = 'Error.\n' + jqXHR.responseText;
+        //             }
+        //     swal.fire({
+        //             title: "Error System",
+        //             html: msgerror+', coba ulangi kembali !!!',
+        //             icon: 'error',
+
+        //             buttonsStyling: true,
+        //             reverseButtons: true,
+        //             confirmButtonText: "<i class='flaticon2-checkmark'></i> OK",
+        //     });      
+                
+        //     }
+        // });
         return false;
     }
     

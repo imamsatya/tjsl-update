@@ -719,8 +719,8 @@ class ProgramController extends Controller
             ->leftJoin('target_tpbs', 'target_tpbs.anggaran_tpb_id', 'anggaran_tpbs.id');
 
        //temp comment 
-        if ($request->perusahaan_id) {            
-            $anggaran_program = $anggaran_program->where('anggaran_tpbs.perusahaan_id', $request->perusahaan_id);
+        if (Crypt::decryptString($request->perusahaan_id)) {            
+            $anggaran_program = $anggaran_program->where('anggaran_tpbs.perusahaan_id', Crypt::decryptString($request->perusahaan_id));
         }
 
         if ($request->tahun) {            
