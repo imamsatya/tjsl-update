@@ -1562,7 +1562,11 @@
                             msgerror = 'jaringan tidak terkoneksi.';
                         } else if (jqXHR.status == 404) {
                             msgerror = 'Halaman tidak ditemukan. [404]';
-                        } else if (jqXHR.status == 500) {
+                        }  else if (jqXHR.status == 403) {
+                        msgerror = 'Pengguna Tidak Sah. [403]';
+                        } 
+                        
+                        else if (jqXHR.status == 500) {
                             msgerror = 'Internal Server Error [500].';
                         } else if (exception === 'parsererror') {
                             msgerror = 'Requested JSON parse gagal.';

@@ -15,7 +15,10 @@ use App\Http\Middleware\CasAuth;
 |
 */
 
-Route::get('/', 'App\Http\Controllers\LandingPageController@index')->name('landing_page');
+Route::middleware(["frame.headers.middleware"])->group(function () {
+    Route::get('/', 'App\Http\Controllers\LandingPageController@index')->name('landing_page');
+});
+
 Route::get('/verifikasi/{id}/{tahun}', 'App\Http\Controllers\RencanaKerja\TbleController@verifikasiIndex')->name('verifikasi.index');
 
 

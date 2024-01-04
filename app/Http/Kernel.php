@@ -71,5 +71,6 @@ class Kernel extends HttpKernel
         
         'cas' => CasAuth::class,
         'tjslUser' => TjslUser::class,
+        'frame.headers.middleware' => \App\Http\Middleware\SecureHeadersMiddleware::class,
     ];
 }

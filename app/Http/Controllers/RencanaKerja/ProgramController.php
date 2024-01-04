@@ -712,6 +712,14 @@ class ProgramController extends Controller
 
     public function export(Request $request) {
 
+        $user = \Auth::user();
+        if (!$user->hasRole('Super Admin')) {
+           if ($user->id_bumn != Crypt::decryptString($request->perusahaan_id)) {
+            # redirect to unauthorized error
+            return response()->json(['error' => 'Unauthorized User'], 403);
+           }
+        }
+        
         $anggaran_program  = AnggaranTpb::leftJoin('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', 'anggaran_tpbs.relasi_pilar_tpb_id')
             ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', 'anggaran_tpbs.perusahaan_id')
             ->leftJoin('pilar_pembangunans', 'pilar_pembangunans.id', 'relasi_pilar_tpbs.pilar_pembangunan_id')
