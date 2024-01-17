@@ -73,6 +73,7 @@ class KegiatanController extends Controller
         $view_only = false;
         // $perusahaan_id = $request->perusahaan_id ?? 'all';
         $perusahaan_id = $request->perusahaan_id ? (Crypt::decryptString($request->perusahaan_id)) : 'all' ;
+        
         if (!empty($users->getRoleNames())) {
             foreach ($users->getRoleNames() as $v) {
                 if ($v == 'Admin BUMN' || $v == 'Verifikator BUMN') {
@@ -96,13 +97,14 @@ class KegiatanController extends Controller
         //Kegiatan
         $program = DB::table('target_tpbs')
         ->join('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun) {
-            if ($perusahaan_id != 'all') {
+            if ($perusahaan_id != 'all' && $perusahaan_id != "") {
+             
                 $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
                 ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
                 ->where('anggaran_tpbs.tahun', $tahun);
             }
 
-            if ($perusahaan_id == 'all') {
+            if ($perusahaan_id == 'all' || $perusahaan_id == "") {
                 $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
                 // ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
                 ->where('anggaran_tpbs.tahun', $tahun);
@@ -146,13 +148,13 @@ class KegiatanController extends Controller
         ->join('bulans', 'bulans.id', 'kegiatan_realisasis.bulan')
         ->join('target_tpbs', 'target_tpbs.id', 'kegiatans.target_tpb_id')
         ->join('anggaran_tpbs', function($join) use ($perusahaan_id, $tahun) {
-            if ($perusahaan_id != 'all') {
+            if ($perusahaan_id != 'all'  && $perusahaan_id != "") {
                 $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
                 ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
                 ->where('anggaran_tpbs.tahun', $tahun);
             }
 
-            if ($perusahaan_id == 'all') {
+            if ($perusahaan_id == 'all' || $perusahaan_id == "") {
                 $join->on('anggaran_tpbs.id', '=', 'target_tpbs.anggaran_tpb_id')
                 // ->where('anggaran_tpbs.perusahaan_id', $perusahaan_id)
                 ->where('anggaran_tpbs.tahun', $tahun);
