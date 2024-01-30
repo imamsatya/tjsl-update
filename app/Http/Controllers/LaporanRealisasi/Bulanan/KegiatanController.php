@@ -1144,7 +1144,9 @@ class KegiatanController extends Controller
 
     public function downloadTemplate(Request $request) {
         
-        $perusahaan_id = ($request->perusahaan_id?$request->perusahaan_id:1);
+        // $perusahaan_id = $perusahaan_id ? (Crypt::decryptString($perusahaan_id)) : null ;
+        $perusahaan_id = ($request->perusahaan_id?Crypt::decryptString($request->perusahaan_id):1);
+        
         $bulan = ($request->bulan ?? date('m'));
         $tahun = ($request->tahun ?? date('Y'));
         
