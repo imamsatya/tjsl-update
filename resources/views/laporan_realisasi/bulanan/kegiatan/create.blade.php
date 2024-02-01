@@ -1038,9 +1038,24 @@
                         // window.location.reload();
                         // var url = window.location.pathname;
                         // var segments = url.split('/'); 
+                        $.ajax({
+                            url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                            type: 'POST',
+                            data: {
+                                data: perusahaan_id,
+                                _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                            },
+                            success: function (encryptedValue) {
+                            
+                            // window.location.href = url + '?perusahaan_id=' + encryptedValue.encryptedValue + '&tahun=' + tahun + '&pilar_pembangunan=' + pilar_pembangunan_id + '&tpb=' + tpb_id + '&jenis_anggaran=' +jenisAnggaran+ '&status=' +statusAnggaran;
+                                let routeTo = "{{route('laporan_realisasi.bulanan.kegiatan.index')}}"+"?perusahaan_id="+encryptedValue.encryptedValue+"&tahun="+tahun+"&jenis_anggaran="+jenis_anggaran+"&bulan_id="+bulan
+                                window.location.href = routeTo
+                            },
+                            error: function (error) {
+                                console.error('Error in encrypting data:', error);
+                            }
+                        });
                         
-                        let routeTo = "{{route('laporan_realisasi.bulanan.kegiatan.index')}}"+"?perusahaan_id="+perusahaan_id+"&tahun="+tahun+"&jenis_anggaran="+jenis_anggaran+"&bulan_id="+bulan
-                        window.location.href = routeTo
                         
                     }
                    
