@@ -123,18 +123,19 @@ class KegiatanController extends Controller
         )
         ->get();
         // $currentMonth = (int) date('n');
-
+       
         $bulan = $request->bulan_id;
         // $bulan = $request->bulan_id ??  'all';
         $tahun = $request->tahun ?? date('Y');
         
         // $perusahaan_id = $request->perusahaan_id ?? 'all';
-        $bulan = $request->bulan;
+     
         $tahun = $request->tahun ?? date('Y');
         $jenis_anggaran = $request->jenis_anggaran ?? 'CID';
         // dd($perusahaan_id);
 
-        
+        // dd($bulan);
+        // dd($program);
         $kegiatan = DB::table('kegiatans')
         ->join('kegiatan_realisasis', function($join) use ($bulan, $tahun) {
             $join->on('kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
@@ -187,11 +188,13 @@ class KegiatanController extends Controller
             'tpbs.id as tpb_id',
             'tpbs.jenis_anggaran',
             'satuan_ukur.nama as satuan_ukur_nama',
-            'bulans.nama as bulan_nama'
+            'bulans.nama as bulan_nama',
+            'bulans.id as bulan_id'
         );
 
         $kegiatanDefault = $kegiatan;
-
+       
+      
         if ($request->pilar_pembangunan_id) {
 
             $kegiatan = $kegiatan->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
@@ -213,6 +216,7 @@ class KegiatanController extends Controller
         }
 
         $kegiatan = $kegiatan->get();
+        
         // dd($kegiatan);
         $totalAnggaranAlokasi = $kegiatanDefault->get()->sum('anggaran_alokasi');
         // dd($request->perusahaan_id);
