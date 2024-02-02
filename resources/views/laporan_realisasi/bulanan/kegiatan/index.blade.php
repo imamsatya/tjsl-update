@@ -307,7 +307,7 @@
                                 data-kt-view-roles-table-select="delete_selected">Simpan Status</button> --}}
                         {{-- <button type="button" class="btn btn-success btn-sm cls-add"
                                 data-kt-view-roles-table-select="delete_selected">Tambah</button> --}}
-                        @can('view-kegiatan')
+                        @can('export-kegiatan')
                         <button type="button" class="btn btn-success me-2 btn-sm  cls-export-queue">Rekap Excel</button>
                         {{-- <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data</button> --}}
                         @endcan

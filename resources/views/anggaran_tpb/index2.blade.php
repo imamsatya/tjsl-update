@@ -259,8 +259,10 @@
                                 }                                    
                             @endphp
                             @can('view-kegiatan')
+                            @can('export-kegiatan')
                                 <button type="button" class="btn btn-success me-2 btn-sm rekap-data">Rekap Data
                                 </button>
+                                @endcan
                                 @can('edit-kegiatan')
                                 <button {{ $isSuperAdmin ? '' : ($enable_input ? (!($isValidated || $isVerified) ? '' : 'disabled') : 'disabled') }} type="button" class="btn btn-success btn-sm input-data me-2" onclick="redirectToNewPage()">Input Data
                                 </button>
