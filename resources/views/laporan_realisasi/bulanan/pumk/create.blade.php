@@ -33,7 +33,7 @@
                         </select>
             </div>
         </div>
-        @if($perusahaan_id == 3)
+        @if($perusahaan_id == 3 || $perusahaan_id == 18)
         <div class="row mb-6">
             <div class="col-lg-3">
                 <div class="ms-2 bulan-label">Nilai Penyaluran Bulan <span style="color: red">*</span></div>
@@ -45,7 +45,7 @@
             </div>
         </div>
         @endif
-        @if($perusahaan_id != 3)
+        @if($perusahaan_id != 3 && $perusahaan_id != 18)
         <div class="row mb-6">
             <div class="col-lg-3">
                 <div class="ms-2 bulan-label">Nilai Penyaluran melalui BRI pada Bulan <span style="color: red">*</span></div>
@@ -68,7 +68,7 @@
             </div>
         </div>
         @endif
-        @if($perusahaan_id == 3)
+        @if($perusahaan_id == 3 || $perusahaan_id == 18)
         <div class="row mb-6">
             <div class="col-lg-3">
                 <div class="ms-2 bulan-label">Jumlah MB baru pada Bulan<span style="color: red">*</span></div>
@@ -361,7 +361,7 @@
     });
     function setFormValidate() {
         let perusahaan_id = $('#perusahaan_id').val()
-        if (perusahaan_id === '3') {
+        if (perusahaan_id === '3' || perusahaan_id === '18') {
             validationRules = {
                 tahun_create: 'required',
                 bulan_id_create: 'required',
@@ -470,7 +470,7 @@
                     //
                     let actionform = $('#actionform').val()
                     let pumk_bulan_id = $('#pumk_bulan_id').val()
-                    if (perusahaan_id === '3') {
+                    if (perusahaan_id === '3' || perusahaan_id === '18') {
                         let nilai_penyaluran = $('#nilai_penyaluran').val()
                         $('#nilai_penyaluran').val(parseInt(nilai_penyaluran.replace(/[^0-9\-]/g, '')))
 

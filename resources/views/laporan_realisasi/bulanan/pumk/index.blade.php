@@ -153,7 +153,7 @@
                                     @php
                                     $select = (($p->id == $perusahaan_id) ? 'selected="selected"' : '');
                                     @endphp
-                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }}</option>
+                                    <option value="{{ $p->id }}" {!! $select !!}>{{ $p->nama_lengkap }} </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -320,12 +320,12 @@
                                     <th
                                         style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">
                                         Bulan - Tahun</th>
-                                        @if($perusahaan_id == '3')
+                                        @if($perusahaan_id == '3'  || $perusahaan_id == '18')
                                     <th
                                         style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">
                                         Nilai Penyaluran </th>
                                         @endif
-                                        @if($perusahaan_id != '3')
+                                        @if($perusahaan_id != '3'  && $perusahaan_id != '18')
                                     <th
                                         style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">
                                         Penyaluran Melalui BRI</th>
@@ -333,7 +333,7 @@
                                         style="text-align:center;font-weight:bold;width:100px;border-bottom: 1px solid #c8c7c7;">
                                         Penyaluran Melalui Pegadaian</th>
                                         @endif
-                                        @if($perusahaan_id == '3')
+                                        @if($perusahaan_id == '3'  || $perusahaan_id == '18')
                                     <th
                                         style="text-align:center;font-weight:bold;width:120px;border-bottom: 1px solid #c8c7c7;">
                                         Jumlah MB Baru</th>
@@ -644,7 +644,7 @@
     function setDatatable() {
         let perusahaan_id = $('#perusahaan_id').val()
         let columns = null
-        if (perusahaan_id == '3') {
+        if (perusahaan_id == '3' || perusahaan_id == '18') {
             columns =  [
                 {
                     data: 'id',
@@ -738,7 +738,7 @@
                 }
             ]
         }
-        if (perusahaan_id != '3') {
+        if (perusahaan_id != '3' && perusahaan_id != '18') {
              columns =  [
                 {
                     data: 'id',
@@ -901,7 +901,7 @@
                 $(api.column(2).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(2).toFixed(0)) + '</div>');
                 $(api.column(3).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(3).toFixed(0)) + '</div>');
 
-                if (perusahaan_id =='3') {
+                if (perusahaan_id =='3' || perusahaan_id == '18') {
                     $(api.column(3).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(3).toFixed(0)) + '</div>');
                     $(api.column(4).footer()).html('<div class="text-end">' + formatCurrency2(getColumnTotal(4).toFixed(0)) + '</div>');
                 }
