@@ -9,7 +9,7 @@
       
         <div class="row mb-6">
             <div class="col-lg-6">
-                <label>Tahun</label>
+                <label>Tahun {{$perusahaan_id}}</label>
                 <select class="form-control form-control-lg form-control-solid form-select form-select-solid form-select2" id="tahun_create" name="tahun_create" data-kt-select2="true">
                     @php for($i = date("Y")+1; $i>=2020; $i--){ @endphp
                     @php

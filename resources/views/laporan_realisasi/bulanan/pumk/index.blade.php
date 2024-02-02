@@ -422,8 +422,10 @@
 
 
         $('body').on('click', '.cls-button-edit', function () {
+            var perusahaan_id = $('#perusahaan_id').val();
             const bulanan_pumk_id = $(this).data('id')
             winform(urlcreate, {
+                'perusahaan_id': perusahaan_id,
                 'bulanan_pumk_id': bulanan_pumk_id,
                 'actionform': 'edit',
             }, 'Ubah Data');
