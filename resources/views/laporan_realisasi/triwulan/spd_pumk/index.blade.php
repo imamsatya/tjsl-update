@@ -902,7 +902,7 @@
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row) {
-                            console.log(row)
+                            // console.log(row)
                             let status = null
                             if (data === 1) {
                                  status = `<span class="btn cls-log badge badge-light-success fw-bolder me-auto px-4 py-3" data-id="${row.id}">Verified</span>`

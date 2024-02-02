@@ -231,7 +231,7 @@
                             <tbody></tbody>
                         </table>
                     </div>
-
+                    @role('Super Admin')
                     <div style="margin-top: 10px">
                         <h1>Tabel Download</h1>
                                     <div class="table-responsive" >            
@@ -250,7 +250,8 @@
                                         <tbody></tbody>
                                       </table>
                                     </div>
-                                  </div>
+                    </div>
+                    @endrole
                 </div>
             </div>
             <!--end::Card body-->

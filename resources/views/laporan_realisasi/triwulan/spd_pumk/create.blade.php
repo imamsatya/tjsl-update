@@ -474,7 +474,7 @@
                                 <button id="close-btn" class="btn btn-danger me-3">Close</button>
                                 <button id="clear-btn" class="btn btn-info me-3">Clear</button>
                                 @if($data?->status_id != 1 && $data?->status_id != 4 )
-                                <button id="{{$selectedPeriode->isoktoinput || $isOkToInput ? 'simpan-btn' : ''}} "  {{$selectedPeriode->isoktoinput || $isOkToInput ? '' : 'disabled'}} {{$data?->status_id == 1 || $data?->status_id == 4 ? 'disabled' : ''}} class="btn btn-success me-3">Simpan</button>
+                                <button id="{{$selectedPeriode->isoktoinput || $isOkToInput ? 'simpan-btn' : ''}}"  {{$selectedPeriode->isoktoinput || $isOkToInput ? '' : 'disabled'}} {{$data?->status_id == 1 || $data?->status_id == 4 ? 'disabled' : ''}} class="btn btn-success me-3">Simpan</button>
                                 @endif
                             </div>
                         </div>

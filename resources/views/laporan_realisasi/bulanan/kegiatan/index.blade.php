@@ -360,6 +360,7 @@
                 <!--end::Card toolbar-->
             </div>
             <!--begin::Card body-->
+            
             <div class="card-body p-0">
                 <!--begin::Heading-->
                 <div class="card-px py-10">
@@ -400,7 +401,7 @@
                             </tr>
                         </tfoot>
                     </table>
-
+                    @role('Super Admin')
                     <div style="margin-top: 10px">
                         <h1>Tabel Download</h1>
                                     <div class="table-responsive" >            
@@ -419,9 +420,11 @@
                                         <tbody></tbody>
                                       </table>
                                     </div>
-                                  </div>
+                    </div>
+                    @endrole
                 </div>
             </div>
+          
             <!--end::Card body-->
         </div>
     </div>
