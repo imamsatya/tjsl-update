@@ -401,7 +401,7 @@
                             </tr>
                         </tfoot>
                     </table>
-                    @role('Super Admin')
+                    @can('view-queueDownload')
                     <div style="margin-top: 10px">
                         <h1>Tabel Download</h1>
                                     <div class="table-responsive" >            
@@ -421,7 +421,7 @@
                                       </table>
                                     </div>
                     </div>
-                    @endrole
+                    @endcan
                 </div>
             </div>
           
