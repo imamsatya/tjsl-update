@@ -68,7 +68,7 @@ class HomeController extends Controller
       
         if (!empty($users->getRoleNames())) {
             foreach ($users->getRoleNames() as $v) {
-                if ($v == 'Admin BUMN') {
+                if ($v == 'Admin BUMN' || $v == 'Verifikator BUMN') {
                     $admin_bumn = true;
                     $perusahaan_id = \Auth::user()->id_bumn;
                     // $perusahaan_id = 16;
@@ -112,7 +112,9 @@ class HomeController extends Controller
             'bulan' => Bulan::get(),
             'owner' => OwnerProgram::get(),
             'menuStatus' => $this->getMenuStatus($currentYear, $perusahaan_id),
-            'jenisKegiatan' => JenisKegiatan::where('is_active', true)->orderBy('id', 'asc')->get()
+            'jenisKegiatan' => JenisKegiatan::where('is_active', true)->orderBy('id', 'asc')->get(),
+            'periode' => $periode = DB::table('periode_laporans')->where('jenis_periode', 'standar')->where('is_visible', 'true')->orderBy('urutan')->get(),
+            // 'periodeNama' => $periode = DB::table('periode_laporans')->where('jenis_periode', 'standar')->where('is_visible', 'true')->orderBy('urutan')->pluck('nama')
         ]);
     }
 
