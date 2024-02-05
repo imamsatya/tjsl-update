@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Perusahaan;
 use App\Models\Menu;
+use App\Models\LaporanManajemen;
 use DB;
 use Session;
 use Datatables;
@@ -59,26 +60,59 @@ class TbleRealisasiController extends Controller
             }
         }
         $status = DB::table('statuses')->get();
-        $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->where('jenis_periode', 'standar')->orderBy('urutan')->get();
-        $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaan_masters.id as perusahaan_id, perusahaan_masters.nama_lengkap as nama_lengkap')
-        ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'laporan_manajemens.perusahaan_id')->whereIn('periode_laporan_id', $periode->pluck('id')->toArray());
-        if ($perusahaan_id) {
+        $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->where('jenis_periode', 'standar')->where('is_visible', 'true')->orderBy('urutan')->get();
+        
+        // $laporan_manajemen = DB::table('laporan_manajemens')->selectRaw('laporan_manajemens.*, perusahaan_masters.id as perusahaan_id, perusahaan_masters.nama_lengkap as nama_lengkap')
+        // ->leftJoin('perusahaan_masters', 'perusahaan_masters.id', '=', 'laporan_manajemens.perusahaan_id')->whereIn('periode_laporan_id', $periode->pluck('id')->toArray());
+        // if ($perusahaan_id) {
 
-            $laporan_manajemen = $laporan_manajemen->where('perusahaan_id', $perusahaan_id);
-        }
+        //     $laporan_manajemen = $laporan_manajemen->where('perusahaan_id', $perusahaan_id);
+        // }
 
 
-        if ($request->tahun) {
+        // if ($request->tahun) {
 
-            $laporan_manajemen = $laporan_manajemen->where('tahun', $request->tahun);
-        }
+        //     $laporan_manajemen = $laporan_manajemen->where('tahun', $request->tahun);
+        // }
 
-        if ($request->periode_id) {
+        // if ($request->periode_id) {
 
-            $laporan_manajemen = $laporan_manajemen->where('periode_laporan_id', $request->periode_id);
-        }
+        //     $laporan_manajemen = $laporan_manajemen->where('periode_laporan_id', $request->periode_id);
+        // }
 
-        $laporan_manajemen = $laporan_manajemen->get();
+        // $laporan_manajemen = $laporan_manajemen->get();
+
+        //cek laporan
+        $all_perusahaan_id =Perusahaan::where('is_active', true)->pluck('id');
+          $currentYear = Carbon::now()->year;
+         
+            if ($perusahaan_id) {
+                for ($year = 2020; $year <= $currentYear; $year++) {
+                    //code untuk cek
+                    // $cek_laporan_rka = DB::table('laporan_manajemens')->where('tahun', 2023)->where('perusahaan_id', 60)->where('periode_laporan_id', $periode_rka_id)->first();
+                    // dd($cek_laporan_rka);
+                    
+                    foreach ($periode as $key => $periode_row) {
+                     
+                        $cek_laporan = DB::table('laporan_manajemens')->where('tahun', $year)->where('perusahaan_id', $perusahaan_id)->where('periode_laporan_id',  $periode_row->id)->first();
+                       
+                        if(!$cek_laporan){
+                          
+                            $latest_id = LaporanManajemen::max('id');
+                            $laporan_manajemen_new = new LaporanManajemen();
+                            $laporan_manajemen_new->id = $latest_id + 1;
+                            $laporan_manajemen_new->perusahaan_id = $perusahaan_id;
+                            $laporan_manajemen_new->periode_laporan_id = $periode_row->id;
+                            $laporan_manajemen_new->status_id = 3; //unfilled
+                            $laporan_manajemen_new->tahun = $year;
+                            $laporan_manajemen_new->save();
+                           
+                        }
+                    }
+                    
+                }
+            }
+            
         return view($this->__route . '.index', [
             'pagetitle' => $this->pagetitle,
             'breadcrumb' => 'Rencana Kerja - Tanda Bukti Lapor Elektronik - RKA',
