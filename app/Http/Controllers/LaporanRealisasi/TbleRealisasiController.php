@@ -308,7 +308,6 @@ class TbleRealisasiController extends Controller
            }
 
            //cek Kegiatan
-           
            for ($i=0; $i < $jumlah_bulan; $i++) { 
                 $bulan_id = $i+1;
                 $bulan_nama = DB::table('bulans')->where('id', $bulan_id)->first()->nama;
@@ -438,8 +437,12 @@ class TbleRealisasiController extends Controller
             //kalau ada yg inprogress walaupun 1 sudah pasti in progress
             if ($laporan_manajemen?->whereIn('status_id', [2, 3])->first()) {
                 $data_laporan_manajemen['tanggal_update'] = $laporan_manajemen?->whereIn('status_id', [2, 3])->first()->updated_at ?? 'Unfilled';
-                
                 $data_laporan_manajemen['status'] = $laporan_manajemen?->whereIn('status_id', [2, 3])->first()->status_id === 2 ? "In Progress" : 'Unfilled';
+                if($laporan_manajemen?->whereIn('status_id', [2, 3])->first()){
+                    if($laporan_manajemen?->whereIn('status_id', [2, 3])->first()->file_name == null){
+                        $data_laporan_manajemen['tanggal_update'] = 'Unfilled';
+                    }
+                }
             }
             $data[] = $data_laporan_manajemen;
             
@@ -527,10 +530,16 @@ class TbleRealisasiController extends Controller
             if ($laporan_manajemen?->whereIn('status_id', [2, 3])->first()) {
                 $data[2]['tanggal_update'] = $laporan_manajemen?->whereIn('status_id', [2, 3])->first()->status_id === 2 ? $laporan_manajemen->whereIn('status_id', [2, 3])->first()->updated_at : 'Unfilled';
                 $data[2]['status'] =  $laporan_manajemen?->whereIn('status_id', [2, 3])->first()->status_id === 2 ? "In Progress" : 'Unfilled';
+
+                if($laporan_manajemen?->whereIn('status_id', [2, 3])->first()){
+                    if($laporan_manajemen?->whereIn('status_id', [2, 3])->first()->file_name == null){
+                        $data[2]['tanggal_update'] = 'Unfilled';
+                    }
+                }
             }
         }
         
-        // dd($data);
+       
       
         $tanggal_cetak = Carbon::now()->locale('id_ID')->isoFormat('D MMMM YYYY');
         $user = Auth::user();
