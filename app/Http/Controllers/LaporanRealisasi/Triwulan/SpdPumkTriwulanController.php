@@ -57,7 +57,7 @@ class SpdPumkTriwulanController extends Controller
                 }
             }
         }
-        $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->where('jenis_periode', 'standar')->orderBy('urutan')->get();
+        $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->where('jenis_periode', 'standar')->where('is_visible', 'true')->orderBy('urutan')->get();
         $anggaran = DB::table('pumk_anggarans')
             ->selectRaw('pumk_anggarans.*,
              perusahaan_masters.id as perusahaan_id, perusahaan_masters.nama_lengkap as nama_lengkap,
@@ -151,7 +151,7 @@ class SpdPumkTriwulanController extends Controller
         
         $perusahaan_id = $perusahaan_id ? (Crypt::decryptString($perusahaan_id)) : null ;
 
-        $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->get();
+        $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->where('is_visible', 'true')->get();
         $selectedPeriode = DB::table('periode_laporans')->where('id', $periode_id)
         ->selectRaw("*, ((DATE(NOW()) BETWEEN tanggal_awal AND tanggal_akhir) OR periode_laporans.is_active = false) AS isOkToInput")
         ->first();

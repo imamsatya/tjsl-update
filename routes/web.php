@@ -156,6 +156,7 @@ Route::middleware([CasAuth::class, TjslUser::class])->group(function () {
                 //Imam
                 Route::get('datatable_tentatif', 'App\Http\Controllers\Referensi\PeriodeLaporanController@datatable_tentatif')->name('referensi.periode_laporan.datatable_tentatif');
                 Route::post('update_status', 'App\Http\Controllers\Referensi\PeriodeLaporanController@updateStatus')->name('referensi.periode_laporan.update_status');
+                Route::post('update_visibility', 'App\Http\Controllers\Referensi\PeriodeLaporanController@updateVisibility')->name('referensi.periode_laporan.update_visibility');
             });
     
             Route::prefix('api_whitelist')->group(function () {

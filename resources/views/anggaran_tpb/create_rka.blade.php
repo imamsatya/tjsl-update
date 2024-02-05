@@ -25,7 +25,7 @@
                     <!--begin::Card title-->
                     <div class="card-title">
                         <h2 class="d-flex align-items-center">
-                            Input Data RKA per TPB
+                            Input Data RKA per TPB x
                             <span class="text-gray-600 fs-6 ms-1">- {{ $nama_perusahaan }}</span>
                         </h2>
                     </div>
@@ -416,7 +416,8 @@
                         if (valueField.length > 0) {
                             num = parseInt(valueField.replace(/[^0-9]+/g, ""), 10);
                         } else {
-                            num = null;
+                            // num = null;
+                            num = 0;
                         }
                         const object = {
                             idrelasi: cidTpbField.dataset.idrelasi,
@@ -433,7 +434,8 @@
                         if (valueField.length > 0) {
                             num = parseInt(valueField.replace(/[^0-9]+/g, ""), 10);
                         } else {
-                            num = null;
+                            // num = null;
+                            num = 0
                         }
                         const object = {
                             idrelasi: noncidTpbField.dataset.idrelasi,

@@ -48,10 +48,12 @@
                                     <th>Tanggal Akhir</th>
                                     <th>Keterangan</th>
                                     <th>Aktif</th>
+                                    <th>Tampak</th>
                                     <th style="text-align:center;">Aksi</th>
                                     <th><label
                                             class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
-                                                data-type="standar" class="form-check-input select-all" type="checkbox"></label>
+                                                data-type="standar" class="form-check-input select-all"
+                                                type="checkbox"></label>
                                     </th>
                                 </tr>
                             </thead>
@@ -107,10 +109,12 @@
                                     <th>Tanggal Akhir</th>
                                     <th>Keterangan</th>
                                     <th>Aktif</th>
+                                    <th>Tampak</th>
                                     <th style="text-align:center;">Aksi</th>
                                     <th><label
                                             class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3"><input
-                                             data-type="tentatif" class="form-check-input select-all" type="checkbox"></label>
+                                                data-type="tentatif" class="form-check-input select-all"
+                                                type="checkbox"></label>
                                     </th>
                                 </tr>
                             </thead>
@@ -189,6 +193,42 @@
                 });
             });
 
+            $('tbody').on('click', '.is_visible-check', function() {
+
+
+                var $row = $(this);
+                var id = $(this).val();
+                var finalVisibility = $(this).prop('checked') ? true : false;
+                var nama = $(this).data('nama');
+
+                $.blockUI();
+
+                // Send an AJAX request to set the "selected" attribute in the database
+                $.ajax({
+                    url: '/referensi/periode_laporan/update_visibility',
+                    type: 'POST',
+                    data: {
+                        id: id,
+                        finalVisibility: finalVisibility
+                    },
+                    success: function(response) {
+                        $.unblockUI();
+
+                        toastr.success(
+                            `Status data <strong>${nama}</strong> berhasil diubah menjadi <strong>${finalStatus ? 'Aktif' : 'Tidak Aktif'}</strong>!`
+                        );
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        $.unblockUI();
+                        toastr.error(
+                            `Status data <strong>${nama}</strong> gagal diupdate!`
+                        );
+                        $row.prop('checked', !finalStatus)
+                        console.log(errorThrown);
+                    }
+                });
+            });
+
             setDatatable();
 
             $('.select-all').on('click', function() {
@@ -198,17 +238,17 @@
 
             $("#datatable").on('click', '.check-standar', function() {
                 let isAllSelected = true;
-                $(`.check-standar`).each( function () {
-                    if(!$(this).prop('checked')) isAllSelected = false;
-                }) 
+                $(`.check-standar`).each(function() {
+                    if (!$(this).prop('checked')) isAllSelected = false;
+                })
                 $('.select-all[data-type="standar"]').prop('checked', isAllSelected)
             })
 
             $("#datatable_tentatif").on('click', '.check-tentatif', function() {
                 let isAllSelected = true;
-                $(`.check-tentatif`).each( function () {
-                    if(!$(this).prop('checked')) isAllSelected = false;
-                }) 
+                $(`.check-tentatif`).each(function() {
+                    if (!$(this).prop('checked')) isAllSelected = false;
+                })
                 $('.select-all[data-type="tentatif"]').prop('checked', isAllSelected)
             })
         });
@@ -256,6 +296,17 @@
                             const isChecked = data ? 'checked' : ''
                             return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
                                     <input class="form-check-input is_active-check" type="checkbox" data-periode="${row.id}" data-nama="${row.nama}"  ${isChecked} value="${row.id}">
+                                    </label>`;
+                        }
+                    },
+                    {
+                        data: 'is_visible',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            const isChecked = data ? 'checked' : ''
+                            return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                    <input class="form-check-input is_visible-check" type="checkbox" data-periode="${row.id}" data-nama="${row.nama}"  ${isChecked} value="${row.id}">
                                     </label>`;
                         }
                     },
@@ -327,6 +378,17 @@
                         }
                     },
                     {
+                        data: 'is_visible',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            const isChecked = data ? 'checked' : ''
+                            return `<label class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 mt-3">
+                                    <input class="form-check-input is_visible-check" type="checkbox" data-periode="${row.id}" data-nama="${row.nama}"  ${isChecked} value="${row.id}">
+                                    </label>`;
+                        }
+                    },
+                    {
                         data: 'action',
                         name: 'action'
                     },
@@ -360,16 +422,16 @@
             });
         }
 
-        function onbtndelete(element) {            
+        function onbtndelete(element) {
             const type = $(element).data('type');
             const selectedValue = $(`.check-${type}:checked`);
-            const deletedPeriode = []            
+            const deletedPeriode = []
 
-            selectedValue.each( function () {
+            selectedValue.each(function() {
                 deletedPeriode.push($(this).val())
-            })         
+            })
 
-            if(!deletedPeriode.length) {
+            if (!deletedPeriode.length) {
                 swal.fire({
                     title: "Pemberitahuan",
                     text: "Tidak ada data terpilih untuk dihapus",
@@ -411,8 +473,8 @@
                             });
 
                             if (data.flag == 'success') {
-                                if(type === 'standar') datatable.ajax.reload(null, false);
-                                if(type === 'tentatif') datatable_tentatif.ajax.reload(null, false);
+                                if (type === 'standar') datatable.ajax.reload(null, false);
+                                if (type === 'tentatif') datatable_tentatif.ajax.reload(null, false);
                             }
 
                         },

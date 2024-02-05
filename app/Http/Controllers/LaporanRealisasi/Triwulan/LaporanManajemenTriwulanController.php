@@ -56,7 +56,7 @@ class LaporanManajemenTriwulanController extends Controller
               }
           }
           $status = DB::table('statuses')->get();
-          $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->where('jenis_periode', 'standar')->orderBy('urutan')->get();
+          $periode = DB::table('periode_laporans')->whereNotIn('nama', ['RKA'])->where('jenis_periode', 'standar')->where('is_visible', 'true')->orderBy('urutan')->get();
           //cek laporan
           $all_perusahaan_id =Perusahaan::where('is_active', true)->pluck('id');
           $currentYear = Carbon::now()->year;

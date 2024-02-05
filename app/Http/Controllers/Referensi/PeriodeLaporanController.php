@@ -378,4 +378,9 @@ class PeriodeLaporanController extends Controller
         PeriodeLaporan::where('id', $request->id)->update(['is_active' => ($request->finalStatus === 'true')]);
         echo json_encode(['result' => true]);
     }
+
+    public function updateVisibility(Request $request) {
+        PeriodeLaporan::where('id', $request->id)->update(['is_visible' => ($request->finalVisibility === 'true')]);
+        echo json_encode(['result' => true]);
+    }
 }
