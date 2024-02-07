@@ -186,10 +186,10 @@ class UploadMitraBinaanController extends Controller
         }else{
             $perusahaan = [];
         }
-
+       
         $namaFile = "Template Data Mitra Binaan.xlsx";
-        
-        return Excel::download(new MitraBinaanTemplateExcelSheet($perusahaan, $tahun, $periode), $namaFile);
+        $listPerusahaan = Perusahaan::where('is_active', true)->get();
+        return Excel::download(new MitraBinaanTemplateExcelSheet($perusahaan, $tahun, $periode, $listPerusahaan), $namaFile);
     }
 
     public function download_upload_berhasil($kode)

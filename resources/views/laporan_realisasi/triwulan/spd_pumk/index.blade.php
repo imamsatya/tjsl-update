@@ -402,23 +402,33 @@
 
                 var selectedTahun = $(this).data('tahun');
 
-                console.log($(this))
+             
                 var selectedPeriodeId = $(this).data('periode_id')
            
 
-                // Do something with the selected value and text
-                console.log("selectedPerusahaanId: " + selectedPerusahaanId);
-          
+                $.ajax({
+                    url: "{{ route('encrypt_data') }}",  // Replace with your actual route
+                    type: 'POST',
+                    data: {
+                        data: selectedPerusahaanId,
+                        _token: '{{ csrf_token() }}'  // Add CSRF token for Laravel
+                    },
+                    success: function (encryptedValue) {
 
-                console.log("selectedTahun: " + selectedTahun);
-           
-
-                // Use the Laravel's built-in route function to generate the new URL
+                        // window.location.href = url + '?perusahaan_id=' + encryptedValue.encryptedValue + '&tahun=' + tahun + '&status_spd=' + status_spd + '&periode_laporan=' + periode_laporan ;
+                         // Use the Laravel's built-in route function to generate the new URL
                 var url = "{{ route('laporan_realisasi.triwulan.spd_pumk.create', ['perusahaan_id' => ':perusahaan_id', 'tahun' => ':tahun', 'periode_id' => ':periode_id']) }}";
-                url = url.replace(':perusahaan_id', selectedPerusahaanId).replace(':tahun', selectedTahun).replace(':periode_id', selectedPeriodeId);
+                url = url.replace(':perusahaan_id', encryptedValue.encryptedValue).replace(':tahun', selectedTahun).replace(':periode_id', selectedPeriodeId);
 
                 // Redirect the user to the new page
                 window.location.href = url;
+                    },
+                    error: function (error) {
+                            console.error('Error in encrypting data:', error);
+                    }
+                });
+
+               
             });
 
             $('body').on('click', '.cls-button-delete', function() {

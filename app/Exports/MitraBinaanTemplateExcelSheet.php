@@ -9,10 +9,11 @@ class MitraBinaanTemplateExcelSheet implements WithMultipleSheets
 {
     use Exportable;
     
-     public function __construct($perusahaan, $tahun, $periode){
+     public function __construct($perusahaan, $tahun, $periode, $listPerusahaan){
         $this->perusahaan = $perusahaan ;
         $this->tahun = $tahun;
         $this->periode = $periode;
+        $this->listPerusahaan = $listPerusahaan;
      }
 
     /**
@@ -21,7 +22,7 @@ class MitraBinaanTemplateExcelSheet implements WithMultipleSheets
     public function sheets(): array
     {
         $sheets = [];
-        $sheets[] = new MitraBinaanTemplateExport($this->perusahaan, $this->tahun, $this->periode);
+        $sheets[] = new MitraBinaanTemplateExport($this->perusahaan, $this->tahun, $this->periode, $this->listPerusahaan);
         // $sheets[] = new ReferensiPerusahaan();
         $sheets[] = new ReferensiProvinsi();
         $sheets[] = new ReferensiKota();
@@ -33,6 +34,7 @@ class MitraBinaanTemplateExcelSheet implements WithMultipleSheets
         // $sheets[] = new ReferensiJenisPembayaran();
         // $sheets[] = new ReferensiBankAccount();
         // $sheets[] = new ReferensiTambahanPendanaan();
+        $sheets[] = new ReferensiListPerusahaan();
         return $sheets;
     }
 }

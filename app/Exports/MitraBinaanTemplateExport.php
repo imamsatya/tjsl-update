@@ -18,10 +18,11 @@ use App\Models\Bulan;
 
 class MitraBinaanTemplateExport implements FromView , WithTitle, ShouldAutoSize
 {
-    public function __construct($perusahaan, $tahun, $periode){
+    public function __construct($perusahaan, $tahun, $periode, $listPerusahaan){
         $this->perusahaan = $perusahaan ;
         $this->tahun = $tahun ;
         $this->periode = $periode;
+        $this->listPerusahaan = $listPerusahaan;
     }
 
     public function view(): View
@@ -42,6 +43,7 @@ class MitraBinaanTemplateExport implements FromView , WithTitle, ShouldAutoSize
           'perusahaan' => $perusahaan, 
           'data' => $data, 
           'tahun' => $this->tahun,
+          'listPerusahaan' => $this->listPerusahaan,
       ]);
     }
 
