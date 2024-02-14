@@ -25,7 +25,7 @@
                     <!--begin::Card title-->
                     <div class="card-title">
                         <h2 class="d-flex align-items-center">
-                            Input Data RKA per TPB x
+                            Input Data RKA per TPB
                             <span class="text-gray-600 fs-6 ms-1">- {{ $nama_perusahaan }}</span>
                         </h2>
                     </div>

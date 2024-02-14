@@ -825,15 +825,23 @@
                 },
                 success: function(response) {
                     
-                    console.log(`success : ${response}`)
-                    toastr.success(
+                    if (response.flag == 'warning') {
+                        toastr.warning(
+                        response.msg
+                        );
+                    }
+                    if (response.flag == 'success') {
+                        toastr.success(
                         `Berhasil!`
                     );
+
+                    
                     var url = window.location.pathname;
                             var segments = url.split('/');
                             console.log(segments)
                             let routeTo = "{{route('laporan_realisasi.triwulan.spd_pumk.index')}}"+"?perusahaan_id="+segments[5]+"&tahun="+segments[6]+"&periode_laporan="+segments[7]
                             window.location.href = routeTo
+                    }
                     // window.location.reload();
                 },
                 error: function(jqXHR, textStatus, errorThrown) {

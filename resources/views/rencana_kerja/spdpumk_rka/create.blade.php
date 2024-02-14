@@ -803,17 +803,26 @@
                     actionform: actionform
                 },
                 success: function(response) {
-                    
+                    console.log(`response : ${response.flag}`)
                     // console.log(`success : ${response}`)
-                    toastr.success(
+                    if (response.flag == 'warning') {
+                        toastr.warning(
+                        response.msg
+                        );
+                    }
+                    if (response.flag == 'success') {
+                        toastr.success(
                         `Berhasil!`
                     );
 
-                    var url = window.location.pathname;
-                            var segments = url.split('/');
-                            // console.log(segments)
-                            let routeTo = "{{route('rencana_kerja.spdpumk_rka.index')}}"+"?perusahaan_id="+segments[4]+"&tahun="+segments[5]
-                            window.location.href = routeTo
+                        var url = window.location.pathname;
+                        var segments = url.split('/');
+                        // console.log(segments)
+                        let routeTo = "{{route('rencana_kerja.spdpumk_rka.index')}}"+"?perusahaan_id="+segments[4]+"&tahun="+segments[5]
+                        window.location.href = routeTo
+                    }
+                   
+
                     // window.location.reload();
                 },
                 error: function(jqXHR, textStatus, errorThrown) {

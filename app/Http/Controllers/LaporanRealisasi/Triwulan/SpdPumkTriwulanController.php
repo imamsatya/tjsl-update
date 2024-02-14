@@ -8,12 +8,15 @@ use App\Models\Kegiatan;
 use App\Models\KegiatanRealisasi;
 use App\Models\LogKegiatan;
 use App\Models\SubKegiatan;
+use App\Models\LogAnggaranTpb;
+use App\Models\AnggaranTpb;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use DB;
 use App\Models\PumkAnggaran;
 use App\Models\LogPumkAnggaran;
+use App\Models\VersiPilar;
 use Session;
 use Datatables;
 use Illuminate\Database\Eloquent\Collection;
@@ -287,7 +290,17 @@ class SpdPumkTriwulanController extends Controller
                     }
                     //cari tpb 8 dulu
                     $tpb8cid_id = DB::table('tpbs')->where('no_tpb', 'TPB 8')->where('jenis_anggaran', 'CID')->first()?->id;
-
+                    if (!$tpb8cid_id) {
+                        DB::rollback();
+                        $result = [
+                            'flag'  => 'warning',
+                            'msg' => 'Data TPB 8 belum tersedia ',
+                            'title' => 'Gagal'
+                        ];
+                        return response()->json($result);
+                        break;
+                     
+                    }
                     if ($tpb8cid_id) {
                         $anggaran_tpb8 = DB::table('anggaran_tpbs')->select('anggaran_tpbs.*')        
                         ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
@@ -295,7 +308,50 @@ class SpdPumkTriwulanController extends Controller
                         ->where('perusahaan_id', $request->perusahaan_id)
                         ->where('tpb_id', $tpb8cid_id)
                         ->first();
+                        //kalau tidak ada , maka tpb 8 dibuat samadengan spdpumk
+                        if (!$anggaran_tpb8){
+                            $versi = VersiPilar::whereNull('tanggal_akhir')->orWhere('tanggal_akhir', '>=', date('Y-m-d'))->first();
+                             $versi_pilar_id = $versi->id;
 
+                            $pilarMaster = DB::table('pilar_pembangunans')->select('nama', 'order_pilar')
+                                ->groupBy('nama', 'order_pilar')
+                                ->orderBy('order_pilar')
+                                ->get();
+
+                            $pilarTpbMaster = DB::table('relasi_pilar_tpbs as rpt')
+                                ->select('rpt.id', 'pp.nama as nama_pilar', 'tpbs.no_tpb', 
+                                    'tpbs.nama as nama_tpb', 'pp.jenis_anggaran as ja_pilar',
+                                    'tpbs.jenis_anggaran as ja_tpbs'
+                                )
+                                ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+                                ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+                                ->where('versi_pilar_id', $versi->id)
+                                ->where('tpbs.is_active', true)
+                                ->where('pp.is_active', true)
+                                ->orderBy('pp.nama', 'asc')
+                                ->orderBy('tpb_id')
+                                ->get();
+                            $relasi_pilar_tpb8_id = $pilarTpbMaster->where('no_tpb', 'TPB 8')->where('ja_tpbs', 'CID')->first();
+                            
+                            $param_tpb['perusahaan_id'] = $request->perusahaan_id;
+                            $param_tpb['tahun'] = $request->tahun;
+                            $param_tpb['user_id']  = \Auth::user()->id;
+                            $param_tpb['relasi_pilar_tpb_id'] = $relasi_pilar_tpb8_id->id;
+                            $param_tpb['anggaran'] = str_replace(',', '',  $param['outcome_total']);
+                            $param_tpb['status_id'] = DB::table('statuss')->where('nama', 'In Progress')->first()->id;
+
+                            $data = AnggaranTpb::create((array)$param_tpb);
+                            SpdPumkTriwulanController::store_log_anggaran($data->id, $param_tpb['status_id'], $param_tpb['anggaran'], 'RKA');
+                       
+                            //get lagi
+                            $anggaran_tpb8 = DB::table('anggaran_tpbs')->select('anggaran_tpbs.*')        
+                            ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                            ->where('tahun', $request->tahun)
+                            ->where('perusahaan_id', $request->perusahaan_id)
+                            ->where('tpb_id', $tpb8cid_id)
+                            ->first();
+                  
+                        }
                         if ($anggaran_tpb8) {
                             $target_tpb = DB::table('target_tpbs')->where('anggaran_tpb_id', $anggaran_tpb8->id)->where('program', 'Penyaluran PUMK')->first();
                             
@@ -360,6 +416,7 @@ class SpdPumkTriwulanController extends Controller
                             'msg' => 'Sukses tambah data',
                             'title' => 'Sukses'
                         ];
+                        return response()->json($result);
                         echo json_encode(['result' => true]);
                     } else {
                         DB::rollback();
@@ -368,6 +425,7 @@ class SpdPumkTriwulanController extends Controller
                             'msg' => 'Data Anggaran ' . $validasi_msg . ' sudah ada',
                             'title' => 'Gagal'
                         ];
+                        return response()->json($result);
                     }
                 } catch (\Exception $e) {
                     DB::rollback();
@@ -376,6 +434,7 @@ class SpdPumkTriwulanController extends Controller
                         'msg' => $e->getMessage(),
                         'title' => 'Gagal'
                     ];
+                    return response()->json($result);
                 }
 
                 break;
@@ -527,6 +586,7 @@ class SpdPumkTriwulanController extends Controller
                         'msg' => 'Sukses ubah data',
                         'title' => 'Sukses'
                     ];
+                    return response()->json($result);
                 } catch (\Exception $e) {
                     DB::rollback();
                     $result = [
@@ -534,6 +594,7 @@ class SpdPumkTriwulanController extends Controller
                         'msg' => $e->getMessage(),
                         'title' => 'Gagal'
                     ];
+                    return response()->json($result);
                 }
 
                 break;
@@ -976,6 +1037,16 @@ class SpdPumkTriwulanController extends Controller
             ];
         }
         return response()->json($result);
+    }
+
+    public function store_log_anggaran($anggaran_tpb_id, $status_id, $anggaran, $keterangan)
+    {
+        $param['anggaran'] = $anggaran;
+        $param['anggaran_tpb_id'] = $anggaran_tpb_id;
+        $param['status_id'] = $status_id;
+        $param['keterangan'] = $keterangan;
+        $param['user_id'] = \Auth::user()->id;
+        LogAnggaranTpb::create((array)$param);
     }
 
 }
