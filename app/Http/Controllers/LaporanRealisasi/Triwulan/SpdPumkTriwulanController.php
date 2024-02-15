@@ -703,23 +703,25 @@ class SpdPumkTriwulanController extends Controller
                 $tpb8cid_id = DB::table('tpbs')->where('no_tpb', 'TPB 8')->where('jenis_anggaran', 'CID')->first()?->id;
                  
                     if ($tpb8cid_id) {
-                    $anggaran_tpb8 = DB::table('anggaran_tpbs')->select('anggaran_tpbs.*')        
-                    ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
-                    ->where('tahun', $pumk_anggaran->tahun)
-                    ->where('perusahaan_id', $pumk_anggaran->bumn_id)
-                    ->where('tpb_id', $tpb8cid_id)
-                    ->first();
-                $target_tpb = DB::table('target_tpbs')->where('anggaran_tpb_id', $anggaran_tpb8->id)->where('program', 'Penyaluran PUMK')->first();
+                            $anggaran_tpb8 = DB::table('anggaran_tpbs')->select('anggaran_tpbs.*')        
+                            ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
+                            ->where('tahun', $pumk_anggaran->tahun)
+                            ->where('perusahaan_id', $pumk_anggaran->bumn_id)
+                            ->where('tpb_id', $tpb8cid_id)
+                            ->first();
 
-                $cek_kegiatan = Kegiatan::join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id');
-                
-                $cek_kegiatan = $cek_kegiatan
-                    ->where('target_tpb_id',$target_tpb->id )
-                    ->where('kegiatan', 'Penyaluran PUMK')
-                    ->where('bulan', $bulan_id)
-                    ->where('tahun', $pumk_anggaran->tahun)
-                    ->first();
-                }
+                        
+                        $target_tpb = DB::table('target_tpbs')->where('anggaran_tpb_id', $anggaran_tpb8->id)->where('program', 'Penyaluran PUMK')->first();
+
+                        $cek_kegiatan = Kegiatan::join('kegiatan_realisasis', 'kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id');
+                        
+                        $cek_kegiatan = $cek_kegiatan
+                            ->where('target_tpb_id',$target_tpb->id )
+                            ->where('kegiatan', 'Penyaluran PUMK')
+                            ->where('bulan', $bulan_id)
+                            ->where('tahun', $pumk_anggaran->tahun)
+                            ->first();
+                    }
              
                 $kegiatan = Kegiatan::where('id', $cek_kegiatan->kegiatan_id)->first();
                 $kegiatan_realisasis = KegiatanRealisasi::where('kegiatan_id', $cek_kegiatan->kegiatan_id)->first();

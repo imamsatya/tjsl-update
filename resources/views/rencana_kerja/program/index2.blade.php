@@ -1426,14 +1426,34 @@
             let parameterSelectAll = {};
             if(isSelectAll) {
                 const queryParams = new URLSearchParams(window.location.search)            
-                parameterSelectAll = {
-                    'perusahaan_id' : queryParams.get('perusahaan_id'),
-                    'tahun' : queryParams.get('tahun'),
-                    'pilar_pembangunan' : queryParams.get('pilar_pembangunan'),
-                    'tpb' : queryParams.get('tpb'),
-                    'jenis_anggaran': queryParams.get('jenis_anggaran'),
-                    'kriteria_program': queryParams.get('kriteria_program')
+                // parameterSelectAll = {
+                //     'perusahaan_id' : queryParams.get('perusahaan_id'),
+                //     'tahun' : queryParams.get('tahun'),
+                //     'pilar_pembangunan' : queryParams.get('pilar_pembangunan'),
+                //     'tpb' : queryParams.get('tpb'),
+                //     'jenis_anggaran': queryParams.get('jenis_anggaran'),
+                //     'kriteria_program': queryParams.get('kriteria_program')
+                // }
+                let kriteria_program = []
+                if (document.getElementById('checkboxPrioritas').checked) {
+                    kriteria_program.push('prioritas');
                 }
+                if (document.getElementById('checkboxCSV').checked) {
+                    kriteria_program.push('csv');
+                }
+                if (document.getElementById('checkboxUmum').checked) {
+                    kriteria_program.push('umum');
+                }         
+                let kriteria_program_string = kriteria_program.join(',');
+                parameterSelectAll = {
+                    'perusahaan_id' : $('#perusahaan_id').val(),
+                    'tahun' : $('#tahun').val(),
+                    'pilar_pembangunan' : $('#pilar_pembangunan_id').val(),
+                    'tpb' : $('#tpb_id').val(),
+                    'jenis_anggaran': $('#jenis-anggaran').val(),
+                    'kriteria_program': kriteria_program_string
+                }
+                
             } 
             const jumlahDataDeleted = isSelectAll ? 'ALL' : selectedProgram.length
             swal.fire({

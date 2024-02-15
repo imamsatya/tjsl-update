@@ -541,14 +541,17 @@ class ProgramController extends Controller
         LogTargetTpb::create((array)$param);
     }
 
-    public function deleteAll($parameter) {
-        $id_perusahaan = $parameter['perusahaan_id'];
+    public function deleteAll($parameter, $isSuperAdmin) {
+        
+ 
+        // dd($parameter);
+        $id_perusahaan = $parameter['perusahaan_id'] ?? null;
         $tahun = $parameter['tahun'] ?? (int) date('Y');
-        $pilar_pembangunan = $parameter['pilar_pembangunan'];
-        $tpb = $parameter['tpb'];
+        $pilar_pembangunan = $parameter['pilar_pembangunan'] ?? null;
+        $tpb = $parameter['tpb'] ?? null;
         $jenis_anggaran = $parameter['jenis_anggaran'] ?? 'CID';
-        $kriteria_program = explode(',', $parameter['kriteria_program']);
-
+        $kriteria_program = explode(',', $parameter['kriteria_program']) ?? null;
+    
         $datatemp = DB::table('target_tpbs as tt')
                     ->select('tt.*')
                     ->join('anggaran_tpbs as atpb', 'atpb.id', '=', 'tt.anggaran_tpb_id')
@@ -585,7 +588,50 @@ class ProgramController extends Controller
                         });
                     })
                     ->get();
+               
+                    if(!$isSuperAdmin){
+                        $datatemp = DB::table('target_tpbs as tt')
+                            ->select('tt.*')
+                            ->join('anggaran_tpbs as atpb', 'atpb.id', '=', 'tt.anggaran_tpb_id')
+                            ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
+                            ->join('pilar_pembangunans as pp', 'pp.id', '=', 'rpt.pilar_pembangunan_id')
+                            ->join('tpbs', 'tpbs.id', '=', 'rpt.tpb_id')
+                            ->where('atpb.tahun', $tahun)
+                            ->where('atpb.anggaran', '>=', 0)
+                            ->where('pp.jenis_anggaran', $jenis_anggaran)
+                            ->where('tpbs.jenis_anggaran', $jenis_anggaran)
+                            ->where('tt.status_id', 2) // hanya yg in progress saja
+                            ->where('atpb.perusahaan_id', $id_perusahaan)
+                            // ->when($id_perusahaan, function($query) use ($id_perusahaan) {
+                            //     return $query->where('atpb.perusahaan_id', $id_perusahaan);
+                            // })
+                            ->when($pilar_pembangunan, function($query) use ($pilar_pembangunan) {
+                                return $query->where('pp.id', $pilar_pembangunan);
+                            })
+                            ->when($tpb, function($query) use ($tpb) {
+                                return $query->where('tpbs.id', $tpb);
+                            })
+                            ->when(count($kriteria_program), function($query) use ($kriteria_program) {
+                                return $query->where(function($queryKriteria) use ($kriteria_program) {
+                                    if(in_array('prioritas', $kriteria_program)) {
+                                        $queryKriteria->orWhere('kriteria_program_prioritas', true);
+                                    }
+                        
+                                    if(in_array('csv', $kriteria_program)) {
+                                        $queryKriteria->orWhere('kriteria_program_csv', true);
+                                    }
+                        
+                                    if(in_array('umum', $kriteria_program)) {
+                                        $queryKriteria->orWhere('kriteria_program_umum', true);
+                                    }    
+                                });
+                            })
+                            ->get();
+                       
+                        
+                    }
 
+        // dd($datatemp);
         return $datatemp->pluck('id')->toArray();        
     }
 
@@ -601,12 +647,22 @@ class ProgramController extends Controller
     public function delete(Request $request) {
         DB::beginTransaction();
         try {
+            $id_users = \Auth::user()->id;
+            $users = User::where('id', $id_users)->first();
+            $isSuperAdmin = false;
+            if (!empty($users->getRoleNames())) {
+                foreach ($users->getRoleNames() as $v) {
+                    if($v == 'Super Admin') {
+                        $isSuperAdmin = true;
+                    }
+                }
+            }
             $list_id_program = $request->input('program_deleted');
-
+          
             $isDeleteAll = filter_var($request->input('isDeleteAll'), FILTER_VALIDATE_BOOLEAN);
             if($isDeleteAll) {
                 $parameterSelectAll = $request->input('parameterSelectAll');
-                $list_id_program = $this->deleteAll($parameterSelectAll);
+                $list_id_program = $this->deleteAll($parameterSelectAll, $isSuperAdmin);
             }
             
             $this->executeDeleteProgram($list_id_program);
