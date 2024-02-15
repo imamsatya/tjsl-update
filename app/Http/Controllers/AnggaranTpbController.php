@@ -1739,11 +1739,12 @@ class AnggaranTpbController extends Controller
     }
 
     public function deleteAll($parameter, $isSuperAdmin) {
-        $id_perusahaan = $parameter['perusahaan_id'];
+    
+        $id_perusahaan = $parameter['perusahaan_id'] ?? null;
         $tahun = $parameter['tahun'] ?? (int) date('Y');
-        $pilar_pembangunan = $parameter['pilar_pembangunan'];
-        $tpb = $parameter['tpb'];
-
+        $pilar_pembangunan = $parameter['pilar_pembangunan'] ?? null;
+        $tpb = $parameter['tpb'] ?? null;
+        
         $datatemp = DB::table('anggaran_tpbs as atpb')
                     ->select('atpb.perusahaan_id', 'pp.nama as pilar_pembangunan', 'tpbs.no_tpb')
                     ->join('relasi_pilar_tpbs as rpt', 'rpt.id', '=', 'atpb.relasi_pilar_tpb_id')
@@ -1764,10 +1765,19 @@ class AnggaranTpbController extends Controller
                     ->groupBy('atpb.perusahaan_id','pp.nama', 'tpbs.no_tpb')
                     ->get();
         
+        //kalau bukan super admin
+        if(!$isSuperAdmin){
+          
+            $datatemp = $datatemp->where('perusahaan_id', $id_perusahaan);
+           
+            
+        }
+      
+       
         // validasi availability untuk input data
         $isOkToInput = $this->checkRule();   
         $refEnable = $this->getReferensiEnable();
-
+        
         foreach($datatemp as $temp) {
             $id_perusahaan = $temp->perusahaan_id;
             // cek enable input by superadmin
@@ -1893,9 +1903,10 @@ class AnggaranTpbController extends Controller
                     }
                 }
             }
-
+            
             $isDeleteAll = filter_var($request->input('isDeleteAll'), FILTER_VALIDATE_BOOLEAN);            
             if($isDeleteAll) {
+                
                 $parameterSelectAll = $request->input('parameterSelectAll');
                 $this->deleteAll($parameterSelectAll, $isSuperAdmin);
             } else {

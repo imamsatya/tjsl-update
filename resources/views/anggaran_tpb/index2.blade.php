@@ -1339,13 +1339,15 @@
         let isSelectAll = $("#select-all").prop('checked');  
         let parameterSelectAll = {};
         if(isSelectAll) {
+          
             const queryParams = new URLSearchParams(window.location.search)            
             parameterSelectAll = {
-                'perusahaan_id' : queryParams.get('perusahaan_id'),
-                'tahun' : queryParams.get('tahun'),
-                'pilar_pembangunan' : queryParams.get('pilar_pembangunan'),
-                'tpb' : queryParams.get('tpb')
+                'perusahaan_id' : $('#perusahaan_id').val(),
+                'tahun' : $('#tahun').val(),
+                'pilar_pembangunan' : $('#pilar_pembangunan').val(),
+                'tpb' : $('#tpb').val()
             }
+        
         }  
         const jumlahDataDeleted = isSelectAll ? 'ALL' : selectedAnggaran.length 
         let pesanHapus = `
