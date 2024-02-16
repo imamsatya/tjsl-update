@@ -609,12 +609,23 @@ class SpdPumkRkaController extends Controller
                         ->where('tpb_id', $tpb8cid_id)
                         ->first();
                     
-                    //    dd('halo');
+                    
 
                         if (!$anggaran_tpb8) {
+                
                             PumkAnggaran::where('id', $value)->delete();
+                            Session::flash('success', "Berhasil menghapus SPD PUMK RKA tahun ");
+                           
+                
+                            DB::commit();
+                            $result = [
+                                'flag'  => 'success',
+                                'msg' => 'Sukses hapus data',
+                                'title' => 'Sukses'
+                            ];
+                            return response()->json($result);
                         }
-                        
+                   
                         if ($anggaran_tpb8) {
                             $target_tpb = TargetTpb::where('anggaran_tpb_id', $anggaran_tpb8->id)->where('program', 'Penyaluran PUMK')->first();
                     
