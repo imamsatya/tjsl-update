@@ -324,6 +324,18 @@ class TbleRealisasiController extends Controller
                     $data_kegiatan_bulan['tanggal_update'] =$kegiatan?->where('kegiatan_realisasi_bulan', $bulan_id)->where('kegiatan_realisasi_status_id', 2)->first()->updated_at;
                     $data_kegiatan_bulan['status'] = "In Progress";
                 }
+
+                 //kalau ada yg verified walaupun 1 sudah pasti in verified
+                 if ($kegiatan?->where('kegiatan_realisasi_bulan', $bulan_id)->where('kegiatan_realisasi_status_id', 1)->first()) {
+                    $data_kegiatan_bulan['tanggal_update'] =$kegiatan?->where('kegiatan_realisasi_bulan', $bulan_id)->where('kegiatan_realisasi_status_id', 1)->first()->updated_at;
+                    $data_kegiatan_bulan['status'] = "Verified";
+                }
+
+                 //kalau ada yg validated walaupun 1 sudah pasti in validated
+                 if ($kegiatan?->where('kegiatan_realisasi_bulan', $bulan_id)->where('kegiatan_realisasi_status_id', 4)->first()) {
+                    $data_kegiatan_bulan['tanggal_update'] =$kegiatan?->where('kegiatan_realisasi_bulan', $bulan_id)->where('kegiatan_realisasi_status_id', 4)->first()->updated_at;
+                    $data_kegiatan_bulan['status'] = "Validated";
+                }
                 // dd($kegiatan);
 
                 $totalKegiatan = count($kegiatan->where('kegiatan_realisasi_bulan', $bulan_id));
@@ -364,6 +376,22 @@ class TbleRealisasiController extends Controller
                     $data_pumk_bulan['tanggal_update'] = $pumk_bulan_in_progress?->updated_at;
                     $data_pumk_bulan['status'] = "In Progress";
                 }
+
+                //kalau verified
+                $pumk_bulan_in_progress = DB::table('pumk_bulans')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('bulan_id', $bulan_id)->where('status_id', 1)->orderBy('updated_at', 'desc')->first();
+                if ($pumk_bulan_in_progress) {
+                    $data_pumk_bulan['tanggal_update'] = $pumk_bulan_in_progress?->updated_at;
+                    $data_pumk_bulan['status'] = "Verified";
+                }
+
+                //kalau validated
+                $pumk_bulan_in_progress = DB::table('pumk_bulans')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('bulan_id', $bulan_id)->where('status_id', 4)->orderBy('updated_at', 'desc')->first();
+                if ($pumk_bulan_in_progress) {
+                    $data_pumk_bulan['tanggal_update'] = $pumk_bulan_in_progress?->updated_at;
+                    $data_pumk_bulan['status'] = "Validated";
+                }
+
+
                 $totalPumkBulan= count( DB::table('pumk_bulans')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('bulan_id', $bulan_id)->get());
                 $totalPumkBulanVerified = count( DB::table('pumk_bulans')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('bulan_id', $bulan_id)->where('status_id', 1)->get());
                 $totalPumkBulanValidated = count( DB::table('pumk_bulans')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('bulan_id', $bulan_id)->where('status_id', 4)->get());
@@ -405,6 +433,18 @@ class TbleRealisasiController extends Controller
                 $data_spd_pumk_bulan['tanggal_update'] = $spd_pumk->where('status_id', 2)->first()->updated_at;
                 $data_spd_pumk_bulan['status'] = "In Progress";
             }
+
+            //kalau ada yg verified walaupun 1 sudah pasti verified
+            if ($spd_pumk?->where('status_id', 1)->first()) {
+                $data_spd_pumk_bulan['tanggal_update'] = $spd_pumk->where('status_id', 1)->first()->updated_at;
+                $data_spd_pumk_bulan['status'] = "Verified";
+            }
+
+            //kalau ada yg validated walaupun 1 sudah pasti validated
+            if ($spd_pumk?->where('status_id', 4)->first()) {
+                $data_spd_pumk_bulan['tanggal_update'] = $spd_pumk->where('status_id', 4)->first()->updated_at;
+                $data_spd_pumk_bulan['status'] = "Validated";
+            }
       
             $data[] = $data_spd_pumk_bulan;
 
@@ -443,6 +483,20 @@ class TbleRealisasiController extends Controller
                         $data_laporan_manajemen['tanggal_update'] = 'Unfilled';
                     }
                 }
+            }
+
+            //kalau ada yg verified walaupun 1 sudah pasti verified
+            if ($laporan_manajemen?->whereIn('status_id', [1])->first()) {
+                $data_laporan_manajemen['tanggal_update'] = $laporan_manajemen?->whereIn('status_id', [1])->first()->updated_at ?? 'Unfilled';
+                $data_laporan_manajemen['status'] = $laporan_manajemen?->whereIn('status_id', [1])->first()->status_id === 1 ? "Verified" : 'Unfilled';
+                
+            }
+
+             //kalau ada yg verified walaupun 1 sudah pasti verified
+             if ($laporan_manajemen?->whereIn('status_id', [4])->first()) {
+                $data_laporan_manajemen['tanggal_update'] = $laporan_manajemen?->whereIn('status_id', [4])->first()->updated_at ?? 'Unfilled';
+                $data_laporan_manajemen['status'] = $laporan_manajemen?->whereIn('status_id', [4])->first()->status_id === 4 ? "Validated" : 'Unfilled';
+                
             }
             $data[] = $data_laporan_manajemen;
             
@@ -497,6 +551,20 @@ class TbleRealisasiController extends Controller
                 $data[0]['status'] = "In Progress";
             }
 
+             //kalau ada yg verified walaupun 1 sudah pasti verified
+             if ($kegiatan?->where('kegiatan_realisasi_status_id', 1)->first()) {
+                $data[0]['tanggal_update'] = $kegiatan->where('kegiatan_realisasi_status_id', 1)->first()->updated_at;
+                $data[0]['status'] = "Verified";
+            }
+
+             //kalau ada yg validated walaupun 1 sudah pasti validated
+             if ($kegiatan?->where('kegiatan_realisasi_status_id', 4)->first()) {
+                $data[0]['tanggal_update'] = $kegiatan->where('kegiatan_realisasi_status_id', 4)->first()->updated_at;
+                $data[0]['status'] = "Validated";
+            }
+
+
+
             //cek spd_pumk       
             //Verified
             if($spd_pumk?->where('status_id', 1)->first()){
@@ -513,6 +581,18 @@ class TbleRealisasiController extends Controller
             if ($spd_pumk?->where('status_id', 2)->first()) {
                 $data[1]['tanggal_update'] = $spd_pumk->where('status_id', 2)->first()->updated_at;
                 $data[1]['status'] = "In Progress";
+            }
+
+            //kalau ada yg verified walaupun 1 sudah pasti Verified
+            if ($spd_pumk?->where('status_id', 1)->first()) {
+                $data[1]['tanggal_update'] = $spd_pumk->where('status_id', 1)->first()->updated_at;
+                $data[1]['status'] = "Verified";
+            }
+
+            //kalau ada yg validated walaupun 1 sudah pasti validated
+            if ($spd_pumk?->where('status_id', 4)->first()) {
+                $data[1]['tanggal_update'] = $spd_pumk->where('status_id', 4)->first()->updated_at;
+                $data[1]['status'] = "Validated";
             }
             //cek laporan manajemen 
             $laporan_manajemen = DB::table('laporan_manajemens')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('periode_laporan_id', $periode_id)->orderBy('updated_at', 'desc')->get();
@@ -537,6 +617,20 @@ class TbleRealisasiController extends Controller
                     }
                 }
             }
+
+            //kalau ada yg verified walaupun 1 sudah pasti verified
+            if ($laporan_manajemen?->whereIn('status_id', [1])->first()) {
+                $data[2]['tanggal_update'] = $laporan_manajemen?->whereIn('status_id', [1])->first()->status_id === 1 ? $laporan_manajemen->whereIn('status_id', [1])->first()->updated_at : 'Unfilled';
+                $data[2]['status'] =  $laporan_manajemen?->whereIn('status_id', [1])->first()->status_id === 1 ? "Verified" : 'Unfilled';
+            }
+
+             //kalau ada yg validated walaupun 1 sudah pasti validated
+             if ($laporan_manajemen?->whereIn('status_id', [4])->first()) {
+                $data[2]['tanggal_update'] = $laporan_manajemen?->whereIn('status_id', [4])->first()->status_id === 4 ? $laporan_manajemen->whereIn('status_id', [4])->first()->updated_at : 'Unfilled';
+                $data[2]['status'] =  $laporan_manajemen?->whereIn('status_id', [4])->first()->status_id === 4 ? "Validated" : 'Unfilled';
+            }
+
+
         }
         
        

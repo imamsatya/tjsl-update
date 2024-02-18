@@ -266,6 +266,18 @@ class TbleController extends Controller
             $data[0]['tanggal_update'] = $anggaran->where('status_id', 2)->first()->updated_at;
             $data[0]['status'] = "In Progress";
         }
+        
+          //kalau ada yg Verified walaupun 1 sudah pasti Verified
+          if ($anggaran?->where('status_id', 1)->first()) {
+            $data[0]['tanggal_update'] = $anggaran->where('status_id', 1)->first()->updated_at;
+            $data[0]['status'] = "Verified";
+        }
+
+        //kalau ada yg Validated walaupun 1 sudah pasti Validated
+        if ($anggaran?->where('status_id', 4)->first()) {
+            $data[0]['tanggal_update'] = $anggaran->where('status_id', 4)->first()->updated_at;
+            $data[0]['status'] = "Validated";
+        }
       
         //cek program
         $anggaran = DB::table('anggaran_tpbs')->where('perusahaan_id', $id)->where('tahun', $tahun)->orderBy('target_tpbs.updated_at', 'desc')->join('target_tpbs', 'target_tpbs.anggaran_tpb_id', '=', 'anggaran_tpbs.id')->get();
@@ -287,6 +299,18 @@ class TbleController extends Controller
         if ($anggaran?->where('status_id', 2)->first()) {
             $data[1]['tanggal_update'] = $anggaran->where('status_id', 2)->first()->updated_at;
             $data[1]['status'] = "In Progress";
+        }
+
+        //kalau ada yg Verified walaupun 1 sudah pasti Verified
+        if ($anggaran?->where('status_id', 1)->first()) {
+            $data[1]['tanggal_update'] = $anggaran->where('status_id', 1)->first()->updated_at;
+            $data[1]['status'] = "Verified";
+        }
+
+        //kalau ada yg Validated walaupun 1 sudah pasti Validated
+        if ($anggaran?->where('status_id', 4)->first()) {
+            $data[1]['tanggal_update'] = $anggaran->where('status_id', 4)->first()->updated_at;
+            $data[1]['status'] = "Validated";
         }
 
         //cek spd pumk
@@ -311,6 +335,18 @@ class TbleController extends Controller
             $data[2]['tanggal_update'] = $spd_pumk->where('status_id', 2)->first()->updated_at;
             $data[2]['status'] = "In Progress";
         }
+
+        //kalau ada yg Verified walaupun 1 sudah pasti Verified
+        if ($anggaran?->where('status_id', 1)->first()) {
+            $data[2]['tanggal_update'] = $anggaran->where('status_id', 1)->first()->updated_at;
+            $data[2]['status'] = "Verified";
+        }
+
+        //kalau ada yg Validated walaupun 1 sudah pasti Validated
+        if ($anggaran?->where('status_id', 4)->first()) {
+            $data[2]['tanggal_update'] = $anggaran->where('status_id', 4)->first()->updated_at;
+            $data[2]['status'] = "Validated";
+        }
         //cek laporan manajemen rka
         $laporan_manajemen = DB::table('laporan_manajemens')->where('perusahaan_id', $id)->where('tahun', $tahun)->where('periode_laporan_id', $periode_rka_id)->get();
 
@@ -330,6 +366,20 @@ class TbleController extends Controller
             $data[3]['tanggal_update'] =$laporan_manajemen->whereIn('status_id', [2, 3])->first()->status_id === 2 ? $laporan_manajemen->whereIn('status_id', [2, 3])->first()->updated_at : 'Unfilled';
             $data[3]['status'] = $laporan_manajemen->whereIn('status_id', [2, 3])->first()->status_id === 2 ? 'In Progress' : 'Unfilled';
         }
+
+         //kalau ada yg verified walaupun 1 sudah pasti in verified
+         if ($laporan_manajemen?->whereIn('status_id', [1])->first()) {
+            $data[3]['tanggal_update'] =$laporan_manajemen->whereIn('status_id', [1])->first()->status_id === 1 ? $laporan_manajemen->whereIn('status_id', [1])->first()->updated_at : 'Unfilled';
+            $data[3]['status'] = $laporan_manajemen->whereIn('status_id', [1])->first()->status_id === 1 ? 'Verified' : 'Unfilled';
+        }
+
+         //kalau ada yg validated walaupun 1 sudah pasti in validated
+         if ($laporan_manajemen?->whereIn('status_id', [4])->first()) {
+            $data[3]['tanggal_update'] =$laporan_manajemen->whereIn('status_id', [4])->first()->status_id === 4 ? $laporan_manajemen->whereIn('status_id', [4])->first()->updated_at : 'Unfilled';
+            $data[3]['status'] = $laporan_manajemen->whereIn('status_id', [4])->first()->status_id === 4 ? 'Validated' : 'Unfilled';
+        }
+
+        
         $tanggal_cetak = Carbon::now()->locale('id_ID')->isoFormat('D MMMM YYYY');
         $user = Auth::user();
         
