@@ -169,51 +169,51 @@
 
                                         <tr id="row_{{$index}}">
                                             @if ($index == 0)
-                                            <td >{{$menuStatus[$index]['menu']}}</td>
-                                            @if(in_array("RKA", $periodeNama))
-                                            <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-no_tpb="{{$menuStatus[$index]['support_props']['no_tpb']}}" data-nama_pilar="{{$menuStatus[$index]['support_props']['nama_pilar']}}"  data-id="{{$menuStatus[$index]['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['rka']) !!} </span></td>
-                                            @endif
-                                            @if(in_array("TW I", $periodeNama))
-                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw1']) !!}</td>
-                                            @endif
-                                            @if(in_array("TW II", $periodeNama))
-                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw2']) !!}</td>
-                                            @endif
-                                            @if(in_array("TW III", $periodeNama))
-                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw3']) !!}</td>
-                                            @endif
-                                            @if(in_array("Prognosa", $periodeNama))
-                                            <td >{!! renderStatusBadge($menuStatus[$index]['prognosa']) !!}</td>
-                                            @endif
-                                            @if(in_array("TW IV", $periodeNama))
-                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw4']) !!}</td>
-                                            @endif
-                                            @if(in_array("Audited", $periodeNama))
-                                            <td >{!! renderStatusBadge($menuStatus[$index]['audited']) !!}</td>
-                                            @endif
+                                                <td >{{$menuStatus[$index]['menu']}}</td>
+                                                @if(in_array("RKA", $periodeNama))
+                                                <td ><span class="cls-log-{{$menuStatus[$index]['class']}}" data-no_tpb="{{$menuStatus[$index]['support_props']['no_tpb']}}" data-nama_pilar="{{$menuStatus[$index]['support_props']['nama_pilar']}}"  data-id="{{$menuStatus[$index]['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['rka']) !!} </span></td>
+                                                @endif
+                                                @if(in_array("TW I", $periodeNama))
+                                                <td >{!! renderStatusBadge($menuStatus[$index]['tw1']) !!}</td>
+                                                @endif
+                                                @if(in_array("TW II", $periodeNama))
+                                                <td >{!! renderStatusBadge($menuStatus[$index]['tw2']) !!}</td>
+                                                @endif
+                                                @if(in_array("TW III", $periodeNama))
+                                                <td >{!! renderStatusBadge($menuStatus[$index]['tw3']) !!}</td>
+                                                @endif
+                                                @if(in_array("Prognosa", $periodeNama))
+                                                <td >{!! renderStatusBadge($menuStatus[$index]['prognosa']) !!}</td>
+                                                @endif
+                                                @if(in_array("TW IV", $periodeNama))
+                                                <td >{!! renderStatusBadge($menuStatus[$index]['tw4']) !!}</td>
+                                                @endif
+                                                @if(in_array("Audited", $periodeNama))
+                                                <td >{!! renderStatusBadge($menuStatus[$index]['audited']) !!}</td>
+                                                @endif
                                             @else
-                                            <td >{{$menuStatus[$index]['menu']}}</td>
-                                            @if(in_array("RKA", $periodeNama))
-                                            <td ><span class="cls-log-{{$menuStatus[$index]['class']}}"  data-id="{{$menuStatus[$index]['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['rka']) !!}</span></td>
-                                            @endif
-                                            @if(in_array("TW I", $periodeNama))
-                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw1']) !!}</td>
-                                            @endif
-                                            @if(in_array("TW II", $periodeNama))
-                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw2']) !!}</td>
-                                            @endif
-                                            @if(in_array("TW III", $periodeNama))
-                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw3']) !!}</td>
-                                            @endif
-                                            @if(in_array("Prognosa", $periodeNama))
-                                            <td >{!! renderStatusBadge($menuStatus[$index]['prognosa']) !!}</td>
-                                            @endif
-                                            @if(in_array("TW IV", $periodeNama))
-                                            <td >{!! renderStatusBadge($menuStatus[$index]['tw4']) !!}</td>
-                                            @endif
-                                            @if(in_array("Audited", $periodeNama))
-                                            <td >{!! renderStatusBadge($menuStatus[$index]['audited']) !!}</td>
-                                            @endif
+                                                <td >{{$menuStatus[$index]['menu']}}</td>
+                                                @if(in_array("RKA", $periodeNama))
+                                                <td ><span class="cls-log-{{$menuStatus[$index]['class']}}"  data-id="{{$menuStatus[$index]['id'] ?? null}}">{!! renderStatusBadge($menuStatus[$index]['rka']) !!}</span></td>
+                                                @endif
+                                                @if(in_array("TW I", $periodeNama))
+                                                <td >{!! renderStatusBadge($menuStatus[$index]['tw1']) !!}</td>
+                                                @endif
+                                                @if(in_array("TW II", $periodeNama))
+                                                <td >{!! renderStatusBadge($menuStatus[$index]['tw2']) !!}</td>
+                                                @endif
+                                                @if(in_array("TW III", $periodeNama))
+                                                <td >{!! renderStatusBadge($menuStatus[$index]['tw3']) !!}</td>
+                                                @endif
+                                                @if(in_array("Prognosa", $periodeNama))
+                                                <td >{!! renderStatusBadge($menuStatus[$index]['prognosa']) !!}</td>
+                                                @endif
+                                                @if(in_array("TW IV", $periodeNama))
+                                                <td >{!! renderStatusBadge($menuStatus[$index]['tw4']) !!}</td>
+                                                @endif
+                                                @if(in_array("Audited", $periodeNama))
+                                                <td >{!! renderStatusBadge($menuStatus[$index]['audited']) !!}</td>
+                                                @endif
                                             @endif
                                             
                                         </tr>
@@ -226,37 +226,37 @@
                                             {{-- {{dd($menuStatus[$index]['rka'])}} --}}
                                             
                                             {{-- {{dd($menuStatus)}} --}}
-                                            <td>{{$menuStatus[$index]['menu']}}</td>
+                                            <td class="menu">{{$menuStatus[$index]['menu']}}</td>
                                             @if(in_array("RKA", $periodeNama))
-                                            <td>{!! isset($menuStatus[$index]['rka']) ? renderStatusBadge($menuStatus[$index]['rka']) : '' !!}</td>
+                                            <td class="rka">{!! isset($menuStatus[$index]['rka']) ? renderStatusBadge($menuStatus[$index]['rka']) : '' !!}</td>
                                             @endif
                                             @if(in_array("TW I", $periodeNama))
-                                            <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw1']['id'] ?? null}}">
+                                            <td class="tw1"><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw1']['id'] ?? null}}">
                                                 {!! isset($menuStatus[$index]['tw1']['value']) ? renderStatusBadge($menuStatus[$index]['tw1']['value']) : '' !!}
                                             </span></td>
                                             @endif
                                             @if(in_array("TW II", $periodeNama))
-                                            <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw2']['id'] ?? null}}">
+                                            <td class="tw2"><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw2']['id'] ?? null}}">
                                                 {!! isset($menuStatus[$index]['tw2']['value']) ? renderStatusBadge($menuStatus[$index]['tw2']['value']) : '' !!}
                                             </span></td>
                                             @endif
                                             @if(in_array("TW III", $periodeNama))
-                                            <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw3']['id'] ?? null}}">
+                                            <td class="tw3"><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw3']['id'] ?? null}}">
                                                 {!! isset($menuStatus[$index]['tw3']['value']) ? renderStatusBadge($menuStatus[$index]['tw3']['value']) : '' !!}
                                             </span></td>
                                             @endif
                                             @if(in_array("Prognosa", $periodeNama))
-                                            <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['prognosa']['id'] ?? null}}">
+                                            <td class="prognosa"><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['prognosa']['id'] ?? null}}">
                                                 {!! isset($menuStatus[$index]['prognosa']['value']) ? renderStatusBadge($menuStatus[$index]['prognosa']['value']) : '' !!}
                                             </span></td>
                                             @endif
                                             @if(in_array("TW IV", $periodeNama))
-                                            <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw4']['id'] ?? null}}">
+                                            <td class="tw4"><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['tw4']['id'] ?? null}}">
                                                 {!! isset($menuStatus[$index]['tw4']['value']) ? renderStatusBadge($menuStatus[$index]['tw4']['value']) : '' !!}
                                             </span></td>
                                             @endif
                                             @if(in_array("Audited", $periodeNama))
-                                            <td><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['audited']['id'] ?? null}}">
+                                            <td class="audited"><span class="cls-log-{{$menuStatus[$index]['class']}}" data-id="{{$menuStatus[$index]['audited']['id'] ?? null}}">
                                                 {!! isset($menuStatus[$index]['audited']['value']) ? renderStatusBadge($menuStatus[$index]['audited']['value']) : '' !!}
                                             </span></td>
                                             @endif
@@ -1080,6 +1080,7 @@
             success: function (data) {
                 // initmitra(data);
                 console.log('halo')
+                console.log(data)
                  // Loop for index 0 to 3
                 for (let index = 0; index < 4; index++) {
                     console.log(data[index])
@@ -1098,8 +1099,7 @@
                     $("#row_" + index + " td:nth-child(8)").html(renderStatusBadge(data[index].audited));
                     }
                     else{
-                        $("#row_" + index + " td:nth-child(2)").html(`<span class="${classAttribute}" data-id="${dataIdAttribute}">` + renderStatusBadge(rkaData) + '</span>');
-                    
+                    $("#row_" + index + " td:nth-child(2)").html(`<span class="${classAttribute}" data-id="${dataIdAttribute}">` + renderStatusBadge(rkaData) + '</span>');  
                     $("#row_" + index + " td:nth-child(3)").html(renderStatusBadge(data[index].tw1));
                     $("#row_" + index + " td:nth-child(4)").html(renderStatusBadge(data[index].tw2));
                     $("#row_" + index + " td:nth-child(5)").html(renderStatusBadge(data[index].tw3));
@@ -1118,13 +1118,13 @@
                     // const classAttribute =`cls-log-${data[index].class}`;
                     // const dataIdAttribute = data[index].id ?? null;
                     
-                    $("#row_" + index + " td:nth-child(2)").html(renderStatusBadge(data[index].rka));
-                    $("#row_" + index + " td:nth-child(3)").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].tw1.id}">` + renderStatusBadge(data[index].tw1.value) + '</span>');
-                    $("#row_" + index + " td:nth-child(4)").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].tw2.id}">` + renderStatusBadge(data[index].tw2.value) + '</span>');
-                    $("#row_" + index + " td:nth-child(5)").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].tw3.id}">` + renderStatusBadge(data[index].tw3.value) + '</span>');
-                    $("#row_" + index + " td:nth-child(6)").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].prognosa.id}">` + renderStatusBadge(data[index].prognosa.value) + '</span>');
-                    $("#row_" + index + " td:nth-child(7)").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].tw4.id}">` + renderStatusBadge(data[index].tw4.value) + '</span>');
-                    $("#row_" + index + " td:nth-child(8)").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].audited.id}">` + renderStatusBadge(data[index].audited.value) + '</span>');
+                    $("#row_" + index + " .rka").html(renderStatusBadge(data[index].rka));
+                    $("#row_" + index + " .tw1").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].tw1.id}">` + renderStatusBadge(data[index].tw1.value) + '</span>');
+                    $("#row_" + index + " .tw2").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].tw2.id}">` + renderStatusBadge(data[index].tw2.value) + '</span>');
+                    $("#row_" + index + " .tw3").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].tw3.id}">` + renderStatusBadge(data[index].tw3.value) + '</span>');
+                    $("#row_" + index + " .prognosa").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].prognosa.id}">` + renderStatusBadge(data[index].prognosa.value) + '</span>');
+                    $("#row_" + index + " .tw4").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].tw4.id}">` + renderStatusBadge(data[index].tw4.value) + '</span>');
+                    $("#row_" + index + " .audited").html(`<span class="cls-log-${data[index].class}" data-id="${data[index].audited.id}">` + renderStatusBadge(data[index].audited.value) + '</span>');
                 }
             }
         });
@@ -1136,6 +1136,7 @@
     });
 
     function renderStatusBadge(status) {
+        console.log('status', status)
         const classMapping = {
             'Verified': 'badge-light-success',
             // 'Completed': 'badge-light-success',

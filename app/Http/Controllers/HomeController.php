@@ -419,7 +419,7 @@ class HomeController extends Controller
             $data[3]['id'] = null;
         };
 
-        //next update
+        
         //Laporan Realisasi
          $kegiatan = DB::table('kegiatans')
                     ->join('kegiatan_realisasis', function($join) use ( $tahun) {
@@ -969,10 +969,11 @@ class HomeController extends Controller
         //laporan manajemen, index 7
         foreach ($periode_laporan as $key => $value) {
             $periodeId = $value->id;
+           
             //TW 1
             if ($periodeId === 1) {
-                $laporan_manajemen_periode = $laporan_manajemen->where('periode_id', $periodeId)->first();
-            
+                $laporan_manajemen_periode = $laporan_manajemen->where('periode_laporan_id', $periodeId)->first();
+                
                 if ($laporan_manajemen_periode) {
                     if ($laporan_manajemen_periode->status_id == 2) {
                         $data[7]['tw1']['value'] = "In Progress";
@@ -998,7 +999,7 @@ class HomeController extends Controller
             //TW 2
             if ($periodeId === 2) {
                 
-                $laporan_manajemen_periode = $laporan_manajemen->where('periode_id', $periodeId)->first();
+                $laporan_manajemen_periode = $laporan_manajemen->where('periode_laporan_id', $periodeId)->first();
                 
                 if ($laporan_manajemen_periode) {
                     if ($laporan_manajemen_periode->status_id == 2) {
@@ -1023,7 +1024,7 @@ class HomeController extends Controller
 
             //TW 3
             if ($periodeId === 3) {
-                $laporan_manajemen_periode = $laporan_manajemen->where('periode_id', $periodeId)->first();
+                $laporan_manajemen_periode = $laporan_manajemen->where('periode_laporan_id', $periodeId)->first();
             
                 if ($laporan_manajemen_periode) {
                     if ($laporan_manajemen_periode->status_id == 2) {
@@ -1049,7 +1050,7 @@ class HomeController extends Controller
 
             //TW 4
             if ($periodeId === 5) {
-                $laporan_manajemen_periode = $laporan_manajemen->where('periode_id', $periodeId)->first();
+                $laporan_manajemen_periode = $laporan_manajemen->where('periode_laporan_id', $periodeId)->first();
             
                 if ($laporan_manajemen_periode) {
                     if ($laporan_manajemen_periode->status_id == 2) {
@@ -1076,7 +1077,7 @@ class HomeController extends Controller
 
             //Prognosa
             if ($periodeId === 6) {
-                $laporan_manajemen_periode = $laporan_manajemen->where('periode_id', $periodeId)->first();
+                $laporan_manajemen_periode = $laporan_manajemen->where('periode_laporan_id', $periodeId)->first();
             
                 if ($laporan_manajemen_periode) {
                     if ($laporan_manajemen_periode->status_id == 2) {
@@ -1102,7 +1103,7 @@ class HomeController extends Controller
 
             //Audited
             if ($periodeId === 7) {
-                $laporan_manajemen_periode = $laporan_manajemen->where('periode_id', $periodeId)->first();
+                $laporan_manajemen_periode = $laporan_manajemen->where('periode_laporan_id', $periodeId)->first();
             
                 if ($laporan_manajemen_periode) {
                     if ($laporan_manajemen_periode->status_id == 2) {
@@ -1127,7 +1128,7 @@ class HomeController extends Controller
                 }
             }
         }
-       
+    //    dd($data);
         return $data;
     }
 
