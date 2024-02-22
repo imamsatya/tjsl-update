@@ -67,10 +67,10 @@ class LaporanRealisasiTemplateExport implements FromView , WithTitle, WithEvents
         return [
             AfterSheet::class => function (AfterSheet $event) {
                 $event->sheet->getDelegate()->getProtection()->setSheet(true);
-                $event->sheet->getDelegate()->getStyle('A5:J50')->getProtection()->setLocked(Protection::PROTECTION_UNPROTECTED);
-                $event->sheet->getDelegate()->getStyle('A5:J50')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
-                $event->sheet->getDelegate()->getStyle('A5:J50')->getFill()->getStartColor()->setRGB('FAFAFD');
-                $event->sheet->getDelegate()->getStyle('A5:J50')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+                $event->sheet->getDelegate()->getStyle('A5:J104')->getProtection()->setLocked(Protection::PROTECTION_UNPROTECTED);
+                $event->sheet->getDelegate()->getStyle('A5:J104')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
+                $event->sheet->getDelegate()->getStyle('A5:J104')->getFill()->getStartColor()->setRGB('FAFAFD');
+                $event->sheet->getDelegate()->getStyle('A5:J104')->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
                 $event->sheet->getDelegate()->getColumnDimension('C')->setWidth(100);
                 $event->sheet->getDelegate()->getProtection()->setFormatColumns(false);
