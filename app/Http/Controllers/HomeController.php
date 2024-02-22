@@ -815,6 +815,8 @@ class HomeController extends Controller
                 $spd_pumk_periode = $spd_pumk->where('periode_id', $periodeId)->first();
             
                 if ($spd_pumk_periode) {
+                    $data[6]['tw1']['value'] = "Unfilled";
+                    $data[6]['tw1']['id'] = null;
                     if ($spd_pumk_periode->status_id == 2) {
                         $data[6]['tw1']['value'] = "In Progress";
                         $data[6]['tw1']['id'] = $spd_pumk_periode->id;
@@ -841,6 +843,8 @@ class HomeController extends Controller
                 $spd_pumk_periode = $spd_pumk->where('periode_id', $periodeId)->first();
                 
                 if ($spd_pumk_periode) {
+                    $data[6]['tw2']['value'] = "Unfilled";
+                    $data[6]['tw2']['id'] = null;
                     if ($spd_pumk_periode->status_id == 2) {
                         $data[6]['tw2']['value'] = "In Progress";
                         $data[6]['tw2']['id'] = $spd_pumk_periode->id;
@@ -869,6 +873,8 @@ class HomeController extends Controller
                 $spd_pumk_periode = $spd_pumk->where('periode_id', $periodeId)->first();
             
                 if ($spd_pumk_periode) {
+                    $data[6]['tw3']['value'] = "Unfilled";
+                    $data[6]['tw3']['id'] = null;
                     if ($spd_pumk_periode->status_id == 2) {
                         $data[6]['tw3']['value'] = "In Progress";
                         $data[6]['tw3']['id'] = $spd_pumk_periode->id;
@@ -895,6 +901,8 @@ class HomeController extends Controller
                 $spd_pumk_periode = $spd_pumk->where('periode_id', $periodeId)->first();
             
                 if ($spd_pumk_periode) {
+                    $data[6]['tw4']['value'] = "Unfilled";
+                    $data[6]['tw4']['id'] = null;
                     if ($spd_pumk_periode->status_id == 2) {
                         $data[6]['tw4']['value'] = "In Progress";
                         $data[6]['tw4']['id'] = $spd_pumk_periode->id;
@@ -919,6 +927,8 @@ class HomeController extends Controller
                 $spd_pumk_periode = $spd_pumk->where('periode_id', $periodeId)->first();
             
                 if ($spd_pumk_periode) {
+                    $data[6]['prognosa']['value'] = "Unfilled";
+                    $data[6]['prognosa']['id'] = null;
                     if ($spd_pumk_periode->status_id == 2) {
                         $data[6]['prognosa']['value'] = "In Progress";
                         $data[6]['prognosa']['id'] = $spd_pumk_periode->id;
@@ -945,6 +955,8 @@ class HomeController extends Controller
                 $spd_pumk_periode = $spd_pumk->where('periode_id', $periodeId)->first();
             
                 if ($spd_pumk_periode) {
+                    $data[6]['audited']['value'] = "Unfilled";
+                    $data[6]['audited']['id'] = null;
                     if ($spd_pumk_periode->status_id == 2) {
                         $data[6]['audited']['value'] = "In Progress";
                         $data[6]['audited']['id'] = $spd_pumk_periode->id;
@@ -975,6 +987,8 @@ class HomeController extends Controller
                 $laporan_manajemen_periode = $laporan_manajemen->where('periode_laporan_id', $periodeId)->first();
                 
                 if ($laporan_manajemen_periode) {
+                    $data[7]['tw1']['value'] = "Unfilled";
+                    $data[7]['tw1']['id'] = null;
                     if ($laporan_manajemen_periode->status_id == 2) {
                         $data[7]['tw1']['value'] = "In Progress";
                         $data[7]['tw1']['id'] = $laporan_manajemen_periode->id;
@@ -1002,6 +1016,8 @@ class HomeController extends Controller
                 $laporan_manajemen_periode = $laporan_manajemen->where('periode_laporan_id', $periodeId)->first();
                 
                 if ($laporan_manajemen_periode) {
+                    $data[7]['tw2']['value'] = "Unfilled";
+                    $data[7]['tw2']['id'] = null;
                     if ($laporan_manajemen_periode->status_id == 2) {
                         $data[7]['tw2']['value'] = "In Progress";
                         $data[7]['tw2']['id'] = $laporan_manajemen_periode->id;
@@ -1025,8 +1041,10 @@ class HomeController extends Controller
             //TW 3
             if ($periodeId === 3) {
                 $laporan_manajemen_periode = $laporan_manajemen->where('periode_laporan_id', $periodeId)->first();
-            
+               
                 if ($laporan_manajemen_periode) {
+                    $data[7]['tw3']['value'] = "Unfilled";
+                    $data[7]['tw3']['id'] = null;
                     if ($laporan_manajemen_periode->status_id == 2) {
                         $data[7]['tw3']['value'] = "In Progress";
                         $data[7]['tw3']['id'] = $laporan_manajemen_periode->id;
@@ -1053,6 +1071,8 @@ class HomeController extends Controller
                 $laporan_manajemen_periode = $laporan_manajemen->where('periode_laporan_id', $periodeId)->first();
             
                 if ($laporan_manajemen_periode) {
+                    $data[7]['tw4']['value'] = "Unfilled";
+                    $data[7]['tw4']['id'] = null;
                     if ($laporan_manajemen_periode->status_id == 2) {
                         $data[7]['tw4']['value'] = "In Progress";
                         $data[7]['tw4']['id'] = $laporan_manajemen_periode->id;
@@ -1080,6 +1100,8 @@ class HomeController extends Controller
                 $laporan_manajemen_periode = $laporan_manajemen->where('periode_laporan_id', $periodeId)->first();
             
                 if ($laporan_manajemen_periode) {
+                    $data[7]['prognosa']['value'] = "Unfilled";
+                    $data[7]['prognosa']['id'] = null;
                     if ($laporan_manajemen_periode->status_id == 2) {
                         $data[7]['prognosa']['value'] = "In Progress";
                         $data[7]['prognosa']['id'] = $laporan_manajemen_periode->id;
@@ -1106,6 +1128,8 @@ class HomeController extends Controller
                 $laporan_manajemen_periode = $laporan_manajemen->where('periode_laporan_id', $periodeId)->first();
             
                 if ($laporan_manajemen_periode) {
+                    $data[7]['audited']['value'] = "Unfilled";
+                    $data[7]['audited']['id'] = null;
                     if ($laporan_manajemen_periode->status_id == 2) {
                         $data[7]['audited']['value'] = "In Progress";
                         $data[7]['audited']['id'] = $laporan_manajemen_periode->id;
@@ -1128,7 +1152,7 @@ class HomeController extends Controller
                 }
             }
         }
-    //    dd($data);
+   
         return $data;
     }
 
