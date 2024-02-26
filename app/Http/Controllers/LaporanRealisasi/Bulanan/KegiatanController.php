@@ -136,6 +136,7 @@ class KegiatanController extends Controller
 
         // dd($bulan);
         // dd($program);
+        
         $kegiatan = DB::table('kegiatans')
         ->join('kegiatan_realisasis', function($join) use ($bulan, $tahun) {
             $join->on('kegiatan_realisasis.kegiatan_id', '=', 'kegiatans.id')
@@ -165,6 +166,7 @@ class KegiatanController extends Controller
         ->join('relasi_pilar_tpbs', 'relasi_pilar_tpbs.id', '=', 'anggaran_tpbs.relasi_pilar_tpb_id')
     
         ->join('tpbs', function($join) use ($jenis_anggaran) {
+            
             $join->on('tpbs.id', '=', 'relasi_pilar_tpbs.tpb_id')
                 ->where('tpbs.jenis_anggaran', $jenis_anggaran);
         })
@@ -194,15 +196,15 @@ class KegiatanController extends Controller
 
         $kegiatanDefault = $kegiatan;
        
-      
-        if ($request->pilar_pembangunan_id) {
 
-            $kegiatan = $kegiatan->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan_id);
+        if ($request->pilar_pembangunan) {
+
+            $kegiatan = $kegiatan->where('relasi_pilar_tpbs.pilar_pembangunan_id', $request->pilar_pembangunan);
         }
 
-        if ($request->tpb_id) {
+        if ($request->tpb) {
 
-            $kegiatan = $kegiatan->where('tpbs.id', $request->tpb_id);
+            $kegiatan = $kegiatan->where('tpbs.id', $request->tpb);
         }
 
         if ($request->program_id) {
@@ -215,10 +217,11 @@ class KegiatanController extends Controller
             $kegiatan = $kegiatan->where('jenis_kegiatans.id', $request->jenis_kegiatan);
         }
 
+        $totalAnggaranAlokasi = $kegiatan->get()->sum('anggaran_alokasi');
         $kegiatan = $kegiatan->get();
-        
+     
         // dd($kegiatan);
-        $totalAnggaranAlokasi = $kegiatanDefault->get()->sum('anggaran_alokasi');
+       
         // dd($request->perusahaan_id);
         // dd($kegiatan);
         // $pilar_pembangunan_id = $request->pilar_pembangunan ?? '';
