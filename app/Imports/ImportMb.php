@@ -70,7 +70,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
         }else{
             trigger_error('Header Nama Perusahaan Kosong.');
         }
-        
+
         $berhasil = 0;
         $update = 0;
         $gagal = 0;
@@ -657,44 +657,70 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     $cek_kolektibilitas = PumkMitraBinaan::where('kolektibilitas_id',(int)$ar['kolektibilitas'] )
                                      ->count();
 
-                    $mitra = PumkMitraBinaan::create([
-                        // 'bulan' => (int)date('m') == 1? 12 : (int)date('m')-1,
-                        // 'tahun' => (int)date('m') == 1? (int)date('Y')-1 : (int)date('Y'),
-                        'bulan' => $this->periode,
-                        'tahun' => $this->tahunCut,
-                        'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
-                        'no_identitas' => rtrim(preg_replace('/[^0-9]/','',$ar['nik'])),
-                        'provinsi_id' => rtrim($ar['provinsi']),
-                        'kota_id' => rtrim($ar['kabupatenkota']),
-                        'sektor_usaha_id' => rtrim($ar['sektor_usaha']),
-                        // 'skala_usaha_id' => rtrim($ar['id_skala_usaha']),
-                        // 'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']),
-                        'kolektibilitas_id' => rtrim($ar['kolektibilitas']),
-                        'kondisi_pinjaman_id' => rtrim($ar['kondisi_pinjaman_belumtelah_di_restruktur']),
-                        // 'jenis_pembayaran_id' => rtrim($ar['id_jenis_pembayaran']),
-                        // 'bank_account_id' => rtrim($ar['id_bank_account']),
-                        // 'nilai_aset' => rtrim($ar['nilai_aset']),
-                        // 'nilai_omset' => rtrim($ar['nilai_omset']),
-                        // 'no_pinjaman' => rtrim($ar['no_pinjaman']),
-                        'sumber_dana' => str_replace('.',',',$ar['bumn_sumber_dana']),
-                        'tgl_awal' => $ar['tanggal_mendapatkan_pendanaan']? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tanggal_mendapatkan_pendanaan'])->format('d-m-Y') : null,
-                        // 'tgl_jatuh_tempo' => $ar['tgl_jatuh_tempo'] ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_jatuh_tempo'])->format('d-m-Y') : null,
-                        'nominal_pendanaan' => rtrim($ar['nominal_pendanaan_rp']),
-                        'saldo_pokok_pendanaan' => rtrim($ar['outstanding_pokok']),
-                        'saldo_jasa_adm_pendanaan' => rtrim($ar['outstanding_jasa_admin']),
-                        // 'penerimaan_pokok_bulan_berjalan' => rtrim($ar['penerimaan_pokok_bulan_berjalan']),
-                        // 'penerimaan_jasa_adm_bulan_berjalan' => rtrim($ar['penerimaan_jasa_admin_bulan_berjalan']),
-                        // 'tgl_penerimaan_terakhir' => $ar['tgl_penerimaan_terakhir'] ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_penerimaan_terakhir'])->format('d-m-Y') : null,
-                        // 'jumlah_sdm' => $ar['sdm_di_mb'] ? rtrim($ar['sdm_di_mb']):0,
-                        // 'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
-                        // 'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
-                        // 'hasil_produk_jasa' => $ar['produkjasa_yang_dihasilkan'] ? rtrim($ar['produkjasa_yang_dihasilkan']):0,
-                        // 'produk_jasa_unggulan' => $ar['produkjasa_unggulan'] ? rtrim($ar['produkjasa_unggulan']):0,
-                        'created_by_id' => \Auth::user()->id,
-                        'perusahaan_id' => $perusahaan->id,
-                        'kode_upload' => $kode,
-                        // 'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):2
-                    ]);
+                    
+                    $cek_identitas_exists = PumkMitraBinaan::where('tahun', $this->tahunCut)
+                        ->where('bulan', $this->periode)
+                        ->where('perusahaan_id', $perusahaan->id)
+                        ->where('no_identitas', $no_id)
+                        ->first();
+
+                    if($cek_identitas_exists) { // update
+                        $cek_identitas_exists->nama_mitra = rtrim($ar['nama_mitra_binaan']);
+                        $cek_identitas_exists->no_identitas = rtrim(preg_replace('/[^0-9]/','',$ar['nik']));
+                        $cek_identitas_exists->provinsi_id = rtrim($ar['provinsi']);
+                        $cek_identitas_exists->kota_id = rtrim($ar['kabupatenkota']);
+                        $cek_identitas_exists->sektor_usaha_id = rtrim($ar['sektor_usaha']);
+                        $cek_identitas_exists->kolektibilitas_id = rtrim($ar['kolektibilitas']);
+                        $cek_identitas_exists->kondisi_pinjaman_id = rtrim($ar['kondisi_pinjaman_belumtelah_di_restruktur']);
+                        $cek_identitas_exists->sumber_dana = str_replace('.',',',$ar['bumn_sumber_dana']);
+                        $cek_identitas_exists->tgl_awal = $ar['tanggal_mendapatkan_pendanaan']? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tanggal_mendapatkan_pendanaan'])->format('d-m-Y') : null;
+                        $cek_identitas_exists->nominal_pendanaan = rtrim($ar['nominal_pendanaan_rp']);
+                        $cek_identitas_exists->saldo_pokok_pendanaan = rtrim($ar['outstanding_pokok']);
+                        $cek_identitas_exists->saldo_jasa_adm_pendanaan = rtrim($ar['outstanding_jasa_admin']);
+                        $cek_identitas_exists->created_by_id = \Auth::user()->id;                        
+                        $cek_identitas_exists->kode_upload = $kode;
+                        $cek_identitas_exists->save();
+                    } else {
+                        $mitra = PumkMitraBinaan::create([
+                            // 'bulan' => (int)date('m') == 1? 12 : (int)date('m')-1,
+                            // 'tahun' => (int)date('m') == 1? (int)date('Y')-1 : (int)date('Y'),
+                            'bulan' => $this->periode,
+                            'tahun' => $this->tahunCut,
+                            'nama_mitra' => rtrim($ar['nama_mitra_binaan']),
+                            'no_identitas' => rtrim(preg_replace('/[^0-9]/','',$ar['nik'])),
+                            'provinsi_id' => rtrim($ar['provinsi']),
+                            'kota_id' => rtrim($ar['kabupatenkota']),
+                            'sektor_usaha_id' => rtrim($ar['sektor_usaha']),
+                            // 'skala_usaha_id' => rtrim($ar['id_skala_usaha']),
+                            // 'cara_penyaluran_id' => rtrim($ar['id_pelaksanaan_program']),
+                            'kolektibilitas_id' => rtrim($ar['kolektibilitas']),
+                            'kondisi_pinjaman_id' => rtrim($ar['kondisi_pinjaman_belumtelah_di_restruktur']),
+                            // 'jenis_pembayaran_id' => rtrim($ar['id_jenis_pembayaran']),
+                            // 'bank_account_id' => rtrim($ar['id_bank_account']),
+                            // 'nilai_aset' => rtrim($ar['nilai_aset']),
+                            // 'nilai_omset' => rtrim($ar['nilai_omset']),
+                            // 'no_pinjaman' => rtrim($ar['no_pinjaman']),
+                            'sumber_dana' => str_replace('.',',',$ar['bumn_sumber_dana']),
+                            'tgl_awal' => $ar['tanggal_mendapatkan_pendanaan']? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tanggal_mendapatkan_pendanaan'])->format('d-m-Y') : null,
+                            // 'tgl_jatuh_tempo' => $ar['tgl_jatuh_tempo'] ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_jatuh_tempo'])->format('d-m-Y') : null,
+                            'nominal_pendanaan' => rtrim($ar['nominal_pendanaan_rp']),
+                            'saldo_pokok_pendanaan' => rtrim($ar['outstanding_pokok']),
+                            'saldo_jasa_adm_pendanaan' => rtrim($ar['outstanding_jasa_admin']),
+                            // 'penerimaan_pokok_bulan_berjalan' => rtrim($ar['penerimaan_pokok_bulan_berjalan']),
+                            // 'penerimaan_jasa_adm_bulan_berjalan' => rtrim($ar['penerimaan_jasa_admin_bulan_berjalan']),
+                            // 'tgl_penerimaan_terakhir' => $ar['tgl_penerimaan_terakhir'] ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($ar['tgl_penerimaan_terakhir'])->format('d-m-Y') : null,
+                            // 'jumlah_sdm' => $ar['sdm_di_mb'] ? rtrim($ar['sdm_di_mb']):0,
+                            // 'kelebihan_angsuran' => $ar['kelebihan_angsuran'] ? rtrim($ar['kelebihan_angsuran']):0,
+                            // 'subsektor' => $ar['subsektor'] ? rtrim($ar['subsektor']):0,
+                            // 'hasil_produk_jasa' => $ar['produkjasa_yang_dihasilkan'] ? rtrim($ar['produkjasa_yang_dihasilkan']):0,
+                            // 'produk_jasa_unggulan' => $ar['produkjasa_unggulan'] ? rtrim($ar['produkjasa_unggulan']):0,
+                            'created_by_id' => \Auth::user()->id,
+                            'perusahaan_id' => $perusahaan->id,
+                            'kode_upload' => $kode,
+                            // 'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):2
+                        ]);
+                    }
+                    
                     DB::commit();
                     $berhasil++;
 
