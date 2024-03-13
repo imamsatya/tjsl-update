@@ -39,22 +39,22 @@ class RowImportmb implements ToCollection, WithMultipleSheets, WithMappedCells
             $position = strpos($tahun , "-");
             $tahunCut = substr($tahun, $position + 1);
 
-            try {
-                $data_perusahaan = DB::table('perusahaan_masters')->where('nama_lengkap', $perusahaan)->first();
-                if($data_perusahaan) {
-                    $cek_ketersediaan_data = PumkMitraBinaan::where('tahun', $tahunCut)->where('bulan', $periode)
-                    ->where('perusahaan_id', $data_perusahaan->id)
-                    ->first();
+            // try {
+            //     $data_perusahaan = DB::table('perusahaan_masters')->where('nama_lengkap', $perusahaan)->first();
+            //     if($data_perusahaan) {
+            //         $cek_ketersediaan_data = PumkMitraBinaan::where('tahun', $tahunCut)->where('bulan', $periode)
+            //         ->where('perusahaan_id', $data_perusahaan->id)
+            //         ->first();
 
-                    if($cek_ketersediaan_data) { // batalkan proses upload data
-                        $data_upload = UploadPumkMitraBinaan::find($this->mb_upload);
-                        $data_upload->delete();
-                        throw new \Exception("Data sudah tersedia, tidak bisa upload data!");   
-                    }
-                }
-            } catch (\Exception $e) {
-                return response()->json(['error' => $e->getMessage()], 400)->header('Content-Type', 'text/plain');
-            }
+            //         if($cek_ketersediaan_data) { // batalkan proses upload data
+            //             $data_upload = UploadPumkMitraBinaan::find($this->mb_upload);
+            //             $data_upload->delete();
+            //             throw new \Exception("Data sudah tersedia, tidak bisa upload data!");   
+            //         }
+            //     }
+            // } catch (\Exception $e) {
+            //     return response()->json(['error' => $e->getMessage()], 400)->header('Content-Type', 'text/plain');
+            // }
 
             $Importmb = new ImportMb($this->nama_file,$this->mb_upload,$perusahaan,$tahun,$tahunCut, $periode);
             $Importmb->sheets();
