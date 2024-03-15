@@ -23,9 +23,11 @@ class RowImportmb implements ToCollection, WithMultipleSheets, WithMappedCells
     *
     * @return \Illuminate\Database\Eloquent\Model|null
     */
-    public function __construct($nama_file = "", $mb_upload = ""){
+    public function __construct($nama_file = "", $mb_upload = "", $upload_periode = "", $upload_tahun = ""){
         $this->nama_file = $nama_file ;
         $this->mb_upload = $mb_upload ;
+        $this->upload_periode = $upload_periode;
+        $this->upload_tahun = $upload_tahun;
      }
  
      public function collection(Collection $row)
@@ -33,11 +35,21 @@ class RowImportmb implements ToCollection, WithMultipleSheets, WithMappedCells
 
            // bulan berfungsi sebagai semester, possible value : 1 , 2
             $perusahaan =  rtrim($row['perusahaan']);
-            $tahun      =  substr(rtrim($row['tahun']),10);
+            $tahun      =  substr(rtrim($row['tahun']),10); // semester 1-2023
             
             $periode = substr($tahun, 9, 1);
             $position = strpos($tahun , "-");
             $tahunCut = substr($tahun, $position + 1);
+
+            try {
+                if($this->upload_periode != $periode || $this->upload_tahun != $tahunCut) {                    
+                    $data_upload = UploadPumkMitraBinaan::find($this->mb_upload);
+                    $data_upload->delete();
+                    throw new \Exception("Template tidak sesuai Periode!");
+                }
+            } catch (\Exception $e) {
+                return response()->json(['error' => $e->getMessage()], 400)->header('Content-Type', 'text/plain');
+            }
 
             // try {
             //     $data_perusahaan = DB::table('perusahaan_masters')->where('nama_lengkap', $perusahaan)->first();

@@ -156,10 +156,10 @@ class UploadMitraBinaanController extends Controller
         $periode = $request->periode;
         // dd($perusahaan_id);
         try {
-            $cek_ketersediaan_data = PumkMitraBinaan::where('tahun', $tahun)->where('bulan', $periode)->where('perusahaan_id', $perusahaan_id)->first();
-            if($cek_ketersediaan_data) { // batalkan proses download template
-                throw new \Exception("Data sudah tersedia, tidak bisa download template");   
-            }
+            // $cek_ketersediaan_data = PumkMitraBinaan::where('tahun', $tahun)->where('bulan', $periode)->where('perusahaan_id', $perusahaan_id)->first();
+            // if($cek_ketersediaan_data) { // batalkan proses download template
+            //     throw new \Exception("Data sudah tersedia, tidak bisa download template");   
+            // }
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 200)->header('Content-Type', 'text/plain');
         }
@@ -216,6 +216,8 @@ class UploadMitraBinaanController extends Controller
         ];
 
         $param['file_name'] = $request->input('file_name');
+        $upload_periode = $request->input('periode');
+        $upload_tahun = $request->input('tahun');
 
 
        try{
@@ -229,7 +231,7 @@ class UploadMitraBinaanController extends Controller
                 ini_set('max_execution_limit','0');
            }
            
-            Excel::import(new RowImportmb($dataUpload->fileRaw, $mb->id), public_path('file_upload/upload_mitra_binaan/'.$dataUpload->fileRaw));
+            Excel::import(new RowImportmb($dataUpload->fileRaw, $mb->id, $upload_periode, $upload_tahun), public_path('file_upload/upload_mitra_binaan/'.$dataUpload->fileRaw));
 
             $param2['file_name']  = $dataUpload->fileRaw;
             $param2['upload_by_id']  = \Auth::user()->id;
@@ -241,7 +243,7 @@ class UploadMitraBinaanController extends Controller
                 DB::rollback();
                 $result = [
                 'flag'  => 'error',
-                'msg' => 'Data sudah tersedia, tidak bisa upload data!',
+                'msg' => 'Template tidak sesuai Periode!',
                 'title' => 'Gagal'
                 ];
                 return response()->json($result);
