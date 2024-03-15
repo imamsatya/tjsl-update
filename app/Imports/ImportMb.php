@@ -74,6 +74,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
         $berhasil = 0;
         $update = 0;
         $gagal = 0;
+        $exist_update = 0;
         
         $keterangan = '';
         $kode = uniqid();
@@ -87,7 +88,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                 $nama = $ar['nama_mitra_binaan'] == null? true : false;
 
                 if($nama){
-                    DB::rollback();
+                    // DB::rollback();
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Nama Mitra Kosong<br>';
                 }
@@ -103,7 +104,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
 
                 if(!$no_id){
                     //jika no ktp tidak 16 digit dan angka terakhir bukan 0
-                    DB::rollback();
+                    // DB::rollback();
                     $is_gagal = true;
                     $keterangan .= "Baris ".rtrim($ar['no'])." Nomor Identitas Wajib 16 Digit dan 4 digit terakhir bukan nol. <br>";
                 }
@@ -126,7 +127,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                 }   
 
                 if(!$sektor){
-                    DB::rollback();
+                    // DB::rollback();
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Data Sektor Usaha tidak sesuai referensi<br>';
                 }
@@ -148,7 +149,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     }
 
                     if(!$provinsi){
-                        DB::rollback();
+                        // DB::rollback();
                         $is_gagal = true;
                         $keterangan .= 'Baris '.rtrim($ar['no']).' Data Provinsi Tidak sesuai Referensi<br>';
                     }
@@ -170,7 +171,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                     }                    
                     
                     if(!$kota){
-                        DB::rollback();
+                        // DB::rollback();
                         $is_gagal = true;
                         $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota Tidak Sesuai referensi.<br>';
                     }
@@ -186,7 +187,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                                 ->where('provinsi_id',rtrim($ar['provinsi']))
                                 ->first();
                     if(!$kota){
-                        DB::rollback();
+                        // DB::rollback();
                         $is_gagal = true;
                         $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kota tidak sesuai Provinsi<br>';
                     }
@@ -214,11 +215,11 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                 $tglawal = $ar['tanggal_mendapatkan_pendanaan'] !== null? true : false;
                 
                 if(!$tglawal){
-                    DB::rollback();
+                    // DB::rollback();
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Tanggal Awal Pendanaan Kosong.<br>';
                 }else if(!is_numeric($ar['tanggal_mendapatkan_pendanaan'])){
-                    DB::rollback();
+                    // DB::rollback();
                     $ar['tanggal_mendapatkan_pendanaan'];
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Kesalahan format Tanggal Awal Pendanaan.<br>';
@@ -236,7 +237,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                 $is_angka = is_numeric($ar['tenor_bulan'])? true : false;
 
                 if(!($tenor && $is_angka)){
-                    DB::rollback();
+                    // DB::rollback();
                     $is_gagal = true;
                     $keterangan .= 'Baris '.rtrim($ar['no']).' Data Sektor Usaha tidak sesuai referensi<br>';
                 }
@@ -282,7 +283,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
             }   
             
             if(!$kolek){
-                DB::rollback();
+                // DB::rollback();
                 $is_gagal = true;
                 $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kolektibilitas tidak sesuai referensi<br>';
             }
@@ -304,7 +305,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
             } 
             
             if(!$kondisi){
-                DB::rollback();
+                // DB::rollback();
                 $is_gagal = true;
                 $keterangan .= 'Baris '.rtrim($ar['no']).' Data Kondisi Pinjaman tidak sesuai referensi<br>';
             }
@@ -321,7 +322,7 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
         
         // sumber dana jika pelaksanaan program mandiri
         if(!rtrim($ar['bumn_sumber_dana']) && !is_numeric($ar['bumn_sumber_dana'])) {
-            DB::rollback();
+            // DB::rollback();
             $is_gagal = true;
             $keterangan .= 'Baris '.rtrim($ar['no']).' Sumber Dana Wajib Diisi.<br>';
         }
@@ -680,6 +681,8 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                         $cek_identitas_exists->created_by_id = \Auth::user()->id;                        
                         $cek_identitas_exists->kode_upload = $kode;
                         $cek_identitas_exists->save();
+                        
+                        $exist_update++;
                     } else {
                         $mitra = PumkMitraBinaan::create([
                             // 'bulan' => (int)date('m') == 1? 12 : (int)date('m')-1,
@@ -719,10 +722,11 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
                             'kode_upload' => $kode,
                             // 'id_tambahan_pendanaan' => $ar['id_tambahan_pendanaan'] ? rtrim($ar['id_tambahan_pendanaan']):2
                         ]);
+                        $berhasil++;
                     }
                     
                     DB::commit();
-                    $berhasil++;
+                    
 
                     // //buat data baru jika identitas & kolek belum ada
                     // if(($cek_identitas && $cek_kolektibilitas) == 0 ){
@@ -926,13 +930,16 @@ class ImportMb implements ToCollection, WithHeadingRow, WithMultipleSheets , Wit
             } 
         }
 
+        $exist_message = $exist_update ? $exist_update.' data sudah ada dan sama dengan data sebelumnya di periode dan tahun yang sama' : '';
+        $gagal_message = $gagal ? $gagal.' data gagal upload, detail: '.$keterangan : '';
+        $total_notupdate = $gagal + $exist_update;
         $mb_upload = UploadPumkMitraBinaan::find((int)$this->mb_upload);
         $param['perusahaan_id'] = $perusahaan->id;
         $param['tahun'] = $this->tahun;
         $param['berhasil'] = $berhasil;
         $param['kode_upload'] = $kode;
-        $param['gagal'] = $gagal;
-        $param['keterangan'] = $keterangan;
+        $param['gagal'] = $total_notupdate;
+        $param['keterangan'] = $exist_update ? $exist_message.' - '.$gagal_message : $gagal_message;
         $mb_upload->update($param); 
         DB::commit();            
     }
